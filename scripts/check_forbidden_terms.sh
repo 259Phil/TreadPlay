@@ -13,7 +13,8 @@ EXCLUDE=(-g '!lib/l10n/app_localizations*.dart')
 
 status=0
 if rg -n -i -w "${EXCLUDE[@]}" -e "$TERMS" "${PATHS[@]}"; then status=1; fi
-if rg --files "${PATHS[@]}" | rg -i -e "$TERMS"; then status=1; fi
+# File names: match whole name parts separated by / _ . - or space.
+if rg --files "${PATHS[@]}" | rg -i -e "(^|[/_. -])($TERMS)([/_. -]|$)"; then status=1; fi
 
 if [[ $status -ne 0 ]]; then
   echo "Forbidden terms found (see §0a)." >&2

@@ -40,7 +40,9 @@ class GameNotifier extends Notifier<GameData> {
     );
     ref.onDispose(() => _regenTimer?.cancel());
     final now = _now();
-    final loaded = _repo.loadGame() ?? GameData.initial(now);
+    final loaded = (_repo.loadGame() ?? GameData.initial(now)).withStarterShoes(
+      now,
+    );
     return loaded.copyWith(
       shoes: [for (final s in loaded.shoes) s.regenerated(now)],
     );
@@ -51,6 +53,12 @@ class GameNotifier extends Notifier<GameData> {
     _set(
       state.copyWith(shoes: [for (final s in state.shoes) s.regenerated(now)]),
     );
+  }
+
+  void equip(String shoeId) {
+    if (shoeId == state.activeShoeId) return;
+    if (!state.shoes.any((s) => s.id == shoeId)) return;
+    _set(state.copyWith(activeShoeId: shoeId));
   }
 
   void completeRun(RunSummary run, {required double breathLeft}) {

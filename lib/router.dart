@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'features/garage/garage_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/run/run_screen.dart';
 import 'features/run/summary_screen.dart';
@@ -28,14 +29,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state, shell) => AppShell(shell: shell),
         branches: [
           _branch(AppRoutes.home, (_) => const HomeScreen()),
-          _branch(
-            AppRoutes.garage,
-            (l) => ComingSoonScreen(
-              title: l.tabGarage,
-              teaser: l.garageTeaser,
-              icon: Icons.shelves,
-            ),
-          ),
+          _branch(AppRoutes.garage, (_) => const GarageScreen()),
           _branch(
             AppRoutes.forge,
             (l) => ComingSoonScreen(

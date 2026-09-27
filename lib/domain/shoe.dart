@@ -42,20 +42,61 @@ class Shoe {
     required this.breathUpdatedAt,
   });
 
-  factory Shoe.cobble(DateTime now) => Shoe(
+  factory Shoe.cobble(DateTime now) => Shoe._starter(
+    now,
     id: 'cobble-1',
     modelId: 'boot_01',
     name: 'Cobble',
     type: ShoeType.stomper,
     rarity: Rarity.common,
+  );
+
+  factory Shoe.gearbuckle(DateTime now) => Shoe._starter(
+    now,
+    id: 'gearbuckle-1',
+    modelId: 'boot_07',
+    name: 'Gearbuckle',
+    type: ShoeType.strider,
+    rarity: Rarity.common,
+  );
+
+  factory Shoe.orbithop(DateTime now) => Shoe._starter(
+    now,
+    id: 'orbithop-1',
+    modelId: 'boot_08',
+    name: 'Orbithop',
+    type: ShoeType.dasher,
+    rarity: Rarity.rare,
+  );
+
+  factory Shoe._starter(
+    DateTime now, {
+    required String id,
+    required String modelId,
+    required String name,
+    required ShoeType type,
+    required Rarity rarity,
+  }) => Shoe(
+    id: id,
+    modelId: modelId,
+    name: name,
+    type: type,
+    rarity: rarity,
     level: 1,
     stride: baseStride,
     grit: baseStride,
     fortune: baseStride,
     sole: 100,
-    breath: Rarity.common.tankSize.toDouble(),
+    breath: rarity.tankSize.toDouble(),
     breathUpdatedAt: now,
   );
+
+  /// The boots every player starts with on the garage shelf.
+  static List<Shoe> starterSet(DateTime now) => [
+    Shoe.cobble(now),
+    Shoe.gearbuckle(now),
+    Shoe.orbithop(now),
+  ];
 
   final String id;
   final String modelId;

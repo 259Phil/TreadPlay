@@ -2,11 +2,9 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../../domain/boot_footprint.dart';
 import '../../domain/shoe.dart';
-import '../../l10n/app_localizations.dart';
-import '../../theme.dart';
-import '../../widgets/format.dart';
+import '../../widgets/boot_placement.dart';
+import '../../widgets/breath_ring.dart';
 
 /// Active boot standing on a cobblestone pedestal in its world scene,
 /// under the empty clothesline, with Breath shown at the shaft.
@@ -54,18 +52,20 @@ class BootDiorama extends StatelessWidget {
     final pedTop = pedBottom - pedHeight;
     final ovalHalf = pedHeight * _PedestalPainter.topShare / 2;
     // Sole lands in the lower half of the top oval so it sits on the stones.
-    final soleY = pedTop + ovalHalf * 1.35;
+    final soleY = pedTop + ovalHalf * 1.35 + 10;
 
-    final fp = bootFootprints[shoe.modelId] ?? defaultBootFootprint;
-    final size = min(w * 0.74, w * 0.5 / fp.height);
-    final imgLeft = w / 2 - fp.center.dx * size;
-    final imgTop = soleY - fp.bottom * size;
-    final bootRight = imgLeft + fp.right * size;
-    final bootTop = imgTop + fp.top * size;
-    final bootWidth = fp.width * size;
+    final seat = BootPlacement.seat(
+      modelId: shoe.modelId,
+      centerX: w / 2,
+      soleY: soleY,
+      maxImageSize: w * 0.74,
+      maxBootHeight: w * 0.5,
+    );
+    final img = seat.image;
+    final bootWidth = seat.boot.width;
 
     const ring = 48.0;
-    final ringLeft = min(bootRight - ring * 0.2, w - ring - 12);
+    final ringLeft = min(seat.boot.right - ring * 0.2, w - ring - 12);
 
     return Stack(
       clipBehavior: Clip.none,
@@ -99,15 +99,15 @@ class BootDiorama extends StatelessWidget {
           ),
         ),
         Positioned(
-          left: imgLeft,
-          top: imgTop,
-          width: size,
-          height: size,
+          left: img.left,
+          top: img.top,
+          width: img.width,
+          height: img.height,
           child: Image.asset(shoe.imageAsset, fit: BoxFit.contain),
         ),
         Positioned(
           left: ringLeft,
-          top: bootTop + 4,
+          top: seat.boot.top + 4,
           width: ring,
           height: ring,
           child: BreathRing(breath: shoe.breath, tank: shoe.tankSize),
@@ -121,68 +121,6 @@ class BootDiorama extends StatelessWidget {
             child: action!,
           ),
       ],
-    );
-  }
-}
-
-/// Small glowing ring showing a boot's Breath.
-class BreathRing extends StatelessWidget {
-  const BreathRing({super.key, required this.breath, required this.tank});
-
-  final double breath;
-  final int tank;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    final share = (breath / tank).clamp(0.0, 1.0);
-    return Semantics(
-      label:
-          '${l.breath} ${l.breathValue(formatNumber(context, breath), tank)}',
-      excludeSemantics: true,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: const Color(0xCC14110F),
-          boxShadow: [
-            BoxShadow(
-              color: TreadColors.breath.withValues(alpha: 0.55 * share),
-              blurRadius: 14,
-              spreadRadius: 1,
-            ),
-          ],
-        ),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(3),
-              child: CircularProgressIndicator(
-                value: share,
-                strokeWidth: 4,
-                color: TreadColors.breath,
-                backgroundColor: TreadColors.panel,
-              ),
-            ),
-            Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.air, size: 14, color: TreadColors.breath),
-                  Text(
-                    formatNumber(context, breath.floorToDouble()),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      height: 1,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

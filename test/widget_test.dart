@@ -46,7 +46,10 @@ void main() {
 
     await tester.tap(find.text('Start'));
     await tester.pumpAndSettle();
-    expect(find.text('Puste'), findsOneWidget);
+    expect(
+      find.text('Noch keine Läufe. Zieh Cobble an und los!'),
+      findsOneWidget,
+    );
     expect(find.text('Los'), findsOneWidget);
   });
 
@@ -77,5 +80,33 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Last run'), findsOneWidget);
     expect(container.read(gameProvider).lp, 2.5);
+  });
+
+  testWidgets('garage equips another boot and Home shows it', (tester) async {
+    await pumpApp(tester);
+    await tester.tap(find.widgetWithText(NavigationDestination, 'Garage'));
+    await tester.pumpAndSettle();
+    expect(find.text('Gearbuckle'), findsOneWidget);
+    expect(find.text('Orbithop'), findsOneWidget);
+
+    await tester.tap(find.text('Gearbuckle'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Put on'));
+    await tester.pumpAndSettle();
+    expect(find.text('Wearing'), findsWidgets);
+
+    await tester.tap(find.widgetWithText(NavigationDestination, 'Home'));
+    await tester.pumpAndSettle();
+    expect(find.text('Gearbuckle'), findsOneWidget);
+    expect(find.text('Cobble'), findsNothing);
+
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(Scaffold).first),
+    );
+    expect(container.read(gameProvider).activeShoeId, 'gearbuckle-1');
+    expect(
+      container.read(gameRepositoryProvider).loadGame()!.activeShoeId,
+      'gearbuckle-1',
+    );
   });
 }

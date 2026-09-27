@@ -146,17 +146,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lastRun => 'Last run';
 
   @override
-  String get noRunsYet => 'No runs yet. Put on Cobble and get moving!';
-
-  @override
   String get invalidRun => 'Not counted';
 
   @override
-  String get comingSoon => 'Coming in a later update.';
+  String get equip => 'Put on';
 
   @override
-  String get garageTeaser =>
-      'Your boot shelf: collect, level up and repair boots.';
+  String get equipped => 'Wearing';
+
+  @override
+  String get garageMoreToFind => 'More boots to find';
+
+  @override
+  String noRunsYet(String name) {
+    return 'No runs yet. Put on $name and get moving!';
+  }
+
+  @override
+  String get comingSoon => 'Coming in a later update.';
 
   @override
   String get forgeTeaser =>

@@ -344,29 +344,41 @@ abstract class AppLocalizations {
   /// **'Last run'**
   String get lastRun;
 
-  /// No description provided for @noRunsYet.
-  ///
-  /// In en, this message translates to:
-  /// **'No runs yet. Put on Cobble and get moving!'**
-  String get noRunsYet;
-
   /// No description provided for @invalidRun.
   ///
   /// In en, this message translates to:
   /// **'Not counted'**
   String get invalidRun;
 
+  /// No description provided for @equip.
+  ///
+  /// In en, this message translates to:
+  /// **'Put on'**
+  String get equip;
+
+  /// No description provided for @equipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Wearing'**
+  String get equipped;
+
+  /// No description provided for @garageMoreToFind.
+  ///
+  /// In en, this message translates to:
+  /// **'More boots to find'**
+  String get garageMoreToFind;
+
+  /// No description provided for @noRunsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No runs yet. Put on {name} and get moving!'**
+  String noRunsYet(String name);
+
   /// No description provided for @comingSoon.
   ///
   /// In en, this message translates to:
   /// **'Coming in a later update.'**
   String get comingSoon;
-
-  /// No description provided for @garageTeaser.
-  ///
-  /// In en, this message translates to:
-  /// **'Your boot shelf: collect, level up and repair boots.'**
-  String get garageTeaser;
 
   /// No description provided for @forgeTeaser.
   ///

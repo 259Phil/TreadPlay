@@ -51,7 +51,7 @@ class HomeScreen extends ConsumerWidget {
                 context.push(AppRoutes.run);
               },
             ),
-            corner: _LastRunNote(run: game.lastRun),
+            corner: _LastRunNote(run: game.lastRun, shoeName: shoe.name),
           ),
           const SizedBox(height: 16),
           Row(
@@ -70,25 +70,22 @@ class HomeScreen extends ConsumerWidget {
             '${l.sweetSpotAt(formatNumber(context, shoe.type.sweetSpotKmh))}',
             style: theme.textTheme.bodyMedium,
           ),
-          const SizedBox(height: 8),
-          DefaultTextStyle.merge(
-            style: theme.textTheme.bodySmall,
-            child: Wrap(
-              spacing: 6,
-              crossAxisAlignment: WrapCrossAlignment.center,
+          if (shoe.breath < 1) ...[
+            const SizedBox(height: 8),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.air, size: 14, color: TreadColors.breath),
-                Text(l.breath),
-                Text(
-                  l.breathValue(
-                    formatNumber(context, shoe.breath),
-                    shoe.tankSize,
+                const Icon(Icons.air, size: 16, color: TreadColors.breath),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    l.breathEmptyHint,
+                    style: theme.textTheme.bodySmall,
                   ),
                 ),
-                Text(shoe.breath < 1 ? l.breathEmptyHint : l.breathRegenHint),
               ],
             ),
-          ),
+          ],
         ],
       ),
     );
@@ -135,9 +132,10 @@ class _StartTread extends StatelessWidget {
 }
 
 class _LastRunNote extends StatelessWidget {
-  const _LastRunNote({required this.run});
+  const _LastRunNote({required this.run, required this.shoeName});
 
   final RunSummary? run;
+  final String shoeName;
 
   @override
   Widget build(BuildContext context) {
@@ -154,7 +152,7 @@ class _LastRunNote extends StatelessWidget {
         child: DefaultTextStyle.merge(
           style: theme.textTheme.bodySmall,
           child: r == null
-              ? Text(l.noRunsYet)
+              ? Text(l.noRunsYet(shoeName))
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,

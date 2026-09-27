@@ -10,8 +10,13 @@ class GameData {
   });
 
   factory GameData.initial(DateTime now) {
-    final cobble = Shoe.cobble(now);
-    return GameData(lp: 0, shoes: [cobble], activeShoeId: cobble.id, runs: []);
+    final shoes = Shoe.starterSet(now);
+    return GameData(
+      lp: 0,
+      shoes: shoes,
+      activeShoeId: shoes.first.id,
+      runs: [],
+    );
   }
 
   static const int maxStoredRuns = 50;
@@ -38,6 +43,16 @@ class GameData {
     activeShoeId: activeShoeId ?? this.activeShoeId,
     runs: runs ?? this.runs,
   );
+
+  /// Adds starter boots that an older save does not have yet.
+  GameData withStarterShoes(DateTime now) {
+    final owned = {for (final s in shoes) s.id};
+    final missing = [
+      for (final s in Shoe.starterSet(now))
+        if (!owned.contains(s.id)) s,
+    ];
+    return missing.isEmpty ? this : copyWith(shoes: [...shoes, ...missing]);
+  }
 
   GameData replaceShoe(Shoe shoe) =>
       copyWith(shoes: [for (final s in shoes) s.id == shoe.id ? shoe : s]);

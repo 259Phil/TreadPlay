@@ -146,17 +146,24 @@ class AppLocalizationsDe extends AppLocalizations {
   String get lastRun => 'Letzter Lauf';
 
   @override
-  String get noRunsYet => 'Noch keine Läufe. Zieh Cobble an und los!';
-
-  @override
   String get invalidRun => 'Nicht gewertet';
 
   @override
-  String get comingSoon => 'Kommt in einem späteren Update.';
+  String get equip => 'Anziehen';
 
   @override
-  String get garageTeaser =>
-      'Dein Schuhregal: Schuhe sammeln, leveln und reparieren.';
+  String get equipped => 'Angezogen';
+
+  @override
+  String get garageMoreToFind => 'Weitere Schuhe warten';
+
+  @override
+  String noRunsYet(String name) {
+    return 'Noch keine Läufe. Zieh $name an und los!';
+  }
+
+  @override
+  String get comingSoon => 'Kommt in einem späteren Update.';
 
   @override
   String get forgeTeaser =>

@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# IP guardrail (docs/TREADPLAY-V1.1-MASTERPLAN.md §0a): forbidden terms in app code, assets, strings and store text.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+TERMS='STEPN|GST|GMT|Sneakers?|Walkers?|Joggers?|Runners?|Trainers?|Mystery Box|Gems?|Efficiency|Comfort|Resilience|Move-to-Earn|M2E|Mint|NFTs?|Crypto-Token'
+PATHS=()
+for p in lib assets l10n store; do [[ -e $p ]] && PATHS+=("$p"); done
+[[ ${#PATHS[@]} -eq 0 ]] && { echo "nothing to check"; exit 0; }
+
+status=0
+if rg -n -i -w -e "$TERMS" "${PATHS[@]}"; then status=1; fi
+if rg --files "${PATHS[@]}" | rg -i -e "$TERMS"; then status=1; fi
+
+if [[ $status -ne 0 ]]; then
+  echo "Forbidden terms found (see §0a)." >&2
+  exit 1
+fi
+echo "OK: no forbidden terms in ${PATHS[*]}"

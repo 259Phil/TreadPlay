@@ -1,0 +1,14 @@
+name: IP check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  forbidden-terms:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update -q && sudo apt-get install -y -q ripgrep
+      - run: scripts/check_forbidden_terms.sh

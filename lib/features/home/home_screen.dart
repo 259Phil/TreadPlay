@@ -7,7 +7,6 @@ import '../../l10n/app_localizations.dart';
 import '../../router.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
-import '../../widgets/breath_bar.dart';
 import '../../widgets/format.dart';
 import 'boot_diorama.dart';
 
@@ -43,7 +42,17 @@ class HomeScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 12),
-          BootDiorama(shoe: shoe),
+          BootDiorama(
+            shoe: shoe,
+            action: _StartTread(
+              label: l.startRun,
+              onPressed: () {
+                ref.read(runControllerProvider.notifier).start();
+                context.push(AppRoutes.run);
+              },
+            ),
+            corner: _LastRunNote(run: game.lastRun),
+          ),
           const SizedBox(height: 16),
           Row(
             children: [
@@ -61,35 +70,72 @@ class HomeScreen extends ConsumerWidget {
             '${l.sweetSpotAt(formatNumber(context, shoe.type.sweetSpotKmh))}',
             style: theme.textTheme.bodyMedium,
           ),
-          const SizedBox(height: 16),
-          BreathBar(breath: shoe.breath, tank: shoe.tankSize),
-          const SizedBox(height: 4),
-          Text(
-            shoe.breath < 1 ? l.breathEmptyHint : l.breathRegenHint,
+          const SizedBox(height: 8),
+          DefaultTextStyle.merge(
             style: theme.textTheme.bodySmall,
-          ),
-          const SizedBox(height: 24),
-          SizedBox(
-            height: 64,
-            child: FilledButton.icon(
-              icon: const Icon(Icons.play_arrow, size: 32),
-              label: Text(l.startRun, style: const TextStyle(fontSize: 22)),
-              onPressed: () {
-                ref.read(runControllerProvider.notifier).start();
-                context.push(AppRoutes.run);
-              },
+            child: Wrap(
+              spacing: 6,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                const Icon(Icons.air, size: 14, color: TreadColors.breath),
+                Text(l.breath),
+                Text(
+                  l.breathValue(
+                    formatNumber(context, shoe.breath),
+                    shoe.tankSize,
+                  ),
+                ),
+                Text(shoe.breath < 1 ? l.breathEmptyHint : l.breathRegenHint),
+              ],
             ),
           ),
-          const SizedBox(height: 24),
-          _LastRunCard(run: game.lastRun),
         ],
       ),
     );
   }
 }
 
-class _LastRunCard extends StatelessWidget {
-  const _LastRunCard({required this.run});
+class _StartTread extends StatelessWidget {
+  const _StartTread({required this.label, required this.onPressed});
+
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: TreadColors.gold,
+      shape: const CircleBorder(
+        side: BorderSide(color: Color(0xFF6E4E2E), width: 3),
+      ),
+      elevation: 6,
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onPressed,
+        child: SizedBox.square(
+          dimension: 84,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.play_arrow, size: 34, color: Colors.black),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LastRunNote extends StatelessWidget {
+  const _LastRunNote({required this.run});
 
   final RunSummary? run;
 
@@ -98,35 +144,44 @@ class _LastRunCard extends StatelessWidget {
     final l = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final r = run;
-    return Card(
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: const Color(0x9914110F),
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: r == null
-            ? Text(l.noRunsYet)
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l.lastRun, style: theme.textTheme.titleSmall),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(l.kmValue(formatKm(context, r.distanceM))),
-                      Text(formatDuration(r.duration)),
-                      Text(
-                        r.valid
-                            ? l.lpAmount(formatNumber(context, r.lp))
-                            : l.invalidRun,
-                        style: TextStyle(
-                          color: r.valid
-                              ? TreadColors.gold
-                              : theme.colorScheme.error,
-                        ),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        child: DefaultTextStyle.merge(
+          style: theme.textTheme.bodySmall,
+          child: r == null
+              ? Text(l.noRunsYet)
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(l.lastRun, style: theme.textTheme.labelSmall),
+                    Text.rich(
+                      TextSpan(
+                        text:
+                            '${l.kmValue(formatKm(context, r.distanceM))} · '
+                            '${formatDuration(r.duration)} · ',
+                        children: [
+                          TextSpan(
+                            text: r.valid
+                                ? l.lpAmount(formatNumber(context, r.lp))
+                                : l.invalidRun,
+                            style: TextStyle(
+                              color: r.valid
+                                  ? TreadColors.gold
+                                  : theme.colorScheme.error,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+        ),
       ),
     );
   }

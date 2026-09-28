@@ -123,15 +123,11 @@ class _Backdrop extends StatelessWidget {
               ),
             ),
           ),
-          if (world.groundPlane case final tone?)
-            CustomPaint(painter: _FlatGroundPainter(tone, groundY)),
         ],
       );
     }
     return CustomPaint(
-      painter: world == World.medieval
-          ? _StoneGroundPainter(groundY)
-          : _PlaceholderPainter(world.placeholder, groundY),
+      painter: _PlaceholderPainter(world.placeholder, groundY),
     );
   }
 }
@@ -157,133 +153,6 @@ class _PlaceholderPainter extends CustomPainter {
   @override
   bool shouldRepaint(_PlaceholderPainter old) =>
       old.color != color || old.groundY != groundY;
-}
-
-/// Flat dusty floor from a soft horizon down to the bottom edge.
-class _FlatGroundPainter extends CustomPainter {
-  _FlatGroundPainter(this.tone, this.groundY);
-
-  final Color tone;
-  final double groundY;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final horizon = groundY - size.height * 0.08;
-    final plane = Rect.fromLTRB(0, horizon, w, size.height);
-    final far = Color.lerp(tone, const Color(0xFFFFFFFF), 0.15)!;
-    final near = Color.lerp(tone, const Color(0xFF000000), 0.55)!;
-    canvas.drawRect(
-      plane,
-      Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [far, tone, near],
-          stops: const [0, 0.35, 1],
-        ).createShader(plane),
-    );
-
-    final rnd = Random(11);
-    final pit = Paint()..color = const Color(0x33000000);
-    final lip = Paint()
-      ..color = const Color(0x22FFFFFF)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
-    for (var i = 0; i < 18; i++) {
-      final t = rnd.nextDouble();
-      final y = horizon + (size.height - horizon) * t * t;
-      final rw = (6 + rnd.nextDouble() * 22) * (0.3 + t * 1.4);
-      final r = Rect.fromCenter(
-        center: Offset(rnd.nextDouble() * w, y),
-        width: rw,
-        height: rw * (0.18 + t * 0.2),
-      );
-      canvas
-        ..drawOval(r, pit)
-        ..drawArc(r, pi, pi, false, lip);
-    }
-
-    canvas.drawRect(
-      Rect.fromLTRB(0, horizon - 10, w, horizon + 6),
-      Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [far.withAlpha(0), far.withAlpha(0xAA), far.withAlpha(0)],
-        ).createShader(Rect.fromLTRB(0, horizon - 10, w, horizon + 6)),
-    );
-  }
-
-  @override
-  bool shouldRepaint(_FlatGroundPainter old) =>
-      old.tone != tone || old.groundY != groundY;
-}
-
-/// Medieval stand-in until its photo exists: dusk sky over a stone yard.
-class _StoneGroundPainter extends CustomPainter {
-  _StoneGroundPainter(this.groundY);
-
-  final double groundY;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    canvas.drawRect(
-      Rect.fromLTRB(0, 0, w, groundY),
-      Paint()
-        ..shader = const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFF22272F), Color(0xFF4A4F57), Color(0xFF6A6259)],
-          stops: [0, 0.7, 1],
-        ).createShader(Rect.fromLTRB(0, 0, w, groundY)),
-    );
-    final ground = Rect.fromLTRB(0, groundY, w, size.height);
-    canvas.drawRect(ground, Paint()..color = const Color(0xFF3B3631));
-
-    final stone = Paint();
-    final gap = Paint()
-      ..color = const Color(0xFF26221F)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.2;
-    final rnd = Random(7);
-    var y = groundY;
-    var rowH = 7.0;
-    var row = 0;
-    while (y < size.height) {
-      var x = -rnd.nextDouble() * rowH * 2;
-      while (x < w) {
-        final sw = rowH * (1.8 + rnd.nextDouble() * 1.4);
-        final shade = 0x6A + rnd.nextInt(0x22) - row;
-        stone.color = Color.fromARGB(255, shade, shade - 6, shade - 12);
-        final r = RRect.fromRectAndRadius(
-          Rect.fromLTWH(x + 1, y + 1, sw - 2, rowH - 2),
-          Radius.circular(rowH * 0.35),
-        );
-        canvas
-          ..drawRRect(r, stone)
-          ..drawRRect(r, gap);
-        x += sw;
-      }
-      y += rowH;
-      rowH *= 1.28;
-      row += 4;
-    }
-    canvas.drawRect(
-      ground,
-      Paint()
-        ..shader = const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0x55000000), Color(0x00000000), Color(0x77000000)],
-          stops: [0, 0.3, 1],
-        ).createShader(ground),
-    );
-  }
-
-  @override
-  bool shouldRepaint(_StoneGroundPainter old) => old.groundY != groundY;
 }
 
 /// Iron rod across the top with three empty wooden pins for treat pouches.

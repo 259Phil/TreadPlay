@@ -5,8 +5,11 @@ import 'sweet_spot.dart';
 
 /// Turns movement samples into LP blocks for one run with one companion.
 class RunEngine {
-  RunEngine({required this.companion, required this.startedAt})
-    : breathLeft = companion.breath;
+  RunEngine({
+    required this.companion,
+    required this.breathAtStart,
+    required this.startedAt,
+  }) : breathLeft = breathAtStart;
 
   static const double metersPerBreath = 250;
 
@@ -19,6 +22,9 @@ class RunEngine {
   static const double minDistanceForStepCheckM = 200;
 
   final Companion companion;
+
+  /// Points on the shared Breath bar when the run started.
+  final double breathAtStart;
   final DateTime startedAt;
 
   double breathLeft;
@@ -36,7 +42,7 @@ class RunEngine {
 
   bool get canEarn => companion.spirit > 0 && breathLeft >= 1;
 
-  double get breathUsed => companion.breath - breathLeft;
+  double get breathUsed => breathAtStart - breathLeft;
 
   bool get isValid {
     if (_fastTime > maxFastTime) return false;

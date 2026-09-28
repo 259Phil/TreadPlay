@@ -155,13 +155,19 @@ abstract class AppLocalizations {
   /// No description provided for @breathRegenHint.
   ///
   /// In en, this message translates to:
-  /// **'+1 every 90 min, per companion'**
+  /// **'One shared bar for all companions, +1 every 90 min. Taking a companion along only sets the max.'**
   String get breathRegenHint;
+
+  /// No description provided for @breathMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Breath max {max}'**
+  String breathMax(int max);
 
   /// No description provided for @breathEmptyHint.
   ///
   /// In en, this message translates to:
-  /// **'Your companion is out of breath. You can still move, but it earns no LP until it recovers.'**
+  /// **'Out of breath. You can still move, but you earn no LP until the bar recovers.'**
   String get breathEmptyHint;
 
   /// No description provided for @rarityCommon.

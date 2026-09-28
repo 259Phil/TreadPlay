@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:treadplay/app.dart';
 import 'package:treadplay/data/game_data.dart';
 import 'package:treadplay/data/movement_source.dart';
+import 'package:treadplay/domain/breath.dart';
 import 'package:treadplay/domain/companion.dart';
 import 'package:treadplay/state/providers.dart';
 
@@ -97,7 +98,6 @@ void main() {
   ) async {
     final start = GameData.initial(t0);
     final dune = Companion.fresh(
-      t0,
       id: 'dune-1',
       speciesId: 'dune',
       rarity: Rarity.rare,
@@ -136,5 +136,35 @@ void main() {
       container.read(gameRepositoryProvider).loadGame()!.activeCompanionId,
       'dune-1',
     );
+  });
+
+  testWidgets('taking Gilt along with an empty bar does not refill it', (
+    tester,
+  ) async {
+    final start = GameData.initial(t0);
+    final gilt = Companion.fresh(
+      id: 'gilt-1',
+      speciesId: 'gilt',
+      rarity: Rarity.legendary,
+    );
+    final game = start.copyWith(
+      companions: [...start.companions, gilt],
+      breath: Breath(points: 0, updatedAt: t0),
+    );
+    await pumpApp(
+      tester,
+      saved: {'flutter.game.v2': jsonEncode(game.toJson())},
+    );
+    expect(find.text('0/6'), findsOneWidget);
+
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(Scaffold).first),
+    );
+    container.read(gameProvider.notifier).takeAlong('gilt-1');
+    await tester.pumpAndSettle();
+    expect(find.text('0/12'), findsOneWidget);
+    expect(find.text('12/12'), findsNothing);
+    expect(container.read(gameProvider).breath.points, 0);
+    expect(container.read(gameRepositoryProvider).loadGame()!.breath.points, 0);
   });
 }

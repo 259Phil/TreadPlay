@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../data/game_data.dart';
 import '../data/game_repository.dart';
 import '../data/movement_source.dart';
+import '../domain/breath.dart';
 import '../domain/run_engine.dart';
 import '../domain/run_summary.dart';
 
@@ -40,27 +41,17 @@ class GameNotifier extends Notifier<GameData> {
     );
     ref.onDispose(() => _regenTimer?.cancel());
     final now = _now();
-    final loaded = _repo.loadGame() ?? GameData.initial(now);
-    return loaded.copyWith(
-      companions: [for (final c in loaded.companions) c.regenerated(now)],
-    );
+    return (_repo.loadGame() ?? GameData.initial(now)).regenerated(now);
   }
 
-  void refreshBreath() {
-    final now = _now();
-    _set(
-      state.copyWith(
-        companions: [for (final c in state.companions) c.regenerated(now)],
-      ),
-    );
-  }
+  void refreshBreath() => _set(state.regenerated(_now()));
 
   /// Switches the companion for the next run. Not possible during a run.
   void takeAlong(String companionId) {
     if (ref.read(runControllerProvider) != null) return;
     if (companionId == state.activeCompanionId) return;
     if (!state.companions.any((c) => c.id == companionId)) return;
-    _set(state.copyWith(activeCompanionId: companionId));
+    _set(state.takingAlong(companionId, _now()));
   }
 
   void completeRun(RunSummary run, {required double breathLeft}) {
@@ -68,17 +59,10 @@ class GameNotifier extends Notifier<GameData> {
       runs: [run, ...state.runs].take(GameData.maxStoredRuns).toList(),
     );
     if (run.valid) {
-      final companion = next.companions.firstWhere(
-        (c) => c.id == run.companionId,
+      next = next.copyWith(
+        lp: next.lp + run.lp,
+        breath: Breath(points: breathLeft, updatedAt: run.startedAt),
       );
-      next = next
-          .replaceCompanion(
-            companion.copyWith(
-              breath: breathLeft,
-              breathUpdatedAt: run.startedAt,
-            ),
-          )
-          .copyWith(lp: next.lp + run.lp);
     }
     _set(next);
     refreshBreath();
@@ -138,9 +122,10 @@ class RunController extends Notifier<RunView?> {
 
   void start() {
     ref.read(gameProvider.notifier).refreshBreath();
-    final companion = ref.read(gameProvider).activeCompanion;
+    final game = ref.read(gameProvider);
     final engine = RunEngine(
-      companion: companion,
+      companion: game.activeCompanion,
+      breathAtStart: game.breath.points,
       startedAt: ref.read(clockProvider)(),
     );
     _source

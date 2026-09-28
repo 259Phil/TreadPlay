@@ -42,11 +42,17 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get breathRegenHint => '+1 every 90 min, per companion';
+  String get breathRegenHint =>
+      'One shared bar for all companions, +1 every 90 min. Taking a companion along only sets the max.';
+
+  @override
+  String breathMax(int max) {
+    return 'Breath max $max';
+  }
 
   @override
   String get breathEmptyHint =>
-      'Your companion is out of breath. You can still move, but it earns no LP until it recovers.';
+      'Out of breath. You can still move, but you earn no LP until the bar recovers.';
 
   @override
   String get rarityCommon => 'Common';

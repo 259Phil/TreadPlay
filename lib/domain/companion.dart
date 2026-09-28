@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import '../data/companion_art.dart';
 import '../data/species.dart';
 import 'world.dart';
@@ -37,7 +35,6 @@ enum Rarity {
   final int charmSlots;
 }
 
-const Duration breathRegenInterval = Duration(minutes: 90);
 const double baseStride = 10;
 
 /// One owned creature that can be taken along on a run.
@@ -51,21 +48,17 @@ class Companion {
     required this.grit,
     required this.fortune,
     required this.spirit,
-    required this.breath,
-    required this.breathUpdatedAt,
     required this.charms,
   });
 
   /// The starter every player is given.
-  factory Companion.pebble(DateTime now) => Companion.fresh(
-    now,
+  factory Companion.pebble() => Companion.fresh(
     id: 'pebble-1',
     speciesId: 'pebble',
     rarity: Rarity.common,
   );
 
-  factory Companion.fresh(
-    DateTime now, {
+  factory Companion.fresh({
     required String id,
     required String speciesId,
     required Rarity rarity,
@@ -78,8 +71,6 @@ class Companion {
     grit: baseStride,
     fortune: baseStride,
     spirit: 100,
-    breath: rarity.tankSize.toDouble(),
-    breathUpdatedAt: now,
     charms: List.filled(rarity.charmSlots, null),
   );
 
@@ -93,8 +84,6 @@ class Companion {
 
   /// Durability in percent (0–100). At 0 the companion earns no LP.
   final double spirit;
-  final double breath;
-  final DateTime breathUpdatedAt;
 
   /// Seal id per charm slot, null when empty. Length = [Rarity.charmSlots].
   final List<String?> charms;
@@ -113,28 +102,13 @@ class Companion {
 
   String get imageAsset => 'assets/companions/$artKey.png';
 
+  /// Breath cap while this companion is taken along.
   int get tankSize => rarity.tankSize;
 
   double get lpPerBreath =>
       rarity.lpPerBreath * (stride / baseStride) * (1 + 0.04 * (level - 1));
 
-  Companion regenerated(DateTime now) {
-    if (!now.isAfter(breathUpdatedAt)) return this;
-    final gained =
-        now.difference(breathUpdatedAt).inSeconds /
-        breathRegenInterval.inSeconds;
-    return copyWith(
-      breath: min(tankSize.toDouble(), breath + gained),
-      breathUpdatedAt: now,
-    );
-  }
-
-  Companion copyWith({
-    double? breath,
-    DateTime? breathUpdatedAt,
-    double? spirit,
-    List<String?>? charms,
-  }) => Companion(
+  Companion copyWith({double? spirit, List<String?>? charms}) => Companion(
     id: id,
     speciesId: speciesId,
     rarity: rarity,
@@ -143,8 +117,6 @@ class Companion {
     grit: grit,
     fortune: fortune,
     spirit: spirit ?? this.spirit,
-    breath: breath ?? this.breath,
-    breathUpdatedAt: breathUpdatedAt ?? this.breathUpdatedAt,
     charms: charms ?? this.charms,
   );
 
@@ -163,8 +135,6 @@ class Companion {
     'grit': grit,
     'fortune': fortune,
     'spirit': spirit,
-    'breath': breath,
-    'breathUpdatedAt': breathUpdatedAt.toIso8601String(),
     'charms': charms,
   };
 
@@ -180,8 +150,6 @@ class Companion {
       grit: (json['grit']! as num).toDouble(),
       fortune: (json['fortune']! as num).toDouble(),
       spirit: (json['spirit']! as num).toDouble(),
-      breath: (json['breath']! as num).toDouble(),
-      breathUpdatedAt: DateTime.parse(json['breathUpdatedAt']! as String),
       charms: [
         for (var i = 0; i < rarity.charmSlots; i++)
           i < saved.length ? saved[i] as String? : null,

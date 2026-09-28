@@ -1,3 +1,4 @@
+import '../domain/breath.dart';
 import '../domain/companion.dart';
 import '../domain/run_summary.dart';
 
@@ -6,15 +7,17 @@ class GameData {
     required this.lp,
     required this.companions,
     required this.activeCompanionId,
+    required this.breath,
     required this.runs,
   });
 
   factory GameData.initial(DateTime now) {
-    final pebble = Companion.pebble(now);
+    final pebble = Companion.pebble();
     return GameData(
       lp: 0,
       companions: [pebble],
       activeCompanionId: pebble.id,
+      breath: Breath.full(pebble.tankSize, now),
       runs: const [],
     );
   }
@@ -26,11 +29,17 @@ class GameData {
   final List<Companion> companions;
   final String activeCompanionId;
 
+  /// The one account-wide Breath bar; see [breathCap].
+  final Breath breath;
+
   /// Newest first.
   final List<RunSummary> runs;
 
   Companion get activeCompanion =>
       companions.firstWhere((c) => c.id == activeCompanionId);
+
+  /// Only the companion taken along sets the cap, never the collection size.
+  int get breathCap => activeCompanion.tankSize;
 
   RunSummary? get lastRun => runs.isEmpty ? null : runs.first;
 
@@ -42,15 +51,27 @@ class GameData {
     return c != null && c.spirit >= 100;
   }
 
+  GameData regenerated(DateTime now) =>
+      copyWith(breath: breath.regenerated(now, breathCap));
+
+  /// Switches companion. The bar keeps its points (regenerated up to [now]
+  /// under the old cap) and is only trimmed if the new cap is lower.
+  GameData takingAlong(String companionId, DateTime now) {
+    final settled = regenerated(now).copyWith(activeCompanionId: companionId);
+    return settled.copyWith(breath: settled.breath.capped(settled.breathCap));
+  }
+
   GameData copyWith({
     double? lp,
     List<Companion>? companions,
     String? activeCompanionId,
+    Breath? breath,
     List<RunSummary>? runs,
   }) => GameData(
     lp: lp ?? this.lp,
     companions: companions ?? this.companions,
     activeCompanionId: activeCompanionId ?? this.activeCompanionId,
+    breath: breath ?? this.breath,
     runs: runs ?? this.runs,
   );
 
@@ -64,20 +85,36 @@ class GameData {
     'lp': lp,
     'companions': [for (final c in companions) c.toJson()],
     'activeCompanionId': activeCompanionId,
+    'breath': breath.toJson(),
     'runs': [for (final r in runs) r.toJson()],
   };
 
-  factory GameData.fromJson(Map<String, Object?> json) => GameData(
-    lp: (json['lp']! as num).toDouble(),
-    companions: [
+  factory GameData.fromJson(Map<String, Object?> json) {
+    final companions = [
       for (final c in json['companions']! as List<Object?>)
-        Companion.fromJson(c! as Map<String, Object?>),
-    ],
-    activeCompanionId: json['activeCompanionId']! as String,
-    runs: [
-      for (final r in json['runs']! as List<Object?>)
-        RunSummary.fromJson(r! as Map<String, Object?>),
-    ],
+        c! as Map<String, Object?>,
+    ];
+    final activeId = json['activeCompanionId']! as String;
+    return GameData(
+      lp: (json['lp']! as num).toDouble(),
+      companions: [for (final c in companions) Companion.fromJson(c)],
+      activeCompanionId: activeId,
+      breath: switch (json['breath']) {
+        final Map<String, Object?> b => Breath.fromJson(b),
+        _ => _legacyBreath(companions.firstWhere((c) => c['id'] == activeId)),
+      },
+      runs: [
+        for (final r in json['runs']! as List<Object?>)
+          RunSummary.fromJson(r! as Map<String, Object?>),
+      ],
+    );
+  }
+
+  /// Older saves kept a tank per companion; the one taken along becomes the
+  /// shared bar and all the others are dropped.
+  static Breath _legacyBreath(Map<String, Object?> active) => Breath(
+    points: (active['breath']! as num).toDouble(),
+    updatedAt: DateTime.parse(active['breathUpdatedAt']! as String),
   );
 }
 

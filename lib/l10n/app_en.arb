@@ -33,8 +33,16 @@
       }
     }
   },
-  "breathRegenHint": "+1 every 90 min, per companion",
-  "breathEmptyHint": "Your companion is out of breath. You can still move, but it earns no LP until it recovers.",
+  "breathRegenHint": "One shared bar for all companions, +1 every 90 min. Taking a companion along only sets the max.",
+  "breathMax": "Breath max {max}",
+  "@breathMax": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "breathEmptyHint": "Out of breath. You can still move, but you earn no LP until the bar recovers.",
   "rarityCommon": "Common",
   "rarityRare": "Rare",
   "rarityEpic": "Epic",

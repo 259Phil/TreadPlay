@@ -26,7 +26,11 @@ class HomeScreen extends ConsumerWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        WorldScene(companion: companion, railTop: topInset + _barHeight + 4),
+        WorldScene(
+          companion: companion,
+          breath: game.breath.points,
+          railTop: topInset + _barHeight + 4,
+        ),
         Positioned(
           left: 0,
           right: 0,
@@ -42,7 +46,11 @@ class HomeScreen extends ConsumerWidget {
           left: 12,
           right: 112,
           bottom: 14,
-          child: _NamePlate(companion: companion, lastRun: game.lastRun),
+          child: _NamePlate(
+            companion: companion,
+            breath: game.breath.points,
+            lastRun: game.lastRun,
+          ),
         ),
         Positioned(
           right: 14,
@@ -166,9 +174,14 @@ class _Rivet extends StatelessWidget {
 
 /// Name, type and the last session on one small iron plate.
 class _NamePlate extends StatelessWidget {
-  const _NamePlate({required this.companion, required this.lastRun});
+  const _NamePlate({
+    required this.companion,
+    required this.breath,
+    required this.lastRun,
+  });
 
   final Companion companion;
+  final double breath;
   final RunSummary? lastRun;
 
   @override
@@ -210,7 +223,7 @@ class _NamePlate extends StatelessWidget {
               '${l.sweetSpotAt(formatNumber(context, companion.type.sweetSpotKmh))}',
               style: small,
             ),
-            if (companion.breath < 1) ...[
+            if (breath < 1) ...[
               const SizedBox(height: 4),
               Text(
                 l.breathEmptyHint,

@@ -42,11 +42,17 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get breathRegenHint => '+1 alle 90 min, pro Gefährte';
+  String get breathRegenHint =>
+      'Ein gemeinsamer Balken für alle Gefährten, +1 alle 90 min. Der mitgenommene Gefährte legt nur das Maximum fest.';
+
+  @override
+  String breathMax(int max) {
+    return 'Puste max. $max';
+  }
 
   @override
   String get breathEmptyHint =>
-      'Dein Gefährte ist außer Puste. Du kannst dich weiter bewegen, bekommst aber keine LP, bis er sich erholt hat.';
+      'Außer Puste. Du kannst dich weiter bewegen, bekommst aber keine LP, bis sich der Balken erholt hat.';
 
   @override
   String get rarityCommon => 'Gewöhnlich';

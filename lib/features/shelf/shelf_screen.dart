@@ -269,8 +269,9 @@ class _Detail extends ConsumerWidget {
                         ),
                       ),
                       Text(
-                        '${l.breath} '
-                        '${l.breathValue(formatNumber(context, c.breath.floorToDouble()), c.tankSize)}',
+                        along
+                            ? '${l.breath} ${l.breathValue(formatNumber(context, game.breath.points.floorToDouble()), c.tankSize)}'
+                            : l.breathMax(c.tankSize),
                         style: const TextStyle(color: TreadColors.breath),
                       ),
                       Text(

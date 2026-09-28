@@ -10,9 +10,17 @@ import '../../widgets/companion_figure.dart';
 /// The taken-along companion standing on the ground of its world, under the
 /// iron rail with three empty pins.
 class WorldScene extends StatelessWidget {
-  const WorldScene({super.key, required this.companion, this.railTop = 0});
+  const WorldScene({
+    super.key,
+    required this.companion,
+    required this.breath,
+    this.railTop = 0,
+  });
 
   final Companion companion;
+
+  /// Points on the shared Breath bar.
+  final double breath;
 
   /// Where the pouch rail hangs (below the top bar).
   final double railTop;
@@ -80,10 +88,7 @@ class WorldScene extends StatelessWidget {
         Positioned(
           left: min(figure.right - 36, w - 84),
           top: max(top - 8, figure.top - 6),
-          child: BreathBadge(
-            breath: companion.breath,
-            tank: companion.tankSize,
-          ),
+          child: BreathBadge(breath: breath, tank: companion.tankSize),
         ),
       ],
     );

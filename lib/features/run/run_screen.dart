@@ -37,7 +37,7 @@ class _RunScreenState extends ConsumerState<RunScreen>
   void _onBlocks(RunEngine engine) {
     if (engine.blocks <= _lastBlocks) return;
     _lastBlocks = engine.blocks;
-    _lastBlockLp = engine.shoe.lpPerBreath;
+    _lastBlockLp = engine.companion.lpPerBreath;
     if (ref.read(settingsProvider).kaching) {
       SystemSound.play(SystemSoundType.click);
       HapticFeedback.mediumImpact();
@@ -77,18 +77,14 @@ class _RunScreenState extends ConsumerState<RunScreen>
               ListView(
                 padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
                 children: [
-                  Text(
-                    '${e.shoe.name} · ${shoeTypeLabel(l, e.shoe.type)}',
-                    style: theme.textTheme.titleMedium,
-                    textAlign: TextAlign.center,
-                  ),
+                  _Portrait(view: view),
                   const SizedBox(height: 8),
                   Text(
                     formatNumber(context, e.lp),
                     key: const Key('run-lp'),
                     textAlign: TextAlign.center,
                     style: theme.textTheme.displayLarge?.copyWith(
-                      color: TreadColors.gold,
+                      color: TreadColors.brass,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -108,9 +104,9 @@ class _RunScreenState extends ConsumerState<RunScreen>
                     ],
                   ),
                   const SizedBox(height: 24),
-                  BreathBar(breath: e.breathLeft, tank: e.shoe.tankSize),
+                  BreathBar(breath: e.breathLeft, tank: e.companion.tankSize),
                   const SizedBox(height: 24),
-                  SweetSpotGauge(type: e.shoe.type, speedKmh: e.speedKmh),
+                  SweetSpotGauge(type: e.companion.type, speedKmh: e.speedKmh),
                   const SizedBox(height: 4),
                   Text(hint, textAlign: TextAlign.center),
                   const SizedBox(height: 24),
@@ -120,8 +116,8 @@ class _RunScreenState extends ConsumerState<RunScreen>
                     height: 64,
                     child: FilledButton.icon(
                       style: FilledButton.styleFrom(
-                        backgroundColor: theme.colorScheme.error,
-                        foregroundColor: theme.colorScheme.onError,
+                        backgroundColor: TreadColors.stop,
+                        foregroundColor: TreadColors.text,
                       ),
                       icon: const Icon(Icons.stop, size: 32),
                       label: Text(
@@ -146,7 +142,7 @@ class _RunScreenState extends ConsumerState<RunScreen>
                         child: Text(
                           '+${l.lpAmount(formatNumber(context, _lastBlockLp))}',
                           style: theme.textTheme.headlineMedium?.copyWith(
-                            color: TreadColors.gold,
+                            color: TreadColors.brass,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -228,6 +224,47 @@ class _DemoPanel extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Small portrait of the companion on this run.
+class _Portrait extends StatelessWidget {
+  const _Portrait({required this.view});
+
+  final RunView view;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final c = view.engine.companion;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          width: 56,
+          height: 56,
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: TreadColors.plate,
+            border: Border.all(color: rarityMetal(c.rarity), width: 2),
+          ),
+          child: Image.asset(c.imageAsset, fit: BoxFit.contain),
+        ),
+        const SizedBox(width: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(c.name, style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              '${typeLabel(l, c.type)} · ${l.statSpirit} '
+              '${l.percentValue(formatNumber(context, c.spirit))}',
+              style: const TextStyle(color: TreadColors.muted, fontSize: 12),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

@@ -19,13 +19,14 @@ class AppShell extends StatelessWidget {
             shell.goBranch(i, initialLocation: i == shell.currentIndex),
         destinations: [
           NavigationDestination(
-            icon: const Icon(Icons.directions_walk_outlined),
-            selectedIcon: const Icon(Icons.directions_walk),
+            icon: const Icon(Icons.landscape_outlined),
+            selectedIcon: const Icon(Icons.landscape),
             label: l.tabHome,
           ),
           NavigationDestination(
-            icon: const Icon(Icons.shelves),
-            label: l.tabGarage,
+            icon: const Icon(Icons.grid_view_outlined),
+            selectedIcon: const Icon(Icons.grid_view),
+            label: l.tabShelf,
           ),
           NavigationDestination(
             icon: const Icon(Icons.local_fire_department_outlined),

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/shoe.dart';
+import '../../domain/companion.dart';
 import '../../domain/sweet_spot.dart';
 import '../../theme.dart';
 
-/// Horizontal speed scale with the boot's range, its core and a marker.
+/// Horizontal speed scale with the companion's range, its core and a marker.
 class SweetSpotGauge extends StatelessWidget {
   const SweetSpotGauge({super.key, required this.type, required this.speedKmh});
 
   static const double maxKmh = 20;
 
-  final ShoeType type;
+  final CompanionType type;
   final double speedKmh;
 
   @override
@@ -26,7 +26,7 @@ class SweetSpotGauge extends StatelessWidget {
 class _GaugePainter extends CustomPainter {
   _GaugePainter(this.type, this.speed);
 
-  final ShoeType type;
+  final CompanionType type;
   final double speed;
 
   @override
@@ -50,13 +50,13 @@ class _GaugePainter extends CustomPainter {
     canvas
       ..drawRRect(
         band(0, SweetSpotGauge.maxKmh),
-        Paint()..color = TreadColors.panel,
+        Paint()..color = TreadColors.plate,
       )
       ..drawRRect(
         band(c - r, c + r),
-        Paint()..color = TreadColors.gold.withAlpha(90),
+        Paint()..color = TreadColors.brass.withAlpha(90),
       )
-      ..drawRRect(band(c - core, c + core), Paint()..color = TreadColors.gold);
+      ..drawRRect(band(c - core, c + core), Paint()..color = TreadColors.brass);
 
     final mx = x(speed);
     canvas.drawLine(

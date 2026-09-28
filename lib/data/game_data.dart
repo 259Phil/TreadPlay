@@ -1,80 +1,120 @@
+import '../domain/breath.dart';
+import '../domain/companion.dart';
 import '../domain/run_summary.dart';
-import '../domain/shoe.dart';
 
 class GameData {
   const GameData({
     required this.lp,
-    required this.shoes,
-    required this.activeShoeId,
+    required this.companions,
+    required this.activeCompanionId,
+    required this.breath,
     required this.runs,
   });
 
   factory GameData.initial(DateTime now) {
-    final shoes = Shoe.starterSet(now);
+    final pebble = Companion.pebble();
     return GameData(
       lp: 0,
-      shoes: shoes,
-      activeShoeId: shoes.first.id,
-      runs: [],
+      companions: [pebble],
+      activeCompanionId: pebble.id,
+      breath: Breath.full(pebble.tankSize, now),
+      runs: const [],
     );
   }
 
   static const int maxStoredRuns = 50;
+  static const int inventoryCap = 12;
 
   final double lp;
-  final List<Shoe> shoes;
-  final String activeShoeId;
+  final List<Companion> companions;
+  final String activeCompanionId;
+
+  /// The one account-wide Breath bar; see [breathCap].
+  final Breath breath;
 
   /// Newest first.
   final List<RunSummary> runs;
 
-  Shoe get activeShoe => shoes.firstWhere((s) => s.id == activeShoeId);
+  Companion get activeCompanion =>
+      companions.firstWhere((c) => c.id == activeCompanionId);
+
+  /// Only the companion taken along sets the cap, never the collection size.
+  int get breathCap => activeCompanion.tankSize;
 
   RunSummary? get lastRun => runs.isEmpty ? null : runs.first;
 
+  /// The last companion can never be sold, so a player is never left without
+  /// one; selling also needs full Spirit.
+  bool canSell(String companionId) {
+    if (companions.length < 2) return false;
+    final c = companions.where((c) => c.id == companionId).firstOrNull;
+    return c != null && c.spirit >= 100;
+  }
+
+  GameData regenerated(DateTime now) =>
+      copyWith(breath: breath.regenerated(now, breathCap));
+
+  /// Switches companion. The bar keeps its points (regenerated up to [now]
+  /// under the old cap) and is only trimmed if the new cap is lower.
+  GameData takingAlong(String companionId, DateTime now) {
+    final settled = regenerated(now).copyWith(activeCompanionId: companionId);
+    return settled.copyWith(breath: settled.breath.capped(settled.breathCap));
+  }
+
   GameData copyWith({
     double? lp,
-    List<Shoe>? shoes,
-    String? activeShoeId,
+    List<Companion>? companions,
+    String? activeCompanionId,
+    Breath? breath,
     List<RunSummary>? runs,
   }) => GameData(
     lp: lp ?? this.lp,
-    shoes: shoes ?? this.shoes,
-    activeShoeId: activeShoeId ?? this.activeShoeId,
+    companions: companions ?? this.companions,
+    activeCompanionId: activeCompanionId ?? this.activeCompanionId,
+    breath: breath ?? this.breath,
     runs: runs ?? this.runs,
   );
 
-  /// Adds starter boots that an older save does not have yet.
-  GameData withStarterShoes(DateTime now) {
-    final owned = {for (final s in shoes) s.id};
-    final missing = [
-      for (final s in Shoe.starterSet(now))
-        if (!owned.contains(s.id)) s,
-    ];
-    return missing.isEmpty ? this : copyWith(shoes: [...shoes, ...missing]);
-  }
-
-  GameData replaceShoe(Shoe shoe) =>
-      copyWith(shoes: [for (final s in shoes) s.id == shoe.id ? shoe : s]);
+  GameData replaceCompanion(Companion companion) => copyWith(
+    companions: [
+      for (final c in companions) c.id == companion.id ? companion : c,
+    ],
+  );
 
   Map<String, Object?> toJson() => {
     'lp': lp,
-    'shoes': [for (final s in shoes) s.toJson()],
-    'activeShoeId': activeShoeId,
+    'companions': [for (final c in companions) c.toJson()],
+    'activeCompanionId': activeCompanionId,
+    'breath': breath.toJson(),
     'runs': [for (final r in runs) r.toJson()],
   };
 
-  factory GameData.fromJson(Map<String, Object?> json) => GameData(
-    lp: (json['lp']! as num).toDouble(),
-    shoes: [
-      for (final s in json['shoes']! as List<Object?>)
-        Shoe.fromJson(s! as Map<String, Object?>),
-    ],
-    activeShoeId: json['activeShoeId']! as String,
-    runs: [
-      for (final r in json['runs']! as List<Object?>)
-        RunSummary.fromJson(r! as Map<String, Object?>),
-    ],
+  factory GameData.fromJson(Map<String, Object?> json) {
+    final companions = [
+      for (final c in json['companions']! as List<Object?>)
+        c! as Map<String, Object?>,
+    ];
+    final activeId = json['activeCompanionId']! as String;
+    return GameData(
+      lp: (json['lp']! as num).toDouble(),
+      companions: [for (final c in companions) Companion.fromJson(c)],
+      activeCompanionId: activeId,
+      breath: switch (json['breath']) {
+        final Map<String, Object?> b => Breath.fromJson(b),
+        _ => _legacyBreath(companions.firstWhere((c) => c['id'] == activeId)),
+      },
+      runs: [
+        for (final r in json['runs']! as List<Object?>)
+          RunSummary.fromJson(r! as Map<String, Object?>),
+      ],
+    );
+  }
+
+  /// Older saves kept a tank per companion; the one taken along becomes the
+  /// shared bar and all the others are dropped.
+  static Breath _legacyBreath(Map<String, Object?> active) => Breath(
+    points: (active['breath']! as num).toDouble(),
+    updatedAt: DateTime.parse(active['breathUpdatedAt']! as String),
   );
 }
 

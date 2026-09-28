@@ -110,12 +110,6 @@ abstract class AppLocalizations {
   /// **'Home'**
   String get tabHome;
 
-  /// No description provided for @tabGarage.
-  ///
-  /// In en, this message translates to:
-  /// **'Garage'**
-  String get tabGarage;
-
   /// No description provided for @tabForge.
   ///
   /// In en, this message translates to:
@@ -161,32 +155,20 @@ abstract class AppLocalizations {
   /// No description provided for @breathRegenHint.
   ///
   /// In en, this message translates to:
-  /// **'+1 every 90 min, per boot'**
+  /// **'One shared bar for all companions, +1 every 90 min. Taking a companion along only sets the max.'**
   String get breathRegenHint;
+
+  /// No description provided for @breathMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Breath max {max}'**
+  String breathMax(int max);
 
   /// No description provided for @breathEmptyHint.
   ///
   /// In en, this message translates to:
-  /// **'This boot is out of breath. You can still move, but it earns no LP until it recovers.'**
+  /// **'Out of breath. You can still move, but you earn no LP until the bar recovers.'**
   String get breathEmptyHint;
-
-  /// No description provided for @typeStomper.
-  ///
-  /// In en, this message translates to:
-  /// **'Stomper'**
-  String get typeStomper;
-
-  /// No description provided for @typeStrider.
-  ///
-  /// In en, this message translates to:
-  /// **'Strider'**
-  String get typeStrider;
-
-  /// No description provided for @typeDasher.
-  ///
-  /// In en, this message translates to:
-  /// **'Dasher'**
-  String get typeDasher;
 
   /// No description provided for @rarityCommon.
   ///
@@ -350,28 +332,10 @@ abstract class AppLocalizations {
   /// **'Not counted'**
   String get invalidRun;
 
-  /// No description provided for @equip.
-  ///
-  /// In en, this message translates to:
-  /// **'Put on'**
-  String get equip;
-
-  /// No description provided for @equipped.
-  ///
-  /// In en, this message translates to:
-  /// **'Wearing'**
-  String get equipped;
-
-  /// No description provided for @garageMoreToFind.
-  ///
-  /// In en, this message translates to:
-  /// **'More boots to find'**
-  String get garageMoreToFind;
-
   /// No description provided for @noRunsYet.
   ///
   /// In en, this message translates to:
-  /// **'No runs yet. Put on {name} and get moving!'**
+  /// **'No runs yet. Take {name} along and get moving!'**
   String noRunsYet(String name);
 
   /// No description provided for @comingSoon.
@@ -383,13 +347,13 @@ abstract class AppLocalizations {
   /// No description provided for @forgeTeaser.
   ///
   /// In en, this message translates to:
-  /// **'The forge: set seals into buckles and forge stronger ones.'**
+  /// **'The forge: set seals into charms and forge stronger ones.'**
   String get forgeTeaser;
 
   /// No description provided for @marketTeaser.
   ///
   /// In en, this message translates to:
-  /// **'The market: buy boots and repair kits with your LP.'**
+  /// **'The market: find new companions and repair kits for LP.'**
   String get marketTeaser;
 
   /// No description provided for @settingsLanguage.
@@ -439,6 +403,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Artwork created with Grok (xAI) and edited by Treadplay.'**
   String get creditsArtwork;
+
+  /// No description provided for @appTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk with a companion.'**
+  String get appTagline;
+
+  /// No description provided for @tabShelf.
+  ///
+  /// In en, this message translates to:
+  /// **'Shelf'**
+  String get tabShelf;
+
+  /// No description provided for @typeMoss.
+  ///
+  /// In en, this message translates to:
+  /// **'Moss'**
+  String get typeMoss;
+
+  /// No description provided for @typeBrook.
+  ///
+  /// In en, this message translates to:
+  /// **'Brook'**
+  String get typeBrook;
+
+  /// No description provided for @typeGale.
+  ///
+  /// In en, this message translates to:
+  /// **'Gale'**
+  String get typeGale;
+
+  /// No description provided for @statStride.
+  ///
+  /// In en, this message translates to:
+  /// **'Stride'**
+  String get statStride;
+
+  /// No description provided for @statGrit.
+  ///
+  /// In en, this message translates to:
+  /// **'Grit'**
+  String get statGrit;
+
+  /// No description provided for @statFortune.
+  ///
+  /// In en, this message translates to:
+  /// **'Fortune'**
+  String get statFortune;
+
+  /// No description provided for @statSpirit.
+  ///
+  /// In en, this message translates to:
+  /// **'Spirit'**
+  String get statSpirit;
+
+  /// No description provided for @percentValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} %'**
+  String percentValue(String value);
+
+  /// No description provided for @takeAlong.
+  ///
+  /// In en, this message translates to:
+  /// **'Take along'**
+  String get takeAlong;
+
+  /// No description provided for @takenAlong.
+  ///
+  /// In en, this message translates to:
+  /// **'Along'**
+  String get takenAlong;
+
+  /// No description provided for @levelUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Level up'**
+  String get levelUp;
+
+  /// No description provided for @repair.
+  ///
+  /// In en, this message translates to:
+  /// **'Repair'**
+  String get repair;
+
+  /// No description provided for @charms.
+  ///
+  /// In en, this message translates to:
+  /// **'Charms'**
+  String get charms;
+
+  /// No description provided for @charmSlotEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty'**
+  String get charmSlotEmpty;
+
+  /// No description provided for @notFoundYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not found yet'**
+  String get notFoundYet;
+
+  /// No description provided for @filterWorld.
+  ///
+  /// In en, this message translates to:
+  /// **'World'**
+  String get filterWorld;
+
+  /// No description provided for @filterType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get filterType;
+
+  /// No description provided for @filterRarity.
+  ///
+  /// In en, this message translates to:
+  /// **'Rarity'**
+  String get filterRarity;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// No description provided for @shelfNothingHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing on the shelf with these filters.'**
+  String get shelfNothingHere;
+
+  /// No description provided for @worldMedieval.
+  ///
+  /// In en, this message translates to:
+  /// **'Medieval'**
+  String get worldMedieval;
+
+  /// No description provided for @worldSpace.
+  ///
+  /// In en, this message translates to:
+  /// **'Space'**
+  String get worldSpace;
+
+  /// No description provided for @worldUnderwater.
+  ///
+  /// In en, this message translates to:
+  /// **'Underwater'**
+  String get worldUnderwater;
+
+  /// No description provided for @worldEgypt.
+  ///
+  /// In en, this message translates to:
+  /// **'Egypt'**
+  String get worldEgypt;
+
+  /// No description provided for @worldJungle.
+  ///
+  /// In en, this message translates to:
+  /// **'Jungle'**
+  String get worldJungle;
+
+  /// No description provided for @worldPirate.
+  ///
+  /// In en, this message translates to:
+  /// **'Pirate'**
+  String get worldPirate;
+
+  /// No description provided for @worldRobot.
+  ///
+  /// In en, this message translates to:
+  /// **'Robot'**
+  String get worldRobot;
+
+  /// No description provided for @worldRococo.
+  ///
+  /// In en, this message translates to:
+  /// **'Rococo'**
+  String get worldRococo;
+
+  /// No description provided for @worldSteampunk.
+  ///
+  /// In en, this message translates to:
+  /// **'Steampunk'**
+  String get worldSteampunk;
+
+  /// No description provided for @worldCandy.
+  ///
+  /// In en, this message translates to:
+  /// **'Candy'**
+  String get worldCandy;
 }
 
 class _AppLocalizationsDelegate

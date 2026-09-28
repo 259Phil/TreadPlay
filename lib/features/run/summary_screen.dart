@@ -50,7 +50,7 @@ class SummaryScreen extends ConsumerWidget {
                   l.lpAmount(formatNumber(context, run.lp)),
                   textAlign: TextAlign.center,
                   style: theme.textTheme.displayMedium?.copyWith(
-                    color: TreadColors.gold,
+                    color: TreadColors.brass,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

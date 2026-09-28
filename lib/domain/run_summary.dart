@@ -1,6 +1,6 @@
 class RunSummary {
   const RunSummary({
-    required this.shoeId,
+    required this.companionId,
     required this.startedAt,
     required this.duration,
     required this.distanceM,
@@ -10,7 +10,7 @@ class RunSummary {
     required this.valid,
   });
 
-  final String shoeId;
+  final String companionId;
   final DateTime startedAt;
   final Duration duration;
   final double distanceM;
@@ -20,7 +20,7 @@ class RunSummary {
   final bool valid;
 
   Map<String, Object?> toJson() => {
-    'shoeId': shoeId,
+    'companionId': companionId,
     'startedAt': startedAt.toIso8601String(),
     'durationS': duration.inSeconds,
     'distanceM': distanceM,
@@ -31,7 +31,7 @@ class RunSummary {
   };
 
   factory RunSummary.fromJson(Map<String, Object?> json) => RunSummary(
-    shoeId: json['shoeId']! as String,
+    companionId: json['companionId']! as String,
     startedAt: DateTime.parse(json['startedAt']! as String),
     duration: Duration(seconds: json['durationS']! as int),
     distanceM: (json['distanceM']! as num).toDouble(),

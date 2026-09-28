@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'features/garage/garage_screen.dart';
 import 'features/home/home_screen.dart';
+import 'features/placeholder/coming_soon_screen.dart';
 import 'features/run/run_screen.dart';
 import 'features/run/summary_screen.dart';
 import 'features/settings/settings_screen.dart';
-import 'features/shelf/coming_soon_screen.dart';
+import 'features/shelf/shelf_screen.dart';
 import 'l10n/app_localizations.dart';
 import 'widgets/app_shell.dart';
 
 class AppRoutes {
   static const home = '/home';
-  static const garage = '/garage';
+  static const shelf = '/shelf';
   static const forge = '/forge';
   static const market = '/market';
   static const settings = '/settings';
@@ -29,7 +29,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state, shell) => AppShell(shell: shell),
         branches: [
           _branch(AppRoutes.home, (_) => const HomeScreen()),
-          _branch(AppRoutes.garage, (_) => const GarageScreen()),
+          _branch(AppRoutes.shelf, (_) => const ShelfScreen()),
           _branch(
             AppRoutes.forge,
             (l) => ComingSoonScreen(

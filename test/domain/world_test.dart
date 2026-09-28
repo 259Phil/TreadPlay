@@ -22,6 +22,12 @@ void main() {
     }
   });
 
+  test('companions stand in the lower third of every world', () {
+    for (final world in World.values) {
+      expect(world.ground, inInclusiveRange(2 / 3, 0.85), reason: world.name);
+    }
+  });
+
   test('world backdrops exist on disk', () {
     for (final world in World.values) {
       final bg = world.background;

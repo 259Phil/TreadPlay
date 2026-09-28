@@ -307,10 +307,13 @@ class _Detail extends ConsumerWidget {
             const SizedBox(height: 6),
             Row(
               children: [
-                for (var i = 0; i < 2; i++)
+                for (var i = 0; i < c.charms.length; i++)
                   Expanded(
                     child: Padding(
-                      padding: EdgeInsets.only(right: i == 0 ? 8 : 0),
+                      key: Key('charm-slot-$i'),
+                      padding: EdgeInsets.only(
+                        right: i < c.charms.length - 1 ? 8 : 0,
+                      ),
                       child: DecoratedBox(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
@@ -319,7 +322,7 @@ class _Detail extends ConsumerWidget {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           child: Text(
-                            l.charmSlotEmpty,
+                            c.charms[i] ?? l.charmSlotEmpty,
                             textAlign: TextAlign.center,
                             style: const TextStyle(color: TreadColors.muted),
                           ),

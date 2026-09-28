@@ -123,6 +123,8 @@ class _Backdrop extends StatelessWidget {
               ),
             ),
           ),
+          if (world.groundPlane case final tone?)
+            CustomPaint(painter: _FlatGroundPainter(tone, groundY)),
         ],
       );
     }
@@ -155,6 +157,67 @@ class _PlaceholderPainter extends CustomPainter {
   @override
   bool shouldRepaint(_PlaceholderPainter old) =>
       old.color != color || old.groundY != groundY;
+}
+
+/// Flat dusty floor from a soft horizon down to the bottom edge.
+class _FlatGroundPainter extends CustomPainter {
+  _FlatGroundPainter(this.tone, this.groundY);
+
+  final Color tone;
+  final double groundY;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final horizon = groundY - size.height * 0.08;
+    final plane = Rect.fromLTRB(0, horizon, w, size.height);
+    final far = Color.lerp(tone, const Color(0xFFFFFFFF), 0.15)!;
+    final near = Color.lerp(tone, const Color(0xFF000000), 0.55)!;
+    canvas.drawRect(
+      plane,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [far, tone, near],
+          stops: const [0, 0.35, 1],
+        ).createShader(plane),
+    );
+
+    final rnd = Random(11);
+    final pit = Paint()..color = const Color(0x33000000);
+    final lip = Paint()
+      ..color = const Color(0x22FFFFFF)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+    for (var i = 0; i < 18; i++) {
+      final t = rnd.nextDouble();
+      final y = horizon + (size.height - horizon) * t * t;
+      final rw = (6 + rnd.nextDouble() * 22) * (0.3 + t * 1.4);
+      final r = Rect.fromCenter(
+        center: Offset(rnd.nextDouble() * w, y),
+        width: rw,
+        height: rw * (0.18 + t * 0.2),
+      );
+      canvas
+        ..drawOval(r, pit)
+        ..drawArc(r, pi, pi, false, lip);
+    }
+
+    canvas.drawRect(
+      Rect.fromLTRB(0, horizon - 10, w, horizon + 6),
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [far.withAlpha(0), far.withAlpha(0xAA), far.withAlpha(0)],
+        ).createShader(Rect.fromLTRB(0, horizon - 10, w, horizon + 6)),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_FlatGroundPainter old) =>
+      old.tone != tone || old.groundY != groundY;
 }
 
 /// Medieval stand-in until its photo exists: dusk sky over a stone yard.

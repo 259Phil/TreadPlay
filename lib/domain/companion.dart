@@ -16,21 +16,25 @@ enum CompanionType {
 }
 
 enum Rarity {
-  common(code: 'c', tankSize: 6, lpPerBreath: 2.5),
-  rare(code: 'r', tankSize: 8, lpPerBreath: 4.0),
-  epic(code: 'e', tankSize: 10, lpPerBreath: 7.0),
-  legendary(code: 'l', tankSize: 12, lpPerBreath: 12.0);
+  common(code: 'c', tankSize: 6, lpPerBreath: 2.5, charmSlots: 1),
+  rare(code: 'r', tankSize: 8, lpPerBreath: 4.0, charmSlots: 2),
+  epic(code: 'e', tankSize: 10, lpPerBreath: 7.0, charmSlots: 2),
+  legendary(code: 'l', tankSize: 12, lpPerBreath: 12.0, charmSlots: 3);
 
   const Rarity({
     required this.code,
     required this.tankSize,
     required this.lpPerBreath,
+    required this.charmSlots,
   });
 
   /// Suffix of the art file, e.g. `pebble_r`.
   final String code;
   final int tankSize;
   final double lpPerBreath;
+
+  /// Charms a companion of this rarity wears; each holds at most one seal.
+  final int charmSlots;
 }
 
 const Duration breathRegenInterval = Duration(minutes: 90);
@@ -49,6 +53,7 @@ class Companion {
     required this.spirit,
     required this.breath,
     required this.breathUpdatedAt,
+    required this.charms,
   });
 
   /// The starter every player is given.
@@ -75,6 +80,7 @@ class Companion {
     spirit: 100,
     breath: rarity.tankSize.toDouble(),
     breathUpdatedAt: now,
+    charms: List.filled(rarity.charmSlots, null),
   );
 
   final String id;
@@ -89,6 +95,9 @@ class Companion {
   final double spirit;
   final double breath;
   final DateTime breathUpdatedAt;
+
+  /// Seal id per charm slot, null when empty. Length = [Rarity.charmSlots].
+  final List<String?> charms;
 
   Species get species => speciesById[speciesId]!;
 
@@ -124,6 +133,7 @@ class Companion {
     double? breath,
     DateTime? breathUpdatedAt,
     double? spirit,
+    List<String?>? charms,
   }) => Companion(
     id: id,
     speciesId: speciesId,
@@ -135,7 +145,14 @@ class Companion {
     spirit: spirit ?? this.spirit,
     breath: breath ?? this.breath,
     breathUpdatedAt: breathUpdatedAt ?? this.breathUpdatedAt,
+    charms: charms ?? this.charms,
   );
+
+  /// Puts [sealId] into charm [slot] (or clears it with null).
+  Companion withCharm(int slot, String? sealId) {
+    RangeError.checkValidIndex(slot, charms, 'slot');
+    return copyWith(charms: [...charms]..[slot] = sealId);
+  }
 
   Map<String, Object?> toJson() => {
     'id': id,
@@ -148,20 +165,29 @@ class Companion {
     'spirit': spirit,
     'breath': breath,
     'breathUpdatedAt': breathUpdatedAt.toIso8601String(),
+    'charms': charms,
   };
 
-  factory Companion.fromJson(Map<String, Object?> json) => Companion(
-    id: json['id']! as String,
-    speciesId: json['speciesId']! as String,
-    rarity: Rarity.values.byName(json['rarity']! as String),
-    level: json['level']! as int,
-    stride: (json['stride']! as num).toDouble(),
-    grit: (json['grit']! as num).toDouble(),
-    fortune: (json['fortune']! as num).toDouble(),
-    spirit: (json['spirit']! as num).toDouble(),
-    breath: (json['breath']! as num).toDouble(),
-    breathUpdatedAt: DateTime.parse(json['breathUpdatedAt']! as String),
-  );
+  factory Companion.fromJson(Map<String, Object?> json) {
+    final rarity = Rarity.values.byName(json['rarity']! as String);
+    final saved = (json['charms'] as List<Object?>?) ?? const [];
+    return Companion(
+      id: json['id']! as String,
+      speciesId: json['speciesId']! as String,
+      rarity: rarity,
+      level: json['level']! as int,
+      stride: (json['stride']! as num).toDouble(),
+      grit: (json['grit']! as num).toDouble(),
+      fortune: (json['fortune']! as num).toDouble(),
+      spirit: (json['spirit']! as num).toDouble(),
+      breath: (json['breath']! as num).toDouble(),
+      breathUpdatedAt: DateTime.parse(json['breathUpdatedAt']! as String),
+      charms: [
+        for (var i = 0; i < rarity.charmSlots; i++)
+          i < saved.length ? saved[i] as String? : null,
+      ],
+    );
+  }
 }
 
 String artKeyFor(String speciesId, Rarity rarity) {

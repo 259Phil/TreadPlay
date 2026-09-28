@@ -29,9 +29,31 @@ void main() {
   });
 
   test('missing rarity art falls back to a lower rarity', () {
-    expect(artKeyFor('pebble', Rarity.rare), 'pebble_r');
-    expect(artKeyFor('pebble', Rarity.epic), 'pebble_r');
+    expect(artKeyFor('gilt', Rarity.rare), 'gilt_r');
+    expect(artKeyFor('gilt', Rarity.epic), 'gilt_r');
+    expect(artKeyFor('pebble', Rarity.rare), 'pebble_c');
     expect(artKeyFor('glaze', Rarity.legendary), 'glaze_c');
+  });
+
+  test('charm slots follow rarity and survive a save', () {
+    expect(Companion.pebble(t0).charms, [null]);
+    final gilt = Companion.fresh(
+      t0,
+      id: 'gilt-1',
+      speciesId: 'gilt',
+      rarity: Rarity.legendary,
+    );
+    expect(gilt.charms, hasLength(3));
+    final sealed = gilt.withCharm(1, 'seal-a');
+    expect(sealed.charms, [null, 'seal-a', null]);
+    expect(gilt.charms, [null, null, null]);
+    expect(Companion.fromJson(sealed.toJson()).charms, sealed.charms);
+    expect(() => gilt.withCharm(3, 'seal-b'), throwsRangeError);
+  });
+
+  test('saves without charms load empty slots', () {
+    final json = Companion.pebble(t0).toJson()..remove('charms');
+    expect(Companion.fromJson(json).charms, [null]);
   });
 
   test('json round trip', () {

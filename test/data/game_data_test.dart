@@ -1,33 +1,34 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:treadplay/data/game_data.dart';
-import 'package:treadplay/domain/shoe.dart';
+import 'package:treadplay/domain/companion.dart';
 
 void main() {
   final t0 = DateTime(2026, 1, 1, 8);
 
-  test('new games start with the three starter boots, Cobble on', () {
+  test('new games start with Pebble only, taken along', () {
     final game = GameData.initial(t0);
-    expect(game.shoes.map((s) => s.name), ['Cobble', 'Gearbuckle', 'Orbithop']);
-    expect(game.activeShoe.name, 'Cobble');
+    expect(game.companions.map((c) => c.name), ['Pebble']);
+    expect(game.activeCompanion.name, 'Pebble');
   });
 
-  test('older saves get missing starter boots and keep their state', () {
-    final cobble = Shoe.cobble(t0).copyWith(breath: 2);
-    final old = GameData(
-      lp: 7.5,
-      shoes: [cobble],
-      activeShoeId: cobble.id,
-      runs: const [],
+  test('Pebble cannot be sold until a second companion exists', () {
+    final game = GameData.initial(t0);
+    expect(game.canSell('pebble-1'), isFalse);
+    final dune = Companion.fresh(
+      t0,
+      id: 'dune-1',
+      speciesId: 'dune',
+      rarity: Rarity.rare,
     );
-    final upgraded = GameData.fromJson(old.toJson()).withStarterShoes(t0);
-    expect(upgraded.shoes.map((s) => s.id), [
-      'cobble-1',
-      'gearbuckle-1',
-      'orbithop-1',
-    ]);
-    expect(upgraded.shoes.first.breath, 2);
-    expect(upgraded.lp, 7.5);
-    expect(upgraded.activeShoeId, 'cobble-1');
-    expect(identical(upgraded.withStarterShoes(t0), upgraded), isTrue);
+    final two = game.copyWith(companions: [...game.companions, dune]);
+    expect(two.canSell('pebble-1'), isTrue);
+    final worn = two.replaceCompanion(dune.copyWith(spirit: 90));
+    expect(worn.canSell('dune-1'), isFalse);
+  });
+
+  test('json round trip', () {
+    final game = GameData.initial(t0).copyWith(lp: 7.5);
+    final copy = GameData.fromJson(game.toJson());
+    expect(copy.toJson(), game.toJson());
   });
 }

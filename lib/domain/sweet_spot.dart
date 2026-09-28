@@ -1,14 +1,14 @@
 import 'dart:math';
 
-import 'shoe.dart';
+import 'companion.dart';
 
 /// Share of the range around the sweet spot that pays 100 %.
 const double sweetSpotCoreShare = 0.4;
 
-/// LP factor (0–1) for moving at [speedKmh] in a boot of [type].
+/// LP factor (0–1) for moving at [speedKmh] with a companion of [type].
 ///
 /// 1.0 inside the core, smooth cosine falloff to 0 at the edge of the range.
-double sweetSpotFactor(ShoeType type, double speedKmh) {
+double sweetSpotFactor(CompanionType type, double speedKmh) {
   final d = (speedKmh - type.sweetSpotKmh).abs();
   final range = type.rangeKmh;
   final core = range * sweetSpotCoreShare;

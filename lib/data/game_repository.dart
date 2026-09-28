@@ -7,7 +7,7 @@ import 'game_data.dart';
 class GameRepository {
   GameRepository(this._prefs);
 
-  static const _gameKey = 'game.v1';
+  static const _gameKey = 'game.v2';
   static const _settingsKey = 'settings.v1';
 
   final SharedPreferences _prefs;

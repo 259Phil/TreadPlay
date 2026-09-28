@@ -1,5 +1,5 @@
 name: treadplay
-description: "Treadplay – walk with your boots."
+description: "Treadplay – walk with a companion."
 publish_to: 'none'
 version: 0.1.0+1
 
@@ -26,10 +26,11 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
-    - assets/boots/
+    - assets/companions/
     - assets/kits/
-    - assets/sack/
+    - assets/pouch/
     - assets/brand/
+    - assets/worlds/
 
 flutter_launcher_icons:
   android: true

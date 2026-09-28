@@ -2,28 +2,51 @@
   "@@locale": "en",
   "appTitle": "Treadplay",
   "tabHome": "Home",
-  "tabGarage": "Garage",
   "tabForge": "Forge",
   "tabMarket": "Market",
   "tabSettings": "Settings",
   "lpAmount": "{lp} LP",
-  "@lpAmount": {"placeholders": {"lp": {"type": "String"}}},
+  "@lpAmount": {
+    "placeholders": {
+      "lp": {
+        "type": "String"
+      }
+    }
+  },
   "levelShort": "Lv {level}",
-  "@levelShort": {"placeholders": {"level": {"type": "int"}}},
+  "@levelShort": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
   "breath": "Breath",
   "breathValue": "{current} / {max}",
-  "@breathValue": {"placeholders": {"current": {"type": "String"}, "max": {"type": "int"}}},
-  "breathRegenHint": "+1 every 90 min, per boot",
-  "breathEmptyHint": "This boot is out of breath. You can still move, but it earns no LP until it recovers.",
-  "typeStomper": "Stomper",
-  "typeStrider": "Strider",
-  "typeDasher": "Dasher",
+  "@breathValue": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "breathRegenHint": "+1 every 90 min, per companion",
+  "breathEmptyHint": "Your companion is out of breath. You can still move, but it earns no LP until it recovers.",
   "rarityCommon": "Common",
   "rarityRare": "Rare",
   "rarityEpic": "Epic",
   "rarityLegendary": "Legendary",
   "sweetSpotAt": "Sweet spot {speed} km/h",
-  "@sweetSpotAt": {"placeholders": {"speed": {"type": "String"}}},
+  "@sweetSpotAt": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      }
+    }
+  },
   "startRun": "Start",
   "stopRun": "Stop",
   "distance": "Distance",
@@ -31,9 +54,21 @@
   "speed": "Speed",
   "steps": "Steps",
   "kmValue": "{km} km",
-  "@kmValue": {"placeholders": {"km": {"type": "String"}}},
+  "@kmValue": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
   "kmhValue": "{kmh} km/h",
-  "@kmhValue": {"placeholders": {"kmh": {"type": "String"}}},
+  "@kmhValue": {
+    "placeholders": {
+      "kmh": {
+        "type": "String"
+      }
+    }
+  },
   "lpThisRun": "LP this run",
   "hintStanding": "Keep moving – standing still earns nothing.",
   "hintOutside": "Outside the sweet spot",
@@ -48,14 +83,17 @@
   "done": "Done",
   "lastRun": "Last run",
   "invalidRun": "Not counted",
-  "equip": "Put on",
-  "equipped": "Wearing",
-  "garageMoreToFind": "More boots to find",
-  "noRunsYet": "No runs yet. Put on {name} and get moving!",
-  "@noRunsYet": {"placeholders": {"name": {"type": "String"}}},
+  "noRunsYet": "No runs yet. Take {name} along and get moving!",
+  "@noRunsYet": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "comingSoon": "Coming in a later update.",
-  "forgeTeaser": "The forge: set seals into buckles and forge stronger ones.",
-  "marketTeaser": "The market: buy boots and repair kits with your LP.",
+  "forgeTeaser": "The forge: set seals into charms and forge stronger ones.",
+  "marketTeaser": "The market: find new companions and repair kits for LP.",
   "settingsLanguage": "Language",
   "settingsKaching": "Ka-ching sound",
   "settingsHealthTitle": "Health data",
@@ -63,5 +101,44 @@
   "settingsPrivacyTitle": "Privacy",
   "settingsPrivacyBody": "Your routes and runs stay on this device. No account, no cloud.",
   "settingsCredits": "Credits",
-  "creditsArtwork": "Artwork created with Grok (xAI) and edited by Treadplay."
+  "creditsArtwork": "Artwork created with Grok (xAI) and edited by Treadplay.",
+  "appTagline": "Walk with a companion.",
+  "tabShelf": "Shelf",
+  "typeMoss": "Moss",
+  "typeBrook": "Brook",
+  "typeGale": "Gale",
+  "statStride": "Stride",
+  "statGrit": "Grit",
+  "statFortune": "Fortune",
+  "statSpirit": "Spirit",
+  "percentValue": "{value} %",
+  "@percentValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "takeAlong": "Take along",
+  "takenAlong": "Along",
+  "levelUp": "Level up",
+  "repair": "Repair",
+  "charms": "Charms",
+  "charmSlotEmpty": "Empty",
+  "notFoundYet": "Not found yet",
+  "filterWorld": "World",
+  "filterType": "Type",
+  "filterRarity": "Rarity",
+  "filterAll": "All",
+  "shelfNothingHere": "Nothing on the shelf with these filters.",
+  "worldMedieval": "Medieval",
+  "worldSpace": "Space",
+  "worldUnderwater": "Underwater",
+  "worldEgypt": "Egypt",
+  "worldJungle": "Jungle",
+  "worldPirate": "Pirate",
+  "worldRobot": "Robot",
+  "worldRococo": "Rococo",
+  "worldSteampunk": "Steampunk",
+  "worldCandy": "Candy"
 }

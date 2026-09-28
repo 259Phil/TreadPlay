@@ -1,76 +1,79 @@
+import '../domain/companion.dart';
 import '../domain/run_summary.dart';
-import '../domain/shoe.dart';
 
 class GameData {
   const GameData({
     required this.lp,
-    required this.shoes,
-    required this.activeShoeId,
+    required this.companions,
+    required this.activeCompanionId,
     required this.runs,
   });
 
   factory GameData.initial(DateTime now) {
-    final shoes = Shoe.starterSet(now);
+    final pebble = Companion.pebble(now);
     return GameData(
       lp: 0,
-      shoes: shoes,
-      activeShoeId: shoes.first.id,
-      runs: [],
+      companions: [pebble],
+      activeCompanionId: pebble.id,
+      runs: const [],
     );
   }
 
   static const int maxStoredRuns = 50;
+  static const int inventoryCap = 12;
 
   final double lp;
-  final List<Shoe> shoes;
-  final String activeShoeId;
+  final List<Companion> companions;
+  final String activeCompanionId;
 
   /// Newest first.
   final List<RunSummary> runs;
 
-  Shoe get activeShoe => shoes.firstWhere((s) => s.id == activeShoeId);
+  Companion get activeCompanion =>
+      companions.firstWhere((c) => c.id == activeCompanionId);
 
   RunSummary? get lastRun => runs.isEmpty ? null : runs.first;
 
+  /// The last companion can never be sold, so a player is never left without
+  /// one; selling also needs full Spirit.
+  bool canSell(String companionId) {
+    if (companions.length < 2) return false;
+    final c = companions.where((c) => c.id == companionId).firstOrNull;
+    return c != null && c.spirit >= 100;
+  }
+
   GameData copyWith({
     double? lp,
-    List<Shoe>? shoes,
-    String? activeShoeId,
+    List<Companion>? companions,
+    String? activeCompanionId,
     List<RunSummary>? runs,
   }) => GameData(
     lp: lp ?? this.lp,
-    shoes: shoes ?? this.shoes,
-    activeShoeId: activeShoeId ?? this.activeShoeId,
+    companions: companions ?? this.companions,
+    activeCompanionId: activeCompanionId ?? this.activeCompanionId,
     runs: runs ?? this.runs,
   );
 
-  /// Adds starter boots that an older save does not have yet.
-  GameData withStarterShoes(DateTime now) {
-    final owned = {for (final s in shoes) s.id};
-    final missing = [
-      for (final s in Shoe.starterSet(now))
-        if (!owned.contains(s.id)) s,
-    ];
-    return missing.isEmpty ? this : copyWith(shoes: [...shoes, ...missing]);
-  }
-
-  GameData replaceShoe(Shoe shoe) =>
-      copyWith(shoes: [for (final s in shoes) s.id == shoe.id ? shoe : s]);
+  GameData replaceCompanion(Companion companion) => copyWith(
+    companions: [
+      for (final c in companions) c.id == companion.id ? companion : c,
+    ],
+  );
 
   Map<String, Object?> toJson() => {
     'lp': lp,
-    'shoes': [for (final s in shoes) s.toJson()],
-    'activeShoeId': activeShoeId,
+    'companions': [for (final c in companions) c.toJson()],
+    'activeCompanionId': activeCompanionId,
     'runs': [for (final r in runs) r.toJson()],
   };
 
   factory GameData.fromJson(Map<String, Object?> json) => GameData(
     lp: (json['lp']! as num).toDouble(),
-    shoes: [
-      for (final s in json['shoes']! as List<Object?>)
-        Shoe.fromJson(s! as Map<String, Object?>),
+    companions: [
+      for (final c in json['companions']! as List<Object?>)
+        Companion.fromJson(c! as Map<String, Object?>),
     ],
-    activeShoeId: json['activeShoeId']! as String,
+    activeCompanionId: json['activeCompanionId']! as String,
     runs: [
       for (final r in json['runs']! as List<Object?>)
         RunSummary.fromJson(r! as Map<String, Object?>),

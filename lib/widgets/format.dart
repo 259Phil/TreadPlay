@@ -1,7 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
-import '../domain/shoe.dart';
+import '../domain/companion.dart';
+import '../domain/world.dart';
 import '../l10n/app_localizations.dart';
 
 String formatKm(BuildContext context, double meters) => NumberFormat(
@@ -25,10 +26,10 @@ String formatDuration(Duration d) {
   return h > 0 ? '$h:$m:$s' : '$m:$s';
 }
 
-String shoeTypeLabel(AppLocalizations l, ShoeType type) => switch (type) {
-  ShoeType.stomper => l.typeStomper,
-  ShoeType.strider => l.typeStrider,
-  ShoeType.dasher => l.typeDasher,
+String typeLabel(AppLocalizations l, CompanionType type) => switch (type) {
+  CompanionType.moss => l.typeMoss,
+  CompanionType.brook => l.typeBrook,
+  CompanionType.gale => l.typeGale,
 };
 
 String rarityLabel(AppLocalizations l, Rarity rarity) => switch (rarity) {
@@ -36,4 +37,17 @@ String rarityLabel(AppLocalizations l, Rarity rarity) => switch (rarity) {
   Rarity.rare => l.rarityRare,
   Rarity.epic => l.rarityEpic,
   Rarity.legendary => l.rarityLegendary,
+};
+
+String worldLabel(AppLocalizations l, World world) => switch (world) {
+  World.medieval => l.worldMedieval,
+  World.space => l.worldSpace,
+  World.underwater => l.worldUnderwater,
+  World.egypt => l.worldEgypt,
+  World.jungle => l.worldJungle,
+  World.pirate => l.worldPirate,
+  World.robot => l.worldRobot,
+  World.rococo => l.worldRococo,
+  World.steampunk => l.worldSteampunk,
+  World.candy => l.worldCandy,
 };

@@ -15,9 +15,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tabHome => 'Home';
 
   @override
-  String get tabGarage => 'Garage';
-
-  @override
   String get tabForge => 'Forge';
 
   @override
@@ -45,20 +42,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get breathRegenHint => '+1 every 90 min, per boot';
+  String get breathRegenHint => '+1 every 90 min, per companion';
 
   @override
   String get breathEmptyHint =>
-      'This boot is out of breath. You can still move, but it earns no LP until it recovers.';
-
-  @override
-  String get typeStomper => 'Stomper';
-
-  @override
-  String get typeStrider => 'Strider';
-
-  @override
-  String get typeDasher => 'Dasher';
+      'Your companion is out of breath. You can still move, but it earns no LP until it recovers.';
 
   @override
   String get rarityCommon => 'Common';
@@ -149,17 +137,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get invalidRun => 'Not counted';
 
   @override
-  String get equip => 'Put on';
-
-  @override
-  String get equipped => 'Wearing';
-
-  @override
-  String get garageMoreToFind => 'More boots to find';
-
-  @override
   String noRunsYet(String name) {
-    return 'No runs yet. Put on $name and get moving!';
+    return 'No runs yet. Take $name along and get moving!';
   }
 
   @override
@@ -167,11 +146,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get forgeTeaser =>
-      'The forge: set seals into buckles and forge stronger ones.';
+      'The forge: set seals into charms and forge stronger ones.';
 
   @override
   String get marketTeaser =>
-      'The market: buy boots and repair kits with your LP.';
+      'The market: find new companions and repair kits for LP.';
 
   @override
   String get settingsLanguage => 'Language';
@@ -199,4 +178,102 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get creditsArtwork =>
       'Artwork created with Grok (xAI) and edited by Treadplay.';
+
+  @override
+  String get appTagline => 'Walk with a companion.';
+
+  @override
+  String get tabShelf => 'Shelf';
+
+  @override
+  String get typeMoss => 'Moss';
+
+  @override
+  String get typeBrook => 'Brook';
+
+  @override
+  String get typeGale => 'Gale';
+
+  @override
+  String get statStride => 'Stride';
+
+  @override
+  String get statGrit => 'Grit';
+
+  @override
+  String get statFortune => 'Fortune';
+
+  @override
+  String get statSpirit => 'Spirit';
+
+  @override
+  String percentValue(String value) {
+    return '$value %';
+  }
+
+  @override
+  String get takeAlong => 'Take along';
+
+  @override
+  String get takenAlong => 'Along';
+
+  @override
+  String get levelUp => 'Level up';
+
+  @override
+  String get repair => 'Repair';
+
+  @override
+  String get charms => 'Charms';
+
+  @override
+  String get charmSlotEmpty => 'Empty';
+
+  @override
+  String get notFoundYet => 'Not found yet';
+
+  @override
+  String get filterWorld => 'World';
+
+  @override
+  String get filterType => 'Type';
+
+  @override
+  String get filterRarity => 'Rarity';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String get shelfNothingHere => 'Nothing on the shelf with these filters.';
+
+  @override
+  String get worldMedieval => 'Medieval';
+
+  @override
+  String get worldSpace => 'Space';
+
+  @override
+  String get worldUnderwater => 'Underwater';
+
+  @override
+  String get worldEgypt => 'Egypt';
+
+  @override
+  String get worldJungle => 'Jungle';
+
+  @override
+  String get worldPirate => 'Pirate';
+
+  @override
+  String get worldRobot => 'Robot';
+
+  @override
+  String get worldRococo => 'Rococo';
+
+  @override
+  String get worldSteampunk => 'Steampunk';
+
+  @override
+  String get worldCandy => 'Candy';
 }

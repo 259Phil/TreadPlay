@@ -1,23 +1,32 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:treadplay/app.dart';
+import 'package:treadplay/data/game_data.dart';
 import 'package:treadplay/data/movement_source.dart';
+import 'package:treadplay/domain/companion.dart';
 import 'package:treadplay/state/providers.dart';
 
 void main() {
-  Future<void> pumpApp(WidgetTester tester) async {
+  final t0 = DateTime(2026, 1, 1, 8);
+
+  Future<void> pumpApp(
+    WidgetTester tester, {
+    Map<String, Object> saved = const {},
+  }) async {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 3;
     addTearDown(tester.view.reset);
-    SharedPreferences.setMockInitialValues({});
+    SharedPreferences.setMockInitialValues(saved);
     final prefs = await SharedPreferences.getInstance();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
-          clockProvider.overrideWithValue(() => DateTime(2026, 1, 1, 8)),
+          clockProvider.overrideWithValue(() => t0),
           movementSourceProvider.overrideWith(
             (ref) => SimulatedMovementSource(
               tick: const Duration(milliseconds: 100),
@@ -30,11 +39,12 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('home shows Cobble and switching to German works', (
+  testWidgets('home shows Pebble and switching to German works', (
     tester,
   ) async {
     await pumpApp(tester);
-    expect(find.text('Cobble'), findsOneWidget);
+    expect(find.text('Pebble'), findsOneWidget);
+    expect(find.text('6/6'), findsOneWidget);
     expect(find.text('Start'), findsWidgets);
 
     await tester.tap(find.text('Settings'));
@@ -47,7 +57,7 @@ void main() {
     await tester.tap(find.text('Start'));
     await tester.pumpAndSettle();
     expect(
-      find.text('Noch keine Läufe. Zieh Cobble an und los!'),
+      find.text('Noch keine Läufe. Nimm Pebble mit und los!'),
       findsOneWidget,
     );
     expect(find.text('Los'), findsOneWidget);
@@ -78,35 +88,53 @@ void main() {
 
     await tester.tap(find.text('Done'));
     await tester.pumpAndSettle();
-    expect(find.text('Last run'), findsOneWidget);
+    expect(find.textContaining('Last run: '), findsOneWidget);
     expect(container.read(gameProvider).lp, 2.5);
   });
 
-  testWidgets('garage equips another boot and Home shows it', (tester) async {
-    await pumpApp(tester);
-    await tester.tap(find.widgetWithText(NavigationDestination, 'Garage'));
+  testWidgets('shelf cards are drawn by Flutter and take along works', (
+    tester,
+  ) async {
+    final start = GameData.initial(t0);
+    final dune = Companion.fresh(
+      t0,
+      id: 'dune-1',
+      speciesId: 'dune',
+      rarity: Rarity.rare,
+    );
+    final game = start.copyWith(companions: [...start.companions, dune]);
+    await pumpApp(
+      tester,
+      saved: {'flutter.game.v2': jsonEncode(game.toJson())},
+    );
+    await tester.tap(find.widgetWithText(NavigationDestination, 'Shelf'));
     await tester.pumpAndSettle();
-    expect(find.text('Gearbuckle'), findsOneWidget);
-    expect(find.text('Orbithop'), findsOneWidget);
+    expect(find.text('Pebble'), findsOneWidget);
+    expect(find.text('Dune'), findsOneWidget);
+    expect(find.text('Gale · Lv 1'), findsOneWidget);
+    expect(find.text('Along'), findsOneWidget);
+    expect(find.text('Not found yet'), findsWidgets);
 
-    await tester.tap(find.text('Gearbuckle'));
+    await tester.tap(find.text('Dune'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Put on'));
+    await tester.tap(find.text('Take along'));
     await tester.pumpAndSettle();
-    expect(find.text('Wearing'), findsWidgets);
+    expect(find.text('Along'), findsWidgets);
+    await tester.tapAt(const Offset(20, 100));
+    await tester.pumpAndSettle();
 
     await tester.tap(find.widgetWithText(NavigationDestination, 'Home'));
     await tester.pumpAndSettle();
-    expect(find.text('Gearbuckle'), findsOneWidget);
-    expect(find.text('Cobble'), findsNothing);
+    expect(find.text('Dune'), findsOneWidget);
+    expect(find.text('Pebble'), findsNothing);
 
     final container = ProviderScope.containerOf(
       tester.element(find.byType(Scaffold).first),
     );
-    expect(container.read(gameProvider).activeShoeId, 'gearbuckle-1');
+    expect(container.read(gameProvider).activeCompanionId, 'dune-1');
     expect(
-      container.read(gameRepositoryProvider).loadGame()!.activeShoeId,
-      'gearbuckle-1',
+      container.read(gameRepositoryProvider).loadGame()!.activeCompanionId,
+      'dune-1',
     );
   });
 }

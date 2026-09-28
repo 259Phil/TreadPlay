@@ -15,9 +15,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get tabHome => 'Start';
 
   @override
-  String get tabGarage => 'Garage';
-
-  @override
   String get tabForge => 'Schmiede';
 
   @override
@@ -45,20 +42,11 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get breathRegenHint => '+1 alle 90 min, pro Schuh';
+  String get breathRegenHint => '+1 alle 90 min, pro Gefährte';
 
   @override
   String get breathEmptyHint =>
-      'Dieser Schuh ist außer Puste. Du kannst dich weiter bewegen, bekommst aber keine LP, bis er sich erholt hat.';
-
-  @override
-  String get typeStomper => 'Stomper';
-
-  @override
-  String get typeStrider => 'Strider';
-
-  @override
-  String get typeDasher => 'Dasher';
+      'Dein Gefährte ist außer Puste. Du kannst dich weiter bewegen, bekommst aber keine LP, bis er sich erholt hat.';
 
   @override
   String get rarityCommon => 'Gewöhnlich';
@@ -149,17 +137,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get invalidRun => 'Nicht gewertet';
 
   @override
-  String get equip => 'Anziehen';
-
-  @override
-  String get equipped => 'Angezogen';
-
-  @override
-  String get garageMoreToFind => 'Weitere Schuhe warten';
-
-  @override
   String noRunsYet(String name) {
-    return 'Noch keine Läufe. Zieh $name an und los!';
+    return 'Noch keine Läufe. Nimm $name mit und los!';
   }
 
   @override
@@ -167,11 +146,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get forgeTeaser =>
-      'Die Schmiede: Siegel in Schnallen setzen und stärkere schmieden.';
+      'Die Schmiede: Siegel in Schmuck setzen und stärkere schmieden.';
 
   @override
   String get marketTeaser =>
-      'Der Markt: Schuhe und Reparaturkits für LP kaufen.';
+      'Der Markt: neue Gefährten und Reparaturkits für LP.';
 
   @override
   String get settingsLanguage => 'Sprache';
@@ -199,4 +178,102 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get creditsArtwork =>
       'Artwork erstellt mit Grok (xAI) und bearbeitet von Treadplay.';
+
+  @override
+  String get appTagline => 'Lauf mit einem Gefährten.';
+
+  @override
+  String get tabShelf => 'Regal';
+
+  @override
+  String get typeMoss => 'Moos';
+
+  @override
+  String get typeBrook => 'Bach';
+
+  @override
+  String get typeGale => 'Bö';
+
+  @override
+  String get statStride => 'Stride';
+
+  @override
+  String get statGrit => 'Grit';
+
+  @override
+  String get statFortune => 'Fortune';
+
+  @override
+  String get statSpirit => 'Mut';
+
+  @override
+  String percentValue(String value) {
+    return '$value %';
+  }
+
+  @override
+  String get takeAlong => 'Mitnehmen';
+
+  @override
+  String get takenAlong => 'Dabei';
+
+  @override
+  String get levelUp => 'Aufleveln';
+
+  @override
+  String get repair => 'Reparieren';
+
+  @override
+  String get charms => 'Schmuck';
+
+  @override
+  String get charmSlotEmpty => 'Leer';
+
+  @override
+  String get notFoundYet => 'Noch nicht gefunden';
+
+  @override
+  String get filterWorld => 'Welt';
+
+  @override
+  String get filterType => 'Typ';
+
+  @override
+  String get filterRarity => 'Seltenheit';
+
+  @override
+  String get filterAll => 'Alle';
+
+  @override
+  String get shelfNothingHere => 'Mit diesen Filtern steht nichts im Regal.';
+
+  @override
+  String get worldMedieval => 'Mittelalter';
+
+  @override
+  String get worldSpace => 'Weltraum';
+
+  @override
+  String get worldUnderwater => 'Unterwasser';
+
+  @override
+  String get worldEgypt => 'Ägypten';
+
+  @override
+  String get worldJungle => 'Dschungel';
+
+  @override
+  String get worldPirate => 'Piraten';
+
+  @override
+  String get worldRobot => 'Roboter';
+
+  @override
+  String get worldRococo => 'Rokoko';
+
+  @override
+  String get worldSteampunk => 'Steampunk';
+
+  @override
+  String get worldCandy => 'Süßigkeiten';
 }

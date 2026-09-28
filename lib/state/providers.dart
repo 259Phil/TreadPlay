@@ -40,25 +40,27 @@ class GameNotifier extends Notifier<GameData> {
     );
     ref.onDispose(() => _regenTimer?.cancel());
     final now = _now();
-    final loaded = (_repo.loadGame() ?? GameData.initial(now)).withStarterShoes(
-      now,
-    );
+    final loaded = _repo.loadGame() ?? GameData.initial(now);
     return loaded.copyWith(
-      shoes: [for (final s in loaded.shoes) s.regenerated(now)],
+      companions: [for (final c in loaded.companions) c.regenerated(now)],
     );
   }
 
   void refreshBreath() {
     final now = _now();
     _set(
-      state.copyWith(shoes: [for (final s in state.shoes) s.regenerated(now)]),
+      state.copyWith(
+        companions: [for (final c in state.companions) c.regenerated(now)],
+      ),
     );
   }
 
-  void equip(String shoeId) {
-    if (shoeId == state.activeShoeId) return;
-    if (!state.shoes.any((s) => s.id == shoeId)) return;
-    _set(state.copyWith(activeShoeId: shoeId));
+  /// Switches the companion for the next run. Not possible during a run.
+  void takeAlong(String companionId) {
+    if (ref.read(runControllerProvider) != null) return;
+    if (companionId == state.activeCompanionId) return;
+    if (!state.companions.any((c) => c.id == companionId)) return;
+    _set(state.copyWith(activeCompanionId: companionId));
   }
 
   void completeRun(RunSummary run, {required double breathLeft}) {
@@ -66,10 +68,15 @@ class GameNotifier extends Notifier<GameData> {
       runs: [run, ...state.runs].take(GameData.maxStoredRuns).toList(),
     );
     if (run.valid) {
-      final shoe = next.shoes.firstWhere((s) => s.id == run.shoeId);
+      final companion = next.companions.firstWhere(
+        (c) => c.id == run.companionId,
+      );
       next = next
-          .replaceShoe(
-            shoe.copyWith(breath: breathLeft, breathUpdatedAt: run.startedAt),
+          .replaceCompanion(
+            companion.copyWith(
+              breath: breathLeft,
+              breathUpdatedAt: run.startedAt,
+            ),
           )
           .copyWith(lp: next.lp + run.lp);
     }
@@ -131,8 +138,11 @@ class RunController extends Notifier<RunView?> {
 
   void start() {
     ref.read(gameProvider.notifier).refreshBreath();
-    final shoe = ref.read(gameProvider).activeShoe;
-    final engine = RunEngine(shoe: shoe, startedAt: ref.read(clockProvider)());
+    final companion = ref.read(gameProvider).activeCompanion;
+    final engine = RunEngine(
+      companion: companion,
+      startedAt: ref.read(clockProvider)(),
+    );
     _source
       ..targetSpeedKmh = 0
       ..timeScale = 1;

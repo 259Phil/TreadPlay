@@ -1,12 +1,12 @@
+import 'companion.dart';
 import 'movement.dart';
 import 'run_summary.dart';
-import 'shoe.dart';
 import 'sweet_spot.dart';
 
-/// Turns movement samples into LP blocks for one run with one boot.
+/// Turns movement samples into LP blocks for one run with one companion.
 class RunEngine {
-  RunEngine({required this.shoe, required this.startedAt})
-    : breathLeft = shoe.breath;
+  RunEngine({required this.companion, required this.startedAt})
+    : breathLeft = companion.breath;
 
   static const double metersPerBreath = 250;
 
@@ -18,7 +18,7 @@ class RunEngine {
   static const double minStepsPerMeter = 0.4;
   static const double minDistanceForStepCheckM = 200;
 
-  final Shoe shoe;
+  final Companion companion;
   final DateTime startedAt;
 
   double breathLeft;
@@ -34,9 +34,9 @@ class RunEngine {
   Duration _fastTime = Duration.zero;
   DateTime? _lastTime;
 
-  bool get canEarn => shoe.sole > 0 && breathLeft >= 1;
+  bool get canEarn => companion.spirit > 0 && breathLeft >= 1;
 
-  double get breathUsed => shoe.breath - breathLeft;
+  double get breathUsed => companion.breath - breathLeft;
 
   bool get isValid {
     if (_fastTime > maxFastTime) return false;
@@ -57,7 +57,7 @@ class RunEngine {
     speedKmh = sample.speedKmh;
     if (speedKmh > maxPlausibleKmh) _fastTime += dt;
 
-    factor = canEarn ? sweetSpotFactor(shoe.type, speedKmh) : 0;
+    factor = canEarn ? sweetSpotFactor(companion.type, speedKmh) : 0;
     if (factor == 0) return 0;
 
     _progressM += sample.distanceM * factor;
@@ -65,7 +65,7 @@ class RunEngine {
     while (_progressM >= metersPerBreath && canEarn) {
       _progressM -= metersPerBreath;
       breathLeft -= 1;
-      lp += shoe.lpPerBreath;
+      lp += companion.lpPerBreath;
       blocks++;
       earned++;
     }
@@ -76,7 +76,7 @@ class RunEngine {
   RunSummary finish() {
     final valid = isValid;
     return RunSummary(
-      shoeId: shoe.id,
+      companionId: companion.id,
       startedAt: startedAt,
       duration: elapsed,
       distanceM: distanceM,

@@ -32,7 +32,7 @@ class BreathBar extends StatelessWidget {
             value: (breath / tank).clamp(0, 1),
             minHeight: 10,
             color: TreadColors.breath,
-            backgroundColor: TreadColors.panel,
+            backgroundColor: TreadColors.plate,
           ),
         ),
       ],

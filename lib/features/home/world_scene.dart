@@ -37,7 +37,7 @@ class WorldScene extends StatelessWidget {
       centerX: w / 2,
       groundY: groundY + footSink,
       maxWidth: w * 0.7,
-      maxHeight: min(h * 0.36, groundY + footSink - top),
+      maxHeight: max(h * 0.2, min(h * 0.36, groundY + footSink - top)),
     );
     final shadowW = figure.width * 0.8;
     final shadowH = max(10.0, figure.height * 0.1);

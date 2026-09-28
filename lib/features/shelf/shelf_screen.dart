@@ -23,10 +23,12 @@ class _ShelfScreenState extends ConsumerState<ShelfScreen> {
   CompanionType? _type;
   Rarity? _rarity;
 
-  bool _matches(World world, CompanionType type, Rarity rarity) =>
+  /// Locked cards stand for a whole species (all rarities), so they pass
+  /// any rarity filter; pass `rarity: null` for them.
+  bool _matches(World world, CompanionType type, Rarity? rarity) =>
       (_world == null || _world == world) &&
       (_type == null || _type == type) &&
-      (_rarity == null || _rarity == rarity);
+      (_rarity == null || rarity == null || _rarity == rarity);
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +41,7 @@ class _ShelfScreenState extends ConsumerState<ShelfScreen> {
     ];
     final missing = [
       for (final s in speciesCatalog)
-        if (!owned.contains(s.id) && _matches(s.world, s.type, Rarity.common))
-          s,
+        if (!owned.contains(s.id) && _matches(s.world, s.type, null)) s,
     ];
 
     return Scaffold(

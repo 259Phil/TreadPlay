@@ -727,6 +727,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not now'**
   String get movementDeny;
+
+  /// No description provided for @todayKm.
+  ///
+  /// In en, this message translates to:
+  /// **'Today {km}'**
+  String todayKm(String km);
 }
 
 class _AppLocalizationsDelegate

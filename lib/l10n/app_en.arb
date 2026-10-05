@@ -205,5 +205,15 @@
       }
     }
   },
-  "marketSoldOut": "All offers are gone. New ones arrive later."
+  "marketSoldOut": "All offers are gone. New ones arrive later.",
+  "settingsTerms": "Terms of use",
+  "settingsMovement": "Movement access",
+  "settingsMovementOn": "Real movement earns LP. Readings stay on this device.",
+  "settingsMovementOff": "Off: real movement earns no LP.",
+  "movementNoticeTitle": "Movement and health",
+  "movementNoticeBody": "To count a walk, TreadPlay asks for motion or health access (Apple Health or Health Connect, location only if GPS is used for distance). Readings stay on this device and are only used to check your pace and award LP. Nothing is uploaded. If you deny, real movement earns no LP.",
+  "movementDeniedHint": "Movement access is off. Runs earn no LP until you allow it.",
+  "movementNoticePrivacyLink": "Read the privacy policy",
+  "movementAllow": "Allow",
+  "movementDeny": "Not now"
 }

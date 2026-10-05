@@ -198,24 +198,42 @@ enum TradeBlock {
   lastCompanion,
 }
 
+/// Answer to the movement / health notice. Only [allowed] lets real
+/// movement earn LP.
+enum MovementAccess { unasked, allowed, denied }
+
 class AppSettings {
-  const AppSettings({this.localeCode = 'en', this.kaching = true});
+  const AppSettings({
+    this.localeCode = 'en',
+    this.kaching = true,
+    this.movementAccess = MovementAccess.unasked,
+  });
 
   final String localeCode;
   final bool kaching;
+  final MovementAccess movementAccess;
 
-  AppSettings copyWith({String? localeCode, bool? kaching}) => AppSettings(
+  AppSettings copyWith({
+    String? localeCode,
+    bool? kaching,
+    MovementAccess? movementAccess,
+  }) => AppSettings(
     localeCode: localeCode ?? this.localeCode,
     kaching: kaching ?? this.kaching,
+    movementAccess: movementAccess ?? this.movementAccess,
   );
 
   Map<String, Object?> toJson() => {
     'localeCode': localeCode,
     'kaching': kaching,
+    'movementAccess': movementAccess.name,
   };
 
   factory AppSettings.fromJson(Map<String, Object?> json) => AppSettings(
     localeCode: json['localeCode'] as String? ?? 'en',
     kaching: json['kaching'] as bool? ?? true,
+    movementAccess:
+        MovementAccess.values.asNameMap()[json['movementAccess']] ??
+        MovementAccess.unasked,
   );
 }

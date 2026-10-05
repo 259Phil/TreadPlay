@@ -118,6 +118,9 @@ class SettingsNotifier extends Notifier<AppSettings> {
 
   void setKaching(bool on) => _set(state.copyWith(kaching: on));
 
+  void setMovementAccess(MovementAccess access) =>
+      _set(state.copyWith(movementAccess: access));
+
   void _set(AppSettings s) {
     state = s;
     ref.read(gameRepositoryProvider).saveSettings(s);
@@ -152,7 +155,12 @@ class RunController extends Notifier<RunView?> {
     return null;
   }
 
-  void start() {
+  /// Starts a run. Refused unless movement access is allowed, so a denied
+  /// notice never earns LP from movement.
+  bool start() {
+    if (ref.read(settingsProvider).movementAccess != MovementAccess.allowed) {
+      return false;
+    }
     ref.read(gameProvider.notifier).refreshBreath();
     final game = ref.read(gameProvider);
     final engine = RunEngine(
@@ -168,6 +176,7 @@ class RunController extends Notifier<RunView?> {
       _emit(engine);
     });
     _emit(engine);
+    return true;
   }
 
   void setDemoSpeed(double kmh) {

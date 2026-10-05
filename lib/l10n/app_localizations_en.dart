@@ -329,4 +329,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get marketSoldOut => 'All offers are gone. New ones arrive later.';
+
+  @override
+  String get settingsTerms => 'Terms of use';
+
+  @override
+  String get settingsMovement => 'Movement access';
+
+  @override
+  String get settingsMovementOn =>
+      'Real movement earns LP. Readings stay on this device.';
+
+  @override
+  String get settingsMovementOff => 'Off: real movement earns no LP.';
+
+  @override
+  String get movementNoticeTitle => 'Movement and health';
+
+  @override
+  String get movementNoticeBody =>
+      'To count a walk, TreadPlay asks for motion or health access (Apple Health or Health Connect, location only if GPS is used for distance). Readings stay on this device and are only used to check your pace and award LP. Nothing is uploaded. If you deny, real movement earns no LP.';
+
+  @override
+  String get movementDeniedHint =>
+      'Movement access is off. Runs earn no LP until you allow it.';
+
+  @override
+  String get movementNoticePrivacyLink => 'Read the privacy policy';
+
+  @override
+  String get movementAllow => 'Allow';
+
+  @override
+  String get movementDeny => 'Not now';
 }

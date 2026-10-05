@@ -3,9 +3,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-TERMS='STEPN|GST|GMT|Sneakers?|Walkers?|Joggers?|Runners?|Trainers?|Mystery Box|Gems?|Efficiency|Comfort|Resilience|Move-to-Earn|M2E|Mint|NFTs?|Crypto-Token|Boots?|Shoes?|Sohlen?|Cobble|Pikmin|Pok[eé]mon|Gotta|Gym|Incense|OpenSea|Wallets?|Ethereum|ETH|Blockchain|Cogsworth'
+TERMS='STEPN|GST|GMT|Sneakers?|Walkers?|Joggers?|Runners?|Trainers?|Mystery Box|Gems?|Efficiency|Comfort|Resilience|Move-to-Earn|M2E|Mint|NFTs?|Crypto|Tokens?|Boots?|Shoes?|Sohlen?|Cobble|Pikmin|Pok[eé]mon|Gotta|Gym|Incense|OpenSea|Wallets?|Ethereum|ETH|Blockchain|Cogsworth'
 PATHS=()
-for p in lib assets l10n store; do [[ -e $p ]] && PATHS+=("$p"); done
+for p in lib assets l10n store docs/legal; do [[ -e $p ]] && PATHS+=("$p"); done
 [[ ${#PATHS[@]} -eq 0 ]] && { echo "nothing to check"; exit 0; }
 
 # Generated from lib/l10n/*.arb (which are checked); boilerplate mentions the iOS project name.

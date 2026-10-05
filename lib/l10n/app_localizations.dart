@@ -667,6 +667,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All offers are gone. New ones arrive later.'**
   String get marketSoldOut;
+
+  /// No description provided for @settingsTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of use'**
+  String get settingsTerms;
+
+  /// No description provided for @settingsMovement.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement access'**
+  String get settingsMovement;
+
+  /// No description provided for @settingsMovementOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Real movement earns LP. Readings stay on this device.'**
+  String get settingsMovementOn;
+
+  /// No description provided for @settingsMovementOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off: real movement earns no LP.'**
+  String get settingsMovementOff;
+
+  /// No description provided for @movementNoticeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement and health'**
+  String get movementNoticeTitle;
+
+  /// No description provided for @movementNoticeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'To count a walk, TreadPlay asks for motion or health access (Apple Health or Health Connect, location only if GPS is used for distance). Readings stay on this device and are only used to check your pace and award LP. Nothing is uploaded. If you deny, real movement earns no LP.'**
+  String get movementNoticeBody;
+
+  /// No description provided for @movementDeniedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement access is off. Runs earn no LP until you allow it.'**
+  String get movementDeniedHint;
+
+  /// No description provided for @movementNoticePrivacyLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Read the privacy policy'**
+  String get movementNoticePrivacyLink;
+
+  /// No description provided for @movementAllow.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow'**
+  String get movementAllow;
+
+  /// No description provided for @movementDeny.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get movementDeny;
 }
 
 class _AppLocalizationsDelegate

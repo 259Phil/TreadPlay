@@ -11,6 +11,7 @@ import 'package:treadplay/data/movement_source.dart';
 import 'package:treadplay/domain/breath.dart';
 import 'package:treadplay/domain/companion.dart';
 import 'package:treadplay/domain/market.dart';
+import 'package:treadplay/features/legal/legal_screen.dart';
 import 'package:treadplay/state/providers.dart';
 import 'package:treadplay/widgets/companion_card.dart';
 
@@ -72,6 +73,10 @@ void main() {
     await pumpApp(tester);
     await tester.tap(find.byIcon(Icons.play_arrow));
     await tester.pumpAndSettle();
+    expect(find.text('Movement and health'), findsOneWidget);
+    await tester.tap(find.text('Allow'));
+    await tester.pumpAndSettle();
+    expect(find.text('Movement and health'), findsNothing);
 
     final container = ProviderScope.containerOf(
       tester.element(find.byType(Scaffold).first),
@@ -315,6 +320,126 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Trading only at 100 % Spirit.'), findsOneWidget);
       expect(tradeButton(tester, 'Sell ·').onPressed, isNull);
+    });
+  });
+
+  group('legal', () {
+    ProviderContainer containerOf(WidgetTester tester) =>
+        ProviderScope.containerOf(tester.element(find.byType(Scaffold).first));
+
+    testWidgets('denying the movement notice starts no run and earns no LP', (
+      tester,
+    ) async {
+      await pumpApp(tester);
+      await tester.tap(find.byIcon(Icons.play_arrow));
+      await tester.pumpAndSettle();
+      expect(find.text('Read the privacy policy'), findsOneWidget);
+      await tester.tap(find.text('Not now'));
+      await tester.pumpAndSettle();
+
+      final container = containerOf(tester);
+      expect(
+        container.read(settingsProvider).movementAccess,
+        MovementAccess.denied,
+      );
+      expect(container.read(runControllerProvider), isNull);
+      expect(container.read(runControllerProvider.notifier).start(), isFalse);
+      expect(container.read(gameProvider).lp, 0);
+      expect(find.text('Pebble'), findsOneWidget);
+
+      await tester.tap(find.byIcon(Icons.play_arrow));
+      await tester.pumpAndSettle();
+      expect(
+        find.text(
+          'Movement access is off. Runs earn no LP until you allow it.',
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('the notice links to the full privacy policy', (tester) async {
+      await pumpApp(tester);
+      await tester.tap(find.byIcon(Icons.play_arrow));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Read the privacy policy'));
+      await tester.pumpAndSettle();
+      expect(find.byType(LegalScreen), findsOneWidget);
+      expect(find.text('3. Movement and health'), findsOneWidget);
+    });
+
+    testWidgets('settings open full privacy and terms in EN and DE', (
+      tester,
+    ) async {
+      await pumpApp(tester);
+      await tester.tap(find.widgetWithText(NavigationDestination, 'Settings'));
+      await tester.pumpAndSettle();
+      Future<void> tapRow(String text, {double delta = 200}) async {
+        await tester.scrollUntilVisible(
+          find.text(text),
+          delta,
+          scrollable: find
+              .descendant(
+                of: find.byType(ListView),
+                matching: find.byType(Scrollable),
+              )
+              .first,
+        );
+        await Scrollable.ensureVisible(
+          tester.element(find.text(text)),
+          alignment: 0.5,
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(text));
+        await tester.pumpAndSettle();
+      }
+
+      expect(find.text('Off: real movement earns no LP.'), findsOneWidget);
+
+      await tapRow('Privacy');
+      expect(find.text('1. Controller'), findsOneWidget);
+      expect(
+        find.textContaining(
+          '[Contact person · address · e-mail — fill in before publishing]',
+        ),
+        findsOneWidget,
+      );
+      await tester.tap(find.byType(BackButton));
+      await tester.pumpAndSettle();
+
+      await tapRow('Terms of use');
+      expect(find.text('2. What the app is'), findsOneWidget);
+      expect(find.textContaining('[address · e-mail]'), findsOneWidget);
+      expect(
+        find.textContaining(RegExp('crypto', caseSensitive: false)),
+        findsNothing,
+      );
+      await tester.tap(find.byType(BackButton));
+      await tester.pumpAndSettle();
+
+      await tapRow('Deutsch', delta: -200);
+      await tapRow('Nutzungsbedingungen');
+      expect(find.text('2. Was die App ist'), findsOneWidget);
+      expect(find.textContaining('[Anschrift · E-Mail]'), findsOneWidget);
+      await tester.tap(find.byType(BackButton));
+      await tester.pumpAndSettle();
+      await tapRow('Datenschutz');
+      expect(find.text('1. Verantwortlicher'), findsOneWidget);
+    });
+
+    testWidgets('movement access can be switched in settings', (tester) async {
+      await pumpApp(tester);
+      await tester.tap(find.widgetWithText(NavigationDestination, 'Settings'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Movement access'));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Real movement earns LP. Readings stay on this device.'),
+        findsOneWidget,
+      );
+      final saved = containerOf(
+        tester,
+      ).read(gameRepositoryProvider).loadSettings();
+      expect(saved.movementAccess, MovementAccess.allowed);
     });
   });
 }

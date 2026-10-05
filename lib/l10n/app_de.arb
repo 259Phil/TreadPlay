@@ -94,5 +94,15 @@
   "marketNeedsSpirit": "Handel nur bei 100 % Spirit.",
   "marketLastCompanion": "{name} bleibt, bis ein zweiter Gefährte in deinem Regal steht.",
   "marketSellSwitches": "Danach geht {name} mit dir.",
-  "marketSoldOut": "Alle Angebote sind weg. Später kommen neue."
+  "marketSoldOut": "Alle Angebote sind weg. Später kommen neue.",
+  "settingsTerms": "Nutzungsbedingungen",
+  "settingsMovement": "Bewegungszugriff",
+  "settingsMovementOn": "Echte Bewegung bringt LP. Die Werte bleiben auf dem Gerät.",
+  "settingsMovementOff": "Aus: Echte Bewegung bringt keine LP.",
+  "movementNoticeTitle": "Bewegung und Gesundheit",
+  "movementNoticeBody": "Damit ein Lauf zählt, fragt TreadPlay Zugriff auf Bewegung oder Gesundheit (Apple Health bzw. Health Connect, Standort nur, wenn GPS für die Distanz genutzt wird). Die Werte bleiben auf dem Gerät und dienen nur dazu, dein Tempo zu prüfen und LP zu vergeben. Nichts wird hochgeladen. Lehnst du ab, gibt es keine LP aus echter Bewegung.",
+  "movementDeniedHint": "Bewegungszugriff ist aus. Läufe bringen keine LP, bis du ihn erlaubst.",
+  "movementNoticePrivacyLink": "Datenschutzerklärung lesen",
+  "movementAllow": "Erlauben",
+  "movementDeny": "Nicht jetzt"
 }

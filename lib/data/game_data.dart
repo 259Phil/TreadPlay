@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import '../domain/breath.dart';
 import '../domain/companion.dart';
+import '../domain/market.dart';
 import '../domain/run_summary.dart';
 
 class GameData {
@@ -9,6 +12,7 @@ class GameData {
     required this.activeCompanionId,
     required this.breath,
     required this.runs,
+    this.market,
   });
 
   factory GameData.initial(DateTime now) {
@@ -35,6 +39,9 @@ class GameData {
   /// Newest first.
   final List<RunSummary> runs;
 
+  /// Null until the market is first opened (see [withMarket]).
+  final Market? market;
+
   Companion get activeCompanion =>
       companions.firstWhere((c) => c.id == activeCompanionId);
 
@@ -49,6 +56,61 @@ class GameData {
     if (companions.length < 2) return false;
     final c = companions.where((c) => c.id == companionId).firstOrNull;
     return c != null && c.spirit >= 100;
+  }
+
+  bool get shelfFull => companions.length >= inventoryCap;
+
+  /// Why [offerId] can't be bought right now, or null if it can.
+  TradeBlock? buyBlock(String offerId) {
+    final m = market;
+    final offer = m?.offer(offerId);
+    if (m == null || offer == null) return TradeBlock.gone;
+    if (shelfFull) return TradeBlock.shelfFull;
+    if (offer.spirit < 100) return TradeBlock.needsSpirit;
+    if (lp < m.priceOf(offer)) return TradeBlock.notEnoughLp;
+    return null;
+  }
+
+  /// Why [companionId] can't be sold right now, or null if it can.
+  TradeBlock? sellBlock(String companionId) {
+    final c = companions.where((c) => c.id == companionId).firstOrNull;
+    if (market == null || c == null) return TradeBlock.gone;
+    if (companions.length < 2) return TradeBlock.lastCompanion;
+    if (c.spirit < 100) return TradeBlock.needsSpirit;
+    return null;
+  }
+
+  /// Keeps the current market until its drift is due, then rolls a new one.
+  GameData withMarket(DateTime now, Random random) => copyWith(
+    market: market?.drifted(now, random) ?? Market.rolled(now, random),
+  );
+
+  /// Moves the offer onto the shelf for its price. Check [buyBlock] first.
+  GameData buying(String offerId) {
+    final m = market!;
+    final offer = m.offer(offerId)!;
+    return copyWith(
+      lp: lp - m.priceOf(offer),
+      companions: [...companions, offer],
+      market: m.without(offerId),
+    );
+  }
+
+  /// Sells to the market. If it was taken along, the first remaining
+  /// companion is taken along instead, under the usual [takingAlong] rule.
+  /// Check [sellBlock] first.
+  GameData selling(String companionId, DateTime now) {
+    final c = companions.firstWhere((c) => c.id == companionId);
+    final next = c.id == activeCompanionId
+        ? takingAlong(companions.firstWhere((o) => o.id != c.id).id, now)
+        : this;
+    return next.copyWith(
+      lp: lp + market!.sellPriceOf(c),
+      companions: [
+        for (final o in companions)
+          if (o.id != c.id) o,
+      ],
+    );
   }
 
   GameData regenerated(DateTime now) =>
@@ -67,12 +129,14 @@ class GameData {
     String? activeCompanionId,
     Breath? breath,
     List<RunSummary>? runs,
+    Market? market,
   }) => GameData(
     lp: lp ?? this.lp,
     companions: companions ?? this.companions,
     activeCompanionId: activeCompanionId ?? this.activeCompanionId,
     breath: breath ?? this.breath,
     runs: runs ?? this.runs,
+    market: market ?? this.market,
   );
 
   GameData replaceCompanion(Companion companion) => copyWith(
@@ -87,6 +151,7 @@ class GameData {
     'activeCompanionId': activeCompanionId,
     'breath': breath.toJson(),
     'runs': [for (final r in runs) r.toJson()],
+    if (market case final m?) 'market': m.toJson(),
   };
 
   factory GameData.fromJson(Map<String, Object?> json) {
@@ -107,6 +172,10 @@ class GameData {
         for (final r in json['runs']! as List<Object?>)
           RunSummary.fromJson(r! as Map<String, Object?>),
       ],
+      market: switch (json['market']) {
+        final Map<String, Object?> m => Market.fromJson(m),
+        _ => null,
+      },
     );
   }
 
@@ -116,6 +185,17 @@ class GameData {
     points: (active['breath']! as num).toDouble(),
     updatedAt: DateTime.parse(active['breathUpdatedAt']! as String),
   );
+}
+
+enum TradeBlock {
+  /// Offer already bought or drifted away, or companion no longer owned.
+  gone,
+  shelfFull,
+  notEnoughLp,
+  needsSpirit,
+
+  /// The only companion on the shelf (Pebble for a new player).
+  lastCompanion,
 }
 
 class AppSettings {

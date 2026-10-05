@@ -155,10 +155,6 @@ class AppLocalizationsDe extends AppLocalizations {
       'Die Schmiede: Siegel in Schmuck setzen und stärkere schmieden.';
 
   @override
-  String get marketTeaser =>
-      'Der Markt: neue Gefährten und Reparaturkits für LP.';
-
-  @override
   String get settingsLanguage => 'Sprache';
 
   @override
@@ -282,4 +278,55 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get worldCandy => 'Süßigkeiten';
+
+  @override
+  String get marketBuyTab => 'Kaufen';
+
+  @override
+  String get marketSellTab => 'Verkaufen';
+
+  @override
+  String get marketHint => 'Angebote und Preise wechseln im Lauf des Tages.';
+
+  @override
+  String shelfCount(int count, int cap) {
+    return 'Regal $count/$cap';
+  }
+
+  @override
+  String marketBuyFor(String price) {
+    return 'Kaufen · $price';
+  }
+
+  @override
+  String marketSellFor(String price) {
+    return 'Verkaufen · $price';
+  }
+
+  @override
+  String get marketGone => 'Dieses Angebot gibt es nicht mehr.';
+
+  @override
+  String marketShelfFull(int cap) {
+    return 'Dein Regal ist voll ($cap/$cap). Verkaufe zuerst einen Gefährten.';
+  }
+
+  @override
+  String get marketNotEnoughLp => 'Noch nicht genug LP.';
+
+  @override
+  String get marketNeedsSpirit => 'Handel nur bei 100 % Spirit.';
+
+  @override
+  String marketLastCompanion(String name) {
+    return '$name bleibt, bis ein zweiter Gefährte in deinem Regal steht.';
+  }
+
+  @override
+  String marketSellSwitches(String name) {
+    return 'Danach geht $name mit dir.';
+  }
+
+  @override
+  String get marketSoldOut => 'Alle Angebote sind weg. Später kommen neue.';
 }

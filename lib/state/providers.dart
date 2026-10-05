@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,6 +16,9 @@ final sharedPreferencesProvider = Provider<SharedPreferences>(
 );
 
 final clockProvider = Provider<DateTime Function()>((ref) => DateTime.now);
+
+/// Rolls market offers. Overridden with a seeded [Random] in tests.
+final randomProvider = Provider<Random>((ref) => Random());
 
 final gameRepositoryProvider = Provider<GameRepository>(
   (ref) => GameRepository(ref.watch(sharedPreferencesProvider)),
@@ -35,16 +39,44 @@ class GameNotifier extends Notifier<GameData> {
 
   @override
   GameData build() {
-    _regenTimer = Timer.periodic(
-      const Duration(minutes: 1),
-      (_) => refreshBreath(),
-    );
+    _regenTimer = Timer.periodic(const Duration(minutes: 1), (_) {
+      refreshBreath();
+      refreshMarket();
+    });
     ref.onDispose(() => _regenTimer?.cancel());
     final now = _now();
-    return (_repo.loadGame() ?? GameData.initial(now)).regenerated(now);
+    final saved = _repo.loadGame();
+    final game = (saved ?? GameData.initial(now))
+        .regenerated(now)
+        .withMarket(now, _random);
+    if (!identical(game.market, saved?.market)) _repo.saveGame(game);
+    return game;
   }
 
+  Random get _random => ref.read(randomProvider);
+
   void refreshBreath() => _set(state.regenerated(_now()));
+
+  void refreshMarket() {
+    final next = state.withMarket(_now(), _random);
+    if (!identical(next.market, state.market)) _set(next);
+  }
+
+  /// Buys a market offer for LP. Not possible during a run.
+  bool buy(String offerId) {
+    if (ref.read(runControllerProvider) != null) return false;
+    if (state.buyBlock(offerId) != null) return false;
+    _set(state.buying(offerId));
+    return true;
+  }
+
+  /// Sells a companion to the market for LP. Not possible during a run.
+  bool sell(String companionId) {
+    if (ref.read(runControllerProvider) != null) return false;
+    if (state.sellBlock(companionId) != null) return false;
+    _set(state.selling(companionId, _now()));
+    return true;
+  }
 
   /// Switches the companion for the next run. Not possible during a run.
   void takeAlong(String companionId) {

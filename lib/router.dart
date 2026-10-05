@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'features/home/home_screen.dart';
+import 'features/market/market_screen.dart';
 import 'features/placeholder/coming_soon_screen.dart';
 import 'features/run/run_screen.dart';
 import 'features/run/summary_screen.dart';
@@ -38,14 +39,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               icon: Icons.local_fire_department,
             ),
           ),
-          _branch(
-            AppRoutes.market,
-            (l) => ComingSoonScreen(
-              title: l.tabMarket,
-              teaser: l.marketTeaser,
-              icon: Icons.storefront,
-            ),
-          ),
+          _branch(AppRoutes.market, (_) => const MarketScreen()),
           _branch(AppRoutes.settings, (_) => const SettingsScreen()),
         ],
       ),

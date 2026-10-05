@@ -350,12 +350,6 @@ abstract class AppLocalizations {
   /// **'The forge: set seals into charms and forge stronger ones.'**
   String get forgeTeaser;
 
-  /// No description provided for @marketTeaser.
-  ///
-  /// In en, this message translates to:
-  /// **'The market: find new companions and repair kits for LP.'**
-  String get marketTeaser;
-
   /// No description provided for @settingsLanguage.
   ///
   /// In en, this message translates to:
@@ -595,6 +589,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Candy'**
   String get worldCandy;
+
+  /// No description provided for @marketBuyTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy'**
+  String get marketBuyTab;
+
+  /// No description provided for @marketSellTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Sell'**
+  String get marketSellTab;
+
+  /// No description provided for @marketHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers and prices drift during the day.'**
+  String get marketHint;
+
+  /// No description provided for @shelfCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Shelf {count}/{cap}'**
+  String shelfCount(int count, int cap);
+
+  /// No description provided for @marketBuyFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy · {price}'**
+  String marketBuyFor(String price);
+
+  /// No description provided for @marketSellFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Sell · {price}'**
+  String marketSellFor(String price);
+
+  /// No description provided for @marketGone.
+  ///
+  /// In en, this message translates to:
+  /// **'This offer is no longer here.'**
+  String get marketGone;
+
+  /// No description provided for @marketShelfFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Your shelf is full ({cap}/{cap}). Sell a companion first.'**
+  String marketShelfFull(int cap);
+
+  /// No description provided for @marketNotEnoughLp.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough LP yet.'**
+  String get marketNotEnoughLp;
+
+  /// No description provided for @marketNeedsSpirit.
+  ///
+  /// In en, this message translates to:
+  /// **'Trading only at 100 % Spirit.'**
+  String get marketNeedsSpirit;
+
+  /// No description provided for @marketLastCompanion.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} stays until a second companion joins your shelf.'**
+  String marketLastCompanion(String name);
+
+  /// No description provided for @marketSellSwitches.
+  ///
+  /// In en, this message translates to:
+  /// **'Afterwards {name} goes along with you.'**
+  String marketSellSwitches(String name);
+
+  /// No description provided for @marketSoldOut.
+  ///
+  /// In en, this message translates to:
+  /// **'All offers are gone. New ones arrive later.'**
+  String get marketSoldOut;
 }
 
 class _AppLocalizationsDelegate

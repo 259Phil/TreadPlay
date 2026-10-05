@@ -101,7 +101,6 @@
   },
   "comingSoon": "Coming in a later update.",
   "forgeTeaser": "The forge: set seals into charms and forge stronger ones.",
-  "marketTeaser": "The market: find new companions and repair kits for LP.",
   "settingsLanguage": "Language",
   "settingsKaching": "Ka-ching sound",
   "settingsHealthTitle": "Health data",
@@ -148,5 +147,63 @@
   "worldRobot": "Robot",
   "worldRococo": "Rococo",
   "worldSteampunk": "Steampunk",
-  "worldCandy": "Candy"
+  "worldCandy": "Candy",
+  "marketBuyTab": "Buy",
+  "marketSellTab": "Sell",
+  "marketHint": "Offers and prices drift during the day.",
+  "shelfCount": "Shelf {count}/{cap}",
+  "@shelfCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "cap": {
+        "type": "int"
+      }
+    }
+  },
+  "marketBuyFor": "Buy · {price}",
+  "@marketBuyFor": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "marketSellFor": "Sell · {price}",
+  "@marketSellFor": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "marketGone": "This offer is no longer here.",
+  "marketShelfFull": "Your shelf is full ({cap}/{cap}). Sell a companion first.",
+  "@marketShelfFull": {
+    "placeholders": {
+      "cap": {
+        "type": "int"
+      }
+    }
+  },
+  "marketNotEnoughLp": "Not enough LP yet.",
+  "marketNeedsSpirit": "Trading only at 100 % Spirit.",
+  "marketLastCompanion": "{name} stays until a second companion joins your shelf.",
+  "@marketLastCompanion": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "marketSellSwitches": "Afterwards {name} goes along with you.",
+  "@marketSellSwitches": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "marketSoldOut": "All offers are gone. New ones arrive later."
 }

@@ -155,10 +155,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'The forge: set seals into charms and forge stronger ones.';
 
   @override
-  String get marketTeaser =>
-      'The market: find new companions and repair kits for LP.';
-
-  @override
   String get settingsLanguage => 'Language';
 
   @override
@@ -282,4 +278,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get worldCandy => 'Candy';
+
+  @override
+  String get marketBuyTab => 'Buy';
+
+  @override
+  String get marketSellTab => 'Sell';
+
+  @override
+  String get marketHint => 'Offers and prices drift during the day.';
+
+  @override
+  String shelfCount(int count, int cap) {
+    return 'Shelf $count/$cap';
+  }
+
+  @override
+  String marketBuyFor(String price) {
+    return 'Buy · $price';
+  }
+
+  @override
+  String marketSellFor(String price) {
+    return 'Sell · $price';
+  }
+
+  @override
+  String get marketGone => 'This offer is no longer here.';
+
+  @override
+  String marketShelfFull(int cap) {
+    return 'Your shelf is full ($cap/$cap). Sell a companion first.';
+  }
+
+  @override
+  String get marketNotEnoughLp => 'Not enough LP yet.';
+
+  @override
+  String get marketNeedsSpirit => 'Trading only at 100 % Spirit.';
+
+  @override
+  String marketLastCompanion(String name) {
+    return '$name stays until a second companion joins your shelf.';
+  }
+
+  @override
+  String marketSellSwitches(String name) {
+    return 'Afterwards $name goes along with you.';
+  }
+
+  @override
+  String get marketSoldOut => 'All offers are gone. New ones arrive later.';
 }

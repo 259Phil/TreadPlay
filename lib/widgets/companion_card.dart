@@ -32,6 +32,14 @@ class CompanionCard extends StatelessWidget {
 
   static const double aspectRatio = 0.72;
 
+  /// Two-column card grid used by Shelf and Market.
+  static const gridDelegate = SliverGridDelegateWithFixedCrossAxisCount(
+    crossAxisCount: 2,
+    mainAxisSpacing: 12,
+    crossAxisSpacing: 12,
+    childAspectRatio: aspectRatio,
+  );
+
   @override
   Widget build(BuildContext context) {
     final metal = locked ? const Color(0xFF4A5058) : rarityMetal(rarity);

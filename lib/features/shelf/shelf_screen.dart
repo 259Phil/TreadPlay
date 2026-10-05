@@ -8,6 +8,7 @@ import '../../l10n/app_localizations.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
 import '../../widgets/companion_card.dart';
+import '../../widgets/companion_stats.dart';
 import '../../widgets/format.dart';
 
 /// Card grid of owned companions, followed by species not found yet.
@@ -92,12 +93,7 @@ class _ShelfScreenState extends ConsumerState<ShelfScreen> {
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(12, 8, 12, 24),
             sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                childAspectRatio: CompanionCard.aspectRatio,
-              ),
+              gridDelegate: CompanionCard.gridDelegate,
               delegate: SliverChildListDelegate([
                 for (final c in companions)
                   CompanionCard(
@@ -214,18 +210,6 @@ class _Detail extends ConsumerWidget {
     final c = game.companions.firstWhere((c) => c.id == companionId);
     final along = c.id == game.activeCompanionId;
 
-    Widget stat(String label, String value) => Expanded(
-      child: Column(
-        children: [
-          Text(value, style: theme.textTheme.titleMedium),
-          Text(
-            label,
-            style: const TextStyle(color: TreadColors.muted, fontSize: 12),
-          ),
-        ],
-      ),
-    );
-
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
@@ -287,22 +271,7 @@ class _Detail extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 16),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: Row(
-                  children: [
-                    stat(l.statStride, formatNumber(context, c.stride)),
-                    stat(l.statGrit, formatNumber(context, c.grit)),
-                    stat(l.statFortune, formatNumber(context, c.fortune)),
-                    stat(
-                      l.statSpirit,
-                      l.percentValue(formatNumber(context, c.spirit)),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            CompanionStats(companion: c),
             const SizedBox(height: 12),
             Text(l.charms, style: theme.textTheme.titleSmall),
             const SizedBox(height: 6),

@@ -26,7 +26,10 @@ enum World {
   ),
   pirate(placeholder: Color(0xFF34505E)),
   robot(placeholder: Color(0xFF454D55)),
-  rococo(placeholder: Color(0xFF5E5058)),
+  rococo(
+    background: 'assets/worlds/rococo_bg.jpg',
+    placeholder: Color(0xFF5E5038),
+  ),
   steampunk(placeholder: Color(0xFF5C4A36)),
   candy(placeholder: Color(0xFF5E4A57));
 

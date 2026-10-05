@@ -42,7 +42,6 @@
   "noRunsYet": "Noch keine Läufe. Nimm {name} mit und los!",
   "comingSoon": "Kommt in einem späteren Update.",
   "forgeTeaser": "Die Schmiede: Siegel in Schmuck setzen und stärkere schmieden.",
-  "marketTeaser": "Der Markt: neue Gefährten und Reparaturkits für LP.",
   "settingsLanguage": "Sprache",
   "settingsKaching": "Ka-ching-Sound",
   "settingsHealthTitle": "Gesundheitsdaten",
@@ -82,5 +81,18 @@
   "worldRobot": "Roboter",
   "worldRococo": "Rokoko",
   "worldSteampunk": "Steampunk",
-  "worldCandy": "Süßigkeiten"
+  "worldCandy": "Süßigkeiten",
+  "marketBuyTab": "Kaufen",
+  "marketSellTab": "Verkaufen",
+  "marketHint": "Angebote und Preise wechseln im Lauf des Tages.",
+  "shelfCount": "Regal {count}/{cap}",
+  "marketBuyFor": "Kaufen · {price}",
+  "marketSellFor": "Verkaufen · {price}",
+  "marketGone": "Dieses Angebot gibt es nicht mehr.",
+  "marketShelfFull": "Dein Regal ist voll ({cap}/{cap}). Verkaufe zuerst einen Gefährten.",
+  "marketNotEnoughLp": "Noch nicht genug LP.",
+  "marketNeedsSpirit": "Handel nur bei 100 % Spirit.",
+  "marketLastCompanion": "{name} bleibt, bis ein zweiter Gefährte in deinem Regal steht.",
+  "marketSellSwitches": "Danach geht {name} mit dir.",
+  "marketSoldOut": "Alle Angebote sind weg. Später kommen neue."
 }

@@ -329,4 +329,37 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get marketSoldOut => 'Alle Angebote sind weg. Später kommen neue.';
+
+  @override
+  String get settingsTerms => 'Nutzungsbedingungen';
+
+  @override
+  String get settingsMovement => 'Bewegungszugriff';
+
+  @override
+  String get settingsMovementOn =>
+      'Echte Bewegung bringt LP. Die Werte bleiben auf dem Gerät.';
+
+  @override
+  String get settingsMovementOff => 'Aus: Echte Bewegung bringt keine LP.';
+
+  @override
+  String get movementNoticeTitle => 'Bewegung und Gesundheit';
+
+  @override
+  String get movementNoticeBody =>
+      'Damit ein Lauf zählt, fragt TreadPlay Zugriff auf Bewegung oder Gesundheit (Apple Health bzw. Health Connect, Standort nur, wenn GPS für die Distanz genutzt wird). Die Werte bleiben auf dem Gerät und dienen nur dazu, dein Tempo zu prüfen und LP zu vergeben. Nichts wird hochgeladen. Lehnst du ab, gibt es keine LP aus echter Bewegung.';
+
+  @override
+  String get movementDeniedHint =>
+      'Bewegungszugriff ist aus. Läufe bringen keine LP, bis du ihn erlaubst.';
+
+  @override
+  String get movementNoticePrivacyLink => 'Datenschutzerklärung lesen';
+
+  @override
+  String get movementAllow => 'Erlauben';
+
+  @override
+  String get movementDeny => 'Nicht jetzt';
 }

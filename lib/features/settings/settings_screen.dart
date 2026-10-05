@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../data/game_data.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../router.dart';
 import '../../state/providers.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -49,7 +53,31 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const Divider(),
           section(l.settingsHealthTitle, l.settingsHealthBody),
-          section(l.settingsPrivacyTitle, l.settingsPrivacyBody),
+          SwitchListTile(
+            title: Text(l.settingsMovement),
+            subtitle: Text(
+              settings.movementAccess == MovementAccess.allowed
+                  ? l.settingsMovementOn
+                  : l.settingsMovementOff,
+            ),
+            value: settings.movementAccess == MovementAccess.allowed,
+            onChanged: (on) => notifier.setMovementAccess(
+              on ? MovementAccess.allowed : MovementAccess.denied,
+            ),
+          ),
+          const Divider(),
+          ListTile(
+            title: Text(l.settingsPrivacyTitle),
+            subtitle: Text(l.settingsPrivacyBody),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push(AppRoutes.privacy),
+          ),
+          ListTile(
+            title: Text(l.settingsTerms),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push(AppRoutes.terms),
+          ),
+          const Divider(),
           section(l.settingsCredits, l.creditsArtwork),
         ],
       ),

@@ -231,4 +231,15 @@ void main() {
       expect(loaded.withMarket(t0, Random(1)).market!.offers, hasLength(6));
     });
   });
+
+  test('settings keep the movement answer, old saves start unasked', () {
+    expect(
+      AppSettings.fromJson(const {'localeCode': 'de'}).movementAccess,
+      MovementAccess.unasked,
+    );
+    for (final a in MovementAccess.values) {
+      final s = const AppSettings().copyWith(movementAccess: a);
+      expect(AppSettings.fromJson(s.toJson()).movementAccess, a);
+    }
+  });
 }

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'features/home/home_screen.dart';
+import 'features/legal/legal_screen.dart';
+import 'features/legal/legal_texts.dart';
 import 'features/market/market_screen.dart';
 import 'features/placeholder/coming_soon_screen.dart';
 import 'features/run/run_screen.dart';
@@ -20,6 +22,8 @@ class AppRoutes {
   static const settings = '/settings';
   static const run = '/run';
   static const summary = '/summary';
+  static const privacy = '/privacy';
+  static const terms = '/terms';
 }
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -47,6 +51,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.summary,
         builder: (_, _) => const SummaryScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.privacy,
+        builder: (_, _) => const LegalScreen(doc: LegalDoc.privacy),
+      ),
+      GoRoute(
+        path: AppRoutes.terms,
+        builder: (_, _) => const LegalScreen(doc: LegalDoc.terms),
       ),
     ],
   );

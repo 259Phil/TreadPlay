@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../domain/companion.dart';
 import '../../domain/run_summary.dart';
 import '../../l10n/app_localizations.dart';
+import '../legal/movement_notice.dart';
 import '../../router.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
@@ -57,9 +58,10 @@ class HomeScreen extends ConsumerWidget {
           bottom: 14,
           child: _StartButton(
             label: l.startRun,
-            onPressed: () {
-              ref.read(runControllerProvider.notifier).start();
-              context.push(AppRoutes.run);
+            onPressed: () async {
+              if (!await ensureMovementAccess(context, ref)) return;
+              if (!ref.read(runControllerProvider.notifier).start()) return;
+              if (context.mounted) context.push(AppRoutes.run);
             },
           ),
         ),

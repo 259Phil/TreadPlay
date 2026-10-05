@@ -65,7 +65,6 @@ class ForgeScreen extends ConsumerWidget {
                       rarity: c.rarity,
                       name: c.name,
                       subtitle: typeLabel(l, c.type),
-                      badge: l.takenAlong,
                     ),
                   ),
                 ),

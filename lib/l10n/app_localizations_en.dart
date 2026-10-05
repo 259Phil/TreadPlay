@@ -148,13 +148,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get comingSoon => 'Coming in a later update.';
-
-  @override
-  String get forgeTeaser =>
-      'The forge: set seals into charms and forge stronger ones.';
-
-  @override
   String get settingsLanguage => 'Language';
 
   @override
@@ -367,4 +360,50 @@ class AppLocalizationsEn extends AppLocalizations {
   String todayKm(String km) {
     return 'Today $km';
   }
+
+  @override
+  String sealName(String stat) {
+    return '$stat seal';
+  }
+
+  @override
+  String sealBonus(int n, String stat) {
+    return '+$n $stat';
+  }
+
+  @override
+  String get forgeAlong => 'Seals go to the companion you have along.';
+
+  @override
+  String forgeFreeSockets(int free, int total) {
+    return '$free of $total sockets free';
+  }
+
+  @override
+  String get forgeRule =>
+      'Each seal adds +1 to its stat, up to +3 per stat. Paid in LP.';
+
+  @override
+  String forgeStatCount(int n) {
+    return '+$n of +3';
+  }
+
+  @override
+  String get forgeSet => 'Set';
+
+  @override
+  String get forgeMaxed => 'Max';
+
+  @override
+  String get forgeNeedsSpirit => 'Forging only at 100 % Spirit.';
+
+  @override
+  String get forgeNotEnoughLp => 'Not enough LP yet.';
+
+  @override
+  String get forgeNoSocket => 'No empty socket left.';
+
+  @override
+  String get forgeSellNote =>
+      'Seals stay on this companion. Selling it removes them; LP are not refunded.';
 }

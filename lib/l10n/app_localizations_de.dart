@@ -148,13 +148,6 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get comingSoon => 'Kommt in einem späteren Update.';
-
-  @override
-  String get forgeTeaser =>
-      'Die Schmiede: Siegel in Schmuck setzen und stärkere schmieden.';
-
-  @override
   String get settingsLanguage => 'Sprache';
 
   @override
@@ -367,4 +360,50 @@ class AppLocalizationsDe extends AppLocalizations {
   String todayKm(String km) {
     return 'Heute $km';
   }
+
+  @override
+  String sealName(String stat) {
+    return '$stat-Siegel';
+  }
+
+  @override
+  String sealBonus(int n, String stat) {
+    return '+$n $stat';
+  }
+
+  @override
+  String get forgeAlong => 'Siegel gehen an den Gefährten, den du dabeihast.';
+
+  @override
+  String forgeFreeSockets(int free, int total) {
+    return '$free von $total Sockeln frei';
+  }
+
+  @override
+  String get forgeRule =>
+      'Jedes Siegel gibt +1 auf seinen Wert, höchstens +3 pro Wert. Bezahlt wird mit LP.';
+
+  @override
+  String forgeStatCount(int n) {
+    return '+$n von +3';
+  }
+
+  @override
+  String get forgeSet => 'Setzen';
+
+  @override
+  String get forgeMaxed => 'Max';
+
+  @override
+  String get forgeNeedsSpirit => 'Schmieden nur bei 100 % Mut.';
+
+  @override
+  String get forgeNotEnoughLp => 'Noch nicht genug LP.';
+
+  @override
+  String get forgeNoSocket => 'Kein freier Sockel mehr.';
+
+  @override
+  String get forgeSellNote =>
+      'Siegel bleiben auf diesem Gefährten. Verkaufst du ihn, sind sie weg, LP gibt es nicht zurück.';
 }

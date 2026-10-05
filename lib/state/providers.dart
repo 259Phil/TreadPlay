@@ -8,6 +8,7 @@ import '../data/game_data.dart';
 import '../data/game_repository.dart';
 import '../data/movement_source.dart';
 import '../domain/breath.dart';
+import '../domain/companion.dart';
 import '../domain/run_engine.dart';
 import '../domain/run_summary.dart';
 
@@ -75,6 +76,14 @@ class GameNotifier extends Notifier<GameData> {
     if (ref.read(runControllerProvider) != null) return false;
     if (state.sellBlock(companionId) != null) return false;
     _set(state.selling(companionId, _now()));
+    return true;
+  }
+
+  /// Buys a seal and sets it into [companionId]. Not possible during a run.
+  bool forge(String companionId, SealType type) {
+    if (ref.read(runControllerProvider) != null) return false;
+    if (state.forgeBlock(companionId, type) != null) return false;
+    _set(state.forging(companionId, type));
     return true;
   }
 

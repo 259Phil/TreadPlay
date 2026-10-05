@@ -66,6 +66,10 @@ double levelFactor(int level) {
   return 1 + 0.04 * (min(l, 18) - 1) + 0.02 * max(0, l - 18);
 }
 
+/// A seal set into a charm socket; each adds +1 to its stat. Saved by
+/// [name] in [Companion.charms].
+enum SealType { stride, grit, fortune }
+
 /// One owned creature that can be taken along on a run.
 class Companion {
   const Companion({
@@ -150,13 +154,28 @@ class Companion {
 
   String get imageAsset => 'assets/companions/$artKey.png';
 
+  /// Seals of [type] set into this companion's charms.
+  int sealCount(SealType type) => charms.where((s) => s == type.name).length;
+
+  /// First empty charm socket, or null when all are filled.
+  int? get freeSocket {
+    final i = charms.indexOf(null);
+    return i < 0 ? null : i;
+  }
+
+  double get strideTotal => stride + sealCount(SealType.stride);
+
+  double get gritTotal => grit + sealCount(SealType.grit);
+
+  double get fortuneTotal => fortune + sealCount(SealType.fortune);
+
   /// Breath cap while this companion is taken along.
   int get tankSize => rarity.tankSize;
 
-  /// LP per Breath point: the rarity rate, scaled by how this instance's
-  /// Stride rolled against the rarity base and by level.
+  /// LP per Breath point: the rarity rate, scaled by this instance's Stride
+  /// (roll plus seals) against the rarity base and by level.
   double get lpPerBreath =>
-      rarity.lpPerBreath * (stride / rarity.baseStat) * levelFactor(level);
+      rarity.lpPerBreath * (strideTotal / rarity.baseStat) * levelFactor(level);
 
   Companion copyWith({
     double? stride,

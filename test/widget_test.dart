@@ -444,4 +444,75 @@ void main() {
       expect(saved.movementAccess, MovementAccess.allowed);
     });
   });
+
+  group('forge', () {
+    Future<void> openForge(WidgetTester tester, GameData game) async {
+      await pumpApp(
+        tester,
+        saved: {'flutter.game.v2': jsonEncode(game.toJson())},
+      );
+      await tester.tap(find.widgetWithText(NavigationDestination, 'Forge'));
+      await tester.pumpAndSettle();
+    }
+
+    ButtonStyleButton sealButton(WidgetTester tester, String type) =>
+        tester.widget<ButtonStyleButton>(
+          find.descendant(
+            of: find.byKey(Key('seal-$type')),
+            matching: find.bySubtype<ButtonStyleButton>(),
+          ),
+        );
+
+    testWidgets('sets a seal on the companion along and shows it on Shelf', (
+      tester,
+    ) async {
+      await openForge(tester, GameData.initial(t0).copyWith(lp: 100));
+      expect(find.text('Pebble'), findsWidgets);
+      expect(find.text('1 of 1 sockets free'), findsOneWidget);
+      expect(find.text('Empty'), findsOneWidget);
+      expect(find.text('Set · 40 LP'), findsNWidgets(3));
+
+      await tester.ensureVisible(find.text('Set · 40 LP').first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Set · 40 LP').first);
+      await tester.pumpAndSettle();
+      expect(find.text('60.0 LP'), findsOneWidget);
+      expect(find.text('+1 Stride'), findsOneWidget);
+      expect(find.text('0 of 1 sockets free'), findsOneWidget);
+      expect(find.text('No empty socket left.'), findsOneWidget);
+      for (final t in SealType.values) {
+        expect(sealButton(tester, t.name).onPressed, isNull);
+      }
+
+      await tester.tap(find.widgetWithText(NavigationDestination, 'Shelf'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Pebble'));
+      await tester.pumpAndSettle();
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('charm-slot-0')),
+          matching: find.text('+1 Stride'),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('Spirit below 100 % locks the forge', (tester) async {
+      final start = GameData.initial(t0).copyWith(lp: 1000);
+      await openForge(
+        tester,
+        start.replaceCompanion(start.activeCompanion.copyWith(spirit: 80)),
+      );
+      expect(find.text('Forging only at 100 % Spirit.'), findsOneWidget);
+      for (final t in SealType.values) {
+        expect(sealButton(tester, t.name).onPressed, isNull);
+      }
+    });
+
+    testWidgets('too little LP disables the seal', (tester) async {
+      await openForge(tester, GameData.initial(t0).copyWith(lp: 39));
+      expect(sealButton(tester, 'stride').onPressed, isNull);
+      expect(find.textContaining('Not enough LP yet.'), findsNWidgets(3));
+    });
+  });
 }

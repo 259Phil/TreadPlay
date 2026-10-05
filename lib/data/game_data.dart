@@ -2,6 +2,7 @@ import 'dart:math';
 
 import '../domain/breath.dart';
 import '../domain/companion.dart';
+import '../domain/forge.dart';
 import '../domain/market.dart';
 import '../domain/run_summary.dart';
 
@@ -78,6 +79,28 @@ class GameData {
     if (companions.length < 2) return TradeBlock.lastCompanion;
     if (c.spirit < 100) return TradeBlock.needsSpirit;
     return null;
+  }
+
+  /// Why a seal of [type] can't be set into [companionId] right now, or null
+  /// if it can.
+  ForgeBlock? forgeBlock(String companionId, SealType type) {
+    final c = companions.where((c) => c.id == companionId).firstOrNull;
+    if (c == null) return ForgeBlock.gone;
+    final cost = Forge.nextCost(c, type);
+    if (cost == null) return ForgeBlock.statMaxed;
+    if (c.freeSocket == null) return ForgeBlock.noSocket;
+    if (c.spirit < 100) return ForgeBlock.needsSpirit;
+    if (lp < cost) return ForgeBlock.notEnoughLp;
+    return null;
+  }
+
+  /// Pays for a seal of [type] and sets it into the first free socket.
+  /// Check [forgeBlock] first.
+  GameData forging(String companionId, SealType type) {
+    final c = companions.firstWhere((c) => c.id == companionId);
+    return replaceCompanion(
+      c.withCharm(c.freeSocket!, type.name),
+    ).copyWith(lp: lp - Forge.nextCost(c, type)!);
   }
 
   /// Keeps the current market until its drift is due, then rolls a new one.
@@ -185,6 +208,18 @@ class GameData {
     points: (active['breath']! as num).toDouble(),
     updatedAt: DateTime.parse(active['breathUpdatedAt']! as String),
   );
+}
+
+enum ForgeBlock {
+  gone,
+
+  /// Already +[Forge.maxPerStat] on this stat.
+  statMaxed,
+
+  /// Every charm socket holds a seal.
+  noSocket,
+  needsSpirit,
+  notEnoughLp,
 }
 
 enum TradeBlock {

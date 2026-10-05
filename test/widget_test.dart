@@ -11,6 +11,7 @@ import 'package:treadplay/data/movement_source.dart';
 import 'package:treadplay/domain/breath.dart';
 import 'package:treadplay/domain/companion.dart';
 import 'package:treadplay/domain/market.dart';
+import 'package:treadplay/features/forge/forge_screen.dart';
 import 'package:treadplay/features/legal/legal_screen.dart';
 import 'package:treadplay/state/providers.dart';
 import 'package:treadplay/widgets/companion_card.dart';
@@ -471,6 +472,13 @@ void main() {
       expect(find.text('1 of 1 sockets free'), findsOneWidget);
       expect(find.text('Empty'), findsOneWidget);
       expect(find.text('Set · 40 LP'), findsNWidgets(3));
+      final card = find.descendant(
+        of: find.byType(ForgeScreen),
+        matching: find.byType(CompanionCard),
+      );
+      Rect tag(String text) =>
+          tester.getRect(find.descendant(of: card, matching: find.text(text)));
+      expect(tag('Along').overlaps(tag('COMMON')), isFalse);
 
       await tester.ensureVisible(find.text('Set · 40 LP').first);
       await tester.pumpAndSettle();

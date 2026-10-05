@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../domain/companion.dart';
 import '../domain/world.dart';
+import '../l10n/app_localizations.dart';
 import '../theme.dart';
+import 'format.dart';
 
-/// Collectible card. The frame, name and stats are drawn here; the image is
-/// only the creature on transparency.
+/// Collectible card. The frame (rarity metal), rarity word, name and
+/// subtitle are drawn here; the image is only the creature on transparency.
 class CompanionCard extends StatelessWidget {
   const CompanionCard({
     super.key,
@@ -15,7 +17,6 @@ class CompanionCard extends StatelessWidget {
     required this.name,
     required this.subtitle,
     this.badge,
-    this.locked = false,
     this.onTap,
   });
 
@@ -27,7 +28,6 @@ class CompanionCard extends StatelessWidget {
 
   /// Small brass tag in the top left corner, e.g. "Along".
   final String? badge;
-  final bool locked;
   final VoidCallback? onTap;
 
   static const double aspectRatio = 0.72;
@@ -42,27 +42,13 @@ class CompanionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final metal = locked ? const Color(0xFF4A5058) : rarityMetal(rarity);
-    final glow = rarity == Rarity.legendary && !locked;
-    Widget art = Image.asset(
+    final metal = rarityMetal(rarity);
+    final glow = rarity == Rarity.legendary;
+    final art = Image.asset(
       'assets/companions/$artKey.png',
       fit: BoxFit.contain,
       alignment: Alignment.bottomCenter,
     );
-    if (locked) {
-      art = Opacity(
-        opacity: 0.35,
-        child: ColorFiltered(
-          colorFilter: const ColorFilter.matrix([
-            0.3, 0.5, 0.1, 0, 0, //
-            0.3, 0.5, 0.1, 0, 0, //
-            0.3, 0.5, 0.1, 0, 0, //
-            0, 0, 0, 1, 0,
-          ]),
-          child: art,
-        ),
-      );
-    }
 
     return Semantics(
       button: onTap != null,
@@ -122,29 +108,17 @@ class CompanionCard extends StatelessWidget {
                           padding: const EdgeInsets.fromLTRB(10, 22, 10, 8),
                           child: art,
                         ),
-                        if (locked)
-                          const Center(
-                            child: Icon(
-                              Icons.lock_outline,
-                              color: TreadColors.muted,
-                            ),
-                          ),
                         if (badge != null)
                           Positioned(left: 6, top: 6, child: _Tag(badge!)),
                         Positioned(
                           right: 7,
                           top: 7,
-                          child: _RarityPips(rarity: rarity, color: metal),
+                          child: _RarityTag(rarity: rarity, color: metal),
                         ),
                       ],
                     ),
                   ),
-                  _Plate(
-                    name: name,
-                    subtitle: subtitle,
-                    metal: metal,
-                    locked: locked,
-                  ),
+                  _Plate(name: name, subtitle: subtitle, metal: metal),
                 ],
               ),
             ),
@@ -160,13 +134,11 @@ class _Plate extends StatelessWidget {
     required this.name,
     required this.subtitle,
     required this.metal,
-    required this.locked,
   });
 
   final String name;
   final String subtitle;
   final Color metal;
-  final bool locked;
 
   @override
   Widget build(BuildContext context) {
@@ -197,8 +169,8 @@ class _Plate extends StatelessWidget {
                     name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: locked ? TreadColors.muted : TreadColors.text,
+                    style: const TextStyle(
+                      color: TreadColors.text,
                       fontWeight: FontWeight.w700,
                       fontSize: 15,
                     ),
@@ -258,33 +230,34 @@ class _Tag extends StatelessWidget {
   }
 }
 
-/// One to four small rivets for the rarity tier.
-class _RarityPips extends StatelessWidget {
-  const _RarityPips({required this.rarity, required this.color});
+/// Rarity word on a small plate in the frame's metal.
+class _RarityTag extends StatelessWidget {
+  const _RarityTag({required this.rarity, required this.color});
 
   final Rarity rarity;
   final Color color;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (var i = 0; i <= rarity.index; i++)
-          Padding(
-            padding: const EdgeInsets.only(left: 3),
-            child: SizedBox.square(
-              dimension: 7,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: color,
-                  border: Border.all(color: const Color(0xFF12141A)),
-                ),
-              ),
-            ),
+    final l = AppLocalizations.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: const Color(0xE612141A),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: color, width: 1.5),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        child: Text(
+          rarityLabel(l, rarity).toUpperCase(),
+          style: TextStyle(
+            color: color,
+            fontSize: 10,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0.8,
           ),
-      ],
+        ),
+      ),
     );
   }
 }

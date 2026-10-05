@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../data/species.dart';
 import '../../domain/companion.dart';
 import '../../domain/world.dart';
 import '../../l10n/app_localizations.dart';
@@ -11,7 +10,7 @@ import '../../widgets/companion_card.dart';
 import '../../widgets/companion_stats.dart';
 import '../../widgets/format.dart';
 
-/// Card grid of owned companions, followed by species not found yet.
+/// Card grid of owned companions.
 class ShelfScreen extends ConsumerStatefulWidget {
   const ShelfScreen({super.key});
 
@@ -24,25 +23,18 @@ class _ShelfScreenState extends ConsumerState<ShelfScreen> {
   CompanionType? _type;
   Rarity? _rarity;
 
-  /// Locked cards stand for a whole species (all rarities), so they pass
-  /// any rarity filter; pass `rarity: null` for them.
-  bool _matches(World world, CompanionType type, Rarity? rarity) =>
+  bool _matches(World world, CompanionType type, Rarity rarity) =>
       (_world == null || _world == world) &&
       (_type == null || _type == type) &&
-      (_rarity == null || rarity == null || _rarity == rarity);
+      (_rarity == null || _rarity == rarity);
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final game = ref.watch(gameProvider);
-    final owned = {for (final c in game.companions) c.speciesId};
     final companions = [
       for (final c in game.companions)
         if (_matches(c.world, c.type, c.rarity)) c,
-    ];
-    final missing = [
-      for (final s in speciesCatalog)
-        if (!owned.contains(s.id) && _matches(s.world, s.type, null)) s,
     ];
 
     return Scaffold(
@@ -80,7 +72,7 @@ class _ShelfScreenState extends ConsumerState<ShelfScreen> {
               ),
             ),
           ),
-          if (companions.isEmpty && missing.isEmpty)
+          if (companions.isEmpty)
             SliverFillRemaining(
               hasScrollBody: false,
               child: Center(
@@ -106,16 +98,6 @@ class _ShelfScreenState extends ConsumerState<ShelfScreen> {
                         '${typeLabel(l, c.type)} · ${l.levelShort(c.level)}',
                     badge: c.id == game.activeCompanionId ? l.takenAlong : null,
                     onTap: () => _showDetail(context, c.id),
-                  ),
-                for (final s in missing)
-                  CompanionCard(
-                    key: ValueKey(s.id),
-                    artKey: artKeyFor(s.id, Rarity.common),
-                    world: s.world,
-                    rarity: Rarity.common,
-                    name: s.name,
-                    subtitle: l.notFoundYet,
-                    locked: true,
                   ),
               ]),
             ),

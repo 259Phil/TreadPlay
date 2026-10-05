@@ -362,4 +362,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get movementDeny => 'Not now';
+
+  @override
+  String todayKm(String km) {
+    return 'Today $km';
+  }
 }

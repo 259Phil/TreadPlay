@@ -62,10 +62,7 @@ void main() {
 
     await tester.tap(find.text('Start'));
     await tester.pumpAndSettle();
-    expect(
-      find.text('Noch keine Läufe. Nimm Pebble mit und los!'),
-      findsOneWidget,
-    );
+    expect(find.text('Heute 0 km'), findsOneWidget);
     expect(find.text('Los'), findsOneWidget);
   });
 
@@ -122,7 +119,9 @@ void main() {
     expect(find.text('Dune'), findsOneWidget);
     expect(find.text('Gale · Lv 1'), findsOneWidget);
     expect(find.text('Along'), findsOneWidget);
-    expect(find.text('Not found yet'), findsWidgets);
+    expect(find.text('Not found yet'), findsNothing);
+    expect(find.text('COMMON'), findsOneWidget);
+    expect(find.text('RARE'), findsOneWidget);
 
     await tester.tap(find.text('Dune'));
     await tester.pumpAndSettle();
@@ -229,7 +228,10 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Shelf 1/12'), findsOneWidget);
       expect(find.byType(CompanionCard), findsNWidgets(Market.offerCount));
-      expect(find.textContaining(RegExp(r'^[\d,]+ LP$')), findsWidgets);
+      expect(
+        find.textContaining(RegExp(r'^(Moss|Brook|Gale) · [\d,]+ LP$')),
+        findsWidgets,
+      );
       expectNoCountdown();
 
       await tester.tap(find.text('Sell'));

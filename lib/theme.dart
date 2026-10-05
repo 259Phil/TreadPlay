@@ -12,17 +12,18 @@ class TreadColors {
   static const brass = Color(0xFFC4A36A);
   static const brassDark = Color(0xFF7A6238);
   static const copper = Color(0xFFB0703F);
+  static const bronze = Color(0xFF8E7046);
   static const steel = Color(0xFF7D858E);
   static const stop = Color(0xFF8B3A3A);
   static const breath = Color(0xFF6FB7C4);
 }
 
-/// Frame metal per rarity: iron, brass, copper, brass with glow.
+/// Frame metal per rarity: steel, bronze, copper, brass (with glow).
 Color rarityMetal(Rarity rarity) => switch (rarity) {
   Rarity.common => TreadColors.steel,
-  Rarity.rare => TreadColors.brass,
+  Rarity.rare => TreadColors.bronze,
   Rarity.epic => TreadColors.copper,
-  Rarity.legendary => const Color(0xFFE2C487),
+  Rarity.legendary => TreadColors.brass,
 };
 
 ThemeData buildTheme() {

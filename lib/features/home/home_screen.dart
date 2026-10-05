@@ -27,11 +27,7 @@ class HomeScreen extends ConsumerWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        WorldScene(
-          companion: companion,
-          breath: game.breath.points,
-          railTop: topInset + _barHeight + 4,
-        ),
+        WorldScene(companion: companion, topClear: topInset + _barHeight),
         Positioned(
           left: 0,
           right: 0,
@@ -174,7 +170,7 @@ class _Rivet extends StatelessWidget {
   }
 }
 
-/// Name, type and the last session on one small iron plate.
+/// Name, type, the shared Breath bar and one line for the last run.
 class _NamePlate extends StatelessWidget {
   const _NamePlate({
     required this.companion,
@@ -225,6 +221,8 @@ class _NamePlate extends StatelessWidget {
               '${l.sweetSpotAt(formatNumber(context, companion.type.sweetSpotKmh))}',
               style: small,
             ),
+            const SizedBox(height: 8),
+            _BreathRow(breath: breath, tank: companion.tankSize),
             if (breath < 1) ...[
               const SizedBox(height: 4),
               Text(
@@ -232,30 +230,33 @@ class _NamePlate extends StatelessWidget {
                 style: small?.copyWith(color: TreadColors.breath),
               ),
             ],
-            const Divider(height: 12),
-            if (r == null)
-              Text(l.noRunsYet(companion.name), style: small)
-            else
-              Text.rich(
-                TextSpan(
-                  text:
-                      '${l.lastRun}: ${l.kmValue(formatKm(context, r.distanceM))} · '
-                      '${formatDuration(r.duration)} · ',
-                  children: [
-                    TextSpan(
-                      text: r.valid
-                          ? l.lpAmount(formatNumber(context, r.lp))
-                          : l.invalidRun,
-                      style: TextStyle(
-                        color: r.valid
-                            ? TreadColors.brass
-                            : theme.colorScheme.error,
-                      ),
+            const SizedBox(height: 6),
+            Text.rich(
+              r == null
+                  ? TextSpan(
+                      text: l.todayKm(l.kmValue(formatNumber(context, 0))),
+                    )
+                  : TextSpan(
+                      text:
+                          '${l.lastRun}: ${l.kmValue(formatKm(context, r.distanceM))} · '
+                          '${formatDuration(r.duration)} · ',
+                      children: [
+                        TextSpan(
+                          text: r.valid
+                              ? l.lpAmount(formatNumber(context, r.lp))
+                              : l.invalidRun,
+                          style: TextStyle(
+                            color: r.valid
+                                ? TreadColors.brass
+                                : theme.colorScheme.error,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                style: small,
-              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: small,
+            ),
           ],
         ),
       ),
@@ -263,7 +264,54 @@ class _NamePlate extends StatelessWidget {
   }
 }
 
-/// Round brass Start knob.
+/// The shared Breath as a slim bar with `4/6` next to it.
+class _BreathRow extends StatelessWidget {
+  const _BreathRow({required this.breath, required this.tank});
+
+  final double breath;
+  final int tank;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final empty = breath < 1;
+    final color = empty ? TreadColors.muted : TreadColors.breath;
+    return Semantics(
+      label:
+          '${l.breath} ${l.breathValue(formatNumber(context, breath), tank)}',
+      excludeSemantics: true,
+      child: Row(
+        children: [
+          Icon(Icons.air, size: 16, color: color),
+          const SizedBox(width: 6),
+          Expanded(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(5),
+              child: LinearProgressIndicator(
+                value: (breath / tank).clamp(0, 1),
+                minHeight: 9,
+                color: TreadColors.breath,
+                backgroundColor: TreadColors.rail,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            '${breath.floor()}/$tank',
+            style: TextStyle(
+              color: color,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              fontFeatures: const [FontFeature.tabularFigures()],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// The single round brass Start knob.
 class _StartButton extends StatelessWidget {
   const _StartButton({required this.label, required this.onPressed});
 
@@ -276,14 +324,10 @@ class _StartButton extends StatelessWidget {
       decoration: const BoxDecoration(
         shape: BoxShape.circle,
         boxShadow: [BoxShadow(color: Color(0x99000000), blurRadius: 12)],
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF8C939B), Color(0xFF2E3338)],
-        ),
+        color: TreadColors.brassDark,
       ),
       child: Padding(
-        padding: const EdgeInsets.all(5),
+        padding: const EdgeInsets.all(3),
         child: Material(
           shape: const CircleBorder(),
           clipBehavior: Clip.antiAlias,

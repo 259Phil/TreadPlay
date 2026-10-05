@@ -215,5 +215,13 @@
   "movementDeniedHint": "Movement access is off. Runs earn no LP until you allow it.",
   "movementNoticePrivacyLink": "Read the privacy policy",
   "movementAllow": "Allow",
-  "movementDeny": "Not now"
+  "movementDeny": "Not now",
+  "todayKm": "Today {km}",
+  "@todayKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  }
 }

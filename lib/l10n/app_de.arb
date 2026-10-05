@@ -104,5 +104,6 @@
   "movementDeniedHint": "Bewegungszugriff ist aus. Läufe bringen keine LP, bis du ihn erlaubst.",
   "movementNoticePrivacyLink": "Datenschutzerklärung lesen",
   "movementAllow": "Erlauben",
-  "movementDeny": "Nicht jetzt"
+  "movementDeny": "Nicht jetzt",
+  "todayKm": "Heute {km}"
 }

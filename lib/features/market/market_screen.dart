@@ -140,7 +140,8 @@ class _Grid extends StatelessWidget {
                   world: c.world,
                   rarity: c.rarity,
                   name: c.name,
-                  subtitle: formatLpPrice(context, price(c)),
+                  subtitle:
+                      '${typeLabel(l, c.type)} · ${formatLpPrice(context, price(c))}',
                   badge: !buying && c.id == game.activeCompanionId
                       ? l.takenAlong
                       : null,

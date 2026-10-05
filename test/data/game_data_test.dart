@@ -122,7 +122,7 @@ void main() {
     );
     final market = Market(
       nextDriftAt: t0.add(const Duration(hours: 8)),
-      drift: {for (final r in Rarity.values) r: 1},
+      drift: const {},
       offers: [offer],
     );
     final price = market.priceOf(offer);

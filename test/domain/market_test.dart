@@ -78,11 +78,7 @@ void main() {
       expect(m.sellPriceOf(c), lessThan(price));
       expect(m.sellPriceOf(c), greaterThan(0));
     }
-    final flat = Market(
-      nextDriftAt: t0,
-      drift: {for (final r in Rarity.values) r: 1},
-      offers: const [],
-    );
+    final flat = Market(nextDriftAt: t0, drift: const {}, offers: const []);
     final prices = [
       for (final r in Rarity.values)
         flat.priceOf(Companion.fresh(id: 'x', speciesId: 'gilt', rarity: r)),
@@ -90,12 +86,27 @@ void main() {
     expect(prices, [200, 500, 1200, 3000]);
   });
 
-  test('prices drift by at most ±20 % per rarity', () {
+  test('each offer drifts on its own within ±20 % of the base price', () {
+    final factors = <double>{};
     for (var seed = 0; seed < 100; seed++) {
-      for (final f in Market.rolled(t0, Random(seed)).drift.values) {
-        expect(f, inInclusiveRange(0.8, 1.2));
+      final m = Market.rolled(t0, Random(seed));
+      expect(m.drift.keys.toSet(), {for (final c in m.offers) c.id});
+      for (final c in m.offers) {
+        final base = Market.basePrice[c.rarity]!;
+        expect(m.priceOf(c), inInclusiveRange(base * 0.8, base * 1.2));
+        factors.add(m.drift[c.id]!);
       }
     }
+    expect(factors.length, greaterThan(500));
+  });
+
+  test('buy-back pays 60 % of the base price', () {
+    final m = Market.rolled(t0, Random(2));
+    final sells = [
+      for (final r in Rarity.values)
+        m.sellPriceOf(Companion.fresh(id: 'x', speciesId: 'gilt', rarity: r)),
+    ];
+    expect(sells, [120, 300, 720, 1800]);
   });
 
   test('json round trip keeps offers and rolled stats', () {

@@ -267,5 +267,17 @@
   "forgeNeedsSpirit": "Forging only at 100 % Spirit.",
   "forgeNotEnoughLp": "Not enough LP yet.",
   "forgeNoSocket": "No empty socket left.",
-  "forgeSellNote": "Seals stay on this companion. Selling it removes them; LP are not refunded."
+  "forgeSellNote": "Seals stay on this companion. Selling it removes them; LP are not refunded.",
+  "forgeClearHint": "Tap a filled socket to remove its seal.",
+  "forgeClearTitle": "Remove {seal}?",
+  "forgeClearBody": "The socket will be empty again. LP are not refunded.",
+  "forgeClearAction": "Remove",
+  "forgeClearKeep": "Keep",
+  "@forgeClearTitle": {
+    "placeholders": {
+      "seal": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -406,4 +406,23 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get forgeSellNote =>
       'Siegel bleiben auf diesem Gefährten. Verkaufst du ihn, sind sie weg, LP gibt es nicht zurück.';
+
+  @override
+  String get forgeClearHint =>
+      'Tippe auf einen vollen Sockel, um das Siegel zu entfernen.';
+
+  @override
+  String forgeClearTitle(String seal) {
+    return '$seal entfernen?';
+  }
+
+  @override
+  String get forgeClearBody =>
+      'Der Sockel ist danach wieder leer. LP gibt es nicht zurück.';
+
+  @override
+  String get forgeClearAction => 'Entfernen';
+
+  @override
+  String get forgeClearKeep => 'Behalten';
 }

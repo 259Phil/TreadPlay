@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -20,6 +21,34 @@ class TreadplayApp extends ConsumerWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       routerConfig: ref.watch(routerProvider),
+      builder: kIsWeb ? (context, child) => _PhoneFrame(child: child) : null,
+    );
+  }
+}
+
+/// In a wide browser window the app keeps its phone layout, centred.
+class _PhoneFrame extends StatelessWidget {
+  const _PhoneFrame({required this.child});
+
+  static const maxWidth = 430.0;
+
+  final Widget? child;
+
+  @override
+  Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    if (media.size.width <= maxWidth) return child ?? const SizedBox();
+    return ColoredBox(
+      color: TreadColors.iron,
+      child: Center(
+        child: SizedBox(
+          width: maxWidth,
+          child: MediaQuery(
+            data: media.copyWith(size: Size(maxWidth, media.size.height)),
+            child: ClipRect(child: child),
+          ),
+        ),
+      ),
     );
   }
 }

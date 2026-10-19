@@ -406,4 +406,22 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get forgeSellNote =>
       'Seals stay on this companion. Selling it removes them; LP are not refunded.';
+
+  @override
+  String get forgeClearHint => 'Tap a filled socket to remove its seal.';
+
+  @override
+  String forgeClearTitle(String seal) {
+    return 'Remove $seal?';
+  }
+
+  @override
+  String get forgeClearBody =>
+      'The socket will be empty again. LP are not refunded.';
+
+  @override
+  String get forgeClearAction => 'Remove';
+
+  @override
+  String get forgeClearKeep => 'Keep';
 }

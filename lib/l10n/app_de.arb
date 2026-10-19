@@ -115,5 +115,10 @@
   "forgeNeedsSpirit": "Schmieden nur bei 100 % Mut.",
   "forgeNotEnoughLp": "Noch nicht genug LP.",
   "forgeNoSocket": "Kein freier Sockel mehr.",
-  "forgeSellNote": "Siegel bleiben auf diesem Gefährten. Verkaufst du ihn, sind sie weg, LP gibt es nicht zurück."
+  "forgeSellNote": "Siegel bleiben auf diesem Gefährten. Verkaufst du ihn, sind sie weg, LP gibt es nicht zurück.",
+  "forgeClearHint": "Tippe auf einen vollen Sockel, um das Siegel zu entfernen.",
+  "forgeClearTitle": "{seal} entfernen?",
+  "forgeClearBody": "Der Sockel ist danach wieder leer. LP gibt es nicht zurück.",
+  "forgeClearAction": "Entfernen",
+  "forgeClearKeep": "Behalten"
 }

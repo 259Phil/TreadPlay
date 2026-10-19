@@ -4,6 +4,7 @@ import '../domain/companion.dart';
 import '../domain/world.dart';
 import '../l10n/app_localizations.dart';
 import '../theme.dart';
+import 'companion_figure.dart';
 import 'format.dart';
 
 /// Collectible card. The frame (rarity metal), rarity word, name and
@@ -45,11 +46,7 @@ class CompanionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final metal = rarityMetal(rarity);
     final glow = rarity == Rarity.legendary;
-    final art = Image.asset(
-      'assets/companions/$artKey.png',
-      fit: BoxFit.contain,
-      alignment: Alignment.bottomCenter,
-    );
+    final art = CompanionArt(artKey);
 
     return Semantics(
       button: onTap != null,
@@ -106,7 +103,7 @@ class CompanionCard extends StatelessWidget {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(10, 22, 10, 8),
+                          padding: const EdgeInsets.fromLTRB(8, 26, 8, 6),
                           child: art,
                         ),
                         Positioned(

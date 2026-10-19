@@ -17,11 +17,13 @@ String sealStat(AppLocalizations l, SealType type) => switch (type) {
 };
 
 /// One round metal socket per charm slot: steel and hollow when empty,
-/// brass with the stat icon when a seal sits in it.
+/// brass with the stat icon when a seal sits in it. With [onClear], a filled
+/// socket can be tapped to remove its seal.
 class CharmSockets extends StatelessWidget {
-  const CharmSockets({super.key, required this.companion});
+  const CharmSockets({super.key, required this.companion, this.onClear});
 
   final Companion companion;
+  final void Function(int slot, SealType seal)? onClear;
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +40,10 @@ class CharmSockets extends StatelessWidget {
               final t? => l.sealBonus(1, sealStat(l, t)),
               null => l.charmSlotEmpty,
             },
+            onTap: switch ((SealType.values.asNameMap()[charms[i]], onClear)) {
+              (final t?, final clear?) => () => clear(i, t),
+              _ => null,
+            },
           ),
       ],
     );
@@ -45,16 +51,22 @@ class CharmSockets extends StatelessWidget {
 }
 
 class _Socket extends StatelessWidget {
-  const _Socket({super.key, required this.seal, required this.label});
+  const _Socket({
+    super.key,
+    required this.seal,
+    required this.label,
+    this.onTap,
+  });
 
   final SealType? seal;
   final String label;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final s = seal;
     final rim = s == null ? TreadColors.steel : TreadColors.brass;
-    return Column(
+    final socket = Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
@@ -87,6 +99,13 @@ class _Socket extends StatelessWidget {
           ),
         ),
       ],
+    );
+    final tap = onTap;
+    if (tap == null) return socket;
+    return InkWell(
+      onTap: tap,
+      borderRadius: BorderRadius.circular(30),
+      child: Padding(padding: const EdgeInsets.all(4), child: socket),
     );
   }
 }

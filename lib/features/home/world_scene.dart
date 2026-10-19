@@ -29,15 +29,15 @@ class WorldScene extends StatelessWidget {
     final world = companion.world;
     final groundY = h * world.ground;
     final top = topClear + 24;
-    final figure = companionStandingRect(
+    final place = companionPlacement(
       artKey: companion.artKey,
       centerX: w / 2,
       groundY: groundY + footSink,
-      maxWidth: w * 0.9,
-      maxHeight: max(h * 0.3, min(h * 0.52, groundY + footSink - top)),
+      maxWidth: w * 0.86,
+      maxHeight: max(h * 0.34, min(h * 0.5, groundY + footSink - top)),
     );
-    final shadowW = figure.width * 0.8;
-    final shadowH = max(10.0, figure.height * 0.1);
+    final shadowW = place.body.width * 0.85;
+    final shadowH = max(12.0, place.body.height * 0.08);
 
     return Stack(
       clipBehavior: Clip.none,
@@ -59,12 +59,11 @@ class WorldScene extends StatelessWidget {
           ),
         ),
         Positioned.fromRect(
-          rect: figure,
+          rect: place.image,
           child: Image.asset(
             companion.imageAsset,
             key: const Key('home-companion'),
-            fit: BoxFit.contain,
-            alignment: Alignment.bottomCenter,
+            fit: BoxFit.fill,
           ),
         ),
       ],

@@ -793,6 +793,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Seals stay on this companion. Selling it removes them; LP are not refunded.'**
   String get forgeSellNote;
+
+  /// No description provided for @forgeClearHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a filled socket to remove its seal.'**
+  String get forgeClearHint;
+
+  /// No description provided for @forgeClearTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {seal}?'**
+  String forgeClearTitle(String seal);
+
+  /// No description provided for @forgeClearBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The socket will be empty again. LP are not refunded.'**
+  String get forgeClearBody;
+
+  /// No description provided for @forgeClearAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get forgeClearAction;
+
+  /// No description provided for @forgeClearKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
+  String get forgeClearKeep;
 }
 
 class _AppLocalizationsDelegate

@@ -5,33 +5,33 @@ import 'dart:ui';
 /// placeholder also tints shelf cards.
 enum World {
   medieval(
-    background: 'assets/worlds/medieval_bg.jpg',
+    background: 'assets/worlds/medieval.jpg',
     placeholder: Color(0xFF4A4F57),
   ),
-  space(
-    background: 'assets/worlds/space_bg.jpg',
-    placeholder: Color(0xFF1E2433),
-  ),
+  space(background: 'assets/worlds/space.jpg', placeholder: Color(0xFF1E2433)),
   underwater(
-    background: 'assets/worlds/water_bg.jpg',
+    background: 'assets/worlds/water.jpg',
     placeholder: Color(0xFF1F4650),
   ),
-  egypt(
-    background: 'assets/worlds/egypt_bg.jpg',
-    placeholder: Color(0xFF5A4A30),
-  ),
+  egypt(background: 'assets/worlds/egypt.jpg', placeholder: Color(0xFF5A4A30)),
   jungle(
-    background: 'assets/worlds/jungle_bg.jpg',
+    background: 'assets/worlds/jungle.jpg',
     placeholder: Color(0xFF2C4630),
   ),
-  pirate(placeholder: Color(0xFF34505E)),
-  robot(placeholder: Color(0xFF454D55)),
+  pirate(
+    background: 'assets/worlds/pirate.jpg',
+    placeholder: Color(0xFF34505E),
+  ),
+  robot(background: 'assets/worlds/robot.jpg', placeholder: Color(0xFF454D55)),
   rococo(
-    background: 'assets/worlds/rococo_bg.jpg',
+    background: 'assets/worlds/rococo.jpg',
     placeholder: Color(0xFF5E5038),
   ),
-  steampunk(placeholder: Color(0xFF5C4A36)),
-  candy(placeholder: Color(0xFF5E4A57));
+  steampunk(
+    background: 'assets/worlds/steam.jpg',
+    placeholder: Color(0xFF5C4A36),
+  ),
+  candy(background: 'assets/worlds/candy.jpg', placeholder: Color(0xFF5E4A57));
 
   const World({this.background, this.placeholder = const Color(0xFF2A3038)});
 

@@ -9,6 +9,7 @@ import '../../router.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
 import '../../widgets/breath_bar.dart';
+import '../../widgets/companion_figure.dart';
 import '../../widgets/format.dart';
 import 'sweet_spot_gauge.dart';
 
@@ -250,7 +251,7 @@ class _Portrait extends StatelessWidget {
             color: TreadColors.plate,
             border: Border.all(color: rarityMetal(c.rarity), width: 2),
           ),
-          child: Image.asset(c.imageAsset, fit: BoxFit.contain),
+          child: CompanionArt(c.artKey),
         ),
         const SizedBox(width: 12),
         Column(

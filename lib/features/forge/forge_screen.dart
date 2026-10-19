@@ -99,7 +99,19 @@ class ForgeScreen extends ConsumerWidget {
             const SizedBox(height: 12),
             Text(l.charms, style: theme.textTheme.titleSmall),
             const SizedBox(height: 8),
-            CharmSockets(companion: c),
+            CharmSockets(
+              companion: c,
+              onClear: (slot, seal) =>
+                  _confirmClear(context, ref, c, slot, seal),
+            ),
+            if (c.charms.any((s) => s != null)) ...[
+              const SizedBox(height: 6),
+              Text(
+                l.forgeClearHint,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: TreadColors.muted, fontSize: 12),
+              ),
+            ],
             const SizedBox(height: 16),
             Text(l.forgeRule, style: const TextStyle(color: TreadColors.muted)),
             if (banner != null) ...[
@@ -122,6 +134,37 @@ class ForgeScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+}
+
+Future<void> _confirmClear(
+  BuildContext context,
+  WidgetRef ref,
+  Companion companion,
+  int slot,
+  SealType seal,
+) async {
+  final l = AppLocalizations.of(context);
+  final ok = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(l.forgeClearTitle(l.sealName(sealStat(l, seal)))),
+      content: Text(l.forgeClearBody),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: Text(l.forgeClearKeep),
+        ),
+        FilledButton(
+          key: const Key('forge-clear-confirm'),
+          onPressed: () => Navigator.pop(context, true),
+          child: Text(l.forgeClearAction),
+        ),
+      ],
+    ),
+  );
+  if (ok == true) {
+    ref.read(gameProvider.notifier).clearSeal(companion.id, slot);
   }
 }
 

@@ -87,6 +87,12 @@ class GameNotifier extends Notifier<GameData> {
     return true;
   }
 
+  /// Removes the seal in [slot] of [companionId]. Not possible during a run.
+  void clearSeal(String companionId, int slot) {
+    if (ref.read(runControllerProvider) != null) return;
+    _set(state.clearingSeal(companionId, slot));
+  }
+
   /// Switches the companion for the next run. Not possible during a run.
   void takeAlong(String companionId) {
     if (ref.read(runControllerProvider) != null) return;

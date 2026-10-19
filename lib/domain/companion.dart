@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import '../data/companion_art.dart';
+import '../data/companion_cutouts.dart';
 import '../data/species.dart';
 import 'world.dart';
 
@@ -150,7 +151,7 @@ class Companion {
 
   /// Art key for this rarity, falling back to the nearest lower rarity that
   /// has an image.
-  String get artKey => artKeyFor(speciesId, rarity);
+  String get artKey => cutoutKeyFor(speciesId, rarity);
 
   String get imageAsset => 'assets/companions/$artKey.png';
 
@@ -244,4 +245,16 @@ String artKeyFor(String speciesId, Rarity rarity) {
     if (companionArt.containsKey(key)) return key;
   }
   return 'pebble_c';
+}
+
+/// Cutout for [speciesId] at [rarity]: `{id}.png` is Common, the others are
+/// `{id}-rare.png`, `{id}-epic.png`, `{id}-legendary.png`. Falls back to the
+/// next lower rarity that has a cutout.
+String cutoutKeyFor(String speciesId, Rarity rarity) {
+  for (var i = rarity.index; i >= 0; i--) {
+    final r = Rarity.values[i];
+    final key = r == Rarity.common ? speciesId : '$speciesId-${r.name}';
+    if (companionCutouts.containsKey(key)) return key;
+  }
+  return 'pebble';
 }

@@ -103,6 +103,12 @@ class GameData {
     ).copyWith(lp: lp - Forge.nextCost(c, type)!);
   }
 
+  /// Empties charm socket [slot] of [companionId]. LP are not refunded.
+  GameData clearingSeal(String companionId, int slot) {
+    final c = companions.firstWhere((c) => c.id == companionId);
+    return replaceCompanion(c.withCharm(slot, null));
+  }
+
   /// Keeps the current market until its drift is due, then rolls a new one.
   GameData withMarket(DateTime now, Random random) => copyWith(
     market: market?.drifted(now, random) ?? Market.rolled(now, random),

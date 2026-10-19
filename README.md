@@ -1,6 +1,6 @@
 # TreadPlay
 
-Walking and running game: you move with one invented fantasy companion. Flutter (iOS + Android), EN/DE.
+Walking and running game: you move with one invented fantasy companion. Flutter (iOS + Android + Web), EN/DE.
 
 No crypto, no NFTs, no cash-out. Movement data stays on the device.
 

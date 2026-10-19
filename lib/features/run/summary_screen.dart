@@ -32,6 +32,16 @@ class SummaryScreen extends ConsumerWidget {
           : ListView(
               padding: const EdgeInsets.all(20),
               children: [
+                if (!run.earnsLp)
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        l.summaryNoLp,
+                        style: const TextStyle(color: TreadColors.copper),
+                      ),
+                    ),
+                  ),
                 if (!run.valid)
                   Card(
                     color: theme.colorScheme.errorContainer,
@@ -58,8 +68,15 @@ class SummaryScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
                 row(l.distance, l.kmValue(formatKm(context, run.distanceM))),
                 row(l.time, formatDuration(run.duration)),
-                row(l.steps, '${run.steps}'),
-                row(l.summaryBreathUsed, formatNumber(context, run.breathUsed)),
+                row(l.pace, l.paceValue(formatPace(run.pace))),
+                if ((run.breathLeft, run.tankSize) case (
+                  final left?,
+                  final tank?,
+                ))
+                  row(
+                    l.summaryBreathLeft,
+                    l.breathValue(formatNumber(context, left), tank),
+                  ),
                 const SizedBox(height: 24),
                 FilledButton(
                   onPressed: () => context.go(AppRoutes.home),

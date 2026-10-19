@@ -93,6 +93,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Run complete'), findsOneWidget);
     expect(find.text('2.5 LP'), findsOneWidget);
+    expect(find.text('Pace'), findsOneWidget);
+    expect(find.textContaining(' /km'), findsOneWidget);
+    expect(find.text('Breath left'), findsOneWidget);
+    expect(find.text('5 / 6'), findsOneWidget);
 
     await tester.tap(find.text('Done'));
     await tester.pumpAndSettle();
@@ -177,6 +181,56 @@ void main() {
     expect(container.read(gameRepositoryProvider).loadGame()!.breath.points, 0);
   });
 
+  testWidgets('switching companion mid-run does not refill shared Breath', (
+    tester,
+  ) async {
+    final start = GameData.initial(t0);
+    final gilt = Companion.fresh(
+      id: 'gilt-1',
+      speciesId: 'gilt',
+      rarity: Rarity.legendary,
+    );
+    final game = start.copyWith(
+      companions: [...start.companions, gilt],
+      breath: Breath(points: 2, updatedAt: t0),
+    );
+    await pumpApp(
+      tester,
+      saved: {'flutter.game.v2': jsonEncode(game.toJson())},
+    );
+    await tester.tap(find.byIcon(Icons.play_arrow));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Allow'));
+    await tester.pumpAndSettle();
+
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(Scaffold).first),
+    );
+    final notifier = container.read(gameProvider.notifier);
+    container.read(runControllerProvider.notifier)
+      ..setDemoSpeed(4.5)
+      ..setTimeLapse(true);
+    for (var i = 0; i < 220; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    notifier.takeAlong('gilt-1');
+    expect(container.read(gameProvider).activeCompanionId, 'pebble-1');
+    final engine = container.read(runControllerProvider)!.engine;
+    expect(engine.breathLeft, 1);
+    expect(engine.companion.tankSize, 6);
+
+    await tester.scrollUntilVisible(find.text('Stop'), 200);
+    await tester.tap(find.text('Stop'));
+    await tester.pumpAndSettle();
+    expect(find.text('1 / 6'), findsOneWidget);
+    await tester.tap(find.text('Done'));
+    await tester.pumpAndSettle();
+
+    notifier.takeAlong('gilt-1');
+    expect(container.read(gameProvider).activeCompanionId, 'gilt-1');
+    expect(container.read(gameProvider).breath.points, 1);
+  });
+
   group('market', () {
     final offer = Companion.rolled(
       id: 'offer-1',
@@ -228,7 +282,19 @@ void main() {
       await tester.tap(find.widgetWithText(NavigationDestination, 'Market'));
       await tester.pumpAndSettle();
       expect(find.text('Shelf 1/12'), findsOneWidget);
-      expect(find.byType(CompanionCard), findsNWidgets(Market.offerCount));
+      final seen = <Key>{};
+      void collect() => seen.addAll(
+        tester
+            .widgetList<CompanionCard>(find.byType(CompanionCard))
+            .map((c) => c.key!),
+      );
+      collect();
+      for (var i = 0; i < 20 && seen.length < Market.offerCount; i++) {
+        await tester.drag(find.byType(CustomScrollView), const Offset(0, -200));
+        await tester.pumpAndSettle();
+        collect();
+      }
+      expect(seen, hasLength(Market.offerCount));
       expect(
         find.textContaining(RegExp(r'^(Moss|Brook|Gale) · [\d,]+ LP$')),
         findsWidgets,
@@ -330,7 +396,7 @@ void main() {
     ProviderContainer containerOf(WidgetTester tester) =>
         ProviderScope.containerOf(tester.element(find.byType(Scaffold).first));
 
-    testWidgets('denying the movement notice starts no run and earns no LP', (
+    testWidgets('denying the movement notice opens the run but earns no LP', (
       tester,
     ) async {
       await pumpApp(tester);
@@ -345,9 +411,32 @@ void main() {
         container.read(settingsProvider).movementAccess,
         MovementAccess.denied,
       );
-      expect(container.read(runControllerProvider), isNull);
-      expect(container.read(runControllerProvider.notifier).start(), isFalse);
+      expect(find.byKey(const Key('run-no-lp')), findsOneWidget);
+      final engine = container.read(runControllerProvider)!.engine;
+      expect(engine.earnsLp, isFalse);
+
+      container.read(runControllerProvider.notifier)
+        ..setDemoSpeed(4.5)
+        ..setTimeLapse(true);
+      for (var i = 0; i < 220; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+      expect(engine.distanceM, greaterThan(250));
+      expect(engine.blocks, 0);
+      expect(engine.breathLeft, 6);
+
+      await tester.scrollUntilVisible(find.text('Stop'), 200);
+      await tester.tap(find.text('Stop'));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Movement access was off, so this run earned no LP.'),
+        findsOneWidget,
+      );
+      expect(find.text('6 / 6'), findsOneWidget);
+      await tester.tap(find.text('Done'));
+      await tester.pumpAndSettle();
       expect(container.read(gameProvider).lp, 0);
+      expect(container.read(gameProvider).breath.points, 6);
       expect(find.text('Pebble'), findsOneWidget);
 
       await tester.tap(find.byIcon(Icons.play_arrow));

@@ -25,8 +25,8 @@ final gameRepositoryProvider = Provider<GameRepository>(
   (ref) => GameRepository(ref.watch(sharedPreferencesProvider)),
 );
 
-final movementSourceProvider = Provider<SimulatedMovementSource>(
-  (ref) => SimulatedMovementSource(),
+final movementSourceProvider = Provider<MovementSource>(
+  (ref) => simulatorFlag ? SimulatedMovementSource() : DeviceMovementSource(),
 );
 
 final gameProvider = NotifierProvider<GameNotifier, GameData>(GameNotifier.new);
@@ -87,6 +87,12 @@ class GameNotifier extends Notifier<GameData> {
     return true;
   }
 
+  /// Removes the seal in [slot] of [companionId]. Not possible during a run.
+  void clearSeal(String companionId, int slot) {
+    if (ref.read(runControllerProvider) != null) return;
+    _set(state.clearingSeal(companionId, slot));
+  }
+
   /// Switches the companion for the next run. Not possible during a run.
   void takeAlong(String companionId) {
     if (ref.read(runControllerProvider) != null) return;
@@ -138,15 +144,12 @@ class SettingsNotifier extends Notifier<AppSettings> {
 
 /// Snapshot of an active run for the UI.
 class RunView {
-  const RunView({
-    required this.engine,
-    required this.demoSpeedKmh,
-    required this.timeScale,
-  });
+  const RunView({required this.engine, this.simulator});
 
   final RunEngine engine;
-  final double demoSpeedKmh;
-  final int timeScale;
+
+  /// Set only when the debug simulator drives the run.
+  final SimulatedMovementSource? simulator;
 }
 
 final runControllerProvider = NotifierProvider<RunController, RunView?>(
@@ -156,7 +159,12 @@ final runControllerProvider = NotifierProvider<RunController, RunView?>(
 class RunController extends Notifier<RunView?> {
   StreamSubscription<Object?>? _sub;
 
-  SimulatedMovementSource get _source => ref.read(movementSourceProvider);
+  MovementSource get _source => ref.read(movementSourceProvider);
+
+  SimulatedMovementSource? get _simulator => switch (_source) {
+    final SimulatedMovementSource s => s,
+    _ => null,
+  };
 
   @override
   RunView? build() {
@@ -164,38 +172,45 @@ class RunController extends Notifier<RunView?> {
     return null;
   }
 
-  /// Starts a run. Refused unless movement access is allowed, so a denied
-  /// notice never earns LP from movement.
+  /// Starts a run on the shared Breath bar. Without movement access the run
+  /// still opens but earns no LP, and device sensors are not touched.
   bool start() {
-    if (ref.read(settingsProvider).movementAccess != MovementAccess.allowed) {
-      return false;
-    }
+    if (state != null) return false;
+    final allowed =
+        ref.read(settingsProvider).movementAccess == MovementAccess.allowed;
     ref.read(gameProvider.notifier).refreshBreath();
     final game = ref.read(gameProvider);
     final engine = RunEngine(
       companion: game.activeCompanion,
       breathAtStart: game.breath.points,
       startedAt: ref.read(clockProvider)(),
+      earnsLp: allowed,
     );
-    _source
-      ..targetSpeedKmh = 0
+    final sim = _simulator
+      ?..targetSpeedKmh = 0
       ..timeScale = 1;
-    _sub = _source.start(engine.startedAt).listen((sample) {
-      engine.add(sample);
-      _emit(engine);
-    });
+    if (allowed || sim != null) {
+      _sub = _source.start(engine.startedAt).listen((sample) {
+        engine.add(sample);
+        _emit(engine);
+      });
+    }
     _emit(engine);
     return true;
   }
 
   void setDemoSpeed(double kmh) {
-    _source.targetSpeedKmh = kmh;
+    final sim = _simulator;
+    if (sim == null) return;
+    sim.targetSpeedKmh = kmh;
     final view = state;
     if (view != null) _emit(view.engine);
   }
 
   void setTimeLapse(bool on) {
-    _source.timeScale = on ? 10 : 1;
+    final sim = _simulator;
+    if (sim == null) return;
+    sim.timeScale = on ? 10 : 1;
     final view = state;
     if (view != null) _emit(view.engine);
   }
@@ -215,10 +230,6 @@ class RunController extends Notifier<RunView?> {
   }
 
   void _emit(RunEngine engine) {
-    state = RunView(
-      engine: engine,
-      demoSpeedKmh: _source.targetSpeedKmh,
-      timeScale: _source.timeScale,
-    );
+    state = RunView(engine: engine, simulator: _simulator);
   }
 }

@@ -1,5 +1,5 @@
 /// One tick of movement data. Distance and steps are deltas since the
-/// previous sample.
+/// previous sample. [steps] is null when the device has no step counter.
 class MovementSample {
   const MovementSample({
     required this.time,
@@ -11,5 +11,5 @@ class MovementSample {
   final DateTime time;
   final double speedKmh;
   final double distanceM;
-  final int steps;
+  final int? steps;
 }

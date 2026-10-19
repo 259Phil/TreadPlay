@@ -1,16 +1,138 @@
 import 'dart:async';
 import 'dart:math';
 
-import '../domain/movement.dart';
+import 'package:flutter/foundation.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:pedometer/pedometer.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-/// Source of movement samples during a run (GPS + health steps).
+import '../domain/movement.dart';
+import '../domain/movement_fuser.dart';
+
+/// Source of movement samples during a run.
 abstract class MovementSource {
   Stream<MovementSample> start(DateTime startedAt);
   void stop();
 }
 
-/// Stand-in until GPS and Apple Health / Health Connect are wired up.
-/// Speed is set from the demo controls on the run screen.
+/// Build with `--dart-define=TREADPLAY_SIM=true` to run on the simulator
+/// slider instead of GPS and the step counter. Ignored in release builds.
+const bool simulatorFlag =
+    !kReleaseMode && bool.fromEnvironment('TREADPLAY_SIM');
+
+/// GPS distance and pedometer steps from this device (GPS only on Web).
+/// Nothing is stored or sent: only the previous fix is held in memory to measure the next step.
+class DeviceMovementSource implements MovementSource {
+  static const Duration tick = Duration(seconds: 1);
+
+  Timer? _timer;
+  StreamController<MovementSample>? _controller;
+  StreamSubscription<Position>? _gps;
+  StreamSubscription<StepCount>? _steps;
+  Position? _lastFix;
+  int _session = 0;
+
+  @override
+  Stream<MovementSample> start(DateTime startedAt) {
+    stop();
+    final session = ++_session;
+    final fuser = MovementFuser();
+    final controller = StreamController<MovementSample>();
+    _controller = controller;
+    _timer = Timer.periodic(tick, (_) => controller.add(fuser.tick(_now())));
+    _listen(session, fuser);
+    return controller.stream;
+  }
+
+  DateTime _now() => DateTime.now();
+
+  Future<void> _listen(int session, MovementFuser fuser) async {
+    if (await _locationAllowed() && session == _session) {
+      _gps = Geolocator.getPositionStream(
+        locationSettings: _locationSettings(),
+      ).listen((p) => _onFix(fuser, p), onError: (Object _) {});
+    }
+    if (!kIsWeb && await _stepsAllowed() && session == _session) {
+      _steps = Pedometer.stepCountStream.listen(
+        (s) => fuser.addStepTotal(s.steps),
+        onError: (Object _) {},
+      );
+    }
+  }
+
+  void _onFix(MovementFuser fuser, Position p) {
+    if (p.accuracy > MovementFuser.maxAccuracyM) return;
+    final last = _lastFix;
+    _lastFix = p;
+    final meters = last == null
+        ? 0.0
+        : Geolocator.distanceBetween(
+            last.latitude,
+            last.longitude,
+            p.latitude,
+            p.longitude,
+          );
+    fuser.addGps(_now(), meters, accuracyM: p.accuracy);
+  }
+
+  Future<bool> _locationAllowed() async {
+    try {
+      if (!await Geolocator.isLocationServiceEnabled()) return false;
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      return permission == LocationPermission.whileInUse ||
+          permission == LocationPermission.always;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<bool> _stepsAllowed() async {
+    if (defaultTargetPlatform != TargetPlatform.android) return true;
+    try {
+      return (await Permission.activityRecognition.request()).isGranted;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  LocationSettings _locationSettings() => switch (defaultTargetPlatform) {
+    TargetPlatform.android => AndroidSettings(
+      accuracy: LocationAccuracy.best,
+      distanceFilter: 0,
+      intervalDuration: tick,
+    ),
+    TargetPlatform.iOS => AppleSettings(
+      accuracy: LocationAccuracy.best,
+      activityType: ActivityType.fitness,
+      distanceFilter: 0,
+      pauseLocationUpdatesAutomatically: false,
+    ),
+    _ => const LocationSettings(
+      accuracy: LocationAccuracy.best,
+      distanceFilter: 0,
+    ),
+  };
+
+  @override
+  void stop() {
+    _session++;
+    _timer?.cancel();
+    _timer = null;
+    _gps?.cancel();
+    _gps = null;
+    _steps?.cancel();
+    _steps = null;
+    _lastFix = null;
+    _controller?.close();
+    _controller = null;
+  }
+}
+
+/// Debug-only stand-in: speed is set from the simulator slider on the run
+/// screen.
 class SimulatedMovementSource implements MovementSource {
   SimulatedMovementSource({this.tick = const Duration(seconds: 1)});
 

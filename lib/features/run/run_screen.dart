@@ -3,12 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../data/movement_source.dart';
 import '../../domain/run_engine.dart';
 import '../../l10n/app_localizations.dart';
 import '../../router.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
 import '../../widgets/breath_bar.dart';
+import '../../widgets/companion_figure.dart';
 import '../../widgets/format.dart';
 import 'sweet_spot_gauge.dart';
 
@@ -60,11 +62,13 @@ class _RunScreenState extends ConsumerState<RunScreen>
     final theme = Theme.of(context);
     if (view == null) return const Scaffold();
     final e = view.engine;
-    final hint = !e.canEarn
+    final hint = !e.earnsLp
+        ? null
+        : !e.canEarn
         ? l.hintNoBreath
         : e.speedKmh < 0.5
         ? l.hintStanding
-        : e.factor > 0
+        : e.inBand
         ? l.hintInside
         : l.hintOutside;
 
@@ -89,6 +93,20 @@ class _RunScreenState extends ConsumerState<RunScreen>
                     ),
                   ),
                   Text(l.lpThisRun, textAlign: TextAlign.center),
+                  if (!e.earnsLp) ...[
+                    const SizedBox(height: 12),
+                    Card(
+                      key: const Key('run-no-lp'),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Text(
+                          l.runNoLp,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: TreadColors.copper),
+                        ),
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 24),
                   Row(
                     children: [
@@ -97,10 +115,7 @@ class _RunScreenState extends ConsumerState<RunScreen>
                         l.kmValue(formatKm(context, e.distanceM)),
                       ),
                       _Stat(l.time, formatDuration(e.elapsed)),
-                      _Stat(
-                        l.speed,
-                        l.kmhValue(formatNumber(context, e.speedKmh)),
-                      ),
+                      _Stat(l.pace, l.paceValue(formatPace(e.pace))),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -108,10 +123,12 @@ class _RunScreenState extends ConsumerState<RunScreen>
                   const SizedBox(height: 24),
                   SweetSpotGauge(type: e.companion.type, speedKmh: e.speedKmh),
                   const SizedBox(height: 4),
-                  Text(hint, textAlign: TextAlign.center),
+                  if (hint != null) Text(hint, textAlign: TextAlign.center),
                   const SizedBox(height: 24),
-                  _DemoPanel(view: view),
-                  const SizedBox(height: 24),
+                  if (view.simulator case final sim?) ...[
+                    _DemoPanel(sim: sim),
+                    const SizedBox(height: 24),
+                  ],
                   SizedBox(
                     height: 64,
                     child: FilledButton.icon(
@@ -180,9 +197,9 @@ class _Stat extends StatelessWidget {
 }
 
 class _DemoPanel extends ConsumerWidget {
-  const _DemoPanel({required this.view});
+  const _DemoPanel({required this.sim});
 
-  final RunView view;
+  final SimulatedMovementSource sim;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -200,7 +217,7 @@ class _DemoPanel extends ConsumerWidget {
                 Expanded(
                   child: Slider(
                     key: const Key('demo-speed'),
-                    value: view.demoSpeedKmh,
+                    value: sim.targetSpeedKmh,
                     max: SweetSpotGauge.maxKmh,
                     divisions: 40,
                     onChanged: controller.setDemoSpeed,
@@ -209,7 +226,7 @@ class _DemoPanel extends ConsumerWidget {
                 SizedBox(
                   width: 80,
                   child: Text(
-                    l.kmhValue(formatNumber(context, view.demoSpeedKmh)),
+                    l.kmhValue(formatNumber(context, sim.targetSpeedKmh)),
                     textAlign: TextAlign.end,
                   ),
                 ),
@@ -218,7 +235,7 @@ class _DemoPanel extends ConsumerWidget {
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               title: Text(l.demoTimeLapse),
-              value: view.timeScale > 1,
+              value: sim.timeScale > 1,
               onChanged: controller.setTimeLapse,
             ),
           ],
@@ -250,7 +267,7 @@ class _Portrait extends StatelessWidget {
             color: TreadColors.plate,
             border: Border.all(color: rarityMetal(c.rarity), width: 2),
           ),
-          child: Image.asset(c.imageAsset, fit: BoxFit.contain),
+          child: CompanionArt(c.artKey),
         ),
         const SizedBox(width: 12),
         Column(

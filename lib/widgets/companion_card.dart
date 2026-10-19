@@ -4,6 +4,7 @@ import '../domain/companion.dart';
 import '../domain/world.dart';
 import '../l10n/app_localizations.dart';
 import '../theme.dart';
+import 'companion_figure.dart';
 import 'format.dart';
 
 /// Collectible card. The frame (rarity metal), rarity word, name and
@@ -18,6 +19,8 @@ class CompanionCard extends StatelessWidget {
     required this.subtitle,
     this.badge,
     this.onTap,
+    this.stats,
+    this.action,
   });
 
   final String artKey;
@@ -31,25 +34,28 @@ class CompanionCard extends StatelessWidget {
   final String? badge;
   final VoidCallback? onTap;
 
+  /// Label and value pairs shown in a row under the subtitle.
+  final List<(String, String)>? stats;
+
+  /// Text on the brass pill at the bottom of the card, e.g. the price.
+  final String? action;
+
   static const double aspectRatio = 0.72;
 
-  /// Two-column card grid used by Shelf and Market.
-  static const gridDelegate = SliverGridDelegateWithFixedCrossAxisCount(
-    crossAxisCount: 2,
-    mainAxisSpacing: 12,
-    crossAxisSpacing: 12,
-    childAspectRatio: aspectRatio,
-  );
+  /// Two-column card grid used by Shelf and Market; taller cards when they
+  /// carry an [action] pill.
+  static SliverGridDelegate grid({bool withAction = false}) =>
+      SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
+        childAspectRatio: withAction ? 0.5 : 0.58,
+      );
 
   @override
   Widget build(BuildContext context) {
     final metal = rarityMetal(rarity);
     final glow = rarity == Rarity.legendary;
-    final art = Image.asset(
-      'assets/companions/$artKey.png',
-      fit: BoxFit.contain,
-      alignment: Alignment.bottomCenter,
-    );
 
     return Semantics(
       button: onTap != null,
@@ -58,30 +64,30 @@ class CompanionCard extends StatelessWidget {
         onTap: onTap,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(20),
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Color.lerp(metal, Colors.white, 0.35)!,
+                Color.lerp(metal, Colors.white, 0.25)!,
                 metal,
                 Color.lerp(metal, Colors.black, 0.45)!,
               ],
             ),
             boxShadow: [
-              const BoxShadow(color: Color(0x88000000), blurRadius: 6),
+              const BoxShadow(color: Color(0xAA000000), blurRadius: 8),
               if (glow)
                 BoxShadow(
-                  color: metal.withValues(alpha: 0.55),
-                  blurRadius: 16,
+                  color: metal.withValues(alpha: 0.5),
+                  blurRadius: 14,
                   spreadRadius: 1,
                 ),
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.all(3),
+            padding: const EdgeInsets.all(2),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(9),
+              borderRadius: BorderRadius.circular(18),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -89,30 +95,39 @@ class CompanionCard extends StatelessWidget {
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                        DecoratedBox(
+                        ColoredBox(
+                          color: Color.lerp(
+                            world.placeholder,
+                            TreadColors.iron,
+                            0.4,
+                          )!,
+                        ),
+                        if (world.background case final bg?)
+                          Image.asset(
+                            bg,
+                            fit: BoxFit.cover,
+                            alignment: Alignment.bottomCenter,
+                            color: const Color(0x40000000),
+                            colorBlendMode: BlendMode.darken,
+                          ),
+                        const DecoratedBox(
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
-                              colors: [
-                                Color.lerp(
-                                  world.placeholder,
-                                  TreadColors.iron,
-                                  0.35,
-                                )!,
-                                TreadColors.iron,
-                              ],
+                              colors: [Color(0x00000000), Color(0x88000000)],
+                              stops: [0.6, 1],
                             ),
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(10, 22, 10, 8),
-                          child: art,
+                          padding: const EdgeInsets.fromLTRB(8, 28, 8, 4),
+                          child: CompanionArt(artKey),
                         ),
                         Positioned(
-                          left: 6,
-                          right: 7,
-                          top: 6,
+                          left: 8,
+                          right: 8,
+                          top: 8,
                           child: switch (badge) {
                             final b? => Wrap(
                               alignment: WrapAlignment.spaceBetween,
@@ -132,7 +147,13 @@ class CompanionCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  _Plate(name: name, subtitle: subtitle, metal: metal),
+                  _Plate(
+                    name: name,
+                    subtitle: subtitle,
+                    metal: metal,
+                    stats: stats,
+                    action: action,
+                  ),
                 ],
               ),
             ),
@@ -148,61 +169,103 @@ class _Plate extends StatelessWidget {
     required this.name,
     required this.subtitle,
     required this.metal,
+    this.stats,
+    this.action,
   });
 
   final String name;
   final String subtitle;
   final Color metal;
+  final List<(String, String)>? stats;
+  final String? action;
 
   @override
   Widget build(BuildContext context) {
-    const rivet = SizedBox.square(
-      dimension: 5,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Color(0xFF5C636B),
-        ),
-      ),
-    );
+    final s = stats;
+    final a = action;
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: TreadColors.rail,
-        border: Border(top: BorderSide(color: metal, width: 2)),
+        color: TreadColors.plate,
+        border: Border(top: BorderSide(color: metal.withValues(alpha: 0.5))),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(6, 6, 6, 7),
-        child: Row(
+        padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            rivet,
-            const SizedBox(width: 6),
-            Expanded(
-              child: Column(
+            Text(
+              name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: serifTitle.copyWith(fontSize: 18),
+            ),
+            const SizedBox(height: 1),
+            Text(
+              subtitle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(color: TreadColors.muted, fontSize: 12.5),
+            ),
+            if (s != null) ...[
+              const SizedBox(height: 8),
+              Row(
                 children: [
-                  Text(
-                    name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: TreadColors.text,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 15,
+                  for (final (label, value) in s)
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Text(
+                            label,
+                            maxLines: 1,
+                            overflow: TextOverflow.fade,
+                            softWrap: false,
+                            style: const TextStyle(
+                              color: TreadColors.muted,
+                              fontSize: 10.5,
+                            ),
+                          ),
+                          Text(
+                            value,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              fontFeatures: [FontFeature.tabularFigures()],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  Text(
-                    subtitle,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: TreadColors.muted,
-                      fontSize: 12,
-                    ),
-                  ),
                 ],
               ),
-            ),
-            const SizedBox(width: 6),
-            rivet,
+            ],
+            if (a != null) ...[
+              const SizedBox(height: 10),
+              DecoratedBox(
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  gradient: brassGradient,
+                ),
+                child: SizedBox(
+                  height: 38,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                      child: Text(
+                        a,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: TreadColors.iron,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -220,31 +283,24 @@ class _Tag extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: TreadColors.brass,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.check, size: 12, color: TreadColors.iron),
-            const SizedBox(width: 2),
-            Text(
-              text,
-              style: const TextStyle(
-                color: TreadColors.iron,
-                fontSize: 11,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ],
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+        child: Text(
+          text,
+          style: const TextStyle(
+            color: TreadColors.iron,
+            fontSize: 11,
+            fontWeight: FontWeight.w800,
+          ),
         ),
       ),
     );
   }
 }
 
-/// Rarity word on a small plate in the frame's metal.
+/// Rarity word on a small dark plate in the frame's metal.
 class _RarityTag extends StatelessWidget {
   const _RarityTag({required this.rarity, required this.color});
 
@@ -256,12 +312,12 @@ class _RarityTag extends StatelessWidget {
     final l = AppLocalizations.of(context);
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: const Color(0xE612141A),
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: color, width: 1.5),
+        color: const Color(0xCC0F0E0D),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.8)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
         child: Text(
           rarityLabel(l, rarity).toUpperCase(),
           style: TextStyle(

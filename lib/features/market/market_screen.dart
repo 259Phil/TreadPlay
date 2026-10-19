@@ -9,6 +9,7 @@ import '../../theme.dart';
 import '../../widgets/companion_card.dart';
 import '../../widgets/companion_stats.dart';
 import '../../widgets/format.dart';
+import '../../widgets/lp_pill.dart';
 
 /// Buy companions for LP and sell them back, on the same card grid as
 /// Shelf. Offers drift every few hours; the moment is never shown.
@@ -26,25 +27,26 @@ class MarketScreen extends ConsumerWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text(l.tabMarket),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: Center(
-                child: Text(
-                  l.lpAmount(formatNumber(context, game.lp, pattern: '0.0')),
-                  style: const TextStyle(
-                    color: TreadColors.brass,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ),
-          ],
+          actions: lpActions(game.lp),
           bottom: TabBar(
-            tabs: [
-              Tab(text: l.marketBuyTab),
-              Tab(text: l.marketSellTab),
-            ],
+            isScrollable: true,
+            tabAlignment: TabAlignment.start,
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+            labelPadding: const EdgeInsets.symmetric(horizontal: 4),
+            dividerHeight: 0,
+            indicatorSize: TabBarIndicatorSize.tab,
+            splashBorderRadius: BorderRadius.circular(20),
+            indicator: const BoxDecoration(
+              gradient: brassGradient,
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+            ),
+            labelColor: TreadColors.iron,
+            unselectedLabelColor: TreadColors.text,
+            labelStyle: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+            ),
+            tabs: [_PillTab(l.marketBuyTab), _PillTab(l.marketSellTab)],
           ),
         ),
         body: market == null
@@ -65,6 +67,24 @@ class MarketScreen extends ConsumerWidget {
                   ),
                 ],
               ),
+      ),
+    );
+  }
+}
+
+/// Rounded pill tab for Offers and Yours.
+class _PillTab extends StatelessWidget {
+  const _PillTab(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tab(
+      height: 40,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Text(text),
       ),
     );
   }
@@ -131,7 +151,7 @@ class _Grid extends StatelessWidget {
         SliverPadding(
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 24),
           sliver: SliverGrid(
-            gridDelegate: CompanionCard.gridDelegate,
+            gridDelegate: CompanionCard.grid(withAction: true),
             delegate: SliverChildListDelegate([
               for (final c in companions)
                 CompanionCard(
@@ -140,7 +160,9 @@ class _Grid extends StatelessWidget {
                   world: c.world,
                   rarity: c.rarity,
                   name: c.name,
-                  subtitle:
+                  subtitle: rarityLabel(l, c.rarity),
+                  stats: cardStats(context, c),
+                  action:
                       '${typeLabel(l, c.type)} · ${formatLpPrice(context, price(c))}',
                   badge: !buying && c.id == game.activeCompanionId
                       ? l.takenAlong

@@ -39,7 +39,7 @@ class Market {
     );
   }
 
-  static const int offerCount = 6;
+  static const int offerCount = 12;
   static const Duration minDrift = Duration(hours: 7);
   static const Duration maxDrift = Duration(hours: 9);
 

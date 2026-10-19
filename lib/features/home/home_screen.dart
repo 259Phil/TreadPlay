@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../data/game_data.dart';
 import '../../domain/companion.dart';
 import '../../domain/run_summary.dart';
 import '../../l10n/app_localizations.dart';
@@ -10,12 +11,11 @@ import '../../router.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
 import '../../widgets/format.dart';
+import '../../widgets/lp_pill.dart';
 import 'world_scene.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
-
-  static const double _barHeight = 48;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,247 +24,183 @@ class HomeScreen extends ConsumerWidget {
     final companion = game.activeCompanion;
     final topInset = MediaQuery.paddingOf(context).top;
 
-    return Stack(
-      fit: StackFit.expand,
+    return ColoredBox(
+      color: TreadColors.iron,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: EdgeInsets.fromLTRB(20, topInset + 10, 16, 0),
+            child: _Header(lp: game.lp, lastRun: game.lastRun),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 10),
+            child: _BreathRow(
+              breath: game.breath.points,
+              tank: companion.tankSize,
+            ),
+          ),
+          Expanded(child: WorldScene(companion: companion)),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+            child: _NamePlate(companion: companion),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
+            child: _StartButton(
+              label: l.startRun,
+              onPressed: () async {
+                await ensureMovementAccess(context, ref);
+                final access = ref.read(settingsProvider).movementAccess;
+                if (!context.mounted || access == MovementAccess.unasked) {
+                  return;
+                }
+                if (!ref.read(runControllerProvider.notifier).start()) return;
+                if (context.mounted) context.push(AppRoutes.run);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Serif title, one line for the last run or "today 0 km", and LP.
+class _Header extends StatelessWidget {
+  const _Header({required this.lp, required this.lastRun});
+
+  final double lp;
+  final RunSummary? lastRun;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final r = lastRun;
+    const small = TextStyle(color: TreadColors.muted, fontSize: 14);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        WorldScene(companion: companion, topClear: topInset + _barHeight),
-        Positioned(
-          left: 0,
-          right: 0,
-          top: 0,
-          child: _MetalBar(
-            topInset: topInset,
-            height: _barHeight,
-            lp: game.lp,
-            companion: companion,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l.appTitle,
+                maxLines: 1,
+                overflow: TextOverflow.fade,
+                softWrap: false,
+                style: serifTitle.copyWith(fontSize: 30),
+              ),
+              Text.rich(
+                r == null
+                    ? TextSpan(
+                        text: l.todayKm(l.kmValue(formatNumber(context, 0))),
+                      )
+                    : TextSpan(
+                        text:
+                            '${l.lastRun}: ${l.kmValue(formatKm(context, r.distanceM))} · '
+                            '${formatDuration(r.duration)} · ',
+                        children: [
+                          TextSpan(
+                            text: r.valid
+                                ? l.lpAmount(formatNumber(context, r.lp))
+                                : l.invalidRun,
+                            style: TextStyle(
+                              color: r.valid
+                                  ? TreadColors.brass
+                                  : Theme.of(context).colorScheme.error,
+                            ),
+                          ),
+                        ],
+                      ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: small,
+              ),
+            ],
           ),
         ),
-        Positioned(
-          left: 12,
-          right: 112,
-          bottom: 14,
-          child: _NamePlate(
-            companion: companion,
-            breath: game.breath.points,
-            lastRun: game.lastRun,
-          ),
-        ),
-        Positioned(
-          right: 14,
-          bottom: 14,
-          child: _StartButton(
-            label: l.startRun,
-            onPressed: () async {
-              if (!await ensureMovementAccess(context, ref)) return;
-              if (!ref.read(runControllerProvider.notifier).start()) return;
-              if (context.mounted) context.push(AppRoutes.run);
-            },
-          ),
+        Padding(
+          padding: const EdgeInsets.only(top: 6),
+          child: LpPill(lp: lp),
         ),
       ],
     );
   }
 }
 
-/// Thin iron strip at the top: LP and a mini status.
-class _MetalBar extends StatelessWidget {
-  const _MetalBar({
-    required this.topInset,
-    required this.height,
-    required this.lp,
-    required this.companion,
-  });
-
-  final double topInset;
-  final double height;
-  final double lp;
-  final Companion companion;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    return DecoratedBox(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xF212141A), Color(0xE62A3038)],
-        ),
-        border: Border(
-          bottom: BorderSide(color: TreadColors.brassDark, width: 1.5),
-        ),
-      ),
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(16, topInset, 12, 0),
-        child: SizedBox(
-          height: height,
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  l.appTitle.toUpperCase(),
-                  maxLines: 1,
-                  overflow: TextOverflow.fade,
-                  softWrap: false,
-                  style: const TextStyle(
-                    color: TreadColors.brass,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.5,
-                    fontSize: 15,
-                  ),
-                ),
-              ),
-              _Rivet(
-                icon: Icons.bolt,
-                text: l.lpAmount(formatNumber(context, lp, pattern: '0.0')),
-                color: TreadColors.brass,
-              ),
-              const SizedBox(width: 8),
-              _Rivet(
-                icon: Icons.favorite_outline,
-                text: l.percentValue(formatNumber(context, companion.spirit)),
-                color: TreadColors.text,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _Rivet extends StatelessWidget {
-  const _Rivet({required this.icon, required this.text, required this.color});
-
-  final IconData icon;
-  final String text;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: TreadColors.iron,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFF3A424C)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 15, color: color),
-            const SizedBox(width: 4),
-            Text(
-              text,
-              style: TextStyle(
-                color: color,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Name, type, the shared Breath bar and one line for the last run.
+/// Name in serif, rarity and type, world and Spirit, sweet spot.
 class _NamePlate extends StatelessWidget {
-  const _NamePlate({
-    required this.companion,
-    required this.breath,
-    required this.lastRun,
-  });
+  const _NamePlate({required this.companion});
 
   final Companion companion;
-  final double breath;
-  final RunSummary? lastRun;
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final r = lastRun;
-    final small = theme.textTheme.bodySmall?.copyWith(color: TreadColors.muted);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: const Color(0xE01A1D22),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: TreadColors.brassDark),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 9),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+    final c = companion;
+    const small = TextStyle(color: TreadColors.muted, fontSize: 13.5);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    companion.name,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    c.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: serifTitle.copyWith(fontSize: 30, height: 1.1),
                   ),
-                ),
-                Text(
-                  l.levelShort(companion.level),
-                  style: const TextStyle(color: TreadColors.brass),
-                ),
-              ],
-            ),
-            Text(
-              '${typeLabel(l, companion.type)} · '
-              '${l.sweetSpotAt(formatNumber(context, companion.type.sweetSpotKmh))}',
-              style: small,
-            ),
-            const SizedBox(height: 8),
-            _BreathRow(breath: breath, tank: companion.tankSize),
-            if (breath < 1) ...[
-              const SizedBox(height: 4),
-              Text(
-                l.breathEmptyHint,
-                style: small?.copyWith(color: TreadColors.breath),
-              ),
-            ],
-            const SizedBox(height: 6),
-            Text.rich(
-              r == null
-                  ? TextSpan(
-                      text: l.todayKm(l.kmValue(formatNumber(context, 0))),
-                    )
-                  : TextSpan(
-                      text:
-                          '${l.lastRun}: ${l.kmValue(formatKm(context, r.distanceM))} · '
-                          '${formatDuration(r.duration)} · ',
+                  Text.rich(
+                    TextSpan(
                       children: [
                         TextSpan(
-                          text: r.valid
-                              ? l.lpAmount(formatNumber(context, r.lp))
-                              : l.invalidRun,
-                          style: TextStyle(
-                            color: r.valid
-                                ? TreadColors.brass
-                                : theme.colorScheme.error,
-                          ),
+                          text: rarityLabel(l, c.rarity),
+                          style: TextStyle(color: rarityMetal(c.rarity)),
+                        ),
+                        TextSpan(
+                          text:
+                              ' · ${typeLabel(l, c.type)} · ${l.levelShort(c.level)}',
                         ),
                       ],
                     ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: small,
+                    style: small,
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(worldLabel(l, c.world), style: small),
+                Text(
+                  '${l.statSpirit} ${l.percentValue(formatNumber(context, c.spirit))}',
+                  style: const TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
-      ),
+        const SizedBox(height: 6),
+        Text(
+          l.sweetSpotAt(formatNumber(context, c.type.sweetSpotKmh)),
+          style: small,
+        ),
+      ],
     );
   }
 }
 
-/// The shared Breath as a slim bar with `4/6` next to it.
+/// The shared Breath: label, `4/6` and one segment per point.
 class _BreathRow extends StatelessWidget {
   const _BreathRow({required this.breath, required this.tank});
 
@@ -275,43 +211,88 @@ class _BreathRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final empty = breath < 1;
-    final color = empty ? TreadColors.muted : TreadColors.breath;
     return Semantics(
       label:
           '${l.breath} ${l.breathValue(formatNumber(context, breath), tank)}',
       excludeSemantics: true,
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.air, size: 16, color: color),
-          const SizedBox(width: 6),
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(5),
-              child: LinearProgressIndicator(
-                value: (breath / tank).clamp(0, 1),
-                minHeight: 9,
-                color: TreadColors.breath,
-                backgroundColor: TreadColors.rail,
+          Row(
+            children: [
+              const Icon(Icons.air, size: 18, color: TreadColors.breath),
+              const SizedBox(width: 6),
+              Text(
+                l.breath,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
+              const Spacer(),
+              Text(
+                '${breath.floor()}/$tank',
+                style: TextStyle(
+                  color: empty ? TreadColors.muted : TreadColors.brass,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 8),
-          Text(
-            '${breath.floor()}/$tank',
-            style: TextStyle(
-              color: color,
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              fontFeatures: const [FontFeature.tabularFigures()],
-            ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              for (var i = 0; i < tank; i++) ...[
+                if (i > 0) const SizedBox(width: 5),
+                Expanded(child: _Segment(fill: (breath - i).clamp(0, 1))),
+              ],
+            ],
           ),
+          if (empty) ...[
+            const SizedBox(height: 6),
+            Text(
+              l.breathEmptyHint,
+              style: const TextStyle(color: TreadColors.breath, fontSize: 13),
+            ),
+          ],
         ],
       ),
     );
   }
 }
 
-/// The single round brass Start knob.
+class _Segment extends StatelessWidget {
+  const _Segment({required this.fill});
+
+  final double fill;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(5),
+      child: SizedBox(
+        height: 12,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            const ColoredBox(color: TreadColors.plate),
+            FractionallySizedBox(
+              alignment: Alignment.centerLeft,
+              widthFactor: fill,
+              child: const DecoratedBox(
+                decoration: BoxDecoration(gradient: brassGradient),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The single wide brass Start button.
 class _StartButton extends StatelessWidget {
   const _StartButton({required this.label, required this.onPressed});
 
@@ -322,49 +303,37 @@ class _StartButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: const BoxDecoration(
-        shape: BoxShape.circle,
+        borderRadius: BorderRadius.all(Radius.circular(32)),
         boxShadow: [BoxShadow(color: Color(0x99000000), blurRadius: 12)],
-        color: TreadColors.brassDark,
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(3),
-        child: Material(
-          shape: const CircleBorder(),
-          clipBehavior: Clip.antiAlias,
-          child: Ink(
-            decoration: const BoxDecoration(
-              gradient: RadialGradient(
-                center: Alignment(-0.3, -0.4),
-                colors: [
-                  Color(0xFFE2C98F),
-                  TreadColors.brass,
-                  Color(0xFF8A6D3E),
-                ],
-                stops: [0, 0.55, 1],
-              ),
-            ),
-            child: InkWell(
-              onTap: onPressed,
-              child: SizedBox.square(
-                dimension: 80,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.play_arrow,
-                      size: 34,
+      child: Material(
+        shape: const StadiumBorder(),
+        clipBehavior: Clip.antiAlias,
+        child: Ink(
+          decoration: const BoxDecoration(gradient: brassGradient),
+          child: InkWell(
+            onTap: onPressed,
+            child: SizedBox(
+              height: 62,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.play_arrow,
+                    size: 30,
+                    color: TreadColors.iron,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    label,
+                    style: const TextStyle(
                       color: TreadColors.iron,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.5,
                     ),
-                    Text(
-                      label,
-                      style: const TextStyle(
-                        color: TreadColors.iron,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),

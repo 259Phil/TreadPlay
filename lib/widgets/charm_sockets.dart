@@ -70,15 +70,15 @@ class _Socket extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 52,
-          height: 52,
+          width: 60,
+          height: 60,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: rim, width: 3),
+            border: Border.all(color: rim, width: 2.5),
             gradient: RadialGradient(
               center: const Alignment(-0.2, -0.3),
               colors: s == null
-                  ? const [Color(0xFF0C0E12), Color(0xFF2A3038)]
+                  ? const [Color(0xFF0A0908), Color(0xFF26231F)]
                   : const [Color(0xFFE2C98F), TreadColors.brassDark],
             ),
             boxShadow: const [
@@ -87,9 +87,9 @@ class _Socket extends StatelessWidget {
           ),
           child: s == null
               ? null
-              : Icon(sealIcon(s), color: TreadColors.iron, size: 24),
+              : Icon(sealIcon(s), color: TreadColors.iron, size: 26),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 6),
         Text(
           label,
           style: TextStyle(

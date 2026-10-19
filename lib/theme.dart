@@ -4,16 +4,16 @@ import 'domain/companion.dart';
 
 /// Metal UI palette (V1.2 §5): dark iron, brass accents, no pastel surfaces.
 class TreadColors {
-  static const iron = Color(0xFF1A1D22);
-  static const plate = Color(0xFF2A3038);
-  static const rail = Color(0xFF12141A);
-  static const text = Color(0xFFE8E0D0);
-  static const muted = Color(0xFF9C968C);
-  static const brass = Color(0xFFC4A36A);
+  static const iron = Color(0xFF0F0E0D);
+  static const plate = Color(0xFF1F1C18);
+  static const rail = Color(0xFF161411);
+  static const text = Color(0xFFF2EADC);
+  static const muted = Color(0xFF9B9387);
+  static const brass = Color(0xFFDDB066);
   static const brassDark = Color(0xFF7A6238);
   static const copper = Color(0xFFB0703F);
   static const bronze = Color(0xFF8E7046);
-  static const steel = Color(0xFF7D858E);
+  static const steel = Color(0xFFA9B1BA);
   static const stop = Color(0xFF8B3A3A);
   static const breath = Color(0xFF6FB7C4);
 }
@@ -51,24 +51,30 @@ ThemeData buildTheme() {
       displayColor: TreadColors.text,
     ),
     appBarTheme: const AppBarTheme(
-      backgroundColor: TreadColors.rail,
+      backgroundColor: TreadColors.iron,
       foregroundColor: TreadColors.text,
       surfaceTintColor: Colors.transparent,
       centerTitle: false,
-      shape: Border(bottom: BorderSide(color: TreadColors.brassDark)),
+      toolbarHeight: 64,
+      titleTextStyle: TextStyle(
+        fontFamily: 'serif',
+        fontSize: 30,
+        fontWeight: FontWeight.w600,
+        color: TreadColors.text,
+      ),
     ),
     cardTheme: const CardThemeData(
       color: TreadColors.plate,
       surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-        side: BorderSide(color: Color(0xFF3A424C)),
+        borderRadius: BorderRadius.all(Radius.circular(16)),
+        side: BorderSide(color: Color(0xFF332E27)),
       ),
     ),
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: TreadColors.rail,
       surfaceTintColor: Colors.transparent,
-      indicatorColor: TreadColors.brass.withValues(alpha: 0.22),
+      indicatorColor: Colors.transparent,
       iconTheme: WidgetStateProperty.resolveWith(
         (s) => IconThemeData(
           color: s.contains(WidgetState.selected)
@@ -91,17 +97,19 @@ ThemeData buildTheme() {
         foregroundColor: TreadColors.iron,
         disabledBackgroundColor: TreadColors.plate,
         disabledForegroundColor: TreadColors.muted,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        minimumSize: const Size(0, 48),
+        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+        shape: const StadiumBorder(),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         foregroundColor: TreadColors.brass,
         side: const BorderSide(color: TreadColors.brassDark),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        shape: const StadiumBorder(),
       ),
     ),
-    dividerTheme: const DividerThemeData(color: Color(0xFF3A424C)),
+    dividerTheme: const DividerThemeData(color: Color(0xFF2B2722)),
     sliderTheme: const SliderThemeData(
       activeTrackColor: TreadColors.brass,
       thumbColor: TreadColors.brass,
@@ -133,3 +141,18 @@ ThemeData buildTheme() {
     ),
   );
 }
+
+/// Serif display style for screen and companion titles.
+const serifTitle = TextStyle(
+  fontFamily: 'serif',
+  fontWeight: FontWeight.w600,
+  color: TreadColors.text,
+);
+
+/// Brushed brass for primary pills and the Start button.
+const brassGradient = LinearGradient(
+  begin: Alignment.topCenter,
+  end: Alignment.bottomCenter,
+  colors: [Color(0xFFF0CE8A), TreadColors.brass, Color(0xFFB98A44)],
+  stops: [0, 0.5, 1],
+);

@@ -37,7 +37,7 @@ class MovementFuser {
     _gpsM += meters;
   }
 
-  /// Cumulative pedometer count (since boot on Android).
+  /// Cumulative pedometer count (since the device started, on Android).
   void addStepTotal(int total) {
     _hasStepCounter = true;
     final last = _lastStepTotal;

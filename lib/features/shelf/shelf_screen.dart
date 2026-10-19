@@ -10,6 +10,7 @@ import '../../widgets/charm_sockets.dart';
 import '../../widgets/companion_card.dart';
 import '../../widgets/companion_stats.dart';
 import '../../widgets/format.dart';
+import '../../widgets/lp_pill.dart';
 
 /// Card grid of owned companions.
 class ShelfScreen extends ConsumerStatefulWidget {
@@ -39,7 +40,7 @@ class _ShelfScreenState extends ConsumerState<ShelfScreen> {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text(l.tabShelf)),
+      appBar: AppBar(title: Text(l.tabShelf), actions: lpActions(game.lp)),
       body: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
@@ -86,7 +87,7 @@ class _ShelfScreenState extends ConsumerState<ShelfScreen> {
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(12, 8, 12, 24),
             sliver: SliverGrid(
-              gridDelegate: CompanionCard.gridDelegate,
+              gridDelegate: CompanionCard.grid(),
               delegate: SliverChildListDelegate([
                 for (final c in companions)
                   CompanionCard(
@@ -98,6 +99,7 @@ class _ShelfScreenState extends ConsumerState<ShelfScreen> {
                     subtitle:
                         '${typeLabel(l, c.type)} · ${l.levelShort(c.level)}',
                     badge: c.id == game.activeCompanionId ? l.takenAlong : null,
+                    stats: cardStats(context, c),
                     onTap: () => _showDetail(context, c.id),
                   ),
               ]),

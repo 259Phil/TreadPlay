@@ -40,8 +40,6 @@
   "lastRun": "Letzter Lauf",
   "invalidRun": "Nicht gewertet",
   "noRunsYet": "Noch keine Läufe. Nimm {name} mit und los!",
-  "comingSoon": "Kommt in einem späteren Update.",
-  "forgeTeaser": "Die Schmiede: Siegel in Schmuck setzen und stärkere schmieden.",
   "settingsLanguage": "Sprache",
   "settingsKaching": "Ka-ching-Sound",
   "settingsHealthTitle": "Gesundheitsdaten",
@@ -105,5 +103,17 @@
   "movementNoticePrivacyLink": "Datenschutzerklärung lesen",
   "movementAllow": "Erlauben",
   "movementDeny": "Nicht jetzt",
-  "todayKm": "Heute {km}"
+  "todayKm": "Heute {km}",
+  "sealName": "{stat}-Siegel",
+  "sealBonus": "+{n} {stat}",
+  "forgeAlong": "Siegel gehen an den Gefährten, den du dabeihast.",
+  "forgeFreeSockets": "{free} von {total} Sockeln frei",
+  "forgeRule": "Jedes Siegel gibt +1 auf seinen Wert, höchstens +3 pro Wert. Bezahlt wird mit LP.",
+  "forgeStatCount": "+{n} von +3",
+  "forgeSet": "Setzen",
+  "forgeMaxed": "Max",
+  "forgeNeedsSpirit": "Schmieden nur bei 100 % Mut.",
+  "forgeNotEnoughLp": "Noch nicht genug LP.",
+  "forgeNoSocket": "Kein freier Sockel mehr.",
+  "forgeSellNote": "Siegel bleiben auf diesem Gefährten. Verkaufst du ihn, sind sie weg, LP gibt es nicht zurück."
 }

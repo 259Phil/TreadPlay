@@ -6,6 +6,7 @@ import '../../domain/world.dart';
 import '../../l10n/app_localizations.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
+import '../../widgets/charm_sockets.dart';
 import '../../widgets/companion_card.dart';
 import '../../widgets/companion_stats.dart';
 import '../../widgets/format.dart';
@@ -257,33 +258,7 @@ class _Detail extends ConsumerWidget {
             const SizedBox(height: 12),
             Text(l.charms, style: theme.textTheme.titleSmall),
             const SizedBox(height: 6),
-            Row(
-              children: [
-                for (var i = 0; i < c.charms.length; i++)
-                  Expanded(
-                    child: Padding(
-                      key: Key('charm-slot-$i'),
-                      padding: EdgeInsets.only(
-                        right: i < c.charms.length - 1 ? 8 : 0,
-                      ),
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: const Color(0xFF3A424C)),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          child: Text(
-                            c.charms[i] ?? l.charmSlotEmpty,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(color: TreadColors.muted),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
+            CharmSockets(companion: c),
             const SizedBox(height: 16),
             Row(
               children: [

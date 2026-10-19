@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'features/forge/forge_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/legal/legal_screen.dart';
 import 'features/legal/legal_texts.dart';
 import 'features/market/market_screen.dart';
-import 'features/placeholder/coming_soon_screen.dart';
 import 'features/run/run_screen.dart';
 import 'features/run/summary_screen.dart';
 import 'features/settings/settings_screen.dart';
@@ -35,14 +35,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         branches: [
           _branch(AppRoutes.home, (_) => const HomeScreen()),
           _branch(AppRoutes.shelf, (_) => const ShelfScreen()),
-          _branch(
-            AppRoutes.forge,
-            (l) => ComingSoonScreen(
-              title: l.tabForge,
-              teaser: l.forgeTeaser,
-              icon: Icons.local_fire_department,
-            ),
-          ),
+          _branch(AppRoutes.forge, (_) => const ForgeScreen()),
           _branch(AppRoutes.market, (_) => const MarketScreen()),
           _branch(AppRoutes.settings, (_) => const SettingsScreen()),
         ],

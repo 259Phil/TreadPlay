@@ -26,7 +26,8 @@ class CompanionCard extends StatelessWidget {
   final String name;
   final String subtitle;
 
-  /// Small brass tag in the top left corner, e.g. "Along".
+  /// Small brass tag in the top left corner, e.g. "Along". On narrow cards
+  /// the rarity tag wraps below it instead of overlapping.
   final String? badge;
   final VoidCallback? onTap;
 
@@ -108,12 +109,25 @@ class CompanionCard extends StatelessWidget {
                           padding: const EdgeInsets.fromLTRB(10, 22, 10, 8),
                           child: art,
                         ),
-                        if (badge != null)
-                          Positioned(left: 6, top: 6, child: _Tag(badge!)),
                         Positioned(
+                          left: 6,
                           right: 7,
-                          top: 7,
-                          child: _RarityTag(rarity: rarity, color: metal),
+                          top: 6,
+                          child: switch (badge) {
+                            final b? => Wrap(
+                              alignment: WrapAlignment.spaceBetween,
+                              spacing: 4,
+                              runSpacing: 4,
+                              children: [
+                                _Tag(b),
+                                _RarityTag(rarity: rarity, color: metal),
+                              ],
+                            ),
+                            null => Align(
+                              alignment: Alignment.topRight,
+                              child: _RarityTag(rarity: rarity, color: metal),
+                            ),
+                          },
                         ),
                       ],
                     ),

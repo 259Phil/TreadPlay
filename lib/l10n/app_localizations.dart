@@ -338,18 +338,6 @@ abstract class AppLocalizations {
   /// **'No runs yet. Take {name} along and get moving!'**
   String noRunsYet(String name);
 
-  /// No description provided for @comingSoon.
-  ///
-  /// In en, this message translates to:
-  /// **'Coming in a later update.'**
-  String get comingSoon;
-
-  /// No description provided for @forgeTeaser.
-  ///
-  /// In en, this message translates to:
-  /// **'The forge: set seals into charms and forge stronger ones.'**
-  String get forgeTeaser;
-
   /// No description provided for @settingsLanguage.
   ///
   /// In en, this message translates to:
@@ -733,6 +721,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Today {km}'**
   String todayKm(String km);
+
+  /// No description provided for @sealName.
+  ///
+  /// In en, this message translates to:
+  /// **'{stat} seal'**
+  String sealName(String stat);
+
+  /// No description provided for @sealBonus.
+  ///
+  /// In en, this message translates to:
+  /// **'+{n} {stat}'**
+  String sealBonus(int n, String stat);
+
+  /// No description provided for @forgeAlong.
+  ///
+  /// In en, this message translates to:
+  /// **'Seals go to the companion you have along.'**
+  String get forgeAlong;
+
+  /// No description provided for @forgeFreeSockets.
+  ///
+  /// In en, this message translates to:
+  /// **'{free} of {total} sockets free'**
+  String forgeFreeSockets(int free, int total);
+
+  /// No description provided for @forgeRule.
+  ///
+  /// In en, this message translates to:
+  /// **'Each seal adds +1 to its stat, up to +3 per stat. Paid in LP.'**
+  String get forgeRule;
+
+  /// No description provided for @forgeStatCount.
+  ///
+  /// In en, this message translates to:
+  /// **'+{n} of +3'**
+  String forgeStatCount(int n);
+
+  /// No description provided for @forgeSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Set'**
+  String get forgeSet;
+
+  /// No description provided for @forgeMaxed.
+  ///
+  /// In en, this message translates to:
+  /// **'Max'**
+  String get forgeMaxed;
+
+  /// No description provided for @forgeNeedsSpirit.
+  ///
+  /// In en, this message translates to:
+  /// **'Forging only at 100 % Spirit.'**
+  String get forgeNeedsSpirit;
+
+  /// No description provided for @forgeNotEnoughLp.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough LP yet.'**
+  String get forgeNotEnoughLp;
+
+  /// No description provided for @forgeNoSocket.
+  ///
+  /// In en, this message translates to:
+  /// **'No empty socket left.'**
+  String get forgeNoSocket;
+
+  /// No description provided for @forgeSellNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Seals stay on this companion. Selling it removes them; LP are not refunded.'**
+  String get forgeSellNote;
 }
 
 class _AppLocalizationsDelegate

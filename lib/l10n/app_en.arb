@@ -99,8 +99,6 @@
       }
     }
   },
-  "comingSoon": "Coming in a later update.",
-  "forgeTeaser": "The forge: set seals into charms and forge stronger ones.",
   "settingsLanguage": "Language",
   "settingsKaching": "Ka-ching sound",
   "settingsHealthTitle": "Health data",
@@ -223,5 +221,51 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sealName": "{stat} seal",
+  "@sealName": {
+    "placeholders": {
+      "stat": {
+        "type": "String"
+      }
+    }
+  },
+  "sealBonus": "+{n} {stat}",
+  "@sealBonus": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "stat": {
+        "type": "String"
+      }
+    }
+  },
+  "forgeAlong": "Seals go to the companion you have along.",
+  "forgeFreeSockets": "{free} of {total} sockets free",
+  "@forgeFreeSockets": {
+    "placeholders": {
+      "free": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "forgeRule": "Each seal adds +1 to its stat, up to +3 per stat. Paid in LP.",
+  "forgeStatCount": "+{n} of +3",
+  "@forgeStatCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "forgeSet": "Set",
+  "forgeMaxed": "Max",
+  "forgeNeedsSpirit": "Forging only at 100 % Spirit.",
+  "forgeNotEnoughLp": "Not enough LP yet.",
+  "forgeNoSocket": "No empty socket left.",
+  "forgeSellNote": "Seals stay on this companion. Selling it removes them; LP are not refunded."
 }

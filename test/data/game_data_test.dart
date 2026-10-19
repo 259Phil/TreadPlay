@@ -228,7 +228,10 @@ void main() {
       final old = GameData.initial(t0).toJson()..remove('market');
       final loaded = GameData.fromJson(old);
       expect(loaded.market, isNull);
-      expect(loaded.withMarket(t0, Random(1)).market!.offers, hasLength(6));
+      expect(
+        loaded.withMarket(t0, Random(1)).market!.offers,
+        hasLength(Market.offerCount),
+      );
     });
   });
 

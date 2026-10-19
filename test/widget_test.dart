@@ -228,7 +228,19 @@ void main() {
       await tester.tap(find.widgetWithText(NavigationDestination, 'Market'));
       await tester.pumpAndSettle();
       expect(find.text('Shelf 1/12'), findsOneWidget);
-      expect(find.byType(CompanionCard), findsNWidgets(Market.offerCount));
+      final seen = <Key>{};
+      void collect() => seen.addAll(
+        tester
+            .widgetList<CompanionCard>(find.byType(CompanionCard))
+            .map((c) => c.key!),
+      );
+      collect();
+      for (var i = 0; i < 20 && seen.length < Market.offerCount; i++) {
+        await tester.drag(find.byType(CustomScrollView), const Offset(0, -200));
+        await tester.pumpAndSettle();
+        collect();
+      }
+      expect(seen, hasLength(Market.offerCount));
       expect(
         find.textContaining(RegExp(r'^(Moss|Brook|Gale) · [\d,]+ LP$')),
         findsWidgets,

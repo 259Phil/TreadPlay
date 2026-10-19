@@ -51,3 +51,11 @@ String worldLabel(AppLocalizations l, World world) => switch (world) {
   World.steampunk => l.worldSteampunk,
   World.candy => l.worldCandy,
 };
+
+/// Pace as m:ss (per km), or a dash before there is distance.
+String formatPace(Duration? pace) {
+  if (pace == null) return '–';
+  final m = pace.inMinutes;
+  final s = pace.inSeconds.remainder(60).toString().padLeft(2, '0');
+  return '$m:$s';
+}

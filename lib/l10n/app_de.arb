@@ -27,10 +27,10 @@
   "kmhValue": "{kmh} km/h",
   "lpThisRun": "LP in diesem Lauf",
   "hintStanding": "Bleib in Bewegung – Stehen bringt nichts.",
-  "hintOutside": "Außerhalb des Sweet Spots",
+  "hintOutside": "Außerhalb des Sweet Spots – Strecke zählt, keine LP",
   "hintInside": "Im Sweet Spot",
   "hintNoBreath": "Außer Puste – nur Tracking",
-  "demoTitle": "Demo-Bewegung (echtes GPS folgt)",
+  "demoTitle": "Simulator (nur Debug-Build)",
   "demoTimeLapse": "10× Zeit",
   "summaryTitle": "Lauf beendet",
   "summaryInvalid": "Die Bewegung sah nicht plausibel aus, deshalb gibt es keine LP. Distanz und Zeit sind trotzdem gespeichert.",
@@ -120,5 +120,10 @@
   "forgeClearTitle": "{seal} entfernen?",
   "forgeClearBody": "Der Sockel ist danach wieder leer. LP gibt es nicht zurück.",
   "forgeClearAction": "Entfernen",
-  "forgeClearKeep": "Behalten"
+  "forgeClearKeep": "Behalten",
+  "pace": "Tempo",
+  "paceValue": "{pace} /km",
+  "summaryBreathLeft": "Puste übrig",
+  "runNoLp": "Bewegungszugriff ist aus. Die Strecke wird nicht gelesen, dieser Lauf bringt keine LP.",
+  "summaryNoLp": "Bewegungszugriff war aus, darum brachte dieser Lauf keine LP."
 }

@@ -79,10 +79,10 @@
   },
   "lpThisRun": "LP this run",
   "hintStanding": "Keep moving – standing still earns nothing.",
-  "hintOutside": "Outside the sweet spot",
+  "hintOutside": "Outside the sweet spot – distance counts, no LP",
   "hintInside": "In the sweet spot",
   "hintNoBreath": "Out of breath – tracking only",
-  "demoTitle": "Demo movement (real GPS comes later)",
+  "demoTitle": "Simulator (debug build only)",
   "demoTimeLapse": "10× time",
   "summaryTitle": "Run complete",
   "summaryInvalid": "This movement didn't look plausible, so it earned no LP. Your distance and time are still saved.",
@@ -267,5 +267,17 @@
   "forgeNeedsSpirit": "Forging only at 100 % Spirit.",
   "forgeNotEnoughLp": "Not enough LP yet.",
   "forgeNoSocket": "No empty socket left.",
-  "forgeSellNote": "Seals stay on this companion. Selling it removes them; LP are not refunded."
+  "forgeSellNote": "Seals stay on this companion. Selling it removes them; LP are not refunded.",
+  "pace": "Pace",
+  "paceValue": "{pace} /km",
+  "summaryBreathLeft": "Breath left",
+  "runNoLp": "Movement access is off. Distance is not read and this run earns no LP.",
+  "summaryNoLp": "Movement access was off, so this run earned no LP.",
+  "@paceValue": {
+    "placeholders": {
+      "pace": {
+        "type": "String"
+      }
+    }
+  }
 }

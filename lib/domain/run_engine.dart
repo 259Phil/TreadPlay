@@ -9,6 +9,7 @@ class RunEngine {
     required this.companion,
     required this.breathAtStart,
     required this.startedAt,
+    this.earnsLp = true,
   }) : breathLeft = breathAtStart;
 
   static const double metersPerBreath = 250;
@@ -27,6 +28,9 @@ class RunEngine {
   final double breathAtStart;
   final DateTime startedAt;
 
+  /// False when movement access was denied: distance is tracked, LP is not.
+  final bool earnsLp;
+
   double breathLeft;
   double distanceM = 0;
   int steps = 0;
@@ -39,14 +43,22 @@ class RunEngine {
   double _progressM = 0;
   Duration _fastTime = Duration.zero;
   DateTime? _lastTime;
+  bool _stepsKnown = false;
 
-  bool get canEarn => companion.spirit > 0 && breathLeft >= 1;
+  bool get canEarn => earnsLp && companion.spirit > 0 && breathLeft >= 1;
+
+  /// True while the current pace is inside the companion's sweet spot.
+  bool get inBand => sweetSpotFactor(companion.type, speedKmh) > 0;
+
+  /// Average pace of the run, null before the first 10 m.
+  Duration? get pace => paceOf(elapsed, distanceM);
 
   double get breathUsed => breathAtStart - breathLeft;
 
   bool get isValid {
     if (_fastTime > maxFastTime) return false;
-    if (distanceM >= minDistanceForStepCheckM &&
+    if (_stepsKnown &&
+        distanceM >= minDistanceForStepCheckM &&
         steps / distanceM < minStepsPerMeter) {
       return false;
     }
@@ -59,7 +71,11 @@ class RunEngine {
     _lastTime = sample.time;
     elapsed = sample.time.difference(startedAt);
     distanceM += sample.distanceM;
-    steps += sample.steps;
+    final sampleSteps = sample.steps;
+    if (sampleSteps != null) {
+      _stepsKnown = true;
+      steps += sampleSteps;
+    }
     speedKmh = sample.speedKmh;
     if (speedKmh > maxPlausibleKmh) _fastTime += dt;
 
@@ -89,6 +105,9 @@ class RunEngine {
       steps: steps,
       lp: valid ? lp : 0,
       breathUsed: valid ? breathUsed : 0,
+      breathLeft: valid ? breathLeft : breathAtStart,
+      tankSize: companion.tankSize,
+      earnsLp: earnsLp,
       valid: valid,
     );
   }

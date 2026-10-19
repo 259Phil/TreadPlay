@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../data/game_data.dart';
 import '../../domain/companion.dart';
 import '../../domain/run_summary.dart';
 import '../../l10n/app_localizations.dart';
@@ -55,7 +56,9 @@ class HomeScreen extends ConsumerWidget {
           child: _StartButton(
             label: l.startRun,
             onPressed: () async {
-              if (!await ensureMovementAccess(context, ref)) return;
+              await ensureMovementAccess(context, ref);
+              final access = ref.read(settingsProvider).movementAccess;
+              if (!context.mounted || access == MovementAccess.unasked) return;
               if (!ref.read(runControllerProvider.notifier).start()) return;
               if (context.mounted) context.push(AppRoutes.run);
             },

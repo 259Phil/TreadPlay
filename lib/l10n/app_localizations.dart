@@ -263,7 +263,7 @@ abstract class AppLocalizations {
   /// No description provided for @hintOutside.
   ///
   /// In en, this message translates to:
-  /// **'Outside the sweet spot'**
+  /// **'Outside the sweet spot – distance counts, no LP'**
   String get hintOutside;
 
   /// No description provided for @hintInside.
@@ -281,7 +281,7 @@ abstract class AppLocalizations {
   /// No description provided for @demoTitle.
   ///
   /// In en, this message translates to:
-  /// **'Demo movement (real GPS comes later)'**
+  /// **'Simulator (debug build only)'**
   String get demoTitle;
 
   /// No description provided for @demoTimeLapse.
@@ -793,6 +793,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Seals stay on this companion. Selling it removes them; LP are not refunded.'**
   String get forgeSellNote;
+
+  /// No description provided for @pace.
+  ///
+  /// In en, this message translates to:
+  /// **'Pace'**
+  String get pace;
+
+  /// No description provided for @paceValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{pace} /km'**
+  String paceValue(String pace);
+
+  /// No description provided for @summaryBreathLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Breath left'**
+  String get summaryBreathLeft;
+
+  /// No description provided for @runNoLp.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement access is off. Distance is not read and this run earns no LP.'**
+  String get runNoLp;
+
+  /// No description provided for @summaryNoLp.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement access was off, so this run earned no LP.'**
+  String get summaryNoLp;
 }
 
 class _AppLocalizationsDelegate

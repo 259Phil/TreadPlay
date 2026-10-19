@@ -106,7 +106,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get hintStanding => 'Bleib in Bewegung – Stehen bringt nichts.';
 
   @override
-  String get hintOutside => 'Außerhalb des Sweet Spots';
+  String get hintOutside =>
+      'Außerhalb des Sweet Spots – Strecke zählt, keine LP';
 
   @override
   String get hintInside => 'Im Sweet Spot';
@@ -115,7 +116,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get hintNoBreath => 'Außer Puste – nur Tracking';
 
   @override
-  String get demoTitle => 'Demo-Bewegung (echtes GPS folgt)';
+  String get demoTitle => 'Simulator (nur Debug-Build)';
 
   @override
   String get demoTimeLapse => '10× Zeit';
@@ -406,4 +407,23 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get forgeSellNote =>
       'Siegel bleiben auf diesem Gefährten. Verkaufst du ihn, sind sie weg, LP gibt es nicht zurück.';
+
+  @override
+  String get pace => 'Tempo';
+
+  @override
+  String paceValue(String pace) {
+    return '$pace /km';
+  }
+
+  @override
+  String get summaryBreathLeft => 'Puste übrig';
+
+  @override
+  String get runNoLp =>
+      'Bewegungszugriff ist aus. Die Strecke wird nicht gelesen, dieser Lauf bringt keine LP.';
+
+  @override
+  String get summaryNoLp =>
+      'Bewegungszugriff war aus, darum brachte dieser Lauf keine LP.';
 }

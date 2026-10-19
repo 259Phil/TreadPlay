@@ -106,7 +106,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hintStanding => 'Keep moving – standing still earns nothing.';
 
   @override
-  String get hintOutside => 'Outside the sweet spot';
+  String get hintOutside => 'Outside the sweet spot – distance counts, no LP';
 
   @override
   String get hintInside => 'In the sweet spot';
@@ -115,7 +115,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hintNoBreath => 'Out of breath – tracking only';
 
   @override
-  String get demoTitle => 'Demo movement (real GPS comes later)';
+  String get demoTitle => 'Simulator (debug build only)';
 
   @override
   String get demoTimeLapse => '10× time';
@@ -406,4 +406,23 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get forgeSellNote =>
       'Seals stay on this companion. Selling it removes them; LP are not refunded.';
+
+  @override
+  String get pace => 'Pace';
+
+  @override
+  String paceValue(String pace) {
+    return '$pace /km';
+  }
+
+  @override
+  String get summaryBreathLeft => 'Breath left';
+
+  @override
+  String get runNoLp =>
+      'Movement access is off. Distance is not read and this run earns no LP.';
+
+  @override
+  String get summaryNoLp =>
+      'Movement access was off, so this run earned no LP.';
 }

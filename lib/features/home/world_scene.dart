@@ -18,6 +18,16 @@ class WorldScene extends StatelessWidget {
   /// How far the feet sink below the ground line, so they cover it.
   static const double footSink = 10;
 
+  /// Widest the creature may get, as a share of the scene width.
+  static const double maxWidthShare = 0.76;
+
+  /// Tallest the creature may get, as a share of the room above its feet.
+  static const double maxHeightShare = 0.84;
+
+  /// Visual size (√(body width × height) of the species' Common cutout) as a
+  /// share of the scene width, so every species reads equally large.
+  static const double presenceShare = 0.66;
+
   /// Pixel size shared by all world backgrounds.
   static const Size imageSize = Size(840, 1493);
 
@@ -49,13 +59,15 @@ class WorldScene extends StatelessWidget {
     final (alignment, groundY) = world.background == null
         ? (Alignment.bottomCenter, h * world.ground)
         : _fitGround(w, h, world.ground);
-    final top = topClear + 8;
+    final feet = groundY + footSink;
+    final room = max(h * 0.5, feet - topClear - 16);
     final place = companionPlacement(
       artKey: companion.artKey,
       centerX: w / 2,
-      groundY: groundY + footSink,
-      maxWidth: w * 0.9,
-      maxHeight: max(h * 0.5, groundY + footSink - top),
+      groundY: feet,
+      maxWidth: w * maxWidthShare,
+      maxHeight: room * maxHeightShare,
+      presence: min(w * presenceShare, room * 0.68),
     );
     final shadowW = place.body.width * 0.85;
     final shadowH = max(12.0, place.body.height * 0.08);

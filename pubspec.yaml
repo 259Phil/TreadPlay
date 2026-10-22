@@ -14,6 +14,7 @@ dependencies:
   flutter_riverpod: ^3.3.2
   geolocator: 14.0.2
   go_router: ^17.2.3
+  google_mobile_ads: ^7.0.0
   intl: ^0.20.2
   pedometer: ^4.2.0
   permission_handler: ^13.0.2

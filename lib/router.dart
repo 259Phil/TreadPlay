@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'features/forge/forge_screen.dart';
+import 'features/history/history_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/legal/legal_screen.dart';
 import 'features/legal/legal_texts.dart';
@@ -24,6 +25,8 @@ class AppRoutes {
   static const summary = '/summary';
   static const privacy = '/privacy';
   static const terms = '/terms';
+  static const history = '/history';
+  static String historyDetail(int index) => '$history/$index';
 }
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -44,6 +47,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.summary,
         builder: (_, _) => const SummaryScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.history,
+        builder: (_, _) => const HistoryScreen(),
+        routes: [
+          GoRoute(
+            path: ':index',
+            builder: (_, state) => RunDetailScreen(
+              index: int.tryParse(state.pathParameters['index'] ?? '') ?? -1,
+            ),
+          ),
+        ],
       ),
       GoRoute(
         path: AppRoutes.privacy,

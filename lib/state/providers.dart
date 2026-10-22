@@ -102,9 +102,7 @@ class GameNotifier extends Notifier<GameData> {
   }
 
   void completeRun(RunSummary run, {required double breathLeft}) {
-    var next = state.copyWith(
-      runs: [run, ...state.runs].take(GameData.maxStoredRuns).toList(),
-    );
+    var next = state.recordingRun(run);
     if (run.valid) {
       next = next.copyWith(
         lp: next.lp + run.lp,
@@ -113,6 +111,17 @@ class GameNotifier extends Notifier<GameData> {
     }
     _set(next);
     refreshBreath();
+  }
+
+  /// Deletes the stored run history; lifetime totals stay.
+  void eraseRuns() => _set(state.erasingRuns());
+
+  /// Pays today's next video reward after a fully watched video.
+  bool claimVideo() {
+    final next = state.claimingVideo(_now());
+    if (next == null) return false;
+    _set(next);
+    return true;
   }
 
   void _set(GameData data) {

@@ -291,5 +291,67 @@
         "type": "String"
       }
     }
-  }
+  },
+  "settingsHistory": "Run history",
+  "historyTitle": "Run history",
+  "historyTotals": "{km} km · {runs} runs · {lp} LP in total",
+  "@historyTotals": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      },
+      "runs": {
+        "type": "int"
+      },
+      "lp": {
+        "type": "String"
+      }
+    }
+  },
+  "historyEmpty": "No runs yet. Your runs show up here after you stop.",
+  "historyLocalNote": "Stored only on this device. No route, no map.",
+  "historyErase": "Erase local record",
+  "historyEraseTitle": "Erase local record?",
+  "historyEraseBody": "All stored runs on this device are deleted. Your lifetime totals for milestones stay.",
+  "historyErased": "Run history erased.",
+  "cancel": "Cancel",
+  "runDetailTitle": "Run",
+  "date": "Date",
+  "breathUsed": "Breath used",
+  "sweetSpotShare": "In sweet spot",
+  "videoTooltip": "Optional video: +{lp} LP ({left} left today)",
+  "@videoTooltip": {
+    "placeholders": {
+      "lp": {
+        "type": "String"
+      },
+      "left": {
+        "type": "int"
+      }
+    }
+  },
+  "videoTitle": "Optional video",
+  "videoBody": "Watch a short video for +{lp} LP. Up to {max} a day, each worth a little less. Running always earns more.",
+  "@videoBody": {
+    "placeholders": {
+      "lp": {
+        "type": "String"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "videoWatch": "Watch",
+  "videoEarned": "+{lp} LP from the video",
+  "@videoEarned": {
+    "placeholders": {
+      "lp": {
+        "type": "String"
+      }
+    }
+  },
+  "videoSkipped": "Video closed early. No LP this time.",
+  "videoFailed": "No video available right now.",
+  "videoUsedUp": "Today's videos are used up. New ones tomorrow."
 }

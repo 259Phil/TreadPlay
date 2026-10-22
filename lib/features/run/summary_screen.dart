@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../history/history_screen.dart';
 import '../../router.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
@@ -69,6 +70,7 @@ class SummaryScreen extends ConsumerWidget {
                 row(l.distance, l.kmValue(formatKm(context, run.distanceM))),
                 row(l.time, formatDuration(run.duration)),
                 row(l.pace, l.paceValue(formatPace(run.pace))),
+                row(l.sweetSpotShare, formatShare(context, run.sweetSpotShare)),
                 if ((run.breathLeft, run.tankSize) case (
                   final left?,
                   final tank?,

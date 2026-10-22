@@ -5,6 +5,8 @@ import '../domain/companion.dart';
 import '../domain/forge.dart';
 import '../domain/market.dart';
 import '../domain/run_summary.dart';
+import '../domain/totals.dart';
+import '../domain/video_rewards.dart';
 
 class GameData {
   const GameData({
@@ -14,6 +16,8 @@ class GameData {
     required this.breath,
     required this.runs,
     this.market,
+    this.totals = const Totals(),
+    this.videos = const VideoRewards(),
   });
 
   factory GameData.initial(DateTime now) {
@@ -42,6 +46,12 @@ class GameData {
 
   /// Null until the market is first opened (see [withMarket]).
   final Market? market;
+
+  /// Lifetime counters, not capped at [maxStoredRuns].
+  final Totals totals;
+
+  /// Today's rewarded videos.
+  final VideoRewards videos;
 
   Companion get activeCompanion =>
       companions.firstWhere((c) => c.id == activeCompanionId);
@@ -98,9 +108,31 @@ class GameData {
   /// Check [forgeBlock] first.
   GameData forging(String companionId, SealType type) {
     final c = companions.firstWhere((c) => c.id == companionId);
-    return replaceCompanion(
-      c.withCharm(c.freeSocket!, type.name),
-    ).copyWith(lp: lp - Forge.nextCost(c, type)!);
+    return replaceCompanion(c.withCharm(c.freeSocket!, type.name)).copyWith(
+      lp: lp - Forge.nextCost(c, type)!,
+      totals: totals.addingForgeUse(),
+    );
+  }
+
+  /// Stores [run] (newest first, capped) and counts it in [totals].
+  GameData recordingRun(RunSummary run) => copyWith(
+    runs: [run, ...runs].take(maxStoredRuns).toList(),
+    totals: totals.addingRun(run),
+  );
+
+  /// "Erase local record": drops the stored runs. [totals] stay, since they
+  /// only hold sums for milestones, no dates or single runs.
+  GameData erasingRuns() => copyWith(runs: const []);
+
+  /// LP the next video pays, sized by the companion taken along.
+  double? nextVideoReward(DateTime now) =>
+      videos.nextReward(now, activeCompanion.rarity.lpPerBreath);
+
+  /// Pays today's next video reward. Null when today's videos are used up.
+  GameData? claimingVideo(DateTime now) {
+    final reward = nextVideoReward(now);
+    if (reward == null) return null;
+    return copyWith(lp: lp + reward, videos: videos.claimed(now));
   }
 
   /// Empties charm socket [slot] of [companionId]. LP are not refunded.
@@ -159,6 +191,8 @@ class GameData {
     Breath? breath,
     List<RunSummary>? runs,
     Market? market,
+    Totals? totals,
+    VideoRewards? videos,
   }) => GameData(
     lp: lp ?? this.lp,
     companions: companions ?? this.companions,
@@ -166,6 +200,8 @@ class GameData {
     breath: breath ?? this.breath,
     runs: runs ?? this.runs,
     market: market ?? this.market,
+    totals: totals ?? this.totals,
+    videos: videos ?? this.videos,
   );
 
   GameData replaceCompanion(Companion companion) => copyWith(
@@ -181,6 +217,8 @@ class GameData {
     'breath': breath.toJson(),
     'runs': [for (final r in runs) r.toJson()],
     if (market case final m?) 'market': m.toJson(),
+    'totals': totals.toJson(),
+    'videos': videos.toJson(),
   };
 
   factory GameData.fromJson(Map<String, Object?> json) {
@@ -189,6 +227,10 @@ class GameData {
         c! as Map<String, Object?>,
     ];
     final activeId = json['activeCompanionId']! as String;
+    final runs = [
+      for (final r in json['runs']! as List<Object?>)
+        RunSummary.fromJson(r! as Map<String, Object?>),
+    ];
     return GameData(
       lp: (json['lp']! as num).toDouble(),
       companions: [for (final c in companions) Companion.fromJson(c)],
@@ -197,13 +239,19 @@ class GameData {
         final Map<String, Object?> b => Breath.fromJson(b),
         _ => _legacyBreath(companions.firstWhere((c) => c['id'] == activeId)),
       },
-      runs: [
-        for (final r in json['runs']! as List<Object?>)
-          RunSummary.fromJson(r! as Map<String, Object?>),
-      ],
+      runs: runs,
       market: switch (json['market']) {
         final Map<String, Object?> m => Market.fromJson(m),
         _ => null,
+      },
+      // Saves from before the counters start from their stored runs, once.
+      totals: switch (json['totals']) {
+        final Map<String, Object?> t => Totals.fromJson(t),
+        _ => Totals.fromRuns(runs),
+      },
+      videos: switch (json['videos']) {
+        final Map<String, Object?> v => VideoRewards.fromJson(v),
+        _ => const VideoRewards(),
       },
     );
   }

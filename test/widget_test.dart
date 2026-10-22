@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:treadplay/ads/rewarded_ad_service.dart';
 import 'package:treadplay/app.dart';
 import 'package:treadplay/data/game_data.dart';
 import 'package:treadplay/data/movement_source.dart';
 import 'package:treadplay/domain/breath.dart';
 import 'package:treadplay/domain/companion.dart';
 import 'package:treadplay/domain/market.dart';
+import 'package:treadplay/domain/run_summary.dart';
 import 'package:treadplay/features/forge/forge_screen.dart';
 import 'package:treadplay/features/legal/legal_screen.dart';
 import 'package:treadplay/state/providers.dart';
@@ -22,6 +24,7 @@ void main() {
   Future<void> pumpApp(
     WidgetTester tester, {
     Map<String, Object> saved = const {},
+    RewardedAdService? ads,
   }) async {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 3;
@@ -34,6 +37,7 @@ void main() {
           sharedPreferencesProvider.overrideWithValue(prefs),
           clockProvider.overrideWithValue(() => t0),
           randomProvider.overrideWithValue(Random(42)),
+          if (ads != null) rewardedAdServiceProvider.overrideWithValue(ads),
           movementSourceProvider.overrideWith(
             (ref) => SimulatedMovementSource(
               tick: const Duration(milliseconds: 100),
@@ -65,6 +69,98 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Heute 0 km'), findsOneWidget);
     expect(find.text('Los'), findsOneWidget);
+  });
+
+  testWidgets('no video button without a video service (Web, tests)', (
+    tester,
+  ) async {
+    await pumpApp(tester);
+    expect(find.byIcon(Icons.smart_display_outlined), findsNothing);
+  });
+
+  testWidgets('video button pays 3 shrinking rewards, then dims', (
+    tester,
+  ) async {
+    await pumpApp(tester, ads: FakeRewardedAdService(delay: Duration.zero));
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(Scaffold).first),
+    );
+    expect(find.text('3'), findsOneWidget);
+    for (final lp in [2.5, 4.0, 5.0]) {
+      await tester.tap(find.byIcon(Icons.smart_display_outlined));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Watch'));
+      await tester.pumpAndSettle();
+      expect(container.read(gameProvider).lp, lp);
+    }
+    expect(find.text('3'), findsNothing);
+    await tester.tap(find.byIcon(Icons.smart_display_outlined));
+    await tester.pumpAndSettle();
+    expect(find.text('Watch'), findsNothing);
+    expect(
+      find.text("Today's videos are used up. New ones tomorrow."),
+      findsOneWidget,
+    );
+    expect(container.read(gameProvider).lp, 5);
+  });
+
+  testWidgets('run history lists runs, shows details and can be erased', (
+    tester,
+  ) async {
+    final runs = [
+      RunSummary(
+        companionId: 'pebble-1',
+        startedAt: t0,
+        duration: const Duration(minutes: 20),
+        distanceM: 2000,
+        steps: 2600,
+        lp: 15,
+        breathUsed: 6,
+        valid: true,
+        sweetSpotShare: 0.8,
+      ),
+      RunSummary(
+        companionId: 'pebble-1',
+        startedAt: t0.subtract(const Duration(days: 1)),
+        duration: const Duration(minutes: 5),
+        distanceM: 500,
+        steps: 650,
+        lp: 5,
+        breathUsed: 2,
+        valid: true,
+      ),
+    ];
+    final json = GameData.initial(t0).copyWith(runs: runs).toJson()
+      ..remove('totals');
+    await pumpApp(tester, saved: {'game.v2': jsonEncode(json)});
+
+    await tester.tap(find.text('Settings'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Run history'));
+    await tester.pumpAndSettle();
+    expect(find.text('2.50 km · 2 runs · 20 LP in total'), findsOneWidget);
+    expect(find.text('15 LP'), findsOneWidget);
+
+    await tester.tap(find.text('15 LP'));
+    await tester.pumpAndSettle();
+    expect(find.text('In sweet spot'), findsOneWidget);
+    expect(find.text('80 %'), findsOneWidget);
+    expect(find.text('Breath used'), findsOneWidget);
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('5 LP'));
+    await tester.pumpAndSettle();
+    expect(find.text('–'), findsOneWidget);
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Erase local record'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Erase local record').last);
+    await tester.pumpAndSettle();
+    expect(find.text('15 LP'), findsNothing);
+    expect(find.text('2.50 km · 2 runs · 20 LP in total'), findsOneWidget);
   });
 
   testWidgets('a run earns LP and shows the summary', (tester) async {

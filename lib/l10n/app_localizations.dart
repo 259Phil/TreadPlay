@@ -853,6 +853,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Movement access was off, so this run earned no LP.'**
   String get summaryNoLp;
+
+  /// No description provided for @settingsHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Run history'**
+  String get settingsHistory;
+
+  /// No description provided for @historyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Run history'**
+  String get historyTitle;
+
+  /// No description provided for @historyTotals.
+  ///
+  /// In en, this message translates to:
+  /// **'{km} km · {runs} runs · {lp} LP in total'**
+  String historyTotals(String km, int runs, String lp);
+
+  /// No description provided for @historyEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No runs yet. Your runs show up here after you stop.'**
+  String get historyEmpty;
+
+  /// No description provided for @historyLocalNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Stored only on this device. No route, no map.'**
+  String get historyLocalNote;
+
+  /// No description provided for @historyErase.
+  ///
+  /// In en, this message translates to:
+  /// **'Erase local record'**
+  String get historyErase;
+
+  /// No description provided for @historyEraseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Erase local record?'**
+  String get historyEraseTitle;
+
+  /// No description provided for @historyEraseBody.
+  ///
+  /// In en, this message translates to:
+  /// **'All stored runs on this device are deleted. Your lifetime totals for milestones stay.'**
+  String get historyEraseBody;
+
+  /// No description provided for @historyErased.
+  ///
+  /// In en, this message translates to:
+  /// **'Run history erased.'**
+  String get historyErased;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @runDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Run'**
+  String get runDetailTitle;
+
+  /// No description provided for @date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get date;
+
+  /// No description provided for @breathUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Breath used'**
+  String get breathUsed;
+
+  /// No description provided for @sweetSpotShare.
+  ///
+  /// In en, this message translates to:
+  /// **'In sweet spot'**
+  String get sweetSpotShare;
+
+  /// No description provided for @videoTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional video: +{lp} LP ({left} left today)'**
+  String videoTooltip(String lp, int left);
+
+  /// No description provided for @videoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional video'**
+  String get videoTitle;
+
+  /// No description provided for @videoBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch a short video for +{lp} LP. Up to {max} a day, each worth a little less. Running always earns more.'**
+  String videoBody(String lp, int max);
+
+  /// No description provided for @videoWatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch'**
+  String get videoWatch;
+
+  /// No description provided for @videoEarned.
+  ///
+  /// In en, this message translates to:
+  /// **'+{lp} LP from the video'**
+  String videoEarned(String lp);
+
+  /// No description provided for @videoSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Video closed early. No LP this time.'**
+  String get videoSkipped;
+
+  /// No description provided for @videoFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'No video available right now.'**
+  String get videoFailed;
+
+  /// No description provided for @videoUsedUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s videos are used up. New ones tomorrow.'**
+  String get videoUsedUp;
 }
 
 class _AppLocalizationsDelegate

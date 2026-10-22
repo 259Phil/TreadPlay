@@ -445,4 +445,82 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get summaryNoLp =>
       'Bewegungszugriff war aus, darum brachte dieser Lauf keine LP.';
+
+  @override
+  String get settingsHistory => 'Laufhistorie';
+
+  @override
+  String get historyTitle => 'Laufhistorie';
+
+  @override
+  String historyTotals(String km, int runs, String lp) {
+    return '$km km · $runs Läufe · $lp LP insgesamt';
+  }
+
+  @override
+  String get historyEmpty =>
+      'Noch keine Läufe. Nach dem Stoppen erscheinen sie hier.';
+
+  @override
+  String get historyLocalNote =>
+      'Nur auf diesem Gerät gespeichert. Keine Route, keine Karte.';
+
+  @override
+  String get historyErase => 'Lokale Aufzeichnung löschen';
+
+  @override
+  String get historyEraseTitle => 'Lokale Aufzeichnung löschen?';
+
+  @override
+  String get historyEraseBody =>
+      'Alle gespeicherten Läufe auf diesem Gerät werden gelöscht. Deine Gesamtwerte für Meilensteine bleiben.';
+
+  @override
+  String get historyErased => 'Laufhistorie gelöscht.';
+
+  @override
+  String get cancel => 'Abbrechen';
+
+  @override
+  String get runDetailTitle => 'Lauf';
+
+  @override
+  String get date => 'Datum';
+
+  @override
+  String get breathUsed => 'Puste verbraucht';
+
+  @override
+  String get sweetSpotShare => 'Im Sweet Spot';
+
+  @override
+  String videoTooltip(String lp, int left) {
+    return 'Optionales Video: +$lp LP (heute noch $left)';
+  }
+
+  @override
+  String get videoTitle => 'Optionales Video';
+
+  @override
+  String videoBody(String lp, int max) {
+    return 'Schau ein kurzes Video für +$lp LP. Bis zu $max am Tag, jedes etwas weniger. Laufen bringt immer mehr.';
+  }
+
+  @override
+  String get videoWatch => 'Ansehen';
+
+  @override
+  String videoEarned(String lp) {
+    return '+$lp LP aus dem Video';
+  }
+
+  @override
+  String get videoSkipped => 'Video vorzeitig geschlossen. Diesmal keine LP.';
+
+  @override
+  String get videoFailed => 'Gerade ist kein Video verfügbar.';
+
+  @override
+  String get videoUsedUp =>
+      'Die Videos für heute sind aufgebraucht. Morgen gibt es neue.';
 }

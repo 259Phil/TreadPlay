@@ -16,6 +16,7 @@ class RunSummary {
     this.breathLeft,
     this.tankSize,
     this.earnsLp = true,
+    this.sweetSpotShare,
   });
 
   final String companionId;
@@ -34,6 +35,10 @@ class RunSummary {
   /// False when the run had no movement access.
   final bool earnsLp;
 
+  /// Share (0–1) of the run's time inside the sweet spot range; null for runs
+  /// saved before it was tracked.
+  final double? sweetSpotShare;
+
   Duration? get pace => paceOf(duration, distanceM);
 
   Map<String, Object?> toJson() => {
@@ -48,6 +53,7 @@ class RunSummary {
     'breathLeft': breathLeft,
     'tankSize': tankSize,
     'earnsLp': earnsLp,
+    if (sweetSpotShare case final s?) 'sweetSpotShare': s,
   };
 
   factory RunSummary.fromJson(Map<String, Object?> json) => RunSummary(
@@ -62,5 +68,6 @@ class RunSummary {
     breathLeft: (json['breathLeft'] as num?)?.toDouble(),
     tankSize: json['tankSize'] as int?,
     earnsLp: json['earnsLp'] as bool? ?? true,
+    sweetSpotShare: (json['sweetSpotShare'] as num?)?.toDouble(),
   );
 }

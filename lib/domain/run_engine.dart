@@ -42,6 +42,7 @@ class RunEngine {
 
   double _progressM = 0;
   Duration _fastTime = Duration.zero;
+  Duration _inBandTime = Duration.zero;
   DateTime? _lastTime;
   bool _stepsKnown = false;
 
@@ -54,6 +55,12 @@ class RunEngine {
   Duration? get pace => paceOf(elapsed, distanceM);
 
   double get breathUsed => breathAtStart - breathLeft;
+
+  /// Share (0–1) of the run's time spent inside the companion's sweet spot
+  /// range, null before any time has passed.
+  double? get sweetSpotShare => elapsed <= Duration.zero
+      ? null
+      : (_inBandTime.inMicroseconds / elapsed.inMicroseconds).clamp(0.0, 1.0);
 
   bool get isValid {
     if (_fastTime > maxFastTime) return false;
@@ -78,6 +85,7 @@ class RunEngine {
     }
     speedKmh = sample.speedKmh;
     if (speedKmh > maxPlausibleKmh) _fastTime += dt;
+    if (inBand) _inBandTime += dt;
 
     factor = canEarn ? sweetSpotFactor(companion.type, speedKmh) : 0;
     if (factor == 0) return 0;
@@ -109,6 +117,7 @@ class RunEngine {
       tankSize: companion.tankSize,
       earnsLp: earnsLp,
       valid: valid,
+      sweetSpotShare: sweetSpotShare,
     );
   }
 }

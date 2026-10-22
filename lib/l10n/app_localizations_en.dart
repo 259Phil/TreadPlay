@@ -443,4 +443,81 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get summaryNoLp =>
       'Movement access was off, so this run earned no LP.';
+
+  @override
+  String get settingsHistory => 'Run history';
+
+  @override
+  String get historyTitle => 'Run history';
+
+  @override
+  String historyTotals(String km, int runs, String lp) {
+    return '$km km · $runs runs · $lp LP in total';
+  }
+
+  @override
+  String get historyEmpty =>
+      'No runs yet. Your runs show up here after you stop.';
+
+  @override
+  String get historyLocalNote =>
+      'Stored only on this device. No route, no map.';
+
+  @override
+  String get historyErase => 'Erase local record';
+
+  @override
+  String get historyEraseTitle => 'Erase local record?';
+
+  @override
+  String get historyEraseBody =>
+      'All stored runs on this device are deleted. Your lifetime totals for milestones stay.';
+
+  @override
+  String get historyErased => 'Run history erased.';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get runDetailTitle => 'Run';
+
+  @override
+  String get date => 'Date';
+
+  @override
+  String get breathUsed => 'Breath used';
+
+  @override
+  String get sweetSpotShare => 'In sweet spot';
+
+  @override
+  String videoTooltip(String lp, int left) {
+    return 'Optional video: +$lp LP ($left left today)';
+  }
+
+  @override
+  String get videoTitle => 'Optional video';
+
+  @override
+  String videoBody(String lp, int max) {
+    return 'Watch a short video for +$lp LP. Up to $max a day, each worth a little less. Running always earns more.';
+  }
+
+  @override
+  String get videoWatch => 'Watch';
+
+  @override
+  String videoEarned(String lp) {
+    return '+$lp LP from the video';
+  }
+
+  @override
+  String get videoSkipped => 'Video closed early. No LP this time.';
+
+  @override
+  String get videoFailed => 'No video available right now.';
+
+  @override
+  String get videoUsedUp => 'Today\'s videos are used up. New ones tomorrow.';
 }

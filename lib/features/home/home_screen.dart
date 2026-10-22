@@ -12,6 +12,7 @@ import '../../state/providers.dart';
 import '../../theme.dart';
 import '../../widgets/format.dart';
 import '../../widgets/lp_pill.dart';
+import 'video_button.dart';
 import 'world_scene.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -121,8 +122,12 @@ class _Header extends StatelessWidget {
             ],
           ),
         ),
+        const Padding(
+          padding: EdgeInsets.only(top: 6, right: 10),
+          child: VideoButton(),
+        ),
         Padding(
-          padding: const EdgeInsets.only(top: 6),
+          padding: const EdgeInsets.only(top: 8),
           child: LpPill(lp: lp),
         ),
       ],

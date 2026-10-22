@@ -353,5 +353,61 @@
   },
   "videoSkipped": "Video closed early. No LP this time.",
   "videoFailed": "No video available right now.",
-  "videoUsedUp": "Today's videos are used up. New ones tomorrow."
+  "videoUsedUp": "Today's videos are used up. New ones tomorrow.",
+  "settingsSaveGame": "Save game",
+  "saveHint": "Your save game lives only on this device. Export it as a file to keep a copy or to move to a new phone.",
+  "saveExport": "Export save game",
+  "saveNoExportYet": "No export yet",
+  "saveLastExport": "Last export: {date}",
+  "@saveLastExport": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "saveImport": "Import save game",
+  "saveImportSub": "Replaces the save game on this device",
+  "saveDelete": "Delete save game",
+  "saveShareSubject": "Treadplay save game",
+  "saveExported": "Save game exported.",
+  "saveDownloaded": "Save game downloaded.",
+  "saveImportTitle": "Import save game?",
+  "saveImportSummary": "This save holds {companions} companions, {lp} LP and {runs} stored runs. Exported: {date}.\n\nReplace overwrites your current save game on this device.",
+  "@saveImportSummary": {
+    "placeholders": {
+      "companions": {
+        "type": "int"
+      },
+      "lp": {
+        "type": "String"
+      },
+      "runs": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "saveReplace": "Replace",
+  "saveImported": "Save game imported.",
+  "saveErrorNotASave": "This file is not a Treadplay save game.",
+  "saveErrorNewer": "This save game comes from a newer Treadplay version. Update the app first.",
+  "saveErrorDamaged": "This save game is damaged and can't be loaded. Your current game is unchanged.",
+  "saveErrorDuringRun": "Not possible during a run.",
+  "saveDeleteTitle": "Delete save game?",
+  "saveDeleteBody": "Companions, seals, LP, Breath, run history and lifetime totals are removed. You start again with Pebble.",
+  "saveDeleteReallyTitle": "Really delete everything?",
+  "saveDeleteReallyBody": "This cannot be undone. Without an export the save game is gone.",
+  "saveDeletePermanently": "Delete permanently",
+  "saveDeleted": "Save game deleted. Fresh start with Pebble.",
+  "saveError": "Error: {error}",
+  "@saveError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

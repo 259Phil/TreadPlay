@@ -296,26 +296,33 @@ class AppSettings {
     this.localeCode = 'en',
     this.kaching = true,
     this.movementAccess = MovementAccess.unasked,
+    this.lastExportAt,
   });
 
   final String localeCode;
   final bool kaching;
   final MovementAccess movementAccess;
 
+  /// When the save game was last exported on this device.
+  final DateTime? lastExportAt;
+
   AppSettings copyWith({
     String? localeCode,
     bool? kaching,
     MovementAccess? movementAccess,
+    DateTime? lastExportAt,
   }) => AppSettings(
     localeCode: localeCode ?? this.localeCode,
     kaching: kaching ?? this.kaching,
     movementAccess: movementAccess ?? this.movementAccess,
+    lastExportAt: lastExportAt ?? this.lastExportAt,
   );
 
   Map<String, Object?> toJson() => {
     'localeCode': localeCode,
     'kaching': kaching,
     'movementAccess': movementAccess.name,
+    if (lastExportAt case final d?) 'lastExportAt': d.toIso8601String(),
   };
 
   factory AppSettings.fromJson(Map<String, Object?> json) => AppSettings(
@@ -324,5 +331,6 @@ class AppSettings {
     movementAccess:
         MovementAccess.values.asNameMap()[json['movementAccess']] ??
         MovementAccess.unasked,
+    lastExportAt: DateTime.tryParse(json['lastExportAt'] as String? ?? ''),
   );
 }

@@ -9,6 +9,7 @@ import '../../router.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
 import '../../widgets/format.dart';
+import 'save_game_section.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -94,6 +95,8 @@ class SettingsScreen extends ConsumerWidget {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push(AppRoutes.terms),
           ),
+          const Divider(),
+          const SaveGameSection(),
           const Divider(),
           section(l.settingsCredits, l.creditsArtwork),
         ],

@@ -523,4 +523,93 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get videoUsedUp =>
       'Die Videos für heute sind aufgebraucht. Morgen gibt es neue.';
+
+  @override
+  String get settingsSaveGame => 'Spielstand';
+
+  @override
+  String get saveHint =>
+      'Dein Spielstand liegt nur auf diesem Gerät. Exportiere ihn als Datei, um eine Kopie zu behalten oder aufs neue Handy umzuziehen.';
+
+  @override
+  String get saveExport => 'Spielstand exportieren';
+
+  @override
+  String get saveNoExportYet => 'Noch kein Export';
+
+  @override
+  String saveLastExport(String date) {
+    return 'Letzter Export: $date';
+  }
+
+  @override
+  String get saveImport => 'Spielstand importieren';
+
+  @override
+  String get saveImportSub => 'Ersetzt den Spielstand auf diesem Gerät';
+
+  @override
+  String get saveDelete => 'Spielstand löschen';
+
+  @override
+  String get saveShareSubject => 'Treadplay Spielstand';
+
+  @override
+  String get saveExported => 'Spielstand exportiert.';
+
+  @override
+  String get saveDownloaded => 'Spielstand heruntergeladen.';
+
+  @override
+  String get saveImportTitle => 'Spielstand importieren?';
+
+  @override
+  String saveImportSummary(int companions, String lp, int runs, String date) {
+    return 'Dieser Spielstand enthält $companions Gefährten, $lp LP und $runs gespeicherte Läufe. Exportiert: $date.\n\nErsetzen überschreibt deinen aktuellen Spielstand auf diesem Gerät.';
+  }
+
+  @override
+  String get saveReplace => 'Ersetzen';
+
+  @override
+  String get saveImported => 'Spielstand importiert.';
+
+  @override
+  String get saveErrorNotASave => 'Diese Datei ist kein Treadplay-Spielstand.';
+
+  @override
+  String get saveErrorNewer =>
+      'Dieser Spielstand stammt aus einer neueren Treadplay-Version. Aktualisiere zuerst die App.';
+
+  @override
+  String get saveErrorDamaged =>
+      'Dieser Spielstand ist beschädigt und kann nicht geladen werden. Dein aktuelles Spiel bleibt unverändert.';
+
+  @override
+  String get saveErrorDuringRun => 'Während eines Laufs nicht möglich.';
+
+  @override
+  String get saveDeleteTitle => 'Spielstand löschen?';
+
+  @override
+  String get saveDeleteBody =>
+      'Gefährten, Siegel, LP, Puste, Laufhistorie und Gesamtwerte werden entfernt. Du startest neu mit Pebble.';
+
+  @override
+  String get saveDeleteReallyTitle => 'Wirklich alles löschen?';
+
+  @override
+  String get saveDeleteReallyBody =>
+      'Das kann nicht rückgängig gemacht werden. Ohne Export ist der Spielstand weg.';
+
+  @override
+  String get saveDeletePermanently => 'Endgültig löschen';
+
+  @override
+  String get saveDeleted => 'Spielstand gelöscht. Neustart mit Pebble.';
+
+  @override
+  String saveError(String error) {
+    return 'Fehler: $error';
+  }
 }

@@ -985,6 +985,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Today\'s videos are used up. New ones tomorrow.'**
   String get videoUsedUp;
+
+  /// No description provided for @settingsSaveGame.
+  ///
+  /// In en, this message translates to:
+  /// **'Save game'**
+  String get settingsSaveGame;
+
+  /// No description provided for @saveHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your save game lives only on this device. Export it as a file to keep a copy or to move to a new phone.'**
+  String get saveHint;
+
+  /// No description provided for @saveExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Export save game'**
+  String get saveExport;
+
+  /// No description provided for @saveNoExportYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No export yet'**
+  String get saveNoExportYet;
+
+  /// No description provided for @saveLastExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Last export: {date}'**
+  String saveLastExport(String date);
+
+  /// No description provided for @saveImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Import save game'**
+  String get saveImport;
+
+  /// No description provided for @saveImportSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Replaces the save game on this device'**
+  String get saveImportSub;
+
+  /// No description provided for @saveDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete save game'**
+  String get saveDelete;
+
+  /// No description provided for @saveShareSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Treadplay save game'**
+  String get saveShareSubject;
+
+  /// No description provided for @saveExported.
+  ///
+  /// In en, this message translates to:
+  /// **'Save game exported.'**
+  String get saveExported;
+
+  /// No description provided for @saveDownloaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Save game downloaded.'**
+  String get saveDownloaded;
+
+  /// No description provided for @saveImportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import save game?'**
+  String get saveImportTitle;
+
+  /// No description provided for @saveImportSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'This save holds {companions} companions, {lp} LP and {runs} stored runs. Exported: {date}.\n\nReplace overwrites your current save game on this device.'**
+  String saveImportSummary(int companions, String lp, int runs, String date);
+
+  /// No description provided for @saveReplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace'**
+  String get saveReplace;
+
+  /// No description provided for @saveImported.
+  ///
+  /// In en, this message translates to:
+  /// **'Save game imported.'**
+  String get saveImported;
+
+  /// No description provided for @saveErrorNotASave.
+  ///
+  /// In en, this message translates to:
+  /// **'This file is not a Treadplay save game.'**
+  String get saveErrorNotASave;
+
+  /// No description provided for @saveErrorNewer.
+  ///
+  /// In en, this message translates to:
+  /// **'This save game comes from a newer Treadplay version. Update the app first.'**
+  String get saveErrorNewer;
+
+  /// No description provided for @saveErrorDamaged.
+  ///
+  /// In en, this message translates to:
+  /// **'This save game is damaged and can\'t be loaded. Your current game is unchanged.'**
+  String get saveErrorDamaged;
+
+  /// No description provided for @saveErrorDuringRun.
+  ///
+  /// In en, this message translates to:
+  /// **'Not possible during a run.'**
+  String get saveErrorDuringRun;
+
+  /// No description provided for @saveDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete save game?'**
+  String get saveDeleteTitle;
+
+  /// No description provided for @saveDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Companions, seals, LP, Breath, run history and lifetime totals are removed. You start again with Pebble.'**
+  String get saveDeleteBody;
+
+  /// No description provided for @saveDeleteReallyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Really delete everything?'**
+  String get saveDeleteReallyTitle;
+
+  /// No description provided for @saveDeleteReallyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This cannot be undone. Without an export the save game is gone.'**
+  String get saveDeleteReallyBody;
+
+  /// No description provided for @saveDeletePermanently.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete permanently'**
+  String get saveDeletePermanently;
+
+  /// No description provided for @saveDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Save game deleted. Fresh start with Pebble.'**
+  String get saveDeleted;
+
+  /// No description provided for @saveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {error}'**
+  String saveError(String error);
 }
 
 class _AppLocalizationsDelegate

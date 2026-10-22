@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,6 +16,8 @@ import 'package:treadplay/domain/market.dart';
 import 'package:treadplay/domain/run_summary.dart';
 import 'package:treadplay/features/forge/forge_screen.dart';
 import 'package:treadplay/features/legal/legal_screen.dart';
+import 'package:treadplay/platform/save_file_io.dart';
+import 'package:treadplay/domain/totals.dart';
 import 'package:treadplay/state/providers.dart';
 import 'package:treadplay/widgets/companion_card.dart';
 
@@ -25,6 +28,7 @@ void main() {
     WidgetTester tester, {
     Map<String, Object> saved = const {},
     RewardedAdService? ads,
+    SaveFileIo? files,
   }) async {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 3;
@@ -38,6 +42,7 @@ void main() {
           clockProvider.overrideWithValue(() => t0),
           randomProvider.overrideWithValue(Random(42)),
           if (ads != null) rewardedAdServiceProvider.overrideWithValue(ads),
+          if (files != null) saveFileIoProvider.overrideWithValue(files),
           movementSourceProvider.overrideWith(
             (ref) => SimulatedMovementSource(
               tick: const Duration(milliseconds: 100),
@@ -102,6 +107,150 @@ void main() {
       findsOneWidget,
     );
     expect(container.read(gameProvider).lp, 5);
+  });
+
+  Future<void> openSaveTile(WidgetTester tester, String key) async {
+    await tester.tap(find.text('Settings'));
+    await tester.pumpAndSettle();
+    final tile = find.byKey(Key(key));
+    await tester.scrollUntilVisible(tile, 200);
+    await tester.pumpAndSettle();
+    await tester.tap(tile);
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('save game export and import roundtrip in settings', (
+    tester,
+  ) async {
+    final files = _FakeSaveFiles();
+    final rich = GameData.initial(
+      t0,
+    ).copyWith(lp: 77, totals: const Totals(distanceM: 5000, lp: 77, runs: 3));
+    await pumpApp(
+      tester,
+      saved: {'game.v2': jsonEncode(rich.toJson())},
+      files: files,
+    );
+
+    await openSaveTile(tester, 'save-export');
+    expect(files.delivered, isNotNull);
+    expect(files.name, endsWith('.json'));
+    expect(find.text('Save game exported.'), findsOneWidget);
+    expect(find.textContaining('Last export:'), findsOneWidget);
+
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(Scaffold).first),
+    );
+    container.read(gameProvider.notifier).wipe();
+    await tester.pumpAndSettle();
+    expect(container.read(gameProvider).lp, 0);
+
+    files.toPick = files.delivered;
+    await tester.tap(find.byKey(const Key('save-import')));
+    await tester.pumpAndSettle();
+    expect(find.text('Import save game?'), findsOneWidget);
+    expect(find.textContaining('1 companions, 77 LP'), findsOneWidget);
+    await tester.tap(find.text('Replace'));
+    await tester.pumpAndSettle();
+    expect(find.text('Save game imported.'), findsOneWidget);
+    expect(container.read(gameProvider).lp, 77);
+    expect(container.read(gameProvider).totals.runs, 3);
+  });
+
+  testWidgets('an invalid save file is rejected and nothing changes', (
+    tester,
+  ) async {
+    final files = _FakeSaveFiles()
+      ..toPick = Uint8List.fromList(utf8.encode('{"format":"other"}'));
+    final rich = GameData.initial(t0).copyWith(lp: 42);
+    await pumpApp(
+      tester,
+      saved: {'game.v2': jsonEncode(rich.toJson())},
+      files: files,
+    );
+    await openSaveTile(tester, 'save-import');
+    expect(
+      find.text('This file is not a Treadplay save game.'),
+      findsOneWidget,
+    );
+    expect(find.text('Import save game?'), findsNothing);
+
+    files.toPick = Uint8List.fromList(
+      utf8.encode(
+        jsonEncode({
+          'format': 'treadplay-save',
+          'version': 99,
+          'game': rich.toJson(),
+        }),
+      ),
+    );
+    await tester.tap(find.byKey(const Key('save-import')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('newer Treadplay version'), findsOneWidget);
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(Scaffold).first),
+    );
+    expect(container.read(gameProvider).lp, 42);
+  });
+
+  testWidgets('delete save game asks twice and resets to Pebble', (
+    tester,
+  ) async {
+    final rich = GameData.initial(t0).copyWith(
+      lp: 500,
+      totals: const Totals(distanceM: 9000, lp: 500, runs: 9),
+      runs: [
+        RunSummary(
+          companionId: 'pebble-1',
+          startedAt: t0,
+          duration: const Duration(minutes: 20),
+          distanceM: 2000,
+          steps: 2600,
+          lp: 15,
+          breathUsed: 6,
+          valid: true,
+        ),
+      ],
+    );
+    await pumpApp(tester, saved: {'game.v2': jsonEncode(rich.toJson())});
+    await openSaveTile(tester, 'save-delete');
+    expect(find.text('Delete save game?'), findsOneWidget);
+    await tester.tap(find.text('Delete save game').last);
+    await tester.pumpAndSettle();
+    expect(find.text('Really delete everything?'), findsOneWidget);
+    await tester.tap(find.text('Delete permanently'));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Save game deleted. Fresh start with Pebble.'),
+      findsOneWidget,
+    );
+
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(Scaffold).first),
+    );
+    final g = container.read(gameProvider);
+    expect(g.lp, 0);
+    expect(g.runs, isEmpty);
+    expect(g.totals.runs, 0);
+    expect(g.totals.distanceM, 0);
+    expect(g.companions.single.speciesId, 'pebble');
+    expect(g.videos.watched, 0);
+    final stored = container.read(gameRepositoryProvider).loadGame();
+    expect(stored?.totals.runs, 0);
+  });
+
+  testWidgets('cancelling the first delete question keeps everything', (
+    tester,
+  ) async {
+    final rich = GameData.initial(t0).copyWith(lp: 500);
+    await pumpApp(tester, saved: {'game.v2': jsonEncode(rich.toJson())});
+    await openSaveTile(tester, 'save-delete');
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(Scaffold).first),
+    );
+    expect(container.read(gameProvider).lp, 500);
   });
 
   testWidgets('run history lists runs, shows details and can be erased', (
@@ -708,4 +857,26 @@ void main() {
       expect(find.textContaining('Not enough LP yet.'), findsNWidgets(3));
     });
   });
+}
+
+class _FakeSaveFiles extends SaveFileIo {
+  Uint8List? delivered;
+  String? name;
+  Uint8List? toPick;
+
+  @override
+  Future<Uint8List?> pick() async => toPick;
+
+  @override
+  Future<void> deliver(
+    String name,
+    Uint8List bytes, {
+    required String subject,
+  }) async {
+    this.name = name;
+    delivered = bytes;
+  }
+
+  @override
+  bool get downloads => false;
 }

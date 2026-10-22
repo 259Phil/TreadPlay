@@ -520,4 +520,93 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get videoUsedUp => 'Today\'s videos are used up. New ones tomorrow.';
+
+  @override
+  String get settingsSaveGame => 'Save game';
+
+  @override
+  String get saveHint =>
+      'Your save game lives only on this device. Export it as a file to keep a copy or to move to a new phone.';
+
+  @override
+  String get saveExport => 'Export save game';
+
+  @override
+  String get saveNoExportYet => 'No export yet';
+
+  @override
+  String saveLastExport(String date) {
+    return 'Last export: $date';
+  }
+
+  @override
+  String get saveImport => 'Import save game';
+
+  @override
+  String get saveImportSub => 'Replaces the save game on this device';
+
+  @override
+  String get saveDelete => 'Delete save game';
+
+  @override
+  String get saveShareSubject => 'Treadplay save game';
+
+  @override
+  String get saveExported => 'Save game exported.';
+
+  @override
+  String get saveDownloaded => 'Save game downloaded.';
+
+  @override
+  String get saveImportTitle => 'Import save game?';
+
+  @override
+  String saveImportSummary(int companions, String lp, int runs, String date) {
+    return 'This save holds $companions companions, $lp LP and $runs stored runs. Exported: $date.\n\nReplace overwrites your current save game on this device.';
+  }
+
+  @override
+  String get saveReplace => 'Replace';
+
+  @override
+  String get saveImported => 'Save game imported.';
+
+  @override
+  String get saveErrorNotASave => 'This file is not a Treadplay save game.';
+
+  @override
+  String get saveErrorNewer =>
+      'This save game comes from a newer Treadplay version. Update the app first.';
+
+  @override
+  String get saveErrorDamaged =>
+      'This save game is damaged and can\'t be loaded. Your current game is unchanged.';
+
+  @override
+  String get saveErrorDuringRun => 'Not possible during a run.';
+
+  @override
+  String get saveDeleteTitle => 'Delete save game?';
+
+  @override
+  String get saveDeleteBody =>
+      'Companions, seals, LP, Breath, run history and lifetime totals are removed. You start again with Pebble.';
+
+  @override
+  String get saveDeleteReallyTitle => 'Really delete everything?';
+
+  @override
+  String get saveDeleteReallyBody =>
+      'This cannot be undone. Without an export the save game is gone.';
+
+  @override
+  String get saveDeletePermanently => 'Delete permanently';
+
+  @override
+  String get saveDeleted => 'Save game deleted. Fresh start with Pebble.';
+
+  @override
+  String saveError(String error) {
+    return 'Error: $error';
+  }
 }

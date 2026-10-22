@@ -113,6 +113,23 @@ class GameNotifier extends Notifier<GameData> {
     refreshBreath();
   }
 
+  /// Replaces the whole game with an imported save. Not during a run.
+  bool importGame(GameData game) {
+    if (ref.read(runControllerProvider) != null) return false;
+    final now = _now();
+    _set(game.regenerated(now).withMarket(now, _random));
+    return true;
+  }
+
+  /// "Delete save game": everything goes, incl. totals and today's videos,
+  /// back to a fresh start with Pebble. Not during a run.
+  bool wipe() {
+    if (ref.read(runControllerProvider) != null) return false;
+    final now = _now();
+    _set(GameData.initial(now).withMarket(now, _random));
+    return true;
+  }
+
   /// Deletes the stored run history; lifetime totals stay.
   void eraseRuns() => _set(state.erasingRuns());
 
@@ -144,6 +161,8 @@ class SettingsNotifier extends Notifier<AppSettings> {
 
   void setMovementAccess(MovementAccess access) =>
       _set(state.copyWith(movementAccess: access));
+
+  void markExported(DateTime at) => _set(state.copyWith(lastExportAt: at));
 
   void _set(AppSettings s) {
     state = s;

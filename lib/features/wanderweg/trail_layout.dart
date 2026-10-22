@@ -41,6 +41,14 @@ class TrailSection {
   final List<TrailSign> signs;
 }
 
+/// Where a new player starts: on the painted path inside section 0, well
+/// above the fade into the task panel.
+const Offset trailStart = Offset(616, 1450);
+
+/// Where the companion rests once all waymarks are reached: further up the
+/// path in the last section, clear of the last waymark and its label.
+const Offset trailEnd = Offset(480, 120);
+
 /// Section 0 at the bottom (Medieval → Jungle) up to section 3 (Robot,
 /// Space, Rococo, Candy).
 const List<TrailSection> trailSections = [
@@ -215,7 +223,7 @@ const List<TrailSection> trailSections = [
     },
     signs: [
       TrailSign([World.space, World.robot], Offset(24, 1560), 15),
-      TrailSign([World.rococo], Offset(756, 1130), 19, right: true),
+      TrailSign([World.rococo], Offset(756, 1040), 19, right: true),
       TrailSign([World.candy], Offset(756, 160), 19, right: true),
     ],
   ),
@@ -247,6 +255,12 @@ class TrailGeometry {
   }
 
   final double width;
+
+  /// Arc length of [trailStart]; nothing is walked before it.
+  late final double startS = project(map(0, trailStart));
+
+  /// Arc length of [trailEnd].
+  late final double endS = project(map(trailSections.length - 1, trailEnd));
   final double topPad;
   final double bottomPad;
   final List<Offset> _points = [];
@@ -318,17 +332,17 @@ class TrailGeometry {
   double companionS(WanderwegProgress progress, double distanceM) {
     final reached = progress.reached;
     if (progress.complete) {
-      return math.min(waymarkS(waymarks.length) + width * 0.12, length);
+      return endS;
     }
     final next = waymarks[reached];
     final fromKm = reached == 0 ? 0.0 : waymarks[reached - 1].km;
-    final fromS = reached == 0 ? 0.0 : waymarkS(reached);
+    final fromS = reached == 0 ? startS : waymarkS(reached);
     final toS = waymarkS(next.number);
     final f = ((distanceM / 1000 - fromKm) / (next.km - fromKm)).clamp(
       0.0,
       1.0,
     );
-    final start = reached == 0 ? 0.04 : 0.1;
+    final start = reached == 0 ? 0.0 : 0.1;
     return fromS + (toS - fromS) * (start + (0.88 - start) * f);
   }
 }

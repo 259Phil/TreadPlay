@@ -66,8 +66,8 @@ class _WanderwegScreenState extends ConsumerState<WanderwegScreen> {
           final bottomOverlay = 214 + insets.bottom;
           final geo = TrailGeometry(
             width: w,
-            topPad: topOverlay - 40,
-            bottomPad: bottomOverlay - 60,
+            topPad: topOverlay + 20,
+            bottomPad: 40 + insets.bottom,
           );
           final progress = game.wanderweg;
           final s = geo.companionS(progress, game.totals.distanceM);
@@ -193,6 +193,13 @@ class _TrailContent extends StatelessWidget {
           height: w * 0.18,
           child: _Companion(game: game),
         ),
+        Positioned(
+          left: 0,
+          right: 0,
+          top: at.dy + w * 0.01 + 4,
+          height: 22,
+          child: _CompanionTag(game: game, centerX: at.dx),
+        ),
       ],
     );
   }
@@ -301,7 +308,7 @@ class _EmberTrail extends CustomPainter {
       ..color = TrailColors.ember.withValues(alpha: 0.55)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
     final core = Paint()..color = TrailColors.emberCore;
-    for (var s = step * 0.5; s < walkedS - step * 0.6; s += step) {
+    for (var s = geo.startS + step * 0.5; s < walkedS - step * 0.6; s += step) {
       final p = geo.at(s);
       canvas.drawCircle(p, 4.2, glow);
       canvas.drawCircle(p, 2.1, core);
@@ -555,18 +562,6 @@ class _Companion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    final progress = game.wanderweg;
-    final next = progress.next;
-    final String tag;
-    if (next == null) {
-      tag = l.wwYou;
-    } else {
-      final left = next.km - game.totals.distanceM / 1000;
-      tag = left > 0
-          ? '${l.wwYou} · ${l.wwYouLeft(kmText(context, math.max(left, 0.1)))}'
-          : '${l.wwYou} · ${l.wwYouTask}';
-    }
     return LayoutBuilder(
       builder: (context, box) {
         final s = box.maxWidth;
@@ -595,37 +590,81 @@ class _Companion extends StatelessWidget {
                 alignment: Alignment.bottomCenter,
               ),
             ),
-            Positioned(
-              bottom: -22,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: const Color(0xE61A1D22),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: TrailColors.ember),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 7,
-                    vertical: 2,
-                  ),
-                  child: Text(
-                    tag,
-                    maxLines: 1,
-                    softWrap: false,
-                    style: const TextStyle(
-                      color: TrailColors.bone,
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            ),
           ],
         );
       },
     );
   }
+}
+
+/// The "you · X km to go" tag under the companion, centred on it but kept
+/// inside the screen at both edges.
+class _CompanionTag extends StatelessWidget {
+  const _CompanionTag({required this.game, required this.centerX});
+
+  final GameData game;
+  final double centerX;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final progress = game.wanderweg;
+    final next = progress.next;
+    final String tag;
+    if (next == null) {
+      tag = l.wwYou;
+    } else {
+      final left = next.km - game.totals.distanceM / 1000;
+      tag = left > 0
+          ? '${l.wwYou} · ${l.wwYouLeft(kmText(context, math.max(left, 0.1)))}'
+          : '${l.wwYou} · ${l.wwYouTask}';
+    }
+    return CustomSingleChildLayout(
+      delegate: _CenterClamp(centerX),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: const Color(0xE61A1D22),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: TrailColors.ember),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+          child: Text(
+            tag,
+            maxLines: 1,
+            softWrap: false,
+            style: const TextStyle(
+              color: TrailColors.bone,
+              fontSize: 10.5,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CenterClamp extends SingleChildLayoutDelegate {
+  _CenterClamp(this.centerX);
+
+  final double centerX;
+  static const margin = 6.0;
+
+  @override
+  BoxConstraints getConstraintsForChild(BoxConstraints constraints) =>
+      constraints.loosen().deflate(
+        const EdgeInsets.symmetric(horizontal: margin),
+      );
+
+  @override
+  Offset getPositionForChild(Size size, Size childSize) {
+    final maxX = math.max(margin, size.width - childSize.width - margin);
+    return Offset((centerX - childSize.width / 2).clamp(margin, maxX), 0);
+  }
+
+  @override
+  bool shouldRelayout(_CenterClamp old) => old.centerX != centerX;
 }
 
 class _TopBar extends StatelessWidget {

@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:treadplay/data/game_data.dart';
 import 'package:treadplay/domain/companion.dart';
 import 'package:treadplay/domain/forge.dart';
+import 'package:treadplay/domain/wanderweg.dart';
 
 void main() {
   final t0 = DateTime(2026, 1, 1, 8);
@@ -15,7 +16,11 @@ void main() {
 
   GameData withGilt(double lp) {
     final start = GameData.initial(t0);
-    return start.copyWith(lp: lp, companions: [...start.companions, gilt]);
+    return start.copyWith(
+      lp: lp,
+      companions: [...start.companions, gilt],
+      wanderweg: const WanderwegProgress(legacyForge: true),
+    );
   }
 
   test('seals cost 40, 90, 160 LP for the first, second, third on a stat', () {
@@ -57,7 +62,9 @@ void main() {
   });
 
   test('sockets follow rarity: a Common takes one seal', () {
-    var game = GameData.initial(t0).copyWith(lp: 1000);
+    var game = GameData.initial(
+      t0,
+    ).copyWith(lp: 1000, wanderweg: const WanderwegProgress(legacyForge: true));
     game = game.forging('pebble-1', SealType.grit);
     expect(game.activeCompanion.charms, ['grit']);
     expect(game.forgeBlock('pebble-1', SealType.stride), ForgeBlock.noSocket);

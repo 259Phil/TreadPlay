@@ -12,6 +12,7 @@ import 'features/run/run_screen.dart';
 import 'features/run/summary_screen.dart';
 import 'features/settings/settings_screen.dart';
 import 'features/shelf/shelf_screen.dart';
+import 'features/wanderweg/wanderweg_screen.dart';
 import 'l10n/app_localizations.dart';
 import 'widgets/app_shell.dart';
 
@@ -26,6 +27,7 @@ class AppRoutes {
   static const privacy = '/privacy';
   static const terms = '/terms';
   static const history = '/history';
+  static const wanderweg = '/wanderweg';
   static String historyDetail(int index) => '$history/$index';
 }
 
@@ -59,6 +61,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             ),
           ),
         ],
+      ),
+      GoRoute(
+        path: AppRoutes.wanderweg,
+        builder: (_, _) => const WanderwegScreen(),
       ),
       GoRoute(
         path: AppRoutes.privacy,

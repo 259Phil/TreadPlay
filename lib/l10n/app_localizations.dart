@@ -1141,6 +1141,468 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error: {error}'**
   String saveError(String error);
+
+  /// No description provided for @wwTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trail'**
+  String get wwTitle;
+
+  /// No description provided for @wwWaymark.
+  ///
+  /// In en, this message translates to:
+  /// **'Waymark {n}'**
+  String wwWaymark(int n);
+
+  /// No description provided for @wwSettingsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'{reached} of {total} waymarks · next at {km} km'**
+  String wwSettingsSub(int reached, int total, String km);
+
+  /// No description provided for @wwAllReached.
+  ///
+  /// In en, this message translates to:
+  /// **'All {total} waymarks reached. The trail keeps growing.'**
+  String wwAllReached(int total);
+
+  /// No description provided for @wwLastAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Last at waymark {n}'**
+  String wwLastAt(int n);
+
+  /// No description provided for @wwStartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The trail begins'**
+  String get wwStartTitle;
+
+  /// No description provided for @wwStartLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Every valid run counts. The first waymark is {km} km away.'**
+  String wwStartLine(String km);
+
+  /// No description provided for @wwNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next waymark {n}'**
+  String wwNext(int n);
+
+  /// No description provided for @wwKmTask.
+  ///
+  /// In en, this message translates to:
+  /// **'{km} km in total'**
+  String wwKmTask(String km);
+
+  /// No description provided for @wwKmValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} / {target} km'**
+  String wwKmValue(String done, String target);
+
+  /// No description provided for @wwLater.
+  ///
+  /// In en, this message translates to:
+  /// **'later'**
+  String get wwLater;
+
+  /// No description provided for @wwLaterNote.
+  ///
+  /// In en, this message translates to:
+  /// **'“later”: not in the game yet, already counts as done.'**
+  String get wwLaterNote;
+
+  /// No description provided for @wwUnlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'unlocked'**
+  String get wwUnlocked;
+
+  /// No description provided for @wwComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'comes with an update'**
+  String get wwComingSoon;
+
+  /// No description provided for @wwYou.
+  ///
+  /// In en, this message translates to:
+  /// **'you'**
+  String get wwYou;
+
+  /// No description provided for @wwYouLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{km} km to go'**
+  String wwYouLeft(String km);
+
+  /// No description provided for @wwYouTask.
+  ///
+  /// In en, this message translates to:
+  /// **'task open'**
+  String get wwYouTask;
+
+  /// No description provided for @wwReachedOne.
+  ///
+  /// In en, this message translates to:
+  /// **'Waymark {n} reached · {unlock}'**
+  String wwReachedOne(int n, String unlock);
+
+  /// No description provided for @wwReachedMany.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} waymarks reached'**
+  String wwReachedMany(int count);
+
+  /// No description provided for @wwOpenTrail.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the trail'**
+  String get wwOpenTrail;
+
+  /// No description provided for @wwFromWaymark.
+  ///
+  /// In en, this message translates to:
+  /// **'from waymark {n}'**
+  String wwFromWaymark(int n);
+
+  /// No description provided for @wwLineLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'The messenger’s line waits at this waymark.'**
+  String get wwLineLocked;
+
+  /// No description provided for @wwForgeLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'The Forge opens at waymark 2 of the trail ({km} km).'**
+  String wwForgeLocked(String km);
+
+  /// No description provided for @wwClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get wwClose;
+
+  /// No description provided for @wwTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks'**
+  String get wwTasks;
+
+  /// No description provided for @wwNoTask.
+  ///
+  /// In en, this message translates to:
+  /// **'No task, only distance.'**
+  String get wwNoTask;
+
+  /// No description provided for @wwTaskBrownPouch.
+  ///
+  /// In en, this message translates to:
+  /// **'Open a brown pouch'**
+  String get wwTaskBrownPouch;
+
+  /// No description provided for @wwTaskCopperPouch.
+  ///
+  /// In en, this message translates to:
+  /// **'Open a copper pouch'**
+  String get wwTaskCopperPouch;
+
+  /// No description provided for @wwTaskTurquoisePouch.
+  ///
+  /// In en, this message translates to:
+  /// **'Open a turquoise pouch'**
+  String get wwTaskTurquoisePouch;
+
+  /// No description provided for @wwTaskSealPlaced.
+  ///
+  /// In en, this message translates to:
+  /// **'Forge a seal and set it'**
+  String get wwTaskSealPlaced;
+
+  /// No description provided for @wwTaskSealsForged.
+  ///
+  /// In en, this message translates to:
+  /// **'Forge {n} seals in total'**
+  String wwTaskSealsForged(int n);
+
+  /// No description provided for @wwTaskSealL3.
+  ///
+  /// In en, this message translates to:
+  /// **'One seal at L3'**
+  String get wwTaskSealL3;
+
+  /// No description provided for @wwTaskMessenger.
+  ///
+  /// In en, this message translates to:
+  /// **'Meet a messenger'**
+  String get wwTaskMessenger;
+
+  /// No description provided for @wwTaskSweet58.
+  ///
+  /// In en, this message translates to:
+  /// **'1 run with Sweet Spot ≥ 58 %'**
+  String get wwTaskSweet58;
+
+  /// No description provided for @wwTaskSweet71.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} runs with Sweet Spot ≥ 71 %'**
+  String wwTaskSweet71(int n);
+
+  /// No description provided for @wwTaskLeash.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill the leash (a pouch on all 4 clips)'**
+  String get wwTaskLeash;
+
+  /// No description provided for @wwTaskBuy.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy a second companion in the Market'**
+  String get wwTaskBuy;
+
+  /// No description provided for @wwTaskLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'A companion at level {n}'**
+  String wwTaskLevel(int n);
+
+  /// No description provided for @wwTaskCombine.
+  ///
+  /// In en, this message translates to:
+  /// **'Combine once'**
+  String get wwTaskCombine;
+
+  /// No description provided for @wwUnlockBrownPouch.
+  ///
+  /// In en, this message translates to:
+  /// **'Brown pouch'**
+  String get wwUnlockBrownPouch;
+
+  /// No description provided for @wwUnlockForge.
+  ///
+  /// In en, this message translates to:
+  /// **'Forge (seals L1)'**
+  String get wwUnlockForge;
+
+  /// No description provided for @wwUnlockMarketMedievalJungle.
+  ///
+  /// In en, this message translates to:
+  /// **'Market +2 species (Medieval, Jungle)'**
+  String get wwUnlockMarketMedievalJungle;
+
+  /// No description provided for @wwUnlockCopperPouch.
+  ///
+  /// In en, this message translates to:
+  /// **'Copper pouch'**
+  String get wwUnlockCopperPouch;
+
+  /// No description provided for @wwUnlockForgeL2.
+  ///
+  /// In en, this message translates to:
+  /// **'Forging L2'**
+  String get wwUnlockForgeL2;
+
+  /// No description provided for @wwUnlockWorldUnderwater.
+  ///
+  /// In en, this message translates to:
+  /// **'World Underwater + species'**
+  String get wwUnlockWorldUnderwater;
+
+  /// No description provided for @wwUnlockLeashClip4.
+  ///
+  /// In en, this message translates to:
+  /// **'4th leash clip'**
+  String get wwUnlockLeashClip4;
+
+  /// No description provided for @wwUnlockForgeL3.
+  ///
+  /// In en, this message translates to:
+  /// **'Forging L3'**
+  String get wwUnlockForgeL3;
+
+  /// No description provided for @wwUnlockMarketEgyptPirate.
+  ///
+  /// In en, this message translates to:
+  /// **'Market +2 species (Egypt, Pirates)'**
+  String get wwUnlockMarketEgyptPirate;
+
+  /// No description provided for @wwUnlockTurquoisePouch.
+  ///
+  /// In en, this message translates to:
+  /// **'Turquoise pouch'**
+  String get wwUnlockTurquoisePouch;
+
+  /// No description provided for @wwUnlockWorldSteampunk.
+  ///
+  /// In en, this message translates to:
+  /// **'World Steampunk + species'**
+  String get wwUnlockWorldSteampunk;
+
+  /// No description provided for @wwUnlockForgeL4.
+  ///
+  /// In en, this message translates to:
+  /// **'Forging L4'**
+  String get wwUnlockForgeL4;
+
+  /// No description provided for @wwUnlockCombineL3.
+  ///
+  /// In en, this message translates to:
+  /// **'Combining L3'**
+  String get wwUnlockCombineL3;
+
+  /// No description provided for @wwUnlockNavyPouch.
+  ///
+  /// In en, this message translates to:
+  /// **'Navy pouch'**
+  String get wwUnlockNavyPouch;
+
+  /// No description provided for @wwUnlockWorldSpaceRobot.
+  ///
+  /// In en, this message translates to:
+  /// **'Worlds Space + Robot + species'**
+  String get wwUnlockWorldSpaceRobot;
+
+  /// No description provided for @wwUnlockForgeL5.
+  ///
+  /// In en, this message translates to:
+  /// **'Forging L5'**
+  String get wwUnlockForgeL5;
+
+  /// No description provided for @wwUnlockShelfPlus2.
+  ///
+  /// In en, this message translates to:
+  /// **'Shelf +2 slots (12→14)'**
+  String get wwUnlockShelfPlus2;
+
+  /// No description provided for @wwUnlockCombineL5.
+  ///
+  /// In en, this message translates to:
+  /// **'Combining L5'**
+  String get wwUnlockCombineL5;
+
+  /// No description provided for @wwUnlockWorldRococoCandy.
+  ///
+  /// In en, this message translates to:
+  /// **'Worlds Rococo + Candy + species'**
+  String get wwUnlockWorldRococoCandy;
+
+  /// No description provided for @wwLine1.
+  ///
+  /// In en, this message translates to:
+  /// **'A companion doesn’t grow on a shelf. It grows beside you, step by step.'**
+  String get wwLine1;
+
+  /// No description provided for @wwLine2.
+  ///
+  /// In en, this message translates to:
+  /// **'What you find along the way belongs to you both.'**
+  String get wwLine2;
+
+  /// No description provided for @wwLine3.
+  ///
+  /// In en, this message translates to:
+  /// **'New tracks in the Market. But no companion gets far if it is only carried.'**
+  String get wwLine3;
+
+  /// No description provided for @wwLine4.
+  ///
+  /// In en, this message translates to:
+  /// **'A seal only holds what the trail has put into it.'**
+  String get wwLine4;
+
+  /// No description provided for @wwLine5.
+  ///
+  /// In en, this message translates to:
+  /// **'Two equal seals, one fire. Patience is the third part.'**
+  String get wwLine5;
+
+  /// No description provided for @wwLine6.
+  ///
+  /// In en, this message translates to:
+  /// **'At the right pace you hear each other breathe.'**
+  String get wwLine6;
+
+  /// No description provided for @wwLine7.
+  ///
+  /// In en, this message translates to:
+  /// **'One more clip means more that comes home with you.'**
+  String get wwLine7;
+
+  /// No description provided for @wwLine8.
+  ///
+  /// In en, this message translates to:
+  /// **'The first ember in the brass. It only burns because you walked.'**
+  String get wwLine8;
+
+  /// No description provided for @wwLine9.
+  ///
+  /// In en, this message translates to:
+  /// **'Far lands send their creatures. They are looking for someone to walk with.'**
+  String get wwLine9;
+
+  /// No description provided for @wwLine10.
+  ///
+  /// In en, this message translates to:
+  /// **'A full leash is a full trail.'**
+  String get wwLine10;
+
+  /// No description provided for @wwLine11.
+  ///
+  /// In en, this message translates to:
+  /// **'Steam and cogs. Even machines only learn on the way.'**
+  String get wwLine11;
+
+  /// No description provided for @wwLine12.
+  ///
+  /// In en, this message translates to:
+  /// **'Forged five times. Now your hands know it.'**
+  String get wwLine12;
+
+  /// No description provided for @wwLine13.
+  ///
+  /// In en, this message translates to:
+  /// **'Two powers in one seal, like two who walk the same trail.'**
+  String get wwLine13;
+
+  /// No description provided for @wwLine14.
+  ///
+  /// In en, this message translates to:
+  /// **'Two together don’t make the trail shorter, but brighter.'**
+  String get wwLine14;
+
+  /// No description provided for @wwLine15.
+  ///
+  /// In en, this message translates to:
+  /// **'Even between the stars only the next step counts.'**
+  String get wwLine15;
+
+  /// No description provided for @wwLine16.
+  ///
+  /// In en, this message translates to:
+  /// **'The crown is not given. It is walked.'**
+  String get wwLine16;
+
+  /// No description provided for @wwLine17.
+  ///
+  /// In en, this message translates to:
+  /// **'More room on the shelf. The growing still happens outside.'**
+  String get wwLine17;
+
+  /// No description provided for @wwLine18.
+  ///
+  /// In en, this message translates to:
+  /// **'Whoever keeps the beat, the ember follows.'**
+  String get wwLine18;
+
+  /// No description provided for @wwLine19.
+  ///
+  /// In en, this message translates to:
+  /// **'No end, only a bend. The trail grows with you.'**
+  String get wwLine19;
 }
 
 class _AppLocalizationsDelegate

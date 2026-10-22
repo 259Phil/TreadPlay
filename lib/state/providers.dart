@@ -48,9 +48,13 @@ class GameNotifier extends Notifier<GameData> {
     final now = _now();
     final saved = _repo.loadGame();
     final game = (saved ?? GameData.initial(now))
+        .advancingWanderweg(now)
         .regenerated(now)
         .withMarket(now, _random);
-    if (!identical(game.market, saved?.market)) _repo.saveGame(game);
+    if (!identical(game.market, saved?.market) ||
+        !identical(game.wanderweg, saved?.wanderweg)) {
+      _repo.saveGame(game);
+    }
     return game;
   }
 
@@ -141,9 +145,19 @@ class GameNotifier extends Notifier<GameData> {
     return true;
   }
 
+  /// The player has seen the newly reached waymarks (bubble closed or the
+  /// trail opened).
+  void markWanderwegSeen() {
+    if (state.wanderweg.unseen == 0) return;
+    _set(state.copyWith(wanderweg: state.wanderweg.markedSeen()));
+  }
+
+  /// Every change also reaches the waymarks it allows; none is ever taken
+  /// back.
   void _set(GameData data) {
-    state = data;
-    _repo.saveGame(data);
+    final next = data.advancingWanderweg(_now());
+    state = next;
+    _repo.saveGame(next);
   }
 }
 

@@ -39,7 +39,11 @@ class LoadedSave {
 /// Device settings (language, sound, movement access) are not part of it.
 class SaveGame {
   static const String format = 'treadplay-save';
-  static const int version = 1;
+
+  /// 2: adds the Wanderweg (reached waymarks) and new lifetime counters.
+  /// Version 1 files still import: [GameData.fromJson] grants them every
+  /// waymark their km allow and counts the new totals from their runs.
+  static const int version = 2;
 
   static String fileName(DateTime now) {
     final stamp = now.toIso8601String().replaceAll(':', '-').split('.').first;
@@ -75,7 +79,7 @@ class SaveGame {
     if (v > version) {
       throw const SaveGameException(SaveGameError.newerVersion);
     }
-    final json = raw['game'];
+    final json = _migrate(raw['game'], v);
     if (json is! Map<String, Object?>) {
       throw const SaveGameException(SaveGameError.damaged);
     }
@@ -96,6 +100,13 @@ class SaveGame {
       game: game,
       exportedAt: DateTime.tryParse(raw['exportedAt'] as String? ?? ''),
     );
+  }
+
+  /// Version 1 games carry no 'wanderweg'; drop a stray one so the legacy
+  /// grant always applies to them.
+  static Object? _migrate(Object? game, int fromVersion) {
+    if (fromVersion >= 2 || game is! Map<String, Object?>) return game;
+    return {...game}..remove('wanderweg');
   }
 
   static final Set<String> _seals = {for (final t in SealType.values) t.name};

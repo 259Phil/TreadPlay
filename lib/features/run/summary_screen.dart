@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../history/history_screen.dart';
+import '../wanderweg/trail_entry.dart';
 import '../../router.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
@@ -56,6 +57,7 @@ class SummaryScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
+                const WaymarkReachedBubble(dismissible: false),
                 const SizedBox(height: 8),
                 Text(
                   l.lpAmount(formatNumber(context, run.lp)),

@@ -39,6 +39,7 @@ flutter:
     - assets/pouch/
     - assets/brand/
     - assets/worlds/
+    - assets/wanderweg/
 
 flutter_launcher_icons:
   android: true

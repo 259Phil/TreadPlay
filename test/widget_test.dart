@@ -18,6 +18,7 @@ import 'package:treadplay/features/forge/forge_screen.dart';
 import 'package:treadplay/features/legal/legal_screen.dart';
 import 'package:treadplay/platform/save_file_io.dart';
 import 'package:treadplay/domain/totals.dart';
+import 'package:treadplay/domain/wanderweg.dart';
 import 'package:treadplay/state/providers.dart';
 import 'package:treadplay/widgets/companion_card.dart';
 
@@ -781,10 +782,17 @@ void main() {
   });
 
   group('forge', () {
-    Future<void> openForge(WidgetTester tester, GameData game) async {
+    Future<void> openForge(
+      WidgetTester tester,
+      GameData game, {
+      bool open = true,
+    }) async {
+      final seeded = open
+          ? game.copyWith(wanderweg: const WanderwegProgress(legacyForge: true))
+          : game;
       await pumpApp(
         tester,
-        saved: {'flutter.game.v2': jsonEncode(game.toJson())},
+        saved: {'flutter.game.v2': jsonEncode(seeded.toJson())},
       );
       await tester.tap(find.widgetWithText(NavigationDestination, 'Forge'));
       await tester.pumpAndSettle();
@@ -855,6 +863,21 @@ void main() {
       await openForge(tester, GameData.initial(t0).copyWith(lp: 39));
       expect(sealButton(tester, 'stride').onPressed, isNull);
       expect(find.textContaining('Not enough LP yet.'), findsNWidgets(3));
+    });
+
+    testWidgets('a new game finds the forge closed until waymark 2', (
+      tester,
+    ) async {
+      await openForge(
+        tester,
+        GameData.initial(t0).copyWith(lp: 1000),
+        open: false,
+      );
+      expect(find.byKey(const Key('forge-block')), findsOneWidget);
+      expect(find.textContaining('waymark 2'), findsOneWidget);
+      for (final t in SealType.values) {
+        expect(sealButton(tester, t.name).onPressed, isNull);
+      }
     });
   });
 }

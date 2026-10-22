@@ -12,6 +12,7 @@ import '../../state/providers.dart';
 import '../../theme.dart';
 import '../../widgets/format.dart';
 import '../../widgets/lp_pill.dart';
+import '../wanderweg/trail_entry.dart';
 import 'video_button.dart';
 import 'world_scene.dart';
 
@@ -41,7 +42,19 @@ class HomeScreen extends ConsumerWidget {
               tank: companion.tankSize,
             ),
           ),
-          Expanded(child: WorldScene(companion: companion)),
+          Expanded(
+            child: Stack(
+              children: [
+                Positioned.fill(child: WorldScene(companion: companion)),
+                const Positioned(
+                  top: 6,
+                  left: 14,
+                  right: 14,
+                  child: WaymarkReachedBubble(),
+                ),
+              ],
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
             child: _NamePlate(companion: companion),
@@ -103,33 +116,46 @@ class _Header extends StatelessWidget {
             LpPill(lp: lp),
           ],
         ),
-        Text.rich(
-          r == null
-              ? TextSpan(text: l.todayKm(l.kmValue(formatNumber(context, 0))))
-              : TextSpan(
-                  text:
-                      '${l.lastRun}: ${l.kmValue(formatKm(context, r.distanceM))} · '
-                      '${formatDuration(r.duration)} · ',
-                  children: [
-                    TextSpan(
-                      text: r.valid
-                          ? l.lpAmount(formatNumber(context, r.lp))
-                          : l.invalidRun,
-                      style: TextStyle(
-                        color: r.valid
-                            ? TreadColors.brass
-                            : Theme.of(context).colorScheme.error,
-                      ),
-                    ),
-                  ],
-                ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: small,
+        Row(
+          children: [
+            Expanded(child: _lastRunLine(context, l, r, small)),
+            const SizedBox(width: 8),
+            const TrailChip(),
+          ],
         ),
       ],
     );
   }
+
+  Widget _lastRunLine(
+    BuildContext context,
+    AppLocalizations l,
+    RunSummary? r,
+    TextStyle small,
+  ) => Text.rich(
+    r == null
+        ? TextSpan(text: l.todayKm(l.kmValue(formatNumber(context, 0))))
+        : TextSpan(
+            text:
+                '${l.lastRun}: ${l.kmValue(formatKm(context, r.distanceM))} · '
+                '${formatDuration(r.duration)} · ',
+            children: [
+              TextSpan(
+                text: r.valid
+                    ? l.lpAmount(formatNumber(context, r.lp))
+                    : l.invalidRun,
+                style: TextStyle(
+                  color: r.valid
+                      ? TreadColors.brass
+                      : Theme.of(context).colorScheme.error,
+                ),
+              ),
+            ],
+          ),
+    maxLines: 1,
+    overflow: TextOverflow.ellipsis,
+    style: small,
+  );
 }
 
 /// Name in serif, rarity and type, world and Spirit, sweet spot.

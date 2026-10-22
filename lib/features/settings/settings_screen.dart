@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../data/game_data.dart';
+import '../../domain/wanderweg.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../router.dart';
@@ -21,6 +22,7 @@ class SettingsScreen extends ConsumerWidget {
     final settings = ref.watch(settingsProvider);
     final notifier = ref.read(settingsProvider.notifier);
     final totals = ref.watch(gameProvider.select((g) => g.totals));
+    final trail = ref.watch(gameProvider.select((g) => g.wanderweg));
 
     Widget section(String title, String body) => Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
@@ -94,6 +96,25 @@ class SettingsScreen extends ConsumerWidget {
             title: Text(l.settingsTerms),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push(AppRoutes.terms),
+          ),
+          const Divider(),
+          ListTile(
+            key: const Key('settings-trail'),
+            leading: const Icon(
+              Icons.signpost_outlined,
+              color: TreadColors.brass,
+            ),
+            title: Text(l.wwTitle),
+            subtitle: Text(switch (trail.next) {
+              final next? => l.wwSettingsSub(
+                trail.reached,
+                waymarks.length,
+                formatNumber(context, next.km, pattern: '0.0'),
+              ),
+              null => l.wwAllReached(waymarks.length),
+            }),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push(AppRoutes.wanderweg),
           ),
           const Divider(),
           const SaveGameSection(),

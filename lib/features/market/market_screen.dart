@@ -126,7 +126,7 @@ class _Grid extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  l.shelfCount(game.companions.length, GameData.inventoryCap),
+                  l.shelfCount(game.companions.length, game.shelfSlots),
                   style: TextStyle(
                     color: game.shelfFull
                         ? TreadColors.copper
@@ -271,7 +271,7 @@ class _TradeSheet extends ConsumerWidget {
             const SizedBox(height: 12),
             if (block != null)
               Text(
-                _blockText(l, block, c),
+                _blockText(l, block, c, ref.read(gameProvider).shelfSlots),
                 key: const Key('trade-block'),
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: TreadColors.copper),
@@ -309,11 +309,15 @@ class _TradeSheet extends ConsumerWidget {
   }
 }
 
-String _blockText(AppLocalizations l, TradeBlock block, Companion c) =>
-    switch (block) {
-      TradeBlock.gone => l.marketGone,
-      TradeBlock.shelfFull => l.marketShelfFull(GameData.inventoryCap),
-      TradeBlock.notEnoughLp => l.marketNotEnoughLp,
-      TradeBlock.needsSpirit => l.marketNeedsSpirit,
-      TradeBlock.lastCompanion => l.marketLastCompanion(c.name),
-    };
+String _blockText(
+  AppLocalizations l,
+  TradeBlock block,
+  Companion c,
+  int shelfSlots,
+) => switch (block) {
+  TradeBlock.gone => l.marketGone,
+  TradeBlock.shelfFull => l.marketShelfFull(shelfSlots),
+  TradeBlock.notEnoughLp => l.marketNotEnoughLp,
+  TradeBlock.needsSpirit => l.marketNeedsSpirit,
+  TradeBlock.lastCompanion => l.marketLastCompanion(c.name),
+};

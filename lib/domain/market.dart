@@ -2,6 +2,7 @@ import 'dart:math';
 
 import '../data/species.dart';
 import 'companion.dart';
+import 'world.dart';
 
 /// The local companion market. Offers and prices are rolled together and
 /// stay put until the next drift, 7–9 h later. The drift moment is kept in
@@ -16,7 +17,14 @@ class Market {
   /// A fresh set of [offerCount] offers. Every offer is a new instance whose
   /// Stride, Grit and Fortune are rolled independently (see
   /// [Companion.rolled]).
-  factory Market.rolled(DateTime now, Random random) {
+  /// Offers only come from species of [worlds]; null or no match means
+  /// the whole catalog.
+  factory Market.rolled(DateTime now, Random random, {Set<World>? worlds}) {
+    final inPool = [
+      for (final s in speciesCatalog)
+        if (worlds == null || worlds.contains(s.world)) s,
+    ];
+    final pool = inPool.isEmpty ? speciesCatalog : inPool;
     final minutes =
         minDrift.inMinutes +
         random.nextInt(maxDrift.inMinutes - minDrift.inMinutes + 1);
@@ -24,7 +32,7 @@ class Market {
       for (var i = 0; i < offerCount; i++)
         Companion.rolled(
           id: 'm${now.microsecondsSinceEpoch}-$i',
-          speciesId: speciesCatalog[random.nextInt(speciesCatalog.length)].id,
+          speciesId: pool[random.nextInt(pool.length)].id,
           rarity: _rollRarity(random),
           random: random,
         ),
@@ -71,8 +79,10 @@ class Market {
   final List<Companion> offers;
 
   /// Same market until [nextDriftAt]; afterwards a newly rolled one.
-  Market drifted(DateTime now, Random random) =>
-      now.isBefore(nextDriftAt) ? this : Market.rolled(now, random);
+  Market drifted(DateTime now, Random random, {Set<World>? worlds}) =>
+      now.isBefore(nextDriftAt)
+      ? this
+      : Market.rolled(now, random, worlds: worlds);
 
   Companion? offer(String id) => offers.where((c) => c.id == id).firstOrNull;
 

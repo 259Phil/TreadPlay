@@ -445,4 +445,446 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get summaryNoLp =>
       'Bewegungszugriff war aus, darum brachte dieser Lauf keine LP.';
+
+  @override
+  String get settingsHistory => 'Laufhistorie';
+
+  @override
+  String get historyTitle => 'Laufhistorie';
+
+  @override
+  String historyTotals(String km, int runs, String lp) {
+    return '$km km · $runs Läufe · $lp LP insgesamt';
+  }
+
+  @override
+  String get historyEmpty =>
+      'Noch keine Läufe. Nach dem Stoppen erscheinen sie hier.';
+
+  @override
+  String get historyLocalNote =>
+      'Nur auf diesem Gerät gespeichert. Keine Route, keine Karte.';
+
+  @override
+  String get historyErase => 'Lokale Aufzeichnung löschen';
+
+  @override
+  String get historyEraseTitle => 'Lokale Aufzeichnung löschen?';
+
+  @override
+  String get historyEraseBody =>
+      'Alle gespeicherten Läufe auf diesem Gerät werden gelöscht. Deine Gesamtwerte für Meilensteine bleiben.';
+
+  @override
+  String get historyErased => 'Laufhistorie gelöscht.';
+
+  @override
+  String get cancel => 'Abbrechen';
+
+  @override
+  String get runDetailTitle => 'Lauf';
+
+  @override
+  String get date => 'Datum';
+
+  @override
+  String get breathUsed => 'Puste verbraucht';
+
+  @override
+  String get sweetSpotShare => 'Im Sweet Spot';
+
+  @override
+  String videoTooltip(String lp, int left) {
+    return 'Optionales Video: +$lp LP (heute noch $left)';
+  }
+
+  @override
+  String get videoTitle => 'Optionales Video';
+
+  @override
+  String videoBody(String lp, int max) {
+    return 'Schau ein kurzes Video für +$lp LP. Bis zu $max am Tag, jedes etwas weniger. Laufen bringt immer mehr.';
+  }
+
+  @override
+  String get videoWatch => 'Ansehen';
+
+  @override
+  String videoEarned(String lp) {
+    return '+$lp LP aus dem Video';
+  }
+
+  @override
+  String get videoSkipped => 'Video vorzeitig geschlossen. Diesmal keine LP.';
+
+  @override
+  String get videoFailed => 'Gerade ist kein Video verfügbar.';
+
+  @override
+  String get videoUsedUp =>
+      'Die Videos für heute sind aufgebraucht. Morgen gibt es neue.';
+
+  @override
+  String get settingsSaveGame => 'Spielstand';
+
+  @override
+  String get saveHint =>
+      'Dein Spielstand liegt nur auf diesem Gerät. Exportiere ihn als Datei, um eine Kopie zu behalten oder aufs neue Handy umzuziehen.';
+
+  @override
+  String get saveExport => 'Spielstand exportieren';
+
+  @override
+  String get saveNoExportYet => 'Noch kein Export';
+
+  @override
+  String saveLastExport(String date) {
+    return 'Letzter Export: $date';
+  }
+
+  @override
+  String get saveImport => 'Spielstand importieren';
+
+  @override
+  String get saveImportSub => 'Ersetzt den Spielstand auf diesem Gerät';
+
+  @override
+  String get saveDelete => 'Spielstand löschen';
+
+  @override
+  String get saveShareSubject => 'Treadplay Spielstand';
+
+  @override
+  String get saveExported => 'Spielstand exportiert.';
+
+  @override
+  String get saveDownloaded => 'Spielstand heruntergeladen.';
+
+  @override
+  String get saveImportTitle => 'Spielstand importieren?';
+
+  @override
+  String saveImportSummary(int companions, String lp, int runs, String date) {
+    return 'Dieser Spielstand enthält $companions Gefährten, $lp LP und $runs gespeicherte Läufe. Exportiert: $date.\n\nErsetzen überschreibt deinen aktuellen Spielstand auf diesem Gerät.';
+  }
+
+  @override
+  String get saveReplace => 'Ersetzen';
+
+  @override
+  String get saveImported => 'Spielstand importiert.';
+
+  @override
+  String get saveErrorNotASave => 'Diese Datei ist kein Treadplay-Spielstand.';
+
+  @override
+  String get saveErrorNewer =>
+      'Dieser Spielstand stammt aus einer neueren Treadplay-Version. Aktualisiere zuerst die App.';
+
+  @override
+  String get saveErrorDamaged =>
+      'Dieser Spielstand ist beschädigt und kann nicht geladen werden. Dein aktuelles Spiel bleibt unverändert.';
+
+  @override
+  String get saveErrorDuringRun => 'Während eines Laufs nicht möglich.';
+
+  @override
+  String get saveDeleteTitle => 'Spielstand löschen?';
+
+  @override
+  String get saveDeleteBody =>
+      'Gefährten, Siegel, LP, Puste, Laufhistorie und Gesamtwerte werden entfernt. Du startest neu mit Pebble.';
+
+  @override
+  String get saveDeleteReallyTitle => 'Wirklich alles löschen?';
+
+  @override
+  String get saveDeleteReallyBody =>
+      'Das kann nicht rückgängig gemacht werden. Ohne Export ist der Spielstand weg.';
+
+  @override
+  String get saveDeletePermanently => 'Endgültig löschen';
+
+  @override
+  String get saveDeleted => 'Spielstand gelöscht. Neustart mit Pebble.';
+
+  @override
+  String saveError(String error) {
+    return 'Fehler: $error';
+  }
+
+  @override
+  String get wwTitle => 'Wanderweg';
+
+  @override
+  String wwWaymark(int n) {
+    return 'Wegmarke $n';
+  }
+
+  @override
+  String wwSettingsSub(int reached, int total, String km) {
+    return '$reached von $total Wegmarken · nächste bei $km km';
+  }
+
+  @override
+  String wwAllReached(int total) {
+    return 'Alle $total Wegmarken erreicht. Der Weg wächst weiter.';
+  }
+
+  @override
+  String wwLastAt(int n) {
+    return 'Zuletzt an Wegmarke $n';
+  }
+
+  @override
+  String get wwStartTitle => 'Der Weg beginnt';
+
+  @override
+  String wwStartLine(String km) {
+    return 'Jeder gültige Lauf zählt. Die erste Wegmarke liegt $km km entfernt.';
+  }
+
+  @override
+  String wwNext(int n) {
+    return 'Nächste Wegmarke $n';
+  }
+
+  @override
+  String wwKmTask(String km) {
+    return '$km km insgesamt';
+  }
+
+  @override
+  String wwKmValue(String done, String target) {
+    return '$done / $target km';
+  }
+
+  @override
+  String get wwLater => 'später';
+
+  @override
+  String get wwLaterNote =>
+      '„später“: gibt es noch nicht im Spiel, zählt schon als erfüllt.';
+
+  @override
+  String get wwUnlocked => 'freigeschaltet';
+
+  @override
+  String get wwComingSoon => 'kommt mit einem Update';
+
+  @override
+  String get wwYou => 'du';
+
+  @override
+  String wwYouLeft(String km) {
+    return 'noch $km km';
+  }
+
+  @override
+  String get wwYouTask => 'Aufgabe offen';
+
+  @override
+  String wwReachedOne(int n, String unlock) {
+    return 'Wegmarke $n erreicht · $unlock';
+  }
+
+  @override
+  String wwReachedMany(int count) {
+    return '$count Wegmarken erreicht';
+  }
+
+  @override
+  String get wwOpenTrail => 'Zum Wanderweg';
+
+  @override
+  String wwFromWaymark(int n) {
+    return 'ab Wegmarke $n';
+  }
+
+  @override
+  String get wwLineLocked => 'Die Zeile des Boten wartet an dieser Wegmarke.';
+
+  @override
+  String wwForgeLocked(String km) {
+    return 'Die Schmiede öffnet an Wegmarke 2 des Wanderwegs ($km km).';
+  }
+
+  @override
+  String get wwClose => 'Schließen';
+
+  @override
+  String get wwTasks => 'Aufgaben';
+
+  @override
+  String get wwNoTask => 'Keine Aufgabe, nur Strecke.';
+
+  @override
+  String get wwTaskBrownPouch => '1 braunen Beutel öffnen';
+
+  @override
+  String get wwTaskCopperPouch => '1 Kupfer-Beutel öffnen';
+
+  @override
+  String get wwTaskTurquoisePouch => '1 Türkis-Beutel öffnen';
+
+  @override
+  String get wwTaskSealPlaced => '1 Siegel schmieden und einsetzen';
+
+  @override
+  String wwTaskSealsForged(int n) {
+    return 'Insgesamt $n Siegel schmieden';
+  }
+
+  @override
+  String get wwTaskSealL3 => '1 Siegel auf L3';
+
+  @override
+  String get wwTaskMessenger => '1 Boten treffen';
+
+  @override
+  String get wwTaskSweet58 => '1 Lauf mit Sweet Spot ≥ 58 %';
+
+  @override
+  String wwTaskSweet71(int n) {
+    return '$n Läufe mit Sweet Spot ≥ 71 %';
+  }
+
+  @override
+  String get wwTaskLeash => 'Leine füllen (alle 4 Clips mit Beutel)';
+
+  @override
+  String get wwTaskBuy => 'Zweiten Gefährten im Markt kaufen';
+
+  @override
+  String wwTaskLevel(int n) {
+    return '1 Gefährte auf Level $n';
+  }
+
+  @override
+  String get wwTaskCombine => '1× kombinieren';
+
+  @override
+  String get wwUnlockBrownPouch => 'Brauner Beutel';
+
+  @override
+  String get wwUnlockForge => 'Schmiede (Siegel L1)';
+
+  @override
+  String get wwUnlockMarketMedievalJungle =>
+      'Markt +2 Arten (Mittelalter, Dschungel)';
+
+  @override
+  String get wwUnlockCopperPouch => 'Kupfer-Beutel';
+
+  @override
+  String get wwUnlockForgeL2 => 'Schmieden L2';
+
+  @override
+  String get wwUnlockWorldUnderwater => 'Welt Unterwasser + Arten';
+
+  @override
+  String get wwUnlockLeashClip4 => '4. Leinen-Clip';
+
+  @override
+  String get wwUnlockForgeL3 => 'Schmieden L3';
+
+  @override
+  String get wwUnlockMarketEgyptPirate => 'Markt +2 Arten (Ägypten, Piraten)';
+
+  @override
+  String get wwUnlockTurquoisePouch => 'Türkis-Beutel';
+
+  @override
+  String get wwUnlockWorldSteampunk => 'Welt Steampunk + Arten';
+
+  @override
+  String get wwUnlockForgeL4 => 'Schmieden L4';
+
+  @override
+  String get wwUnlockCombineL3 => 'Kombinieren L3';
+
+  @override
+  String get wwUnlockNavyPouch => 'Navy-Beutel';
+
+  @override
+  String get wwUnlockWorldSpaceRobot => 'Welt Weltraum + Roboter + Arten';
+
+  @override
+  String get wwUnlockForgeL5 => 'Schmieden L5';
+
+  @override
+  String get wwUnlockShelfPlus2 => 'Regal +2 Plätze (12→14)';
+
+  @override
+  String get wwUnlockCombineL5 => 'Kombinieren L5';
+
+  @override
+  String get wwUnlockWorldRococoCandy => 'Welt Rokoko + Süßigkeiten + Arten';
+
+  @override
+  String get wwLine1 =>
+      'Ein Begleiter wächst nicht im Regal. Er wächst neben dir, Schritt für Schritt.';
+
+  @override
+  String get wwLine2 => 'Was ihr unterwegs findet, gehört euch beiden.';
+
+  @override
+  String get wwLine3 =>
+      'Neue Spuren im Markt. Doch kein Begleiter kommt weit, wenn er nur getragen wird.';
+
+  @override
+  String get wwLine4 => 'Ein Siegel hält nur, was der Weg hineingelegt hat.';
+
+  @override
+  String get wwLine5 =>
+      'Zwei gleiche Siegel, ein Feuer. Geduld ist das dritte Teil.';
+
+  @override
+  String get wwLine6 => 'Im richtigen Tempo hört ihr einander atmen.';
+
+  @override
+  String get wwLine7 => 'Ein Clip mehr heißt: mehr, das mit euch heimkommt.';
+
+  @override
+  String get wwLine8 =>
+      'Die erste Glut im Messing. Sie brennt nur, weil ihr gegangen seid.';
+
+  @override
+  String get wwLine9 =>
+      'Ferne Länder schicken ihre Tiere. Sie suchen jemanden, der mit ihnen geht.';
+
+  @override
+  String get wwLine10 => 'Eine volle Leine ist ein voller Weg.';
+
+  @override
+  String get wwLine11 =>
+      'Dampf und Zahnräder. Auch Maschinen lernen erst unterwegs.';
+
+  @override
+  String get wwLine12 => 'Fünfmal geschmiedet. Jetzt wissen es deine Hände.';
+
+  @override
+  String get wwLine13 =>
+      'Zwei Kräfte in einem Siegel, wie zwei, die denselben Weg gehen.';
+
+  @override
+  String get wwLine14 => 'Zu zweit wird der Weg nicht kürzer, aber heller.';
+
+  @override
+  String get wwLine15 =>
+      'Selbst zwischen den Sternen zählt nur der nächste Schritt.';
+
+  @override
+  String get wwLine16 => 'Die Krone wird nicht verliehen. Sie wird gegangen.';
+
+  @override
+  String get wwLine17 =>
+      'Mehr Platz im Regal. Das Wachsen passiert trotzdem draußen.';
+
+  @override
+  String get wwLine18 => 'Wer den Takt hält, dem folgt die Glut.';
+
+  @override
+  String get wwLine19 =>
+      'Kein Ende, nur eine Biegung. Der Weg wächst mit euch.';
 }

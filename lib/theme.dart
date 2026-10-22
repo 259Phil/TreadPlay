@@ -63,6 +63,19 @@ ThemeData buildTheme() {
         color: TreadColors.text,
       ),
     ),
+    snackBarTheme: const SnackBarThemeData(
+      backgroundColor: TreadColors.plate,
+      contentTextStyle: TextStyle(color: TreadColors.text, fontSize: 15),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(14)),
+        side: BorderSide(color: TreadColors.brassDark),
+      ),
+    ),
+    dialogTheme: const DialogThemeData(
+      backgroundColor: TreadColors.plate,
+      surfaceTintColor: Colors.transparent,
+    ),
     cardTheme: const CardThemeData(
       color: TreadColors.plate,
       surfaceTintColor: Colors.transparent,

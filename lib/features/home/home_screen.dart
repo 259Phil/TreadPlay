@@ -12,6 +12,8 @@ import '../../state/providers.dart';
 import '../../theme.dart';
 import '../../widgets/format.dart';
 import '../../widgets/lp_pill.dart';
+import '../wanderweg/trail_entry.dart';
+import 'video_button.dart';
 import 'world_scene.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -40,7 +42,19 @@ class HomeScreen extends ConsumerWidget {
               tank: companion.tankSize,
             ),
           ),
-          Expanded(child: WorldScene(companion: companion)),
+          Expanded(
+            child: Stack(
+              children: [
+                Positioned.fill(child: WorldScene(companion: companion)),
+                const Positioned(
+                  top: 6,
+                  left: 14,
+                  right: 14,
+                  child: WaymarkReachedBubble(),
+                ),
+              ],
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
             child: _NamePlate(companion: companion),
@@ -78,56 +92,70 @@ class _Header extends StatelessWidget {
     final l = AppLocalizations.of(context);
     final r = lastRun;
     const small = TextStyle(color: TreadColors.muted, fontSize: 14);
-    return Row(
+    // Title row carries the small video button and the LP pill at the top
+    // edge; the last-run line gets the full width below so it never clips.
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Text(
                 l.appTitle,
                 maxLines: 1,
                 overflow: TextOverflow.fade,
                 softWrap: false,
                 style: serifTitle.copyWith(fontSize: 30),
               ),
-              Text.rich(
-                r == null
-                    ? TextSpan(
-                        text: l.todayKm(l.kmValue(formatNumber(context, 0))),
-                      )
-                    : TextSpan(
-                        text:
-                            '${l.lastRun}: ${l.kmValue(formatKm(context, r.distanceM))} · '
-                            '${formatDuration(r.duration)} · ',
-                        children: [
-                          TextSpan(
-                            text: r.valid
-                                ? l.lpAmount(formatNumber(context, r.lp))
-                                : l.invalidRun,
-                            style: TextStyle(
-                              color: r.valid
-                                  ? TreadColors.brass
-                                  : Theme.of(context).colorScheme.error,
-                            ),
-                          ),
-                        ],
-                      ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: small,
-              ),
-            ],
-          ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(right: 10),
+              child: VideoButton(),
+            ),
+            LpPill(lp: lp),
+          ],
         ),
-        Padding(
-          padding: const EdgeInsets.only(top: 6),
-          child: LpPill(lp: lp),
+        Row(
+          children: [
+            Expanded(child: _lastRunLine(context, l, r, small)),
+            const SizedBox(width: 8),
+            const TrailChip(),
+          ],
         ),
       ],
     );
   }
+
+  Widget _lastRunLine(
+    BuildContext context,
+    AppLocalizations l,
+    RunSummary? r,
+    TextStyle small,
+  ) => Text.rich(
+    r == null
+        ? TextSpan(text: l.todayKm(l.kmValue(formatNumber(context, 0))))
+        : TextSpan(
+            text:
+                '${l.lastRun}: ${l.kmValue(formatKm(context, r.distanceM))} · '
+                '${formatDuration(r.duration)} · ',
+            children: [
+              TextSpan(
+                text: r.valid
+                    ? l.lpAmount(formatNumber(context, r.lp))
+                    : l.invalidRun,
+                style: TextStyle(
+                  color: r.valid
+                      ? TreadColors.brass
+                      : Theme.of(context).colorScheme.error,
+                ),
+              ),
+            ],
+          ),
+    maxLines: 1,
+    overflow: TextOverflow.ellipsis,
+    style: small,
+  );
 }
 
 /// Name in serif, rarity and type, world and Spirit, sweet spot.

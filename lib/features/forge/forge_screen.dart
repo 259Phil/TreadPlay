@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/game_data.dart';
 import '../../domain/companion.dart';
 import '../../domain/forge.dart';
+import '../../domain/wanderweg.dart';
 import '../../l10n/app_localizations.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
@@ -23,7 +24,9 @@ class ForgeScreen extends ConsumerWidget {
     final game = ref.watch(gameProvider);
     final c = game.activeCompanion;
     final free = c.charms.where((s) => s == null).length;
-    final banner = c.spirit < 100
+    final banner = !game.unlocks.forge
+        ? l.wwForgeLocked(formatNumber(context, waymarks[1].km, pattern: '0.0'))
+        : c.spirit < 100
         ? l.forgeNeedsSpirit
         : free == 0
         ? l.forgeNoSocket

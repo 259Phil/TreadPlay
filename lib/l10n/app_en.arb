@@ -291,5 +291,324 @@
         "type": "String"
       }
     }
-  }
+  },
+  "settingsHistory": "Run history",
+  "historyTitle": "Run history",
+  "historyTotals": "{km} km · {runs} runs · {lp} LP in total",
+  "@historyTotals": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      },
+      "runs": {
+        "type": "int"
+      },
+      "lp": {
+        "type": "String"
+      }
+    }
+  },
+  "historyEmpty": "No runs yet. Your runs show up here after you stop.",
+  "historyLocalNote": "Stored only on this device. No route, no map.",
+  "historyErase": "Erase local record",
+  "historyEraseTitle": "Erase local record?",
+  "historyEraseBody": "All stored runs on this device are deleted. Your lifetime totals for milestones stay.",
+  "historyErased": "Run history erased.",
+  "cancel": "Cancel",
+  "runDetailTitle": "Run",
+  "date": "Date",
+  "breathUsed": "Breath used",
+  "sweetSpotShare": "In sweet spot",
+  "videoTooltip": "Optional video: +{lp} LP ({left} left today)",
+  "@videoTooltip": {
+    "placeholders": {
+      "lp": {
+        "type": "String"
+      },
+      "left": {
+        "type": "int"
+      }
+    }
+  },
+  "videoTitle": "Optional video",
+  "videoBody": "Watch a short video for +{lp} LP. Up to {max} a day, each worth a little less. Running always earns more.",
+  "@videoBody": {
+    "placeholders": {
+      "lp": {
+        "type": "String"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "videoWatch": "Watch",
+  "videoEarned": "+{lp} LP from the video",
+  "@videoEarned": {
+    "placeholders": {
+      "lp": {
+        "type": "String"
+      }
+    }
+  },
+  "videoSkipped": "Video closed early. No LP this time.",
+  "videoFailed": "No video available right now.",
+  "videoUsedUp": "Today's videos are used up. New ones tomorrow.",
+  "settingsSaveGame": "Save game",
+  "saveHint": "Your save game lives only on this device. Export it as a file to keep a copy or to move to a new phone.",
+  "saveExport": "Export save game",
+  "saveNoExportYet": "No export yet",
+  "saveLastExport": "Last export: {date}",
+  "@saveLastExport": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "saveImport": "Import save game",
+  "saveImportSub": "Replaces the save game on this device",
+  "saveDelete": "Delete save game",
+  "saveShareSubject": "Treadplay save game",
+  "saveExported": "Save game exported.",
+  "saveDownloaded": "Save game downloaded.",
+  "saveImportTitle": "Import save game?",
+  "saveImportSummary": "This save holds {companions} companions, {lp} LP and {runs} stored runs. Exported: {date}.\n\nReplace overwrites your current save game on this device.",
+  "@saveImportSummary": {
+    "placeholders": {
+      "companions": {
+        "type": "int"
+      },
+      "lp": {
+        "type": "String"
+      },
+      "runs": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "saveReplace": "Replace",
+  "saveImported": "Save game imported.",
+  "saveErrorNotASave": "This file is not a Treadplay save game.",
+  "saveErrorNewer": "This save game comes from a newer Treadplay version. Update the app first.",
+  "saveErrorDamaged": "This save game is damaged and can't be loaded. Your current game is unchanged.",
+  "saveErrorDuringRun": "Not possible during a run.",
+  "saveDeleteTitle": "Delete save game?",
+  "saveDeleteBody": "Companions, seals, LP, Breath, run history and lifetime totals are removed. You start again with Pebble.",
+  "saveDeleteReallyTitle": "Really delete everything?",
+  "saveDeleteReallyBody": "This cannot be undone. Without an export the save game is gone.",
+  "saveDeletePermanently": "Delete permanently",
+  "saveDeleted": "Save game deleted. Fresh start with Pebble.",
+  "saveError": "Error: {error}",
+  "@saveError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "wwTitle": "Trail",
+  "wwWaymark": "Waymark {n}",
+  "@wwWaymark": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "wwSettingsSub": "{reached} of {total} waymarks · next at {km} km",
+  "@wwSettingsSub": {
+    "placeholders": {
+      "reached": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "wwAllReached": "All {total} waymarks reached. The trail keeps growing.",
+  "@wwAllReached": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "wwLastAt": "Last at waymark {n}",
+  "@wwLastAt": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "wwStartTitle": "The trail begins",
+  "wwStartLine": "Every valid run counts. The first waymark is {km} km away.",
+  "@wwStartLine": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "wwNext": "Next waymark {n}",
+  "@wwNext": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "wwKmTask": "{km} km in total",
+  "@wwKmTask": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "wwKmValue": "{done} / {target} km",
+  "@wwKmValue": {
+    "placeholders": {
+      "done": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "wwLater": "later",
+  "wwLaterNote": "“later”: not in the game yet, already counts as done.",
+  "wwUnlocked": "unlocked",
+  "wwComingSoon": "comes with an update",
+  "wwYou": "you",
+  "wwYouLeft": "{km} km to go",
+  "@wwYouLeft": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "wwYouTask": "task open",
+  "wwReachedOne": "Waymark {n} reached · {unlock}",
+  "@wwReachedOne": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "unlock": {
+        "type": "String"
+      }
+    }
+  },
+  "wwReachedMany": "{count} waymarks reached",
+  "@wwReachedMany": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wwOpenTrail": "Open the trail",
+  "wwFromWaymark": "from waymark {n}",
+  "@wwFromWaymark": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "wwLineLocked": "The messenger’s line waits at this waymark.",
+  "wwForgeLocked": "The Forge opens at waymark 2 of the trail ({km} km).",
+  "@wwForgeLocked": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "wwClose": "Close",
+  "wwTasks": "Tasks",
+  "wwNoTask": "No task, only distance.",
+  "wwTaskBrownPouch": "Open a brown pouch",
+  "wwTaskCopperPouch": "Open a copper pouch",
+  "wwTaskTurquoisePouch": "Open a turquoise pouch",
+  "wwTaskSealPlaced": "Forge a seal and set it",
+  "wwTaskSealsForged": "Forge {n} seals in total",
+  "@wwTaskSealsForged": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "wwTaskSealL3": "One seal at L3",
+  "wwTaskMessenger": "Meet a messenger",
+  "wwTaskSweet58": "1 run with Sweet Spot ≥ 58 %",
+  "wwTaskSweet71": "{n} runs with Sweet Spot ≥ 71 %",
+  "@wwTaskSweet71": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "wwTaskLeash": "Fill the leash (a pouch on all 4 clips)",
+  "wwTaskBuy": "Buy a second companion in the Market",
+  "wwTaskLevel": "A companion at level {n}",
+  "@wwTaskLevel": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "wwTaskCombine": "Combine once",
+  "wwUnlockBrownPouch": "Brown pouch",
+  "wwUnlockForge": "Forge (seals L1)",
+  "wwUnlockMarketMedievalJungle": "Market +2 species (Medieval, Jungle)",
+  "wwUnlockCopperPouch": "Copper pouch",
+  "wwUnlockForgeL2": "Forging L2",
+  "wwUnlockWorldUnderwater": "World Underwater + species",
+  "wwUnlockLeashClip4": "4th leash clip",
+  "wwUnlockForgeL3": "Forging L3",
+  "wwUnlockMarketEgyptPirate": "Market +2 species (Egypt, Pirates)",
+  "wwUnlockTurquoisePouch": "Turquoise pouch",
+  "wwUnlockWorldSteampunk": "World Steampunk + species",
+  "wwUnlockForgeL4": "Forging L4",
+  "wwUnlockCombineL3": "Combining L3",
+  "wwUnlockNavyPouch": "Navy pouch",
+  "wwUnlockWorldSpaceRobot": "Worlds Space + Robot + species",
+  "wwUnlockForgeL5": "Forging L5",
+  "wwUnlockShelfPlus2": "Shelf +2 slots (12→14)",
+  "wwUnlockCombineL5": "Combining L5",
+  "wwUnlockWorldRococoCandy": "Worlds Rococo + Candy + species",
+  "wwLine1": "A companion doesn’t grow on a shelf. It grows beside you, step by step.",
+  "wwLine2": "What you find along the way belongs to you both.",
+  "wwLine3": "New tracks in the Market. But no companion gets far if it is only carried.",
+  "wwLine4": "A seal only holds what the trail has put into it.",
+  "wwLine5": "Two equal seals, one fire. Patience is the third part.",
+  "wwLine6": "At the right pace you hear each other breathe.",
+  "wwLine7": "One more clip means more that comes home with you.",
+  "wwLine8": "The first ember in the brass. It only burns because you walked.",
+  "wwLine9": "Far lands send their creatures. They are looking for someone to walk with.",
+  "wwLine10": "A full leash is a full trail.",
+  "wwLine11": "Steam and cogs. Even machines only learn on the way.",
+  "wwLine12": "Forged five times. Now your hands know it.",
+  "wwLine13": "Two powers in one seal, like two who walk the same trail.",
+  "wwLine14": "Two together don’t make the trail shorter, but brighter.",
+  "wwLine15": "Even between the stars only the next step counts.",
+  "wwLine16": "The crown is not given. It is walked.",
+  "wwLine17": "More room on the shelf. The growing still happens outside.",
+  "wwLine18": "Whoever keeps the beat, the ember follows.",
+  "wwLine19": "No end, only a bend. The trail grows with you."
 }

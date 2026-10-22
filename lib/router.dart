@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'features/forge/forge_screen.dart';
+import 'features/history/history_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/legal/legal_screen.dart';
 import 'features/legal/legal_texts.dart';
@@ -11,6 +12,7 @@ import 'features/run/run_screen.dart';
 import 'features/run/summary_screen.dart';
 import 'features/settings/settings_screen.dart';
 import 'features/shelf/shelf_screen.dart';
+import 'features/wanderweg/wanderweg_screen.dart';
 import 'l10n/app_localizations.dart';
 import 'widgets/app_shell.dart';
 
@@ -24,6 +26,9 @@ class AppRoutes {
   static const summary = '/summary';
   static const privacy = '/privacy';
   static const terms = '/terms';
+  static const history = '/history';
+  static const wanderweg = '/wanderweg';
+  static String historyDetail(int index) => '$history/$index';
 }
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -44,6 +49,22 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.summary,
         builder: (_, _) => const SummaryScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.history,
+        builder: (_, _) => const HistoryScreen(),
+        routes: [
+          GoRoute(
+            path: ':index',
+            builder: (_, state) => RunDetailScreen(
+              index: int.tryParse(state.pathParameters['index'] ?? '') ?? -1,
+            ),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: AppRoutes.wanderweg,
+        builder: (_, _) => const WanderwegScreen(),
       ),
       GoRoute(
         path: AppRoutes.privacy,

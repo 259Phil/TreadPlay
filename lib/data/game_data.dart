@@ -5,6 +5,10 @@ import '../domain/companion.dart';
 import '../domain/forge.dart';
 import '../domain/market.dart';
 import '../domain/run_summary.dart';
+import '../domain/totals.dart';
+import '../domain/video_rewards.dart';
+import '../domain/wanderweg.dart';
+import '../domain/world.dart';
 
 class GameData {
   const GameData({
@@ -14,6 +18,9 @@ class GameData {
     required this.breath,
     required this.runs,
     this.market,
+    this.totals = const Totals(),
+    this.videos = const VideoRewards(),
+    this.wanderweg = const WanderwegProgress(),
   });
 
   factory GameData.initial(DateTime now) {
@@ -28,7 +35,9 @@ class GameData {
   }
 
   static const int maxStoredRuns = 50;
-  static const int inventoryCap = 12;
+
+  /// Shelf slots without the trail's extra ones; see [shelfSlots].
+  static const int inventoryCap = WaymarkUnlocks.baseShelfSlots;
 
   final double lp;
   final List<Companion> companions;
@@ -42,6 +51,64 @@ class GameData {
 
   /// Null until the market is first opened (see [withMarket]).
   final Market? market;
+
+  /// Lifetime counters, not capped at [maxStoredRuns].
+  final Totals totals;
+
+  /// Today's rewarded videos.
+  final VideoRewards videos;
+
+  /// Reached waymarks of the Wanderweg.
+  final WanderwegProgress wanderweg;
+
+  /// Everything a waymark task can count, from what the save holds.
+  WaymarkCounters get waymarkCounters {
+    final setSeals = companions.fold<int>(
+      0,
+      (n, c) => n + c.charms.where((s) => s != null).length,
+    );
+    final forged = totals.forgeUses > setSeals ? totals.forgeUses : setSeals;
+    final bought = companions.where(_fromMarket).length;
+    final maxLevel = companions.fold<int>(
+      1,
+      (n, c) => c.level > n ? c.level : n,
+    );
+    return WaymarkCounters(
+      distanceM: totals.distanceM,
+      values: {
+        WaymarkCounter.sealsForged: forged,
+        WaymarkCounter.sealsPlaced: forged,
+        WaymarkCounter.sweetSpot58Runs: totals.sweetSpot58Runs,
+        WaymarkCounter.sweetSpot71Runs: totals.sweetSpot71Runs,
+        WaymarkCounter.companionsBought: totals.companionsBought > bought
+            ? totals.companionsBought
+            : bought,
+        WaymarkCounter.companionLevel: maxLevel,
+      },
+    );
+  }
+
+  static bool _fromMarket(Companion c) => c.id.startsWith('m');
+
+  WaymarkUnlocks get unlocks => WaymarkUnlocks(
+    wanderweg,
+    forgeUsed:
+        totals.forgeUses > 0 ||
+        companions.any((c) => c.charms.any((s) => s != null)),
+    ownedWorlds: {for (final c in companions) c.world},
+  );
+
+  /// Reaches every waymark the counters allow. Never takes one back.
+  GameData advancingWanderweg(DateTime now) {
+    final next = wanderweg.advanced(waymarkCounters, now);
+    return identical(next, wanderweg) ? this : copyWith(wanderweg: next);
+  }
+
+  /// Shelf size: [inventoryCap], plus 2 from waymark 17.
+  int get shelfSlots => unlocks.shelfSlots;
+
+  /// Worlds whose species the Market offers.
+  Set<World> get marketWorlds => unlocks.marketWorlds;
 
   Companion get activeCompanion =>
       companions.firstWhere((c) => c.id == activeCompanionId);
@@ -59,7 +126,7 @@ class GameData {
     return c != null && c.spirit >= 100;
   }
 
-  bool get shelfFull => companions.length >= inventoryCap;
+  bool get shelfFull => companions.length >= shelfSlots;
 
   /// Why [offerId] can't be bought right now, or null if it can.
   TradeBlock? buyBlock(String offerId) {
@@ -86,6 +153,7 @@ class GameData {
   ForgeBlock? forgeBlock(String companionId, SealType type) {
     final c = companions.where((c) => c.id == companionId).firstOrNull;
     if (c == null) return ForgeBlock.gone;
+    if (!unlocks.forge) return ForgeBlock.locked;
     final cost = Forge.nextCost(c, type);
     if (cost == null) return ForgeBlock.statMaxed;
     if (c.freeSocket == null) return ForgeBlock.noSocket;
@@ -98,9 +166,31 @@ class GameData {
   /// Check [forgeBlock] first.
   GameData forging(String companionId, SealType type) {
     final c = companions.firstWhere((c) => c.id == companionId);
-    return replaceCompanion(
-      c.withCharm(c.freeSocket!, type.name),
-    ).copyWith(lp: lp - Forge.nextCost(c, type)!);
+    return replaceCompanion(c.withCharm(c.freeSocket!, type.name)).copyWith(
+      lp: lp - Forge.nextCost(c, type)!,
+      totals: totals.addingForgeUse(),
+    );
+  }
+
+  /// Stores [run] (newest first, capped) and counts it in [totals].
+  GameData recordingRun(RunSummary run) => copyWith(
+    runs: [run, ...runs].take(maxStoredRuns).toList(),
+    totals: totals.addingRun(run),
+  );
+
+  /// "Erase local record": drops the stored runs. [totals] stay, since they
+  /// only hold sums for milestones, no dates or single runs.
+  GameData erasingRuns() => copyWith(runs: const []);
+
+  /// LP the next video pays, sized by the companion taken along.
+  double? nextVideoReward(DateTime now) =>
+      videos.nextReward(now, activeCompanion.rarity.lpPerBreath);
+
+  /// Pays today's next video reward. Null when today's videos are used up.
+  GameData? claimingVideo(DateTime now) {
+    final reward = nextVideoReward(now);
+    if (reward == null) return null;
+    return copyWith(lp: lp + reward, videos: videos.claimed(now));
   }
 
   /// Empties charm socket [slot] of [companionId]. LP are not refunded.
@@ -110,9 +200,15 @@ class GameData {
   }
 
   /// Keeps the current market until its drift is due, then rolls a new one.
-  GameData withMarket(DateTime now, Random random) => copyWith(
-    market: market?.drifted(now, random) ?? Market.rolled(now, random),
-  );
+  /// Offers only come from [marketWorlds].
+  GameData withMarket(DateTime now, Random random) {
+    final pool = marketWorlds;
+    return copyWith(
+      market:
+          market?.drifted(now, random, worlds: pool) ??
+          Market.rolled(now, random, worlds: pool),
+    );
+  }
 
   /// Moves the offer onto the shelf for its price. Check [buyBlock] first.
   GameData buying(String offerId) {
@@ -122,6 +218,7 @@ class GameData {
       lp: lp - m.priceOf(offer),
       companions: [...companions, offer],
       market: m.without(offerId),
+      totals: totals.addingPurchase(),
     );
   }
 
@@ -159,6 +256,9 @@ class GameData {
     Breath? breath,
     List<RunSummary>? runs,
     Market? market,
+    Totals? totals,
+    VideoRewards? videos,
+    WanderwegProgress? wanderweg,
   }) => GameData(
     lp: lp ?? this.lp,
     companions: companions ?? this.companions,
@@ -166,6 +266,9 @@ class GameData {
     breath: breath ?? this.breath,
     runs: runs ?? this.runs,
     market: market ?? this.market,
+    totals: totals ?? this.totals,
+    videos: videos ?? this.videos,
+    wanderweg: wanderweg ?? this.wanderweg,
   );
 
   GameData replaceCompanion(Companion companion) => copyWith(
@@ -181,29 +284,56 @@ class GameData {
     'breath': breath.toJson(),
     'runs': [for (final r in runs) r.toJson()],
     if (market case final m?) 'market': m.toJson(),
+    'totals': totals.toJson(),
+    'videos': videos.toJson(),
+    'wanderweg': wanderweg.toJson(),
   };
 
-  factory GameData.fromJson(Map<String, Object?> json) {
+  /// [now] dates the waymarks a save from before the trail is granted.
+  factory GameData.fromJson(Map<String, Object?> json, {DateTime? now}) {
     final companions = [
       for (final c in json['companions']! as List<Object?>)
         c! as Map<String, Object?>,
     ];
     final activeId = json['activeCompanionId']! as String;
+    final runs = [
+      for (final r in json['runs']! as List<Object?>)
+        RunSummary.fromJson(r! as Map<String, Object?>),
+    ];
+    final owned = [for (final c in companions) Companion.fromJson(c)];
+    // Saves from before the counters start from their stored runs, once.
+    final totals = switch (json['totals']) {
+      final Map<String, Object?> t => Totals.fromJson(
+        t,
+        runs: runs,
+        boughtOnShelf: owned.where(_fromMarket).length,
+      ),
+      _ => Totals.fromRuns(
+        runs,
+      ).copyWith(companionsBought: owned.where(_fromMarket).length),
+    };
     return GameData(
       lp: (json['lp']! as num).toDouble(),
-      companions: [for (final c in companions) Companion.fromJson(c)],
+      companions: owned,
       activeCompanionId: activeId,
       breath: switch (json['breath']) {
         final Map<String, Object?> b => Breath.fromJson(b),
         _ => _legacyBreath(companions.firstWhere((c) => c['id'] == activeId)),
       },
-      runs: [
-        for (final r in json['runs']! as List<Object?>)
-          RunSummary.fromJson(r! as Map<String, Object?>),
-      ],
+      runs: runs,
       market: switch (json['market']) {
         final Map<String, Object?> m => Market.fromJson(m),
         _ => null,
+      },
+      totals: totals,
+      videos: switch (json['videos']) {
+        final Map<String, Object?> v => VideoRewards.fromJson(v),
+        _ => const VideoRewards(),
+      },
+      // Saves from before the trail get every waymark their km allow.
+      wanderweg: switch (json['wanderweg']) {
+        final Map<String, Object?> w => WanderwegProgress.fromJson(w),
+        _ => WanderwegProgress.legacy(totals.distanceM, now ?? DateTime.now()),
       },
     );
   }
@@ -218,6 +348,9 @@ class GameData {
 
 enum ForgeBlock {
   gone,
+
+  /// The Forge opens at waymark 2 of the Wanderweg.
+  locked,
 
   /// Already +[Forge.maxPerStat] on this stat.
   statMaxed,
@@ -248,26 +381,33 @@ class AppSettings {
     this.localeCode = 'en',
     this.kaching = true,
     this.movementAccess = MovementAccess.unasked,
+    this.lastExportAt,
   });
 
   final String localeCode;
   final bool kaching;
   final MovementAccess movementAccess;
 
+  /// When the save game was last exported on this device.
+  final DateTime? lastExportAt;
+
   AppSettings copyWith({
     String? localeCode,
     bool? kaching,
     MovementAccess? movementAccess,
+    DateTime? lastExportAt,
   }) => AppSettings(
     localeCode: localeCode ?? this.localeCode,
     kaching: kaching ?? this.kaching,
     movementAccess: movementAccess ?? this.movementAccess,
+    lastExportAt: lastExportAt ?? this.lastExportAt,
   );
 
   Map<String, Object?> toJson() => {
     'localeCode': localeCode,
     'kaching': kaching,
     'movementAccess': movementAccess.name,
+    if (lastExportAt case final d?) 'lastExportAt': d.toIso8601String(),
   };
 
   factory AppSettings.fromJson(Map<String, Object?> json) => AppSettings(
@@ -276,5 +416,6 @@ class AppSettings {
     movementAccess:
         MovementAccess.values.asNameMap()[json['movementAccess']] ??
         MovementAccess.unasked,
+    lastExportAt: DateTime.tryParse(json['lastExportAt'] as String? ?? ''),
   );
 }

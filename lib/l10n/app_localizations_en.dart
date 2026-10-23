@@ -185,7 +185,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTagline => 'Walk with a companion.';
 
   @override
-  String get tabShelf => 'Shelf';
+  String get tabShelf => 'Den';
 
   @override
   String get typeMoss => 'Moss';
@@ -247,7 +247,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get filterAll => 'All';
 
   @override
-  String get shelfNothingHere => 'Nothing on the shelf with these filters.';
+  String get shelfNothingHere => 'Nobody in the den with these filters.';
 
   @override
   String get worldMedieval => 'Medieval';
@@ -290,7 +290,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String shelfCount(int count, int cap) {
-    return 'Shelf $count/$cap';
+    return 'Den $count/$cap';
   }
 
   @override
@@ -308,7 +308,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String marketShelfFull(int cap) {
-    return 'Your shelf is full ($cap/$cap). Sell a companion first.';
+    return 'Your den is full ($cap/$cap). Sell a companion first.';
   }
 
   @override
@@ -319,7 +319,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String marketLastCompanion(String name) {
-    return '$name stays until a second companion joins your shelf.';
+    return '$name stays until a second companion joins your den.';
   }
 
   @override
@@ -798,7 +798,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wwUnlockForgeL5 => 'Forging L5';
 
   @override
-  String get wwUnlockShelfPlus2 => 'Shelf +2 slots (12→14)';
+  String get wwUnlockShelfPlus2 => 'Den +2 slots (12→14)';
 
   @override
   String get wwUnlockCombineL5 => 'Combining L5';
@@ -808,7 +808,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get wwLine1 =>
-      'A companion doesn’t grow on a shelf. It grows beside you, step by step.';
+      'A companion doesn’t grow in a den. It grows beside you, step by step.';
 
   @override
   String get wwLine2 => 'What you find along the way belongs to you both.';
@@ -863,7 +863,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get wwLine17 =>
-      'More room on the shelf. The growing still happens outside.';
+      'More room in the den. The growing still happens outside.';
 
   @override
   String get wwLine18 => 'Whoever keeps the beat, the ember follows.';

@@ -129,7 +129,7 @@ void main() {
     GameData withLp(double lp) =>
         GameData.initial(t0).copyWith(lp: lp, market: market);
 
-    test('buying moves the offer to the shelf for its LP price', () {
+    test('buying moves the offer to the den for its LP price', () {
       final game = withLp(price + 5);
       expect(game.buyBlock('offer-1'), isNull);
       final bought = game.buying('offer-1');
@@ -144,7 +144,7 @@ void main() {
       expect(withLp(price - 1).buyBlock('offer-1'), TradeBlock.notEnoughLp);
     });
 
-    test('the shelf holds at most 12 companions', () {
+    test('the den holds at most 12 companions', () {
       expect(GameData.inventoryCap, 12);
       final start = withLp(1e6);
       final full = start.copyWith(

@@ -110,7 +110,7 @@
   "settingsCredits": "Credits",
   "creditsArtwork": "Artwork created with Grok (xAI) and edited by Treadplay.",
   "appTagline": "Walk with a companion.",
-  "tabShelf": "Shelf",
+  "tabShelf": "Den",
   "typeMoss": "Moss",
   "typeBrook": "Brook",
   "typeGale": "Gale",
@@ -137,7 +137,7 @@
   "filterType": "Type",
   "filterRarity": "Rarity",
   "filterAll": "All",
-  "shelfNothingHere": "Nothing on the shelf with these filters.",
+  "shelfNothingHere": "Nobody in the den with these filters.",
   "worldMedieval": "Medieval",
   "worldSpace": "Space",
   "worldUnderwater": "Underwater",
@@ -151,7 +151,7 @@
   "marketBuyTab": "Buy",
   "marketSellTab": "Sell",
   "marketHint": "Offers and prices drift during the day.",
-  "shelfCount": "Shelf {count}/{cap}",
+  "shelfCount": "Den {count}/{cap}",
   "@shelfCount": {
     "placeholders": {
       "count": {
@@ -179,7 +179,7 @@
     }
   },
   "marketGone": "This offer is no longer here.",
-  "marketShelfFull": "Your shelf is full ({cap}/{cap}). Sell a companion first.",
+  "marketShelfFull": "Your den is full ({cap}/{cap}). Sell a companion first.",
   "@marketShelfFull": {
     "placeholders": {
       "cap": {
@@ -189,7 +189,7 @@
   },
   "marketNotEnoughLp": "Not enough LP yet.",
   "marketNeedsSpirit": "Trading only at 100 % Spirit.",
-  "marketLastCompanion": "{name} stays until a second companion joins your shelf.",
+  "marketLastCompanion": "{name} stays until a second companion joins your den.",
   "@marketLastCompanion": {
     "placeholders": {
       "name": {
@@ -569,10 +569,10 @@
   "wwUnlockNavyPouch": "Navy pouch",
   "wwUnlockWorldSpaceRobot": "Worlds Space + Robot + species",
   "wwUnlockForgeL5": "Forging L5",
-  "wwUnlockShelfPlus2": "Shelf +2 slots (12→14)",
+  "wwUnlockShelfPlus2": "Den +2 slots (12→14)",
   "wwUnlockCombineL5": "Combining L5",
   "wwUnlockWorldRococoCandy": "Worlds Rococo + Candy + species",
-  "wwLine1": "A companion doesn’t grow on a shelf. It grows beside you, step by step.",
+  "wwLine1": "A companion doesn’t grow in a den. It grows beside you, step by step.",
   "wwLine2": "What you find along the way belongs to you both.",
   "wwLine3": "New tracks in the Market. But no companion gets far if it is only carried.",
   "wwLine4": "A seal only holds what the trail has put into it.",
@@ -588,7 +588,7 @@
   "wwLine14": "Two together don’t make the trail shorter, but brighter.",
   "wwLine15": "Even between the stars only the next step counts.",
   "wwLine16": "The crown is not given. It is walked.",
-  "wwLine17": "More room on the shelf. The growing still happens outside.",
+  "wwLine17": "More room in the den. The growing still happens outside.",
   "wwLine18": "Whoever keeps the beat, the ember follows.",
   "wwLine19": "No end, only a bend. The trail grows with you.",
   "forgeIntro": "Seals wait in the case. Set them into the companion you have along.",

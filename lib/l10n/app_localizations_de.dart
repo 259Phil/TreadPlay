@@ -186,7 +186,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get appTagline => 'Lauf mit einem Gefährten.';
 
   @override
-  String get tabShelf => 'Regal';
+  String get tabShelf => 'Gehege';
 
   @override
   String get typeMoss => 'Moos';
@@ -248,7 +248,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get filterAll => 'Alle';
 
   @override
-  String get shelfNothingHere => 'Mit diesen Filtern steht nichts im Regal.';
+  String get shelfNothingHere => 'Mit diesen Filtern ist niemand im Gehege.';
 
   @override
   String get worldMedieval => 'Mittelalter';
@@ -291,7 +291,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String shelfCount(int count, int cap) {
-    return 'Regal $count/$cap';
+    return 'Gehege $count/$cap';
   }
 
   @override
@@ -309,7 +309,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String marketShelfFull(int cap) {
-    return 'Dein Regal ist voll ($cap/$cap). Verkaufe zuerst einen Gefährten.';
+    return 'Dein Gehege ist voll ($cap/$cap). Verkaufe zuerst einen Gefährten.';
   }
 
   @override
@@ -320,7 +320,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String marketLastCompanion(String name) {
-    return '$name bleibt, bis ein zweiter Gefährte in deinem Regal steht.';
+    return '$name bleibt, bis ein zweiter Gefährte in deinem Gehege lebt.';
   }
 
   @override
@@ -801,7 +801,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get wwUnlockForgeL5 => 'Schmieden L5';
 
   @override
-  String get wwUnlockShelfPlus2 => 'Regal +2 Plätze (12→14)';
+  String get wwUnlockShelfPlus2 => 'Gehege +2 Plätze (12→14)';
 
   @override
   String get wwUnlockCombineL5 => 'Kombinieren L5';
@@ -811,7 +811,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get wwLine1 =>
-      'Ein Begleiter wächst nicht im Regal. Er wächst neben dir, Schritt für Schritt.';
+      'Ein Begleiter wächst nicht im Gehege. Er wächst neben dir, Schritt für Schritt.';
 
   @override
   String get wwLine2 => 'Was ihr unterwegs findet, gehört euch beiden.';
@@ -867,7 +867,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get wwLine17 =>
-      'Mehr Platz im Regal. Das Wachsen passiert trotzdem draußen.';
+      'Mehr Platz im Gehege. Das Wachsen passiert trotzdem draußen.';
 
   @override
   String get wwLine18 => 'Wer den Takt hält, dem folgt die Glut.';

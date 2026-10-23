@@ -407,7 +407,7 @@ abstract class AppLocalizations {
   /// No description provided for @tabShelf.
   ///
   /// In en, this message translates to:
-  /// **'Shelf'**
+  /// **'Den'**
   String get tabShelf;
 
   /// No description provided for @typeMoss.
@@ -527,7 +527,7 @@ abstract class AppLocalizations {
   /// No description provided for @shelfNothingHere.
   ///
   /// In en, this message translates to:
-  /// **'Nothing on the shelf with these filters.'**
+  /// **'Nobody in the den with these filters.'**
   String get shelfNothingHere;
 
   /// No description provided for @worldMedieval.
@@ -611,7 +611,7 @@ abstract class AppLocalizations {
   /// No description provided for @shelfCount.
   ///
   /// In en, this message translates to:
-  /// **'Shelf {count}/{cap}'**
+  /// **'Den {count}/{cap}'**
   String shelfCount(int count, int cap);
 
   /// No description provided for @marketBuyFor.
@@ -635,7 +635,7 @@ abstract class AppLocalizations {
   /// No description provided for @marketShelfFull.
   ///
   /// In en, this message translates to:
-  /// **'Your shelf is full ({cap}/{cap}). Sell a companion first.'**
+  /// **'Your den is full ({cap}/{cap}). Sell a companion first.'**
   String marketShelfFull(int cap);
 
   /// No description provided for @marketNotEnoughLp.
@@ -653,7 +653,7 @@ abstract class AppLocalizations {
   /// No description provided for @marketLastCompanion.
   ///
   /// In en, this message translates to:
-  /// **'{name} stays until a second companion joins your shelf.'**
+  /// **'{name} stays until a second companion joins your den.'**
   String marketLastCompanion(String name);
 
   /// No description provided for @marketSellSwitches.
@@ -1457,7 +1457,7 @@ abstract class AppLocalizations {
   /// No description provided for @wwUnlockShelfPlus2.
   ///
   /// In en, this message translates to:
-  /// **'Shelf +2 slots (12→14)'**
+  /// **'Den +2 slots (12→14)'**
   String get wwUnlockShelfPlus2;
 
   /// No description provided for @wwUnlockCombineL5.
@@ -1475,7 +1475,7 @@ abstract class AppLocalizations {
   /// No description provided for @wwLine1.
   ///
   /// In en, this message translates to:
-  /// **'A companion doesn’t grow on a shelf. It grows beside you, step by step.'**
+  /// **'A companion doesn’t grow in a den. It grows beside you, step by step.'**
   String get wwLine1;
 
   /// No description provided for @wwLine2.
@@ -1571,7 +1571,7 @@ abstract class AppLocalizations {
   /// No description provided for @wwLine17.
   ///
   /// In en, this message translates to:
-  /// **'More room on the shelf. The growing still happens outside.'**
+  /// **'More room in the den. The growing still happens outside.'**
   String get wwLine17;
 
   /// No description provided for @wwLine18.

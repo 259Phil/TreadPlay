@@ -352,7 +352,7 @@ void main() {
     expect(container.read(gameProvider).lp, 2.5);
   });
 
-  testWidgets('shelf cards are drawn by Flutter and take along works', (
+  testWidgets('den cards are drawn by Flutter and take along works', (
     tester,
   ) async {
     final start = GameData.initial(t0);
@@ -366,7 +366,7 @@ void main() {
       tester,
       saved: {'flutter.game.v2': jsonEncode(game.toJson())},
     );
-    await tester.tap(find.widgetWithText(NavigationDestination, 'Shelf'));
+    await tester.tap(find.widgetWithText(NavigationDestination, 'Den'));
     await tester.pumpAndSettle();
     expect(find.text('Pebble'), findsOneWidget);
     expect(find.text('Dune'), findsOneWidget);
@@ -529,7 +529,7 @@ void main() {
       await pumpApp(tester);
       await tester.tap(find.widgetWithText(NavigationDestination, 'Market'));
       await tester.pumpAndSettle();
-      expect(find.text('Shelf 1/12'), findsOneWidget);
+      expect(find.text('Den 1/12'), findsOneWidget);
       final seen = <Key>{};
       void collect() => seen.addAll(
         tester
@@ -555,14 +555,14 @@ void main() {
       await tester.tap(find.text('Pebble'));
       await tester.pumpAndSettle();
       expect(
-        find.text('Pebble stays until a second companion joins your shelf.'),
+        find.text('Pebble stays until a second companion joins your den.'),
         findsOneWidget,
       );
       expect(tradeButton(tester, 'Sell ·').onPressed, isNull);
       expectNoCountdown();
     });
 
-    testWidgets('buying puts the offer on the shelf and spends LP', (
+    testWidgets('buying puts the offer in the den and spends LP', (
       tester,
     ) async {
       final game = GameData.initial(t0).copyWith(lp: price + 3, market: market);
@@ -571,7 +571,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.textContaining('Buy ·'));
       await tester.pumpAndSettle();
-      expect(find.text('Shelf 2/12'), findsOneWidget);
+      expect(find.text('Den 2/12'), findsOneWidget);
       expect(
         find.text('All offers are gone. New ones arrive later.'),
         findsOneWidget,
@@ -593,7 +593,7 @@ void main() {
       expect(tradeButton(tester, 'Sell ·').onPressed, isNotNull);
     });
 
-    testWidgets('a full shelf of 12 blocks buying', (tester) async {
+    testWidgets('a full den of 12 blocks buying', (tester) async {
       final start = GameData.initial(t0);
       final game = start.copyWith(
         lp: 1e6,
@@ -609,11 +609,11 @@ void main() {
         ],
       );
       await openMarket(tester, game);
-      expect(find.text('Shelf 12/12'), findsOneWidget);
+      expect(find.text('Den 12/12'), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey('offer-1')));
       await tester.pumpAndSettle();
       expect(
-        find.text('Your shelf is full (12/12). Sell a companion first.'),
+        find.text('Your den is full (12/12). Sell a companion first.'),
         findsOneWidget,
       );
       expect(tradeButton(tester, 'Buy ·').onPressed, isNull);
@@ -887,7 +887,7 @@ void main() {
         findsOneWidget,
       );
 
-      await tester.tap(find.widgetWithText(NavigationDestination, 'Shelf'));
+      await tester.tap(find.widgetWithText(NavigationDestination, 'Den'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Pebble'));
       await tester.pumpAndSettle();

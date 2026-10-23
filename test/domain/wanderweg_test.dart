@@ -231,7 +231,7 @@ void main() {
       expect(game.marketWorlds, {World.medieval, World.jungle});
     });
 
-    test('species on the shelf stay in the market pool', () {
+    test('species in the den stay in the market pool', () {
       final brine = Companion.fresh(
         id: 'brine-1',
         speciesId: 'brine',
@@ -243,7 +243,7 @@ void main() {
       expect(game.marketWorlds, contains(World.underwater));
     });
 
-    test('waymark 17 adds two shelf slots', () {
+    test('waymark 17 adds two den slots', () {
       final all = WanderwegProgress(
         reachedAt: List.filled(17, t1),
         legacyForge: true,

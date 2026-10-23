@@ -193,4 +193,22 @@ void main() {
     await tapKey(tester, 'summary-to-leash');
     expect(find.byType(PouchScreen), findsOneWidget);
   });
+
+  testWidgets('the fourth leash ring stays locked until waymark 7', (
+    tester,
+  ) async {
+    await pump(tester, game(reached: 6), const Size(390, 844));
+    expect(find.byKey(const Key('home-leash-clip-locked-3')), findsOneWidget);
+    await tapKey(tester, 'home-leash');
+    expect(find.byKey(const Key('pouch-clip-locked-3')), findsOneWidget);
+    expect(find.byKey(const Key('pouch-clip-3')), findsNothing);
+    expect(find.byKey(const Key('pouch-clip-2')), findsOneWidget);
+  });
+
+  testWidgets('at waymark 7 all four rings carry a pouch', (tester) async {
+    await pump(tester, game(), const Size(390, 844));
+    await tapKey(tester, 'home-leash');
+    expect(find.byKey(const Key('pouch-clip-locked-3')), findsNothing);
+    expect(find.byKey(const Key('pouch-clip-3')), findsOneWidget);
+  });
 }

@@ -12,6 +12,7 @@ import '../../theme.dart';
 import '../../widgets/format.dart';
 import '../../widgets/lp_pill.dart';
 import '../../widgets/pouch_art.dart';
+import '../../ui/skin.dart';
 
 /// The leash with the found pouches: pick one, see what it holds and how
 /// far it is walked warm, open it (free when warm, else for LP) and see
@@ -54,11 +55,12 @@ class _PouchScreenState extends ConsumerState<PouchScreen> {
     final l = AppLocalizations.of(context);
     final game = ref.watch(gameProvider);
     final selected = _pick(game);
+    final skin = TreadSkin.of(context);
     return Scaffold(
-      backgroundColor: ForgeColors.base,
+      backgroundColor: skin.base,
       appBar: AppBar(
-        backgroundColor: ForgeColors.base,
-        title: Text(l.pouchTitle),
+        backgroundColor: skin.base,
+        title: Text(skin.displayText(l.pouchTitle), style: skin.display(26)),
         actions: lpActions(game.lp),
       ),
       body: SafeArea(
@@ -266,16 +268,13 @@ class _PouchScreenState extends ConsumerState<PouchScreen> {
               style: const TextStyle(color: ForgeColors.ember, fontSize: 12.5),
             ),
           ),
-        SizedBox(
+        SkinButton(
+          key: const Key('pouch-open'),
           height: 50,
-          child: FilledButton(
-            key: const Key('pouch-open'),
-            style: _brass,
-            onPressed: pouch == null || block != null
-                ? null
-                : () => _open(selected!),
-            child: Text(label, style: _buttonText),
-          ),
+          label: label,
+          onPressed: pouch == null || block != null
+              ? null
+              : () => _open(selected!),
         ),
       ],
     );
@@ -286,53 +285,28 @@ class _PouchScreenState extends ConsumerState<PouchScreen> {
     return Row(
       children: [
         Expanded(
-          child: SizedBox(
+          child: SkinButton.secondary(
+            key: const Key('pouch-to-forge'),
             height: 50,
-            child: OutlinedButton(
-              key: const Key('pouch-to-forge'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: ForgeColors.brass,
-                side: const BorderSide(color: ForgeColors.brass),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-              onPressed: () => context.go(AppRoutes.forge),
-              child: Text(l.pouchToForge, style: _buttonText),
-            ),
+            label: l.pouchToForge,
+            onPressed: () => context.go(AppRoutes.forge),
           ),
         ),
         const SizedBox(width: 8),
         Expanded(
-          child: SizedBox(
+          child: SkinButton(
+            key: const Key('pouch-continue'),
             height: 50,
-            child: FilledButton(
-              key: const Key('pouch-continue'),
-              style: _brass,
-              onPressed: () => setState(() {
-                _rewards = null;
-                _openedColor = null;
-              }),
-              child: Text(l.pouchContinue, style: _buttonText),
-            ),
+            label: l.pouchContinue,
+            onPressed: () => setState(() {
+              _rewards = null;
+              _openedColor = null;
+            }),
           ),
         ),
       ],
     );
   }
-
-  static final _brass = FilledButton.styleFrom(
-    backgroundColor: ForgeColors.brass,
-    foregroundColor: ForgeColors.base,
-    disabledBackgroundColor: ForgeColors.raised,
-    disabledForegroundColor: ForgeColors.muted,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-  );
-
-  static const _buttonText = TextStyle(
-    fontSize: 15.5,
-    fontWeight: FontWeight.w800,
-  );
 }
 
 class _Panel extends StatelessWidget {
@@ -341,14 +315,7 @@ class _Panel extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      color: ForgeColors.surface,
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(color: ForgeColors.line),
-    ),
-    child: Padding(padding: const EdgeInsets.all(12), child: child),
-  );
+  Widget build(BuildContext context) => SkinPanel(child: child);
 }
 
 class _Note extends StatelessWidget {

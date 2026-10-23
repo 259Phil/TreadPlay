@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -16,6 +18,7 @@ import '../../widgets/pouch_art.dart';
 import '../wanderweg/trail_entry.dart';
 import 'video_button.dart';
 import 'world_scene.dart';
+import '../../ui/skin.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -26,9 +29,10 @@ class HomeScreen extends ConsumerWidget {
     final game = ref.watch(gameProvider);
     final companion = game.activeCompanion;
     final topInset = MediaQuery.paddingOf(context).top;
+    final skin = TreadSkin.of(context);
 
     return ColoredBox(
-      color: TreadColors.iron,
+      color: skin.base,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -63,22 +67,32 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-            child: _NamePlate(companion: companion),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
-            child: _StartButton(
-              label: l.startRun,
-              onPressed: () async {
-                await ensureMovementAccess(context, ref);
-                final access = ref.read(settingsProvider).movementAccess;
-                if (!context.mounted || access == MovementAccess.unasked) {
-                  return;
-                }
-                if (!ref.read(runControllerProvider.notifier).start()) return;
-                if (context.mounted) context.push(AppRoutes.run);
-              },
+            padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: SkinPanel(
+                    padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+                    child: _NamePlate(companion: companion),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                _StartButton(
+                  label: l.startRun,
+                  onPressed: () async {
+                    await ensureMovementAccess(context, ref);
+                    final access = ref.read(settingsProvider).movementAccess;
+                    if (!context.mounted || access == MovementAccess.unasked) {
+                      return;
+                    }
+                    if (!ref.read(runControllerProvider.notifier).start()) {
+                      return;
+                    }
+                    if (context.mounted) context.push(AppRoutes.run);
+                  },
+                ),
+              ],
             ),
           ),
         ],
@@ -113,7 +127,7 @@ class _Header extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.fade,
                 softWrap: false,
-                style: serifTitle.copyWith(fontSize: 30),
+                style: TreadSkin.of(context).display(30),
               ),
             ),
             const Padding(
@@ -190,7 +204,7 @@ class _NamePlate extends StatelessWidget {
                     c.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: serifTitle.copyWith(fontSize: 30, height: 1.1),
+                    style: TreadSkin.of(context).display(26),
                   ),
                   Text.rich(
                     TextSpan(
@@ -312,7 +326,7 @@ class _Segment extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            const ColoredBox(color: TreadColors.plate),
+            ColoredBox(color: TreadSkin.of(context).surface),
             FractionallySizedBox(
               alignment: Alignment.centerLeft,
               widthFactor: fill,
@@ -327,48 +341,80 @@ class _Segment extends StatelessWidget {
   }
 }
 
-/// The single wide brass Start button.
+/// The round brass Start button, bottom right.
 class _StartButton extends StatelessWidget {
   const _StartButton({required this.label, required this.onPressed});
 
   final String label;
   final VoidCallback onPressed;
 
+  static const _size = 92.0;
+
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(32)),
-        boxShadow: [BoxShadow(color: Color(0x99000000), blurRadius: 12)],
+    final s = TreadSkin.of(context);
+    final ring = switch (s.style) {
+      TreadStyle.forgeBrass => Border.all(
+        color: const Color(0xFF4A3B24),
+        width: 3,
       ),
-      child: Material(
-        shape: const StadiumBorder(),
-        clipBehavior: Clip.antiAlias,
-        child: Ink(
-          decoration: const BoxDecoration(gradient: brassGradient),
-          child: InkWell(
-            onTap: onPressed,
-            child: SizedBox(
-              height: 62,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.play_arrow,
-                    size: 30,
-                    color: TreadColors.iron,
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    label,
-                    style: const TextStyle(
-                      color: TreadColors.iron,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.5,
+      TreadStyle.ironPlain => Border.all(color: s.line, width: 2),
+      TreadStyle.leather => Border.all(
+        color: const Color(0xFF2E221A),
+        width: 4,
+      ),
+      TreadStyle.runeEmber => Border.all(color: s.accent, width: 2),
+    };
+    return Semantics(
+      button: true,
+      label: label,
+      excludeSemantics: true,
+      child: Container(
+        width: _size,
+        height: _size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: ring,
+          boxShadow: [
+            const BoxShadow(color: Color(0x99000000), blurRadius: 12),
+            if (s.style == TreadStyle.runeEmber)
+              BoxShadow(color: s.accent.withValues(alpha: .55), blurRadius: 18),
+          ],
+        ),
+        child: Material(
+          shape: const CircleBorder(),
+          clipBehavior: Clip.antiAlias,
+          child: Ink(
+            decoration: BoxDecoration(
+              gradient: s.style == TreadStyle.ironPlain
+                  ? LinearGradient(colors: [s.brass, s.brass])
+                  : const RadialGradient(
+                      center: Alignment(-.3, -.4),
+                      radius: .95,
+                      colors: [
+                        Color(0xFFF0D598),
+                        Color(0xFFC4A36A),
+                        Color(0xFF8E7046),
+                      ],
                     ),
-                  ),
-                ],
+            ),
+            child: InkWell(
+              onTap: onPressed,
+              child: CustomPaint(
+                foregroundPainter: _StartRing(s),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.play_arrow, size: 36, color: s.base),
+                    Text(
+                      s.displayText(label),
+                      style: s
+                          .display(16, color: s.base)
+                          .copyWith(height: 1, fontWeight: s.displayWeight),
+                    ),
+                    const SizedBox(height: 6),
+                  ],
+                ),
               ),
             ),
           ),
@@ -378,6 +424,62 @@ class _StartButton extends StatelessWidget {
   }
 }
 
+class _StartRing extends CustomPainter {
+  _StartRing(this.s);
+  final TreadSkin s;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final c = size.center(Offset.zero);
+    final r = size.shortestSide / 2;
+    final p = Paint()..style = PaintingStyle.stroke;
+    switch (s.style) {
+      case TreadStyle.forgeBrass:
+        canvas.drawCircle(
+          c,
+          r - 6,
+          p
+            ..strokeWidth = 1
+            ..color = const Color(0xAA5A4628),
+        );
+        for (var i = 0; i < 8; i++) {
+          final a = i * math.pi / 4;
+          canvas.drawCircle(
+            c + Offset(math.cos(a), math.sin(a)) * (r - 9),
+            1.8,
+            Paint()..color = const Color(0xFF7A6238),
+          );
+        }
+      case TreadStyle.ironPlain:
+        break;
+      case TreadStyle.leather:
+        final path = Path()..addOval(Rect.fromCircle(center: c, radius: r - 7));
+        for (final m in path.computeMetrics()) {
+          for (var d = 0.0; d < m.length; d += 7) {
+            canvas.drawPath(
+              m.extractPath(d, d + 4),
+              Paint()
+                ..style = PaintingStyle.stroke
+                ..strokeWidth = 1.2
+                ..color = const Color(0xAA4A3420),
+            );
+          }
+        }
+      case TreadStyle.runeEmber:
+        canvas.drawCircle(
+          c,
+          r - 6,
+          p
+            ..strokeWidth = 1.2
+            ..color = const Color(0xAA6B3519),
+        );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_StartRing old) => old.s != s;
+}
+
 /// The leash in small at the edge of the world: the pouches found so far,
 /// warm ones glowing. Tap opens the pouch screen.
 class _LeashChip extends StatelessWidget {
@@ -385,68 +487,46 @@ class _LeashChip extends StatelessWidget {
 
   final GameData game;
 
+  static const _railW = 184.0;
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final s = TreadSkin.of(context);
     final leash = game.pouches.leash;
     return Semantics(
       button: true,
       label: l.pouchLeash(leash.length, game.leashClips),
-      child: Material(
-        color: const Color(0xD91A1D22),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: const BorderSide(color: Color(0xFF7A6238)),
-        ),
-        child: InkWell(
-          key: const Key('home-leash'),
-          borderRadius: BorderRadius.circular(20),
-          onTap: () => context.push(AppRoutes.pouches),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(10, 4, 12, 4),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  l.homeLeash,
-                  style: const TextStyle(
-                    color: TreadColors.brass,
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(width: 6),
-                for (var i = 0; i < game.leashClips; i++)
-                  i < leash.length
-                      ? PouchArt(
-                          color: leash[i].color,
-                          size: 30,
-                          glow: leash[i].ready,
-                        )
-                      : const SizedBox(
-                          width: 30,
-                          height: 30,
-                          child: Center(child: _EmptyClip()),
-                        ),
-              ],
+      child: SkinChip(
+        key: const Key('home-leash'),
+        onTap: () => context.push(AppRoutes.pouches),
+        padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              s.displayText(l.homeLeash),
+              style: TextStyle(
+                color: s.brass,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                letterSpacing: s.displayUpper ? 1 : 0,
+              ),
             ),
-          ),
+            SizedBox(
+              width: _railW,
+              child: LeashRail(
+                leash: leash,
+                clips: game.leashClips,
+                artSize: 36,
+                compact: true,
+                keyPrefix: 'home-leash-clip',
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
-}
-
-class _EmptyClip extends StatelessWidget {
-  const _EmptyClip();
-
-  @override
-  Widget build(BuildContext context) => Container(
-    width: 12,
-    height: 12,
-    decoration: BoxDecoration(
-      shape: BoxShape.circle,
-      border: Border.all(color: const Color(0xFF59616B), width: 1.5),
-    ),
-  );
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../domain/pouch.dart';
 import '../l10n/app_localizations.dart';
 import '../theme.dart';
+import '../ui/skin.dart';
 import 'format.dart';
 import 'seal_art.dart';
 import 'stock_art.dart';
@@ -80,7 +81,9 @@ class PouchArt extends StatelessWidget {
   }
 }
 
-/// The iron leash rod with its clips; pouches hang below the clips.
+/// The painted leash: brass end brackets, a braided leather rope and four
+/// brass rings. Pouches hang from the rings by their own carabiner. Rings
+/// beyond [clips] are dimmed and carry a lock badge.
 class LeashRail extends StatelessWidget {
   const LeashRail({
     super.key,
@@ -91,6 +94,7 @@ class LeashRail extends StatelessWidget {
     this.onTap,
     this.labels = false,
     this.keyPrefix = 'leash',
+    this.compact = false,
   });
 
   final List<Pouch> leash;
@@ -103,96 +107,100 @@ class LeashRail extends StatelessWidget {
   final bool labels;
   final String keyPrefix;
 
+  /// Small rail for the Home chip: no labels, smaller lock badge.
+  final bool compact;
+
+  // Geometry of the art pieces (pixels in the 310 px tall source).
+  static const _srcH = 310.0;
+  static const _capW = 206.0;
+  static const _ringW = 76.0;
+  static const _hangY = 284.0;
+
+  /// Height the rail needs at [width].
+  static double heightFor(double width, double artSize, bool labels) {
+    final g = _Geom(width, artSize);
+    return g.pouchTop + g.art + (labels ? 18 : 0);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    return Stack(
-      children: [
-        // The rod.
-        Positioned(
-          left: 0,
-          right: 0,
-          top: 4,
-          child: Container(
-            height: 6,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(3),
-              gradient: const LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFF8A9099),
-                  Color(0xFF3B434E),
-                  Color(0xFF1A1D22),
-                ],
-              ),
-              boxShadow: const [
-                BoxShadow(color: Color(0x99000000), blurRadius: 3),
-              ],
+    return LayoutBuilder(
+      builder: (context, box) {
+        final g = _Geom(box.maxWidth, artSize);
+        final h = g.pouchTop + g.art + (labels ? 18 : 0);
+        final children = <Widget>[
+          Positioned(
+            left: g.capW * .5,
+            right: g.capW * .5,
+            top: 0,
+            height: g.railH,
+            child: Image.asset(
+              'assets/leash/leash_rope.webp',
+              repeat: ImageRepeat.repeatX,
+              fit: BoxFit.fitHeight,
+              alignment: Alignment.centerLeft,
+              filterQuality: FilterQuality.medium,
             ),
           ),
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            for (var i = 0; i < clips; i++)
-              Expanded(child: _clip(context, l, i)),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _clip(BuildContext context, AppLocalizations l, int i) {
-    final p = i < leash.length ? leash[i] : null;
-    final isSelected = p != null && i == selected;
-    final clip = Container(
-      width: 8,
-      height: 16,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(2),
-        border: Border.all(color: const Color(0xFF4A3B24)),
-        gradient: const LinearGradient(
-          colors: [Color(0xFFC4A36A), Color(0xFF7A6238)],
-        ),
-      ),
-    );
-    final body = Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        clip,
-        if (p == null)
-          SizedBox(
-            height: artSize,
-            child: Center(
-              child: Container(
-                width: artSize * .42,
-                height: artSize * .42,
+          Positioned(
+            left: 0,
+            top: 0,
+            width: g.capW,
+            height: g.railH,
+            child: _piece('leash_cap_l'),
+          ),
+          Positioned(
+            right: 0,
+            top: 0,
+            width: g.capW,
+            height: g.railH,
+            child: _piece('leash_cap_r'),
+          ),
+        ];
+        for (var i = 0; i < Pouches.maxClips; i++) {
+          final cx = g.ringX(i);
+          final p = i < leash.length && i < clips ? leash[i] : null;
+          final locked = i >= clips;
+          if (p != null) {
+            final isSelected = i == selected;
+            Widget art = PouchArt(color: p.color, size: g.art, glow: p.ready);
+            if (isSelected) {
+              art = DecoratedBox(
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: ForgeColors.line, width: 1.5),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: ForgeColors.brass, width: 1.5),
+                  color: const Color(0x22C4A36A),
                 ),
+                child: art,
+              );
+            }
+            final tap = onTap;
+            if (tap != null) {
+              art = InkWell(
+                key: Key('$keyPrefix-$i'),
+                borderRadius: BorderRadius.circular(10),
+                onTap: () => tap(i),
+                child: art,
+              );
+            }
+            children.add(
+              Positioned(
+                left: cx - g.art * .53,
+                top: g.pouchTop,
+                width: g.art,
+                height: g.art,
+                child: art,
               ),
-            ),
-          )
-        else
-          DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: isSelected ? ForgeColors.brass : Colors.transparent,
-                width: 1.5,
-              ),
-              color: isSelected ? const Color(0x22C4A36A) : null,
-            ),
-            child: PouchArt(color: p.color, size: artSize, glow: p.ready),
-          ),
-        if (labels)
-          SizedBox(
-            height: 16,
-            child: p == null
-                ? null
-                : FittedBox(
+            );
+            if (labels) {
+              children.add(
+                Positioned(
+                  left: cx - g.spacing * .45,
+                  width: g.spacing * .9,
+                  top: g.pouchTop + g.art + 1,
+                  height: 16,
+                  child: FittedBox(
                     child: Text(
                       p.ready
                           ? l.pouchReadyShort
@@ -207,22 +215,82 @@ class LeashRail extends StatelessWidget {
                       ),
                     ),
                   ),
-          ),
-      ],
-    );
-    final tap = onTap;
-    if (p == null || tap == null) {
-      return Center(child: body);
-    }
-    return Center(
-      child: InkWell(
-        key: Key('$keyPrefix-$i'),
-        borderRadius: BorderRadius.circular(10),
-        onTap: () => tap(i),
-        child: body,
-      ),
+                ),
+              );
+            }
+          }
+          Widget ring = _piece('leash_ring');
+          if (locked) {
+            ring = Opacity(
+              opacity: .55,
+              child: ColorFiltered(
+                colorFilter: const ColorFilter.matrix([
+                  .25, .25, .25, 0, 0, //
+                  .22, .22, .22, 0, 0, //
+                  .2, .2, .2, 0, 0, //
+                  0, 0, 0, 1, 0,
+                ]),
+                child: ring,
+              ),
+            );
+          }
+          children.add(
+            Positioned(
+              left: cx - g.ringW / 2,
+              top: 0,
+              width: g.ringW,
+              height: g.railH,
+              child: ring,
+            ),
+          );
+          if (locked) {
+            final b = compact ? 13.0 : 20.0;
+            children.add(
+              Positioned(
+                key: Key('$keyPrefix-locked-$i'),
+                left: cx - b / 2,
+                top: g.railH * (_hangY / _srcH) - b * .15,
+                child: LockBadge(size: b),
+              ),
+            );
+          }
+        }
+        return SizedBox(
+          height: h,
+          width: box.maxWidth,
+          child: Stack(clipBehavior: Clip.none, children: children),
+        );
+      },
     );
   }
+
+  static Widget _piece(String name) => Image.asset(
+    'assets/leash/$name.webp',
+    fit: BoxFit.fill,
+    filterQuality: FilterQuality.medium,
+  );
+}
+
+class _Geom {
+  _Geom(this.width, double artSize) {
+    railH = (width * .2).clamp(26.0, 88.0);
+    capW = railH * LeashRail._capW / LeashRail._srcH;
+    ringW = railH * LeashRail._ringW / LeashRail._srcH;
+    final inner = width - capW * 1.7;
+    spacing = inner / Pouches.maxClips;
+    art = artSize.clamp(0.0, spacing * .98);
+    pouchTop = railH * (LeashRail._hangY / LeashRail._srcH) - art * .07;
+  }
+
+  final double width;
+  late final double railH;
+  late final double capW;
+  late final double ringW;
+  late final double spacing;
+  late final double art;
+  late final double pouchTop;
+
+  double ringX(int i) => capW * .85 + spacing * (i + .5);
 }
 
 String _km(BuildContext context, double m) =>

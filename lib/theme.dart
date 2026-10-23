@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'domain/companion.dart';
+import 'ui/skin.dart';
 
 /// Metal UI palette (V1.2 §5): dark iron, brass accents, no pastel surfaces.
 class TreadColors {
@@ -44,6 +45,10 @@ ThemeData buildTheme() {
         onError: TreadColors.text,
       );
   final base = ThemeData(colorScheme: scheme, useMaterial3: true);
+  return applySkin(_baseTheme(base), TreadSkin.forStyle(buildStyle));
+}
+
+ThemeData _baseTheme(ThemeData base) {
   return base.copyWith(
     scaffoldBackgroundColor: TreadColors.iron,
     textTheme: base.textTheme.apply(

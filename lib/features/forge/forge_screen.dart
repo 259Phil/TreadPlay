@@ -14,6 +14,7 @@ import '../../widgets/format.dart';
 import '../../widgets/lp_pill.dart';
 import '../../widgets/seal_art.dart';
 import '../../widgets/stock_art.dart';
+import '../../ui/skin.dart';
 
 enum _Mode { up, combine }
 
@@ -96,7 +97,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
     if (_first != null && game.forge.count(_first!) == 0) _first = null;
     if (_second != null && game.forge.count(_second!) == 0) _second = null;
 
-    final tabLabel = const TextStyle(fontSize: 13, fontWeight: FontWeight.w700);
+    final skin = TreadSkin.of(context);
     final content = Column(
       children: [
         _Header(
@@ -106,41 +107,22 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
               : _confirmClear(context, game.activeCompanion, slot, seal),
         ),
         const SizedBox(height: 2),
-        DecoratedBox(
-          decoration: const BoxDecoration(
-            border: Border(bottom: BorderSide(color: ForgeColors.line)),
-          ),
-          child: TabBar(
-            key: const Key('forge-tabs'),
-            controller: _tabs,
-            labelColor: ForgeColors.brass,
-            unselectedLabelColor: ForgeColors.muted,
-            indicatorColor: ForgeColors.brass,
-            indicatorWeight: 2.5,
-            indicatorSize: TabBarIndicatorSize.tab,
-            dividerHeight: 0,
-            labelPadding: const EdgeInsets.symmetric(horizontal: 2),
-            labelStyle: tabLabel,
-            unselectedLabelStyle: tabLabel.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-            overlayColor: WidgetStateProperty.all(
-              ForgeColors.brass.withValues(alpha: 0.08),
-            ),
-            tabs: [
-              for (final (key, text) in [
-                ('tab-up', l.forgeModeUp),
-                ('tab-combine', l.forgeModeCombine),
-                ('tab-case', l.forgeCase),
-                ('tab-ladder', l.forgeLadder),
-              ])
-                Tab(
-                  key: Key(key),
-                  height: 40,
-                  child: FittedBox(fit: BoxFit.scaleDown, child: Text(text)),
-                ),
-            ],
-          ),
+        SkinTabBar(
+          key: const Key('forge-tabs'),
+          controller: _tabs,
+          tabs: [
+            for (final (key, text) in [
+              ('tab-up', l.forgeModeUp),
+              ('tab-combine', l.forgeModeCombine),
+              ('tab-case', l.forgeCase),
+              ('tab-ladder', l.forgeLadder),
+            ])
+              Tab(
+                key: Key(key),
+                height: 40,
+                child: FittedBox(fit: BoxFit.scaleDown, child: Text(text)),
+              ),
+          ],
         ),
         Expanded(
           child: TabBarView(
@@ -157,10 +139,10 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
     );
 
     return Scaffold(
-      backgroundColor: ForgeColors.base,
+      backgroundColor: skin.base,
       appBar: AppBar(
-        backgroundColor: ForgeColors.base,
-        title: Text(l.tabForge),
+        backgroundColor: skin.base,
+        title: Text(skin.displayText(l.tabForge), style: skin.display(26)),
         actions: lpActions(game.lp),
       ),
       // Very short screens fall back to scrolling instead of overflowing.
@@ -239,139 +221,129 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
         key: Key(mode == _Mode.up ? 'forge-up-tab' : 'forge-combine-tab'),
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          DecoratedBox(
+          SkinPanel(
             key: active ? const Key('forge-panel') : null,
-            decoration: BoxDecoration(
-              color: ForgeColors.surface,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: ForgeColors.line),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    mode == _Mode.up ? l.forgeUpTitle : l.forgeCombineTitle,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: ForgeColors.text,
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w700,
-                    ),
+            padding: const EdgeInsets.fromLTRB(12, 9, 12, 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  mode == _Mode.up ? l.forgeUpTitle : l.forgeCombineTitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: ForgeColors.text,
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w700,
                   ),
-                  const SizedBox(height: 6),
-                  SizedBox(
-                    height: 70,
-                    child: Row(
-                      children: [
-                        _Input(seal: a),
-                        const SizedBox(width: 4),
-                        _Input(seal: mode == _Mode.up ? a : b),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (step != null) ...[
-                                  Text(
-                                    l.forgeGlutCost(_glut),
-                                    style: const TextStyle(
-                                      color: ForgeColors.brass,
-                                      fontWeight: FontWeight.w800,
-                                      fontSize: 16,
-                                    ),
+                ),
+                const SizedBox(height: 6),
+                SizedBox(
+                  height: 70,
+                  child: Row(
+                    children: [
+                      _Input(seal: a),
+                      const SizedBox(width: 4),
+                      _Input(seal: mode == _Mode.up ? a : b),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (step != null) ...[
+                                Text(
+                                  l.forgeGlutCost(_glut),
+                                  style: const TextStyle(
+                                    color: ForgeColors.brass,
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 16,
                                   ),
-                                  Text(
-                                    l.forgeLpCost(
-                                      formatNumber(context, step.lp * 1.0),
-                                    ),
-                                    style: const TextStyle(
-                                      color: ForgeColors.muted,
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                        ),
-                        const Icon(
-                          Icons.arrow_forward,
-                          color: ForgeColors.text,
-                        ),
-                        const SizedBox(width: 4),
-                        SizedBox(
-                          width: 70,
-                          height: 70,
-                          child: made == null
-                              ? null
-                              : SealArt(
-                                  key: const Key('forge-result'),
-                                  seal: made,
-                                  size: 70,
-                                  showLevel: true,
                                 ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 40,
-                    child: step == null
-                        ? null
-                        : _GlutSlider(
-                            glut: _glut,
-                            step: step,
-                            have: game.forge.glut,
-                            onChanged: (g) => setState(() => _glut = g),
+                                Text(
+                                  l.forgeLpCost(
+                                    formatNumber(context, step.lp * 1.0),
+                                  ),
+                                  style: const TextStyle(
+                                    color: ForgeColors.muted,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ],
                           ),
+                        ),
+                      ),
+                      const Icon(Icons.arrow_forward, color: ForgeColors.text),
+                      const SizedBox(width: 4),
+                      SizedBox(
+                        width: 70,
+                        height: 70,
+                        child: made == null
+                            ? null
+                            : SealArt(
+                                key: const Key('forge-result'),
+                                seal: made,
+                                size: 70,
+                                showLevel: true,
+                              ),
+                      ),
+                    ],
                   ),
-                  SizedBox(
-                    height: 16,
-                    child: step == null
-                        ? null
-                        : FittedBox(
-                            fit: BoxFit.scaleDown,
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              l.forgeFailNote(
-                                pctText(context, step.failChance(_glut)),
-                              ),
-                              key: const Key('forge-fail'),
-                              style: const TextStyle(
-                                color: ForgeColors.text,
-                                fontSize: 12.5,
-                              ),
+                ),
+                SizedBox(
+                  height: 40,
+                  child: step == null
+                      ? null
+                      : _GlutSlider(
+                          glut: _glut,
+                          step: step,
+                          have: game.forge.glut,
+                          onChanged: (g) => setState(() => _glut = g),
+                        ),
+                ),
+                SizedBox(
+                  height: 16,
+                  child: step == null
+                      ? null
+                      : FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            l.forgeFailNote(
+                              pctText(context, step.failChance(_glut)),
+                            ),
+                            key: const Key('forge-fail'),
+                            style: const TextStyle(
+                              color: ForgeColors.text,
+                              fontSize: 12.5,
                             ),
                           ),
-                  ),
-                  const SizedBox(height: 2),
-                  SizedBox(
-                    height: 28,
-                    child: Text(
-                      hint,
-                      key: !active
-                          ? null
-                          : unlocks.forge
-                          ? const Key('forge-hint')
-                          : const Key('forge-block'),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: block == null && unlocks.forge
-                            ? ForgeColors.muted
-                            : ForgeColors.ember,
-                        fontSize: 11.5,
-                        height: 1.2,
-                      ),
+                        ),
+                ),
+                const SizedBox(height: 2),
+                SizedBox(
+                  height: 28,
+                  child: Text(
+                    hint,
+                    key: !active
+                        ? null
+                        : unlocks.forge
+                        ? const Key('forge-hint')
+                        : const Key('forge-block'),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: block == null && unlocks.forge
+                          ? ForgeColors.muted
+                          : ForgeColors.ember,
+                      fontSize: 11.5,
+                      height: 1.2,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 8),
@@ -388,30 +360,15 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
           Row(
             children: [
               Expanded(
-                child: SizedBox(
+                child: SkinButton(
+                  key: active ? const Key('forge-go') : null,
                   height: 50,
-                  child: FilledButton(
-                    key: active ? const Key('forge-go') : null,
-                    style: FilledButton.styleFrom(
-                      backgroundColor: ForgeColors.brass,
-                      foregroundColor: ForgeColors.base,
-                      disabledBackgroundColor: ForgeColors.raised,
-                      disabledForegroundColor: ForgeColors.muted,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    onPressed: a == null || block != null || made == null
-                        ? null
-                        : () => _forge(context),
-                    child: Text(
-                      mode == _Mode.up ? l.forgeAction : l.forgeCombineAction,
-                      style: const TextStyle(
-                        fontSize: 15.5,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ),
+                  label: mode == _Mode.up
+                      ? l.forgeAction
+                      : l.forgeCombineAction,
+                  onPressed: a == null || block != null || made == null
+                      ? null
+                      : () => _forge(context),
                 ),
               ),
               const SizedBox(width: 8),
@@ -661,13 +618,27 @@ class _Input extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = seal;
+    final skin = TreadSkin.of(context);
     return Container(
       width: 58,
       height: 58,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: ForgeColors.base,
-        border: Border.all(color: ForgeColors.line, width: 1.5),
+        color: skin.base,
+        border: Border.all(
+          color: skin.style == TreadStyle.ironPlain
+              ? skin.line
+              : skin.brassDeep,
+          width: 1.5,
+        ),
+        boxShadow: skin.style == TreadStyle.runeEmber
+            ? [
+                BoxShadow(
+                  color: skin.accent.withValues(alpha: .3),
+                  blurRadius: 6,
+                ),
+              ]
+            : null,
       ),
       child: s == null
           ? const Icon(Icons.add, color: ForgeColors.line)
@@ -768,24 +739,37 @@ class _StoresLine extends StatelessWidget {
       fontWeight: FontWeight.w700,
       fontSize: 13,
     );
+    Widget chip(Widget icon, String text, String suffix) => Flexible(
+      child: SkinChip(
+        padding: const EdgeInsets.fromLTRB(4, 2, 10, 2),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              icon,
+              const SizedBox(width: 4),
+              Text(
+                text,
+                key: name == null ? null : Key('$name-$suffix'),
+                style: style.copyWith(color: TreadSkin.of(context).text),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
     return Row(
       key: k,
       children: [
-        const SplitterIcon(size: 24),
-        const SizedBox(width: 4),
-        Text(
+        chip(
+          const SplitterIcon(size: 24),
           l.storesSplinters(game.forge.splinters),
-          key: name == null ? null : Key('$name-splinters'),
-          style: style,
+          'splinters',
         ),
-        const SizedBox(width: 14),
-        const GlutIcon(size: 24),
-        const SizedBox(width: 4),
-        Text(
-          l.storesGlut(game.forge.glut),
-          key: name == null ? null : Key('$name-glut'),
-          style: style,
-        ),
+        const SizedBox(width: 8),
+        chip(const GlutIcon(size: 24), l.storesGlut(game.forge.glut), 'glut'),
       ],
     );
   }
@@ -872,15 +856,16 @@ class _SetButton extends StatelessWidget {
       height: 50,
       child: OutlinedButton(
         onPressed: seal != null && block == null ? onSet : null,
-        style: OutlinedButton.styleFrom(
-          foregroundColor: ForgeColors.text,
-          disabledForegroundColor: ForgeColors.muted,
-          side: const BorderSide(color: ForgeColors.line),
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-        ),
+        style:
+            skinButtonStyle(
+              TreadSkin.of(context),
+              SkinButtonKind.secondary,
+              height: 50,
+            ).copyWith(
+              padding: const WidgetStatePropertyAll(
+                EdgeInsets.symmetric(horizontal: 8),
+              ),
+            ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -1019,18 +1004,24 @@ class _CaseTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final metal = sealLevelMetal(seal.level);
+    final skin = TreadSkin.of(context);
+    final radius = BorderRadius.circular(skin.radius.clamp(3, 12));
     return Material(
       key: Key('case-${seal.code}'),
-      color: selected ? ForgeColors.raised : ForgeColors.surface,
+      color: selected ? skin.raised : skin.surface,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: radius,
         side: BorderSide(
-          color: selected ? ForgeColors.brass : ForgeColors.line,
+          color: selected
+              ? (skin.style == TreadStyle.runeEmber ? skin.accent : skin.brass)
+              : (skin.style == TreadStyle.forgeBrass
+                    ? skin.brassDeep
+                    : skin.line),
           width: selected ? 2 : 1,
         ),
       ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: radius,
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 3),

@@ -9,6 +9,7 @@ import '../wanderweg/trail_entry.dart';
 import '../../router.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
+import '../../ui/skin.dart';
 import '../../widgets/format.dart';
 import '../../widgets/pouch_art.dart';
 import '../../widgets/stock_art.dart';
@@ -27,7 +28,10 @@ class SummaryScreen extends ConsumerWidget {
       trailing: Text(value, style: theme.textTheme.titleMedium),
     );
 
+    final skin = TreadSkin.of(context);
+    final leather = skin.style == TreadStyle.leather;
     return Scaffold(
+      backgroundColor: skin.canvas,
       appBar: AppBar(
         title: Text(l.summaryTitle),
         automaticallyImplyLeading: false,
@@ -65,10 +69,22 @@ class SummaryScreen extends ConsumerWidget {
                 Text(
                   l.lpAmount(formatNumber(context, run.lp)),
                   textAlign: TextAlign.center,
-                  style: theme.textTheme.displayMedium?.copyWith(
-                    color: TreadColors.brass,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: leather
+                      ? skin
+                            .display(52, color: TreadColors.brass)
+                            .copyWith(
+                              shadows: const [
+                                Shadow(
+                                  color: Color(0xCC000000),
+                                  offset: Offset(0, 2),
+                                  blurRadius: 4,
+                                ),
+                              ],
+                            )
+                      : theme.textTheme.displayMedium?.copyWith(
+                          color: TreadColors.brass,
+                          fontWeight: FontWeight.bold,
+                        ),
                 ),
                 Text(l.summaryLp, textAlign: TextAlign.center),
                 const SizedBox(height: 16),
@@ -78,10 +94,33 @@ class SummaryScreen extends ConsumerWidget {
                     leashFull: run.leashFull,
                     warmed: run.pouchesWarmed,
                   ),
-                row(l.distance, l.kmValue(formatKm(context, run.distanceM))),
-                row(l.time, formatDuration(run.duration)),
-                row(l.pace, l.paceValue(formatPace(run.pace))),
-                row(l.sweetSpotShare, formatShare(context, run.sweetSpotShare)),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: Column(
+                      children: [
+                        row(
+                          l.distance,
+                          l.kmValue(formatKm(context, run.distanceM)),
+                        ),
+                        row(l.time, formatDuration(run.duration)),
+                        row(l.pace, l.paceValue(formatPace(run.pace))),
+                        row(
+                          l.sweetSpotShare,
+                          formatShare(context, run.sweetSpotShare),
+                        ),
+                        if ((run.breathLeft, run.tankSize) case (
+                          final left?,
+                          final tank?,
+                        ))
+                          row(
+                            l.summaryBreathLeft,
+                            l.breathValue(formatNumber(context, left), tank),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
                 if (run.glut > 0)
                   ListTile(
                     key: const Key('summary-glut'),
@@ -93,14 +132,6 @@ class SummaryScreen extends ConsumerWidget {
                         color: TreadColors.brass,
                       ),
                     ),
-                  ),
-                if ((run.breathLeft, run.tankSize) case (
-                  final left?,
-                  final tank?,
-                ))
-                  row(
-                    l.summaryBreathLeft,
-                    l.breathValue(formatNumber(context, left), tank),
                   ),
                 const SizedBox(height: 24),
                 FilledButton(
@@ -130,17 +161,28 @@ class _PouchCard extends StatelessWidget {
     final l = AppLocalizations.of(context);
     final p = pouch;
     const muted = TextStyle(color: ForgeColors.muted, fontSize: 13.5);
+    final leather = TreadSkin.of(context).style == TreadStyle.leather;
     return Container(
       key: const Key('summary-pouch'),
       margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
-      decoration: BoxDecoration(
-        color: ForgeColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: p == null ? ForgeColors.line : pouchAccent(p),
-        ),
-      ),
+      padding: leather
+          ? const EdgeInsets.fromLTRB(14, 12, 10, 12)
+          : const EdgeInsets.fromLTRB(12, 10, 8, 10),
+      decoration: leather
+          ? const ShapeDecoration(
+              color: Color(0xF2342519),
+              shape: LeatherBorder(
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+              ),
+              shadows: [BoxShadow(color: Color(0xAA000000), blurRadius: 8)],
+            )
+          : BoxDecoration(
+              color: ForgeColors.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: p == null ? ForgeColors.line : pouchAccent(p),
+              ),
+            ),
       child: Row(
         children: [
           if (p != null) ...[
@@ -177,7 +219,9 @@ class _PouchCard extends StatelessWidget {
           ),
           TextButton(
             key: const Key('summary-to-leash'),
-            style: TextButton.styleFrom(foregroundColor: ForgeColors.brass),
+            style: leather
+                ? null
+                : TextButton.styleFrom(foregroundColor: ForgeColors.brass),
             onPressed: () => context.push(AppRoutes.pouches),
             child: Text(l.summaryToLeash),
           ),

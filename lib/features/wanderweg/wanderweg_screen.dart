@@ -8,16 +8,19 @@ import '../../domain/wanderweg.dart';
 import '../../l10n/app_localizations.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
+import '../../ui/skin.dart';
 import '../../widgets/format.dart';
 import 'trail_layout.dart';
 import 'wanderweg_text.dart';
 
 /// Wanderweg palette on top of [TreadColors].
 class TrailColors {
-  static const slate = Color(0xFF1A1D22);
-  static const slateLight = Color(0xFF2A3038);
+  static const slate = kLeatherBuild ? Color(0xFF241912) : Color(0xFF1A1D22);
+  static const slateLight = kLeatherBuild
+      ? Color(0xFF3A2A20)
+      : Color(0xFF2A3038);
   static const bone = Color(0xFFE8E0D0);
-  static const brass = Color(0xFFC4A36A);
+  static const brass = kLeatherBuild ? Color(0xFFD2B074) : Color(0xFFC4A36A);
   static const ember = Color(0xFFE08A3C);
   static const emberCore = Color(0xFFFFC27A);
 }
@@ -266,7 +269,11 @@ class _Seam extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0x000F0E0D), Color(0x990F0E0D), Color(0x000F0E0D)],
+          colors: [
+            (kLeatherBuild ? Color(0x001E140F) : Color(0x000F0E0D)),
+            (kLeatherBuild ? Color(0x991E140F) : Color(0x990F0E0D)),
+            (kLeatherBuild ? Color(0x001E140F) : Color(0x000F0E0D)),
+          ],
         ),
       ),
     ),
@@ -285,7 +292,10 @@ class _Fade extends StatelessWidget {
         gradient: LinearGradient(
           begin: down ? Alignment.topCenter : Alignment.bottomCenter,
           end: down ? Alignment.bottomCenter : Alignment.topCenter,
-          colors: const [TreadColors.iron, Color(0x000F0E0D)],
+          colors: const [
+            TreadColors.iron,
+            (kLeatherBuild ? Color(0x001E140F) : Color(0x000F0E0D)),
+          ],
         ),
       ),
     ),
@@ -455,14 +465,16 @@ class _CairnLabel extends StatelessWidget {
         TrailColors.bone,
       ),
       _CairnState.open => (
-        const Color(0xFF3A3F47),
+        (kLeatherBuild ? const Color(0xFF6A5038) : const Color(0xFF3A3F47)),
         TreadColors.muted,
         TreadColors.muted,
       ),
     };
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: const Color(0xD91A1D22),
+        color: (kLeatherBuild
+            ? const Color(0xD9241912)
+            : const Color(0xD91A1D22)),
         borderRadius: BorderRadius.circular(9),
         border: Border.all(
           color: border,
@@ -518,10 +530,16 @@ class _WorldSign extends StatelessWidget {
     final name = [for (final w in sign.worlds) worldLabel(l, w)].join(' · ');
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: const Color(0xCC1A1D22),
+        color: (kLeatherBuild
+            ? const Color(0xCC241912)
+            : const Color(0xCC1A1D22)),
         borderRadius: BorderRadius.circular(4),
         border: Border.all(
-          color: open ? TrailColors.brass : const Color(0xFF3A3F47),
+          color: open
+              ? TrailColors.brass
+              : (kLeatherBuild
+                    ? const Color(0xFF6A5038)
+                    : const Color(0xFF3A3F47)),
         ),
       ),
       child: Padding(
@@ -529,9 +547,11 @@ class _WorldSign extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
+            skinIcon(
+              context,
               open ? Icons.signpost_outlined : Icons.lock_outline,
-              size: 13,
+              open ? SkinIcons.waymark : SkinIcons.lock,
+              size: 14,
               color: open ? TrailColors.brass : TreadColors.muted,
             ),
             const SizedBox(width: 5),
@@ -623,7 +643,9 @@ class _CompanionTag extends StatelessWidget {
       delegate: _CenterClamp(centerX),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: const Color(0xE61A1D22),
+          color: (kLeatherBuild
+              ? const Color(0xE6241912)
+              : const Color(0xE61A1D22)),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: TrailColors.ember),
         ),
@@ -682,7 +704,11 @@ class _TopBar extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [TreadColors.iron, Color(0xCC0F0E0D), Color(0x000F0E0D)],
+          colors: [
+            TreadColors.iron,
+            (kLeatherBuild ? Color(0xCC1E140F) : Color(0xCC0F0E0D)),
+            (kLeatherBuild ? Color(0x001E140F) : Color(0x000F0E0D)),
+          ],
           stops: [0, 0.7, 1],
         ),
       ),
@@ -738,7 +764,9 @@ class _TopBar extends StatelessWidget {
             DecoratedBox(
               key: const Key('trail-messenger'),
               decoration: BoxDecoration(
-                color: const Color(0xEB1A1D22),
+                color: (kLeatherBuild
+                    ? const Color(0xEB241912)
+                    : const Color(0xEB1A1D22)),
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: TreadColors.brassDark),
               ),
@@ -1009,7 +1037,7 @@ Future<void> showWaymarkSheet(BuildContext context, GameData game, Waymark wm) {
   final reached = wm.number <= game.wanderweg.reached;
   return showModalBottomSheet<void>(
     context: context,
-    backgroundColor: TrailColors.slate,
+    backgroundColor: kLeatherBuild ? null : TrailColors.slate,
     showDragHandle: true,
     builder: (context) => SafeArea(
       child: Padding(

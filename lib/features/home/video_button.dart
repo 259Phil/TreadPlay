@@ -6,6 +6,7 @@ import '../../domain/video_rewards.dart';
 import '../../l10n/app_localizations.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
+import '../../ui/skin.dart';
 import '../../widgets/format.dart';
 
 /// Small, calm button next to the LP pill for the optional rewarded video.
@@ -39,6 +40,7 @@ class _VideoButtonState extends ConsumerState<VideoButton> {
       child: Semantics(
         button: true,
         child: InkWell(
+          key: const Key('video-button'),
           customBorder: const CircleBorder(),
           onTap: _busy ? null : () => _onTap(reward),
           child: SizedBox(
@@ -53,10 +55,24 @@ class _VideoButtonState extends ConsumerState<VideoButton> {
                       color: TreadColors.plate,
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: usedUp
+                        color: kLeatherBuild
+                            ? (usedUp
+                                  ? TreadColors.brassDark
+                                  : TreadColors.brass)
+                            : usedUp
                             ? const Color(0xFF2B2722)
                             : const Color(0xFF3A3328),
+                        width: kLeatherBuild ? 1.5 : 1,
                       ),
+                      boxShadow: kLeatherBuild
+                          ? const [
+                              BoxShadow(
+                                color: Color(0xAA000000),
+                                blurRadius: 4,
+                                offset: Offset(0, 2),
+                              ),
+                            ]
+                          : null,
                     ),
                     child: Center(
                       child: _busy
@@ -67,6 +83,11 @@ class _VideoButtonState extends ConsumerState<VideoButton> {
                                 strokeWidth: 2,
                                 color: TreadColors.brass,
                               ),
+                            )
+                          : TreadSkin.of(context).style == TreadStyle.leather
+                          ? Opacity(
+                              opacity: usedUp ? .4 : 1,
+                              child: const SkinIcon(SkinIcons.video, size: 30),
                             )
                           : Icon(
                               Icons.smart_display_outlined,
@@ -121,7 +142,7 @@ class _VideoButtonState extends ConsumerState<VideoButton> {
     messenger.removeCurrentSnackBar();
     final watch = await showModalBottomSheet<bool>(
       context: context,
-      backgroundColor: TreadColors.plate,
+      backgroundColor: kLeatherBuild ? null : TreadColors.plate,
       showDragHandle: true,
       builder: (context) => _VideoSheet(reward: reward),
     );
@@ -157,7 +178,12 @@ class _VideoSheet extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(l.videoTitle, style: serifTitle.copyWith(fontSize: 24)),
+            Text(
+              l.videoTitle,
+              style: kLeatherBuild
+                  ? TreadSkin.of(context).display(24, color: TreadColors.brass)
+                  : serifTitle.copyWith(fontSize: 24),
+            ),
             const SizedBox(height: 8),
             Text(
               l.videoBody(
@@ -178,12 +204,16 @@ class _VideoSheet extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: FilledButton.icon(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: TreadColors.brass,
-                      foregroundColor: TreadColors.iron,
-                      shape: const StadiumBorder(),
-                    ),
-                    icon: const Icon(Icons.play_arrow),
+                    style: kLeatherBuild
+                        ? null
+                        : FilledButton.styleFrom(
+                            backgroundColor: TreadColors.brass,
+                            foregroundColor: TreadColors.iron,
+                            shape: const StadiumBorder(),
+                          ),
+                    icon: kLeatherBuild
+                        ? const SkinIcon(SkinIcons.play, size: 22)
+                        : const Icon(Icons.play_arrow),
                     label: Text(l.videoWatch),
                     onPressed: () => Navigator.pop(context, true),
                   ),

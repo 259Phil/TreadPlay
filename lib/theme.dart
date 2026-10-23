@@ -4,15 +4,16 @@ import 'domain/companion.dart';
 import 'ui/skin.dart';
 
 /// Metal UI palette (V1.2 §5): dark iron, brass accents, no pastel surfaces.
+/// Style C builds ([kLeatherBuild]) get the warm leather tones instead.
 class TreadColors {
-  static const iron = Color(0xFF0F0E0D);
-  static const plate = Color(0xFF1F1C18);
-  static const rail = Color(0xFF161411);
-  static const text = Color(0xFFF2EADC);
-  static const muted = Color(0xFF9B9387);
-  static const brass = Color(0xFFDDB066);
+  static const iron = kLeatherBuild ? Color(0xFF1E140F) : Color(0xFF0F0E0D);
+  static const plate = kLeatherBuild ? Color(0xFF3A2A20) : Color(0xFF1F1C18);
+  static const rail = kLeatherBuild ? Color(0xFF2A1D15) : Color(0xFF161411);
+  static const text = kLeatherBuild ? Color(0xFFEDE4D3) : Color(0xFFF2EADC);
+  static const muted = kLeatherBuild ? Color(0xFFBBAC95) : Color(0xFF9B9387);
+  static const brass = kLeatherBuild ? Color(0xFFD2B074) : Color(0xFFDDB066);
   static const brassDark = Color(0xFF7A6238);
-  static const copper = Color(0xFFB0703F);
+  static const copper = kLeatherBuild ? Color(0xFFD08A55) : Color(0xFFB0703F);
   static const bronze = Color(0xFF8E7046);
   static const steel = Color(0xFFA9B1BA);
   static const stop = Color(0xFF8B3A3A);
@@ -178,13 +179,13 @@ const brassGradient = LinearGradient(
 /// Forge palette (V1.2 metal palette): cool iron base and surface, warm
 /// text, brass and the stop red. No pastel, pink or white surfaces.
 class ForgeColors {
-  static const base = Color(0xFF1A1D22);
-  static const surface = Color(0xFF2A3038);
-  static const raised = Color(0xFF323944);
-  static const line = Color(0xFF3B434E);
-  static const text = Color(0xFFE8E0D0);
-  static const muted = Color(0xFF9AA1AA);
-  static const brass = Color(0xFFC4A36A);
+  static const base = kLeatherBuild ? Color(0xFF241912) : Color(0xFF1A1D22);
+  static const surface = kLeatherBuild ? Color(0xFF3A2A20) : Color(0xFF2A3038);
+  static const raised = kLeatherBuild ? Color(0xFF47332A) : Color(0xFF323944);
+  static const line = kLeatherBuild ? Color(0xFF5C4433) : Color(0xFF3B434E);
+  static const text = kLeatherBuild ? Color(0xFFEDE4D3) : Color(0xFFE8E0D0);
+  static const muted = kLeatherBuild ? Color(0xFFBBAC95) : Color(0xFF9AA1AA);
+  static const brass = kLeatherBuild ? Color(0xFFD2B074) : Color(0xFFC4A36A);
   static const stop = Color(0xFF8B3A3A);
   static const ember = Color(0xFFD9692F);
 }

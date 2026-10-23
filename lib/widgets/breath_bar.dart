@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../theme.dart';
+import '../ui/skin.dart';
 import 'format.dart';
 
 class BreathBar extends StatelessWidget {
@@ -18,7 +19,13 @@ class BreathBar extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Icon(Icons.air, size: 18, color: TreadColors.breath),
+            skinIcon(
+              context,
+              Icons.air,
+              SkinIcons.breath,
+              size: 18,
+              color: TreadColors.breath,
+            ),
             const SizedBox(width: 6),
             Text(l.breath),
             const Spacer(),

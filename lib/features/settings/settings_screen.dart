@@ -31,7 +31,12 @@ class SettingsScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: theme.textTheme.titleSmall),
+          Text(
+            title,
+            style: TreadSkin.of(context).style == TreadStyle.leather
+                ? TreadSkin.of(context).display(16, color: TreadColors.brass)
+                : theme.textTheme.titleSmall,
+          ),
           const SizedBox(height: 4),
           Text(body, style: theme.textTheme.bodyMedium),
         ],
@@ -62,7 +67,13 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.history, color: TreadColors.brass),
+            leading: skinIcon(
+              context,
+              Icons.history,
+              SkinIcons.logbook,
+              size: 28,
+              color: TreadColors.brass,
+            ),
             title: Text(l.settingsHistory),
             subtitle: Text(
               l.historyTotals(
@@ -103,8 +114,11 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(),
           ListTile(
             key: const Key('settings-trail'),
-            leading: const Icon(
+            leading: skinIcon(
+              context,
               Icons.signpost_outlined,
+              SkinIcons.waymark,
+              size: 28,
               color: TreadColors.brass,
             ),
             title: Text(l.wwTitle),

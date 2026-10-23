@@ -2,6 +2,10 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import 'leather.dart';
+
+export 'leather.dart';
+
 /// The four style directions Philip picks from. Chosen at build time with
 /// `--dart-define=TREADPLAY_STYLE=A|B|C|D`; C (Philip's pick) is the
 /// default.
@@ -23,6 +27,16 @@ const _styleDefine = String.fromEnvironment(
   'TREADPLAY_STYLE',
   defaultValue: 'C',
 );
+
+/// True when this build uses style C (the default). Compile-time constant,
+/// so the shared palettes in theme.dart can switch to the warm leather tones.
+const kLeatherBuild =
+    _styleDefine != 'A' &&
+    _styleDefine != 'a' &&
+    _styleDefine != 'B' &&
+    _styleDefine != 'b' &&
+    _styleDefine != 'D' &&
+    _styleDefine != 'd';
 
 TreadStyle get buildStyle => switch (_styleDefine.toUpperCase()) {
   'A' => TreadStyle.forgeBrass,
@@ -1279,6 +1293,9 @@ class LpCoin extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = TreadSkin.of(context);
+    if (s.style == TreadStyle.leather) {
+      return SkinIcon(SkinIcons.coin, size: size);
+    }
     return CustomPaint(size: Size.square(size), painter: _CoinPainter(s));
   }
 }
@@ -1333,6 +1350,9 @@ class LockBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = TreadSkin.of(context);
+    if (s.style == TreadStyle.leather) {
+      return SkinIcon(SkinIcons.lock, size: size * 1.15);
+    }
     return Container(
       width: size,
       height: size,
@@ -1429,6 +1449,16 @@ class SkinBackdrop extends StatelessWidget {
 ThemeData applySkin(ThemeData base, TreadSkin s) {
   final leather = s.style == TreadStyle.leather;
   final themed = leather ? _leatherButtons(base, s) : base;
+  final skinned = _applySkin(themed, base, s, leather);
+  return leather ? leatherComponents(skinned, s) : skinned;
+}
+
+ThemeData _applySkin(
+  ThemeData themed,
+  ThemeData base,
+  TreadSkin s,
+  bool leather,
+) {
   return themed.copyWith(
     extensions: [s],
     textTheme: base.textTheme.apply(fontFamily: TreadSkin.bodyFont),

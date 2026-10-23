@@ -516,7 +516,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
     final stock = game.forge.sealsInStock;
     final picked = await showModalBottomSheet<Seal>(
       context: context,
-      backgroundColor: ForgeColors.base,
+      backgroundColor: kLeatherBuild ? null : ForgeColors.base,
       builder: (context) => SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),

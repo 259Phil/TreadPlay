@@ -19,4 +19,10 @@ void main() {
       expect(File('assets/nav/nav_$n.webp').existsSync(), isTrue, reason: n);
     }
   });
+
+  test('every painted component icon exists', () {
+    for (final n in SkinIcons.all) {
+      expect(File(SkinIcons.asset(n)).existsSync(), isTrue, reason: n);
+    }
+  });
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../domain/companion.dart';
 import '../l10n/app_localizations.dart';
 import '../theme.dart';
+import '../ui/skin.dart';
 import 'seal_art.dart';
 
 export 'seal_art.dart' show sealIcon, sealStat;
@@ -69,7 +70,9 @@ class _Socket extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final s = seal;
-    final ring = s == null ? const Color(0xFF59616B) : sealLevelMetal(s.level);
+    final ring = s == null
+        ? (kLeatherBuild ? const Color(0xFF7A5E40) : const Color(0xFF59616B))
+        : sealLevelMetal(s.level);
     final socket = Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -90,7 +93,9 @@ class _Socket extends StatelessWidget {
                   ),
                   gradient: const RadialGradient(
                     center: Alignment(-0.2, -0.3),
-                    colors: [Color(0xFF15181C), Color(0xFF2A3038)],
+                    colors: kLeatherBuild
+                        ? [Color(0xFF150E0A), Color(0xFF34251B)]
+                        : [Color(0xFF15181C), Color(0xFF2A3038)],
                   ),
                   boxShadow: const [
                     BoxShadow(color: Color(0x99000000), blurRadius: 4),

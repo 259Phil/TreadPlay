@@ -7,6 +7,7 @@ import '../../l10n/app_localizations.dart';
 import '../../router.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
+import '../../ui/skin.dart';
 import 'wanderweg_text.dart';
 
 /// Small brass chip on Home: signpost and reached / total. Opens the trail.
@@ -28,15 +29,19 @@ class TrailChip extends ConsumerWidget {
           height: 26,
           padding: const EdgeInsets.symmetric(horizontal: 9),
           decoration: BoxDecoration(
-            color: const Color(0xFF1A1D22),
+            color: kLeatherBuild
+                ? const Color(0xE6241912)
+                : const Color(0xFF1A1D22),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: TreadColors.brassDark),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
+              skinIcon(
+                context,
                 Icons.signpost_outlined,
+                SkinIcons.waymark,
                 size: 15,
                 color: TreadColors.brass,
               ),

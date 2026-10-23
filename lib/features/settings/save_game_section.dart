@@ -6,6 +6,7 @@ import '../../l10n/app_localizations.dart';
 import '../../platform/save_file_io.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
+import '../../ui/skin.dart';
 import '../../widgets/format.dart';
 import '../history/history_screen.dart' show formatRunDate;
 
@@ -129,7 +130,7 @@ class _SaveGameSectionState extends ConsumerState<SaveGameSection> {
             child: Text(l.cancel),
           ),
           TextButton(
-            style: TextButton.styleFrom(foregroundColor: TreadColors.copper),
+            style: dangerButtonStyle(context),
             onPressed: () => Navigator.pop(context, true),
             child: Text(action),
           ),
@@ -154,7 +155,14 @@ class _SaveGameSectionState extends ConsumerState<SaveGameSection> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(l.settingsSaveGame, style: theme.textTheme.titleSmall),
+              Text(
+                l.settingsSaveGame,
+                style: TreadSkin.of(context).style == TreadStyle.leather
+                    ? TreadSkin.of(
+                        context,
+                      ).display(16, color: TreadColors.brass)
+                    : theme.textTheme.titleSmall,
+              ),
               const SizedBox(height: 4),
               Text(l.saveHint, style: theme.textTheme.bodyMedium),
             ],
@@ -162,7 +170,13 @@ class _SaveGameSectionState extends ConsumerState<SaveGameSection> {
         ),
         ListTile(
           key: const Key('save-export'),
-          leading: const Icon(Icons.upload_outlined, color: TreadColors.brass),
+          leading: skinIcon(
+            context,
+            Icons.upload_outlined,
+            SkinIcons.export,
+            size: 28,
+            color: TreadColors.brass,
+          ),
           title: Text(l.saveExport),
           subtitle: Text(
             lastExport == null
@@ -174,8 +188,11 @@ class _SaveGameSectionState extends ConsumerState<SaveGameSection> {
         ),
         ListTile(
           key: const Key('save-import'),
-          leading: const Icon(
+          leading: skinIcon(
+            context,
             Icons.download_outlined,
+            SkinIcons.import,
+            size: 28,
             color: TreadColors.brass,
           ),
           title: Text(l.saveImport),
@@ -185,8 +202,11 @@ class _SaveGameSectionState extends ConsumerState<SaveGameSection> {
         ),
         ListTile(
           key: const Key('save-delete'),
-          leading: const Icon(
+          leading: skinIcon(
+            context,
             Icons.delete_forever_outlined,
+            SkinIcons.delete,
+            size: 28,
             color: TreadColors.copper,
           ),
           title: Text(

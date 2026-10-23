@@ -160,7 +160,11 @@ class _Filter<T> extends StatelessWidget {
                 : TreadColors.plate,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: active ? TreadColors.brass : const Color(0xFF3A424C),
+              color: active
+                  ? TreadColors.brass
+                  : kLeatherBuild
+                  ? const Color(0xFF6A5038)
+                  : const Color(0xFF3A424C),
             ),
           ),
           child: Padding(

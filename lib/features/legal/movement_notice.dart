@@ -7,6 +7,7 @@ import '../../l10n/app_localizations.dart';
 import '../../router.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
+import '../../ui/skin.dart';
 
 /// Short notice shown before movement / health access is requested.
 /// Returns true once access is allowed. Denying keeps the app usable, but
@@ -41,7 +42,12 @@ class _MovementNotice extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(l.movementNoticeTitle, style: theme.textTheme.titleLarge),
+            Text(
+              l.movementNoticeTitle,
+              style: kLeatherBuild
+                  ? TreadSkin.of(context).display(22, color: TreadColors.brass)
+                  : theme.textTheme.titleLarge,
+            ),
             const SizedBox(height: 10),
             Text(l.movementNoticeBody, style: theme.textTheme.bodyMedium),
             if (denied) ...[

@@ -8,6 +8,7 @@ import '../../l10n/app_localizations.dart';
 import '../../router.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
+import '../../ui/skin.dart';
 import '../../widgets/format.dart';
 
 String formatRunDate(BuildContext context, DateTime d) {
@@ -34,6 +35,7 @@ class HistoryScreen extends ConsumerWidget {
     final totals = ref.watch(gameProvider.select((g) => g.totals));
 
     return Scaffold(
+      backgroundColor: TreadSkin.of(context).canvas,
       appBar: AppBar(title: Text(l.historyTitle)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
@@ -75,13 +77,27 @@ class HistoryScreen extends ConsumerWidget {
           const SizedBox(height: 20),
           if (runs.isNotEmpty)
             OutlinedButton.icon(
-              style: OutlinedButton.styleFrom(
-                foregroundColor: TreadColors.muted,
-                side: const BorderSide(color: TreadColors.brassDark),
-                minimumSize: const Size.fromHeight(48),
-                shape: const StadiumBorder(),
+              style: TreadSkin.of(context).style == TreadStyle.leather
+                  ? skinButtonStyle(
+                      TreadSkin.of(context),
+                      SkinButtonKind.secondary,
+                    ).copyWith(
+                      minimumSize: const WidgetStatePropertyAll(
+                        Size.fromHeight(48),
+                      ),
+                    )
+                  : OutlinedButton.styleFrom(
+                      foregroundColor: TreadColors.muted,
+                      side: const BorderSide(color: TreadColors.brassDark),
+                      minimumSize: const Size.fromHeight(48),
+                      shape: const StadiumBorder(),
+                    ),
+              icon: skinIcon(
+                context,
+                Icons.delete_outline,
+                SkinIcons.delete,
+                size: 20,
               ),
-              icon: const Icon(Icons.delete_outline, size: 20),
               label: Text(l.historyErase),
               onPressed: () => _confirmErase(context, ref),
             ),
@@ -95,7 +111,6 @@ class HistoryScreen extends ConsumerWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: TreadColors.plate,
         title: Text(l.historyEraseTitle),
         content: Text(l.historyEraseBody),
         actions: [
@@ -104,7 +119,7 @@ class HistoryScreen extends ConsumerWidget {
             child: Text(l.cancel),
           ),
           TextButton(
-            style: TextButton.styleFrom(foregroundColor: TreadColors.copper),
+            style: dangerButtonStyle(context),
             onPressed: () => Navigator.pop(context, true),
             child: Text(l.historyErase),
           ),
@@ -170,7 +185,7 @@ class _RunTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 4),
-              const Icon(Icons.chevron_right, color: TreadColors.brassDark),
+              const Icon(Icons.chevron_right, color: TreadColors.brass),
             ],
           ),
         ),
@@ -192,6 +207,7 @@ class RunDetailScreen extends ConsumerWidget {
     final run = index >= 0 && index < runs.length ? runs[index] : null;
 
     return Scaffold(
+      backgroundColor: TreadSkin.of(context).canvas,
       appBar: AppBar(title: Text(l.runDetailTitle)),
       body: run == null
           ? const SizedBox.shrink()
@@ -203,8 +219,8 @@ class RunDetailScreen extends ConsumerWidget {
                   run.valid
                       ? l.lpAmount(formatNumber(context, run.lp))
                       : l.invalidRun,
-                  style: serifTitle.copyWith(
-                    fontSize: 40,
+                  style: TreadSkin.of(context).display(
+                    40,
                     color: run.valid ? TreadColors.brass : TreadColors.muted,
                   ),
                 ),
@@ -258,7 +274,11 @@ class _Row extends StatelessWidget {
       decoration: BoxDecoration(
         border: last
             ? null
-            : const Border(bottom: BorderSide(color: Color(0xFF2B2722))),
+            : Border(
+                bottom: BorderSide(
+                  color: TreadSkin.of(context).line.withValues(alpha: .6),
+                ),
+              ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

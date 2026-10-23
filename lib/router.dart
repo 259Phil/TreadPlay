@@ -15,6 +15,7 @@ import 'features/settings/settings_screen.dart';
 import 'features/shelf/shelf_screen.dart';
 import 'features/wanderweg/wanderweg_screen.dart';
 import 'l10n/app_localizations.dart';
+import 'ui/skin.dart';
 import 'widgets/app_shell.dart';
 
 class AppRoutes {
@@ -47,19 +48,24 @@ final routerProvider = Provider<GoRouter>((ref) {
           _branch(AppRoutes.settings, (_) => const SettingsScreen()),
         ],
       ),
-      GoRoute(path: AppRoutes.run, builder: (_, _) => const RunScreen()),
+      GoRoute(
+        path: AppRoutes.run,
+        builder: (_, _) => const SkinRoute(child: RunScreen()),
+      ),
       GoRoute(
         path: AppRoutes.summary,
-        builder: (_, _) => const SummaryScreen(),
+        builder: (_, _) => const SkinRoute(child: SummaryScreen()),
       ),
       GoRoute(
         path: AppRoutes.history,
-        builder: (_, _) => const HistoryScreen(),
+        builder: (_, _) => const SkinRoute(child: HistoryScreen()),
         routes: [
           GoRoute(
             path: ':index',
-            builder: (_, state) => RunDetailScreen(
-              index: int.tryParse(state.pathParameters['index'] ?? '') ?? -1,
+            builder: (_, state) => SkinRoute(
+              child: RunDetailScreen(
+                index: int.tryParse(state.pathParameters['index'] ?? '') ?? -1,
+              ),
             ),
           ),
         ],
@@ -71,11 +77,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: AppRoutes.pouches, builder: (_, _) => const PouchScreen()),
       GoRoute(
         path: AppRoutes.privacy,
-        builder: (_, _) => const LegalScreen(doc: LegalDoc.privacy),
+        builder: (_, _) =>
+            const SkinRoute(child: LegalScreen(doc: LegalDoc.privacy)),
       ),
       GoRoute(
         path: AppRoutes.terms,
-        builder: (_, _) => const LegalScreen(doc: LegalDoc.terms),
+        builder: (_, _) =>
+            const SkinRoute(child: LegalScreen(doc: LegalDoc.terms)),
       ),
     ],
   );

@@ -10,6 +10,7 @@ import '../../l10n/app_localizations.dart';
 import '../../router.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
+import '../../ui/skin.dart';
 import '../../widgets/breath_bar.dart';
 import '../../widgets/companion_figure.dart';
 import '../../widgets/format.dart';
@@ -80,9 +81,12 @@ class _RunScreenState extends ConsumerState<RunScreen>
         ? l.hintInside
         : l.hintOutside;
 
+    final skin = TreadSkin.of(context);
+    final leather = skin.style == TreadStyle.leather;
     return PopScope(
       canPop: false,
       child: Scaffold(
+        backgroundColor: skin.canvas,
         body: SafeArea(
           child: Stack(
             children: [
@@ -95,10 +99,22 @@ class _RunScreenState extends ConsumerState<RunScreen>
                     formatNumber(context, e.lp),
                     key: const Key('run-lp'),
                     textAlign: TextAlign.center,
-                    style: theme.textTheme.displayLarge?.copyWith(
-                      color: TreadColors.brass,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: leather
+                        ? skin
+                              .display(64, color: TreadColors.brass)
+                              .copyWith(
+                                shadows: const [
+                                  Shadow(
+                                    color: Color(0xCC000000),
+                                    offset: Offset(0, 2),
+                                    blurRadius: 5,
+                                  ),
+                                ],
+                              )
+                        : theme.textTheme.displayLarge?.copyWith(
+                            color: TreadColors.brass,
+                            fontWeight: FontWeight.bold,
+                          ),
                   ),
                   Text(l.lpThisRun, textAlign: TextAlign.center),
                   if (!e.earnsLp) ...[
@@ -116,18 +132,21 @@ class _RunScreenState extends ConsumerState<RunScreen>
                     ),
                   ],
                   const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      _Stat(
-                        l.distance,
-                        l.kmValue(formatKm(context, e.distanceM)),
-                        onLongPress: device == null
-                            ? null
-                            : () => setState(() => _gpsDebug = !_gpsDebug),
-                      ),
-                      _Stat(l.time, formatDuration(e.elapsed)),
-                      _Stat(l.pace, l.paceValue(formatPace(e.pace))),
-                    ],
+                  _StatCard(
+                    leather: leather,
+                    child: Row(
+                      children: [
+                        _Stat(
+                          l.distance,
+                          l.kmValue(formatKm(context, e.distanceM)),
+                          onLongPress: device == null
+                              ? null
+                              : () => setState(() => _gpsDebug = !_gpsDebug),
+                        ),
+                        _Stat(l.time, formatDuration(e.elapsed)),
+                        _Stat(l.pace, l.paceValue(formatPace(e.pace))),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 24),
                   BreathBar(breath: e.breathLeft, tank: e.companion.tankSize),
@@ -153,11 +172,19 @@ class _RunScreenState extends ConsumerState<RunScreen>
                   SizedBox(
                     height: 64,
                     child: FilledButton.icon(
-                      style: FilledButton.styleFrom(
-                        backgroundColor: TreadColors.stop,
-                        foregroundColor: TreadColors.text,
-                      ),
-                      icon: const Icon(Icons.stop, size: 32),
+                      style: leather
+                          ? skinButtonStyle(
+                              skin,
+                              SkinButtonKind.danger,
+                              height: 64,
+                            )
+                          : FilledButton.styleFrom(
+                              backgroundColor: TreadColors.stop,
+                              foregroundColor: TreadColors.text,
+                            ),
+                      icon: leather
+                          ? const SkinIcon(SkinIcons.stop, size: 36)
+                          : const Icon(Icons.stop, size: 32),
                       label: Text(
                         l.stopRun,
                         style: const TextStyle(fontSize: 22),
@@ -203,6 +230,24 @@ class _RunScreenState extends ConsumerState<RunScreen>
   }
 }
 
+/// The three run values on a leather card (style C), bare otherwise.
+class _StatCard extends StatelessWidget {
+  const _StatCard({required this.leather, required this.child});
+
+  final bool leather;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => leather
+      ? Card(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            child: child,
+          ),
+        )
+      : child;
+}
+
 class _Stat extends StatelessWidget {
   const _Stat(this.label, this.value, {this.onLongPress});
 
@@ -218,7 +263,12 @@ class _Stat extends StatelessWidget {
         onLongPress: onLongPress,
         child: Column(
           children: [
-            Text(value, style: theme.textTheme.titleLarge),
+            Text(
+              value,
+              style: kLeatherBuild
+                  ? TreadSkin.of(context).display(22)
+                  : theme.textTheme.titleLarge,
+            ),
             Text(label, style: theme.textTheme.bodySmall),
           ],
         ),
@@ -341,6 +391,9 @@ class _Portrait extends StatelessWidget {
             shape: BoxShape.circle,
             color: TreadColors.plate,
             border: Border.all(color: rarityMetal(c.rarity), width: 2),
+            boxShadow: kLeatherBuild
+                ? const [BoxShadow(color: Color(0xAA000000), blurRadius: 6)]
+                : null,
           ),
           child: CompanionArt(c.artKey),
         ),

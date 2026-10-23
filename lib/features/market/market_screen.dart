@@ -39,16 +39,39 @@ class MarketScreen extends ConsumerWidget {
             dividerHeight: 0,
             indicatorSize: TabBarIndicatorSize.tab,
             splashBorderRadius: BorderRadius.circular(20),
-            indicator: const BoxDecoration(
-              gradient: brassGradient,
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-            ),
-            labelColor: TreadColors.iron,
-            unselectedLabelColor: TreadColors.text,
-            labelStyle: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-            ),
+            indicator: kLeatherBuild
+                ? const ShapeDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0xFF5A4030), Color(0xFF3A281C)],
+                    ),
+                    shape: LeatherBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                      rim: 1.4,
+                      stitchInset: 4,
+                    ),
+                    shadows: [
+                      BoxShadow(
+                        color: Color(0x99000000),
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  )
+                : const BoxDecoration(
+                    gradient: brassGradient,
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                  ),
+            labelColor: kLeatherBuild
+                ? const Color(0xFFF6E2AA)
+                : TreadColors.iron,
+            unselectedLabelColor: kLeatherBuild
+                ? TreadColors.muted
+                : TreadColors.text,
+            labelStyle: kLeatherBuild
+                ? TreadSkin.of(context).display(16)
+                : const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
             tabs: [_PillTab(l.marketBuyTab), _PillTab(l.marketSellTab)],
           ),
         ),
@@ -289,7 +312,12 @@ class _TradeSheet extends ConsumerWidget {
             SizedBox(
               height: 52,
               child: FilledButton.icon(
-                icon: Icon(buying ? Icons.shopping_bag : Icons.sell),
+                icon: skinIcon(
+                  context,
+                  buying ? Icons.shopping_bag : Icons.sell,
+                  buying ? SkinIcons.buy : SkinIcons.sell,
+                  size: 24,
+                ),
                 label: Text(
                   buying
                       ? l.marketBuyFor(formatLpPrice(context, price))

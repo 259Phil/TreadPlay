@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../domain/companion.dart';
 import '../l10n/app_localizations.dart';
 import '../theme.dart';
+import '../ui/skin.dart';
 import 'format.dart';
 import 'seal_art.dart';
 
@@ -39,7 +40,11 @@ class CompanionStats extends StatelessWidget {
             color: TreadColors.plate,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: sealed ? TreadColors.brassDark : const Color(0xFF332E27),
+              color: sealed
+                  ? TreadColors.brassDark
+                  : kLeatherBuild
+                  ? const Color(0xFF4A3628)
+                  : const Color(0xFF332E27),
             ),
           ),
           child: Padding(

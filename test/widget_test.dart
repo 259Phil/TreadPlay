@@ -83,7 +83,7 @@ void main() {
     tester,
   ) async {
     await pumpApp(tester);
-    expect(find.byIcon(Icons.smart_display_outlined), findsNothing);
+    expect(find.byKey(const Key('video-button')), findsNothing);
   });
 
   testWidgets('video button pays 3 shrinking rewards, then dims', (
@@ -95,14 +95,14 @@ void main() {
     );
     expect(find.text('3'), findsOneWidget);
     for (final lp in [2.5, 4.0, 5.0]) {
-      await tester.tap(find.byIcon(Icons.smart_display_outlined));
+      await tester.tap(find.byKey(const Key('video-button')));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Watch'));
       await tester.pumpAndSettle();
       expect(container.read(gameProvider).lp, lp);
     }
     expect(find.text('3'), findsNothing);
-    await tester.tap(find.byIcon(Icons.smart_display_outlined));
+    await tester.tap(find.byKey(const Key('video-button')));
     await tester.pumpAndSettle();
     expect(find.text('Watch'), findsNothing);
     expect(

@@ -98,6 +98,7 @@ class _ShelfScreenState extends ConsumerState<ShelfScreen> {
                     artKey: c.artKey,
                     world: c.world,
                     rarity: c.rarity,
+                    type: c.type,
                     name: c.name,
                     subtitle:
                         '${typeLabel(l, c.type)} · ${l.levelShort(c.level)}',
@@ -219,6 +220,7 @@ class _Detail extends ConsumerWidget {
                       artKey: c.artKey,
                       world: c.world,
                       rarity: c.rarity,
+                      type: c.type,
                       name: c.name,
                       subtitle: l.levelShort(c.level),
                     ),

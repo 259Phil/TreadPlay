@@ -4,6 +4,7 @@ import '../domain/companion.dart';
 import '../domain/world.dart';
 import '../l10n/app_localizations.dart';
 import '../theme.dart';
+import 'card_designs.dart';
 import 'companion_figure.dart';
 import 'format.dart';
 
@@ -21,6 +22,7 @@ class CompanionCard extends StatelessWidget {
     this.onTap,
     this.stats,
     this.action,
+    this.type,
   });
 
   final String artKey;
@@ -40,6 +42,9 @@ class CompanionCard extends StatelessWidget {
   /// Text on the brass pill at the bottom of the card, e.g. the price.
   final String? action;
 
+  /// Element of the companion; shown by the trial card designs.
+  final CompanionType? type;
+
   static const double aspectRatio = 0.72;
 
   /// Two-column card grid used by Shelf and Market; taller cards when they
@@ -54,6 +59,7 @@ class CompanionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (kCardDesign != 0) return cardDesign(this);
     final metal = rarityMetal(rarity);
     final glow = rarity == Rarity.legendary;
 

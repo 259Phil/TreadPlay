@@ -715,8 +715,9 @@
   },
   "forgePickSeal": "Pick a seal in the case below.",
   "forgePickPartner": "Now pick a seal of another stat at the same level.",
+  "forgeCaseNone": "No loose seals yet.",
   "forgeCase": "Case",
-  "forgeCaseEmpty": "No loose seals yet. Buy a seal L1 below.",
+  "forgeCaseEmpty": "No loose seals yet. Buy a seal L1 in the Case tab.",
   "forgeStores": "Splinters {s}/5 · Glut {g}",
   "@forgeStores": {
     "placeholders": {

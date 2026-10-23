@@ -1694,6 +1694,12 @@ abstract class AppLocalizations {
   /// **'Now pick a seal of another stat at the same level.'**
   String get forgePickPartner;
 
+  /// No description provided for @forgeCaseNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No loose seals yet.'**
+  String get forgeCaseNone;
+
   /// No description provided for @forgeCase.
   ///
   /// In en, this message translates to:
@@ -1703,7 +1709,7 @@ abstract class AppLocalizations {
   /// No description provided for @forgeCaseEmpty.
   ///
   /// In en, this message translates to:
-  /// **'No loose seals yet. Buy a seal L1 below.'**
+  /// **'No loose seals yet. Buy a seal L1 in the Case tab.'**
   String get forgeCaseEmpty;
 
   /// No description provided for @forgeStores.

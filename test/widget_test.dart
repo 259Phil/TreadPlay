@@ -789,6 +789,7 @@ void main() {
       GameData game, {
       bool open = true,
       Random? random,
+      Size? size,
     }) async {
       final seeded = open
           ? game.copyWith(wanderweg: const WanderwegProgress(legacyForge: true))
@@ -798,17 +799,18 @@ void main() {
         saved: {'flutter.game.v2': jsonEncode(seeded.toJson())},
         random: random,
       );
+      if (size != null) {
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = size;
+        await tester.pumpAndSettle();
+      }
       await tester.tap(find.widgetWithText(NavigationDestination, 'Forge'));
-      await tester.pumpAndSettle();
-      // Tall enough that the whole Forge list is built.
-      tester.view.physicalSize = const Size(1080, 9000);
       await tester.pumpAndSettle();
       expect(find.byType(ForgeScreen), findsOneWidget);
     }
 
+    // The Forge page does not scroll; only the seal strips scroll sideways.
     Future<void> tapKey(WidgetTester tester, String key) async {
-      await tester.ensureVisible(find.byKey(Key(key)));
-      await tester.pumpAndSettle();
       await tester.tap(find.byKey(Key(key)));
       await tester.pumpAndSettle();
     }
@@ -838,25 +840,20 @@ void main() {
           t0,
         ).copyWith(lp: 100, forge: const ForgeState(glut: 5)),
       );
-      await pumpApp(
-        tester,
-        saved: {'flutter.game.v2': jsonEncode(start.toJson())},
-        random: _FixedRandom(0.99),
+      await openForge(tester, start, open: false, random: _FixedRandom(0.99));
+      expect(
+        textOf(tester, 'forge-hint'),
+        'No loose seals yet. Buy a seal L1 in the Case tab.',
       );
-      await tester.tap(find.widgetWithText(NavigationDestination, 'Forge'));
-      await tester.pumpAndSettle();
-      // Tall enough that the whole Forge list is built.
-      tester.view.physicalSize = const Size(1080, 9000);
-      await tester.pumpAndSettle();
-      expect(find.byType(ForgeScreen), findsOneWidget);
-      expect(find.text('No loose seals yet. Buy a seal L1 below.'), findsOne);
       expect(textOf(tester, 'forge-stores'), 'Splinters 0/5 · Glut 5');
 
+      await tapKey(tester, 'tab-case');
       await tapKey(tester, 'buy-stride');
       await tapKey(tester, 'buy-stride');
       expect(find.text('26.0 LP'), findsOneWidget);
       expect(find.text('L1 ×2'), findsOneWidget);
 
+      await tapKey(tester, 'tab-up');
       await tapKey(tester, 'case-stride@1');
       expect(textOf(tester, 'forge-fail'), startsWith('Fail chance 12 %'));
       await tapKey(tester, 'glut-plus');
@@ -864,6 +861,7 @@ void main() {
       expect(textOf(tester, 'forge-fail'), startsWith('Fail chance 7.5 %'));
       expect(find.text('+ 3 Glut'), findsOneWidget);
       expect(find.text('+ 13 LP'), findsOneWidget);
+      expect(textOf(tester, 'glut-value'), '3 / 5');
       expect(find.byKey(const Key('forge-result')), findsOneWidget);
 
       await tapKey(tester, 'forge-go');
@@ -898,6 +896,23 @@ void main() {
       );
     });
 
+    testWidgets('the Glut slider sets the Glut for the try', (tester) async {
+      final start = openAll(
+        GameData.initial(t0).copyWith(
+          lp: 500,
+          forge: const ForgeState(stock: {'grit@3': 2}, glut: 9),
+        ),
+      );
+      await openForge(tester, start, open: false);
+      await tapKey(tester, 'case-grit@3');
+      expect(textOf(tester, 'glut-value'), '2 / 9');
+      final slider = find.byKey(const Key('glut-slider'));
+      await tester.tapAt(tester.getTopRight(slider) + const Offset(-14, 20));
+      await tester.pumpAndSettle();
+      expect(textOf(tester, 'glut-value'), '5 / 9');
+      expect(textOf(tester, 'forge-fail'), startsWith('Fail chance 14 %'));
+    });
+
     testWidgets('a failed forge leaves one seal and 3 splinters', (
       tester,
     ) async {
@@ -926,8 +941,7 @@ void main() {
         ),
       );
       await openForge(tester, start, open: false, random: _FixedRandom(0.99));
-      await tester.tap(find.byKey(const Key('mode-combine')));
-      await tester.pumpAndSettle();
+      await tapKey(tester, 'tab-combine');
       await tapKey(tester, 'case-stride@3');
       expect(
         textOf(tester, 'forge-hint'),
@@ -941,6 +955,12 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('case-stride+grit@3')), findsOneWidget);
       expect(find.text('403.0 LP'), findsOneWidget);
+    });
+
+    testWidgets('combining waits for waymark 13', (tester) async {
+      await openForge(tester, GameData.initial(t0));
+      await tapKey(tester, 'tab-combine');
+      expect(textOf(tester, 'forge-hint'), 'Combining L3 opens at waymark 13.');
     });
 
     testWidgets('a level not yet reached on the trail is locked', (
@@ -969,12 +989,31 @@ void main() {
       expect(find.text('Seals are set only at 100 % Spirit.'), findsOneWidget);
     });
 
-    testWidgets('too little LP disables buying', (tester) async {
-      await openForge(tester, GameData.initial(t0).copyWith(lp: 36));
+    testWidgets('the Case tab buys, melts and sets seals', (tester) async {
+      await openForge(
+        tester,
+        GameData.initial(
+          t0,
+        ).copyWith(lp: 36, forge: const ForgeState(splinters: 6)),
+      );
+      await tapKey(tester, 'tab-case');
       for (final t in SealType.values) {
         expect(button(tester, 'buy-${t.name}').onPressed, isNull);
       }
       expect(find.text('Not enough LP yet.'), findsOneWidget);
+      expect(find.text('No loose seals yet.'), findsOneWidget);
+      await tapKey(tester, 'melt-grit');
+      expect(textOf(tester, 'case-stores'), 'Splinters 1/5 · Glut 0');
+      expect(button(tester, 'melt-grit').onPressed, isNull);
+      await tapKey(tester, 'case-grit@1');
+      await tapKey(tester, 'case-set');
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('charm-slot-0')),
+          matching: find.text('Grit +4 %'),
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('a set seal goes back into the case when taken out', (
@@ -996,21 +1035,20 @@ void main() {
       expect(find.byKey(const Key('case-grit@4')), findsOneWidget);
     });
 
-    testWidgets('the level sheet shows every level', (tester) async {
+    testWidgets('the Levels tab shows every level', (tester) async {
       await openForge(tester, GameData.initial(t0));
-      await tester.tap(find.byKey(const Key('forge-ladder')));
-      await tester.pumpAndSettle();
-      final sheet = find.byKey(const Key('forge-ladder-sheet'));
-      expect(sheet, findsOneWidget);
+      await tapKey(tester, 'tab-ladder');
+      final tab = find.byKey(const Key('forge-ladder-tab'));
+      expect(tab, findsOneWidget);
       for (final pct in ['+4 %', '+9 %', '+15 %', '+22 %', '+31 %']) {
         expect(
-          find.descendant(of: sheet, matching: find.text(pct)),
-          findsWidgets,
+          find.descendant(of: tab, matching: find.text(pct)),
+          findsNWidgets(3),
           reason: pct,
         );
       }
       expect(
-        find.descendant(of: sheet, matching: find.text('+19 % / +19 %')),
+        find.descendant(of: tab, matching: find.text('+19 % / +19 %')),
         findsOneWidget,
       );
     });
@@ -1025,9 +1063,157 @@ void main() {
       );
       expect(find.byKey(const Key('forge-block')), findsOneWidget);
       expect(find.textContaining('waymark 2'), findsOneWidget);
+      await tapKey(tester, 'tab-case');
       for (final t in SealType.values) {
         expect(button(tester, 'buy-${t.name}').onPressed, isNull);
       }
+    });
+
+    group('fits one screen', () {
+      final gilt =
+          Companion.fresh(
+                id: 'm-gilt-1',
+                speciesId: 'gilt',
+                rarity: Rarity.legendary,
+              )
+              .withSeal(0, const Seal(SealType.stride, 5))
+              .withSeal(1, Seal.combined(SealType.stride, SealType.grit, 5))
+              .withSeal(2, const Seal(SealType.fortune, 1));
+      final rich = openAll(
+        GameData.initial(t0).copyWith(
+          lp: 1284.6,
+          companions: [Companion.pebble(), gilt],
+          activeCompanionId: 'm-gilt-1',
+          forge: const ForgeState(
+            stock: {
+              'stride@1': 3,
+              'grit@1': 1,
+              'fortune@2': 1,
+              'grit@4': 1,
+              'stride@3': 2,
+              'grit@3': 1,
+              'fortune@3': 1,
+              'stride+grit@3': 1,
+              'stride@5': 1,
+            },
+            glut: 7,
+            splinters: 6,
+          ),
+        ),
+      );
+
+      /// The page itself never scrolls: no vertical scrollable inside the
+      /// Forge, and the action buttons sit inside the Forge's own area.
+      void expectNoPageScroll(WidgetTester tester, String what) {
+        final forge = tester.getRect(find.byType(ForgeScreen));
+        for (final e
+            in find
+                .descendant(
+                  of: find.byType(ForgeScreen),
+                  matching: find.byType(Scrollable),
+                )
+                .evaluate()) {
+          final state = (e as StatefulElement).state as ScrollableState;
+          if (state.position.axis == Axis.vertical) {
+            expect(
+              state.position.maxScrollExtent,
+              0,
+              reason: '$what scrolls vertically',
+            );
+          }
+        }
+        final error = tester.takeException();
+        expect(
+          error,
+          isNull,
+          reason:
+              '$what: ${error is FlutterError ? error.diagnostics.join('\n') : error}',
+        );
+        for (final key in ['forge-header', 'forge-tabs']) {
+          final r = tester.getRect(find.byKey(Key(key)));
+          expect(
+            r.top >= forge.top && r.bottom <= forge.bottom,
+            isTrue,
+            reason: '$what: $key off screen',
+          );
+        }
+      }
+
+      void expectInside(WidgetTester tester, String key, String what) {
+        final forge = tester.getRect(find.byType(ForgeScreen));
+        final r = tester.getRect(find.byKey(Key(key)));
+        expect(
+          r.top >= forge.top && r.bottom <= forge.bottom,
+          isTrue,
+          reason: '$what: $key at $r outside $forge',
+        );
+      }
+
+      for (final (name, size) in [
+        ('390x844', const Size(390, 844)),
+        ('360x780', const Size(360, 780)),
+        ('desktop 1280x800', const Size(1280, 800)),
+      ]) {
+        testWidgets('every tab at $name', (tester) async {
+          await openForge(tester, rich, open: false, size: size);
+          expectNoPageScroll(tester, '$name main');
+
+          await tapKey(tester, 'case-stride@3');
+          for (final k in [
+            'forge-result',
+            'glut-slider',
+            'forge-fail',
+            'forge-hint',
+            'forge-stores',
+            'forge-go',
+            'forge-set',
+          ]) {
+            expectInside(tester, k, '$name forge up');
+          }
+          expectNoPageScroll(tester, '$name forge up');
+
+          await tapKey(tester, 'tab-combine');
+          await tapKey(tester, 'case-stride@3');
+          await tapKey(tester, 'case-grit@3');
+          for (final k in ['forge-result', 'forge-fail', 'forge-go']) {
+            expectInside(tester, k, '$name combine');
+          }
+          expectNoPageScroll(tester, '$name combine');
+
+          await tapKey(tester, 'tab-case');
+          for (final k in [
+            'case-stores',
+            'case-set',
+            'buy-fortune',
+            'melt-fortune',
+          ]) {
+            expectInside(tester, k, '$name case');
+          }
+          expectNoPageScroll(tester, '$name case');
+
+          await tapKey(tester, 'tab-ladder');
+          expectInside(tester, 'forge-ladder-tab', '$name levels');
+          expectNoPageScroll(tester, '$name levels');
+        });
+      }
+
+      testWidgets('a closed forge at 360x780 fits too', (tester) async {
+        await openForge(
+          tester,
+          GameData.initial(
+            t0,
+          ).copyWith(forge: const ForgeState(stock: {'stride@1': 1})),
+          open: false,
+          size: const Size(360, 780),
+        );
+        expect(find.byKey(const Key('forge-block')), findsOneWidget);
+        await tapKey(tester, 'case-stride@1');
+        expectInside(tester, 'forge-go', 'closed');
+        expectNoPageScroll(tester, 'closed');
+        await tapKey(tester, 'tab-case');
+        expectInside(tester, 'melt-fortune', 'closed case');
+        expectNoPageScroll(tester, 'closed case');
+      });
     });
   });
 }

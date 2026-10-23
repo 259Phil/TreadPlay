@@ -958,11 +958,14 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wähle jetzt ein Siegel eines anderen Werts mit gleicher Stufe.';
 
   @override
+  String get forgeCaseNone => 'Noch keine losen Siegel.';
+
+  @override
   String get forgeCase => 'Vorrat';
 
   @override
   String get forgeCaseEmpty =>
-      'Noch keine losen Siegel. Kauf unten ein Siegel L1.';
+      'Noch keine losen Siegel. Kaufe ein Siegel L1 im Tab Vorrat.';
 
   @override
   String forgeStores(int s, int g) {

@@ -16,11 +16,15 @@ class CharmSockets extends StatelessWidget {
     required this.companion,
     this.onTap,
     this.size = 64,
+    this.compact = false,
   });
 
   final Companion companion;
   final void Function(int slot, Seal? seal)? onTap;
   final double size;
+
+  /// Smaller labels for the Forge header.
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +39,7 @@ class CharmSockets extends StatelessWidget {
               key: Key('charm-slot-$i'),
               seal: companion.sealAt(i),
               size: size,
+              compact: compact,
               onTap: switch (onTap) {
                 final tap? => () => tap(i, companion.sealAt(i)),
                 null => null,
@@ -51,11 +56,13 @@ class _Socket extends StatelessWidget {
     super.key,
     required this.seal,
     required this.size,
+    this.compact = false,
     this.onTap,
   });
 
   final Seal? seal;
   final double size;
+  final bool compact;
   final VoidCallback? onTap;
 
   @override
@@ -94,14 +101,15 @@ class _Socket extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: compact ? 1 : 4),
         Text(
           s == null ? l.charmSlotEmpty : _label(context, l, s),
           textAlign: TextAlign.center,
           maxLines: 2,
           style: TextStyle(
             color: s == null ? ForgeColors.muted : ForgeColors.text,
-            fontSize: 12.5,
+            fontSize: compact ? 11 : 12.5,
+            height: compact ? 1.15 : null,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -110,18 +118,23 @@ class _Socket extends StatelessWidget {
             l.sealLevel(s.level),
             style: TextStyle(
               color: sealLevelMetal(s.level),
-              fontSize: 11.5,
+              fontSize: compact ? 10.5 : 11.5,
+              height: compact ? 1.15 : null,
               fontWeight: FontWeight.w600,
             ),
           ),
       ],
     );
+    // The compact header has a fixed height: shrink rather than overflow.
+    final fitted = compact
+        ? FittedBox(fit: BoxFit.scaleDown, child: socket)
+        : socket;
     final tap = onTap;
-    if (tap == null) return socket;
+    if (tap == null) return fitted;
     return InkWell(
       onTap: tap,
       borderRadius: BorderRadius.circular(size),
-      child: Padding(padding: const EdgeInsets.all(2), child: socket),
+      child: Padding(padding: const EdgeInsets.all(2), child: fitted),
     );
   }
 

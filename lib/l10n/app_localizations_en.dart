@@ -953,10 +953,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Now pick a seal of another stat at the same level.';
 
   @override
+  String get forgeCaseNone => 'No loose seals yet.';
+
+  @override
   String get forgeCase => 'Case';
 
   @override
-  String get forgeCaseEmpty => 'No loose seals yet. Buy a seal L1 below.';
+  String get forgeCaseEmpty =>
+      'No loose seals yet. Buy a seal L1 in the Case tab.';
 
   @override
   String forgeStores(int s, int g) {

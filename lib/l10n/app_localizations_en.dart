@@ -963,11 +963,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'No loose seals yet. Buy a seal L1 in the Case tab.';
 
   @override
-  String forgeStores(int s, int g) {
-    return 'Splinters $s/5 · Glut $g';
-  }
-
-  @override
   String get forgeGlutSource =>
       'Glut comes from pouches. A run of 1 km or more without a pouch still brings 1 Glut.';
 
@@ -1153,7 +1148,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String pouchFortune(String f) {
-    return 'Fortune ×$f';
+    return 'Fortune ×$f, also for rarer colours';
   }
 
   @override
@@ -1195,4 +1190,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeLeash => 'Leash';
+
+  @override
+  String storesSplinters(int s) {
+    return 'Splinters $s/5';
+  }
+
+  @override
+  String storesGlut(int g) {
+    return 'Glut $g';
+  }
+
+  @override
+  String pouchColorOdds(String list) {
+    return 'Colours: $list';
+  }
+
+  @override
+  String get pouchShortBrown => 'Brown';
+
+  @override
+  String get pouchShortCopper => 'Copper';
+
+  @override
+  String get pouchShortTurquoise => 'Turquoise';
+
+  @override
+  String get pouchShortNavy => 'Navy';
+
+  @override
+  String pouchColorShare(String name, String pct) {
+    return '$name $pct';
+  }
 }

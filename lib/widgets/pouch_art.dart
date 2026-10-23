@@ -5,12 +5,20 @@ import '../l10n/app_localizations.dart';
 import '../theme.dart';
 import 'format.dart';
 import 'seal_art.dart';
+import 'stock_art.dart';
 
 String pouchName(AppLocalizations l, PouchColor c) => switch (c) {
   PouchColor.brown => l.pouchBrown,
   PouchColor.copper => l.pouchCopper,
   PouchColor.turquoise => l.pouchTurquoise,
   PouchColor.navy => l.pouchNavy,
+};
+
+String pouchShortName(AppLocalizations l, PouchColor c) => switch (c) {
+  PouchColor.brown => l.pouchShortBrown,
+  PouchColor.copper => l.pouchShortCopper,
+  PouchColor.turquoise => l.pouchShortTurquoise,
+  PouchColor.navy => l.pouchShortNavy,
 };
 
 String pouchContents(AppLocalizations l, PouchColor c) => switch (c) {
@@ -243,17 +251,13 @@ class PouchRewardTile extends StatelessWidget {
         sealLevelMetal(reward.seal!.level),
       ),
       PouchRewardKind.glut => (
-        Icon(
-          Icons.local_fire_department,
-          size: size * .8,
-          color: ForgeColors.ember,
-        ),
+        GlutIcon(size: size),
         l.glutAmount(reward.amount),
         'Glut',
         ForgeColors.ember,
       ),
       PouchRewardKind.splinters => (
-        Icon(Icons.scatter_plot, size: size * .8, color: ForgeColors.muted),
+        SplitterIcon(size: size),
         l.pouchSplinters(reward.amount),
         '',
         ForgeColors.text,

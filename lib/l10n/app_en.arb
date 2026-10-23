@@ -718,17 +718,6 @@
   "forgeCaseNone": "No loose seals yet.",
   "forgeCase": "Case",
   "forgeCaseEmpty": "No loose seals yet. Buy a seal L1 in the Case tab.",
-  "forgeStores": "Splinters {s}/5 · Glut {g}",
-  "@forgeStores": {
-    "placeholders": {
-      "s": {
-        "type": "int"
-      },
-      "g": {
-        "type": "int"
-      }
-    }
-  },
   "forgeGlutSource": "Glut comes from pouches. A run of 1 km or more without a pouch still brings 1 Glut.",
   "forgeBuyTitle": "New seal L1 · {lp} LP",
   "@forgeBuyTitle": {
@@ -898,7 +887,7 @@
       }
     }
   },
-  "pouchFortune": "Fortune ×{f}",
+  "pouchFortune": "Fortune ×{f}, also for rarer colours",
   "@pouchFortune": {
     "placeholders": {
       "f": {
@@ -938,5 +927,44 @@
     }
   },
   "summaryToLeash": "To the leash",
-  "homeLeash": "Leash"
+  "homeLeash": "Leash",
+  "storesSplinters": "Splinters {s}/5",
+  "@storesSplinters": {
+    "placeholders": {
+      "s": {
+        "type": "int"
+      }
+    }
+  },
+  "storesGlut": "Glut {g}",
+  "@storesGlut": {
+    "placeholders": {
+      "g": {
+        "type": "int"
+      }
+    }
+  },
+  "pouchColorOdds": "Colours: {list}",
+  "@pouchColorOdds": {
+    "placeholders": {
+      "list": {
+        "type": "String"
+      }
+    }
+  },
+  "pouchShortBrown": "Brown",
+  "pouchShortCopper": "Copper",
+  "pouchShortTurquoise": "Turquoise",
+  "pouchShortNavy": "Navy",
+  "pouchColorShare": "{name} {pct}",
+  "@pouchColorShare": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "pct": {
+        "type": "String"
+      }
+    }
+  }
 }

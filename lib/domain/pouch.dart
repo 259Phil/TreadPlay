@@ -351,21 +351,51 @@ class Pouches {
     ),
   };
 
+  /// Most Fortune can tilt the colours: the bonus above ×1 counts up to
+  /// this much (+47 %), however many Fortune seals are set.
+  static const double fortuneColorCap = .47;
+
+  /// Find weight of [c] with [fortuneFactor]: the base weight times
+  /// (1 + Fortune bonus, capped) to the power of the colour's rank, so
+  /// copper gains once, turquoise twice and navy three times.
+  static double colorWeight(PouchColor c, double fortuneFactor) {
+    final bonus = (fortuneFactor - 1).clamp(0.0, fortuneColorCap);
+    return c.findWeight * pow(1 + bonus, c.index).toDouble();
+  }
+
+  /// Share of each of [unlocked] among finds with [fortuneFactor]
+  /// (once every colour was found at least once).
+  static Map<PouchColor, double> colorShares(
+    List<PouchColor> unlocked,
+    double fortuneFactor,
+  ) {
+    final total = unlocked.fold(
+      0.0,
+      (n, c) => n + colorWeight(c, fortuneFactor),
+    );
+    return {for (final c in unlocked) c: colorWeight(c, fortuneFactor) / total};
+  }
+
   /// Colour of a found pouch among [unlocked] (lowest first). A colour
   /// never found before comes first, so every Wanderweg pouch task can be
-  /// done with the next find; otherwise colours go by [PouchColor.findWeight].
+  /// done with the next find; otherwise colours go by [colorWeight], where
+  /// Fortune tilts them toward the rarer ones.
   static PouchColor pickColor(
     List<PouchColor> unlocked,
     Map<PouchColor, int> found,
-    Random random,
-  ) {
+    Random random, {
+    double fortuneFactor = 1,
+  }) {
     for (final c in unlocked) {
       if ((found[c] ?? 0) == 0) return c;
     }
-    final total = unlocked.fold(0, (n, c) => n + c.findWeight);
-    var roll = random.nextInt(total);
+    final total = unlocked.fold(
+      0.0,
+      (n, c) => n + colorWeight(c, fortuneFactor),
+    );
+    var roll = random.nextDouble() * total;
     for (final c in unlocked) {
-      roll -= c.findWeight;
+      roll -= colorWeight(c, fortuneFactor);
       if (roll < 0) return c;
     }
     return unlocked.last;

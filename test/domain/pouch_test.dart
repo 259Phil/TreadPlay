@@ -173,6 +173,90 @@ void main() {
     });
   });
 
+  group('Fortune and colours', () {
+    test('Fortune tilts the weights by colour rank, capped at +47 %', () {
+      for (final c in PouchColor.values) {
+        expect(Pouches.colorWeight(c, 1), c.findWeight.toDouble());
+      }
+      expect(
+        Pouches.colorWeight(PouchColor.brown, 1.15),
+        PouchColor.brown.findWeight.toDouble(),
+      );
+      expect(
+        Pouches.colorWeight(PouchColor.navy, 1.15),
+        closeTo(4 * pow(1.15, 3), 1e-9),
+      );
+      expect(
+        Pouches.colorWeight(PouchColor.navy, 3),
+        Pouches.colorWeight(PouchColor.navy, 1 + Pouches.fortuneColorCap),
+      );
+      // Below ×1 nothing is taken away.
+      expect(Pouches.colorWeight(PouchColor.navy, .5), 4);
+    });
+
+    test('rarer colours gain share with Fortune, brown loses', () {
+      final all = PouchColor.values;
+      final base = Pouches.colorShares(all, 1);
+      final lucky = Pouches.colorShares(all, 1.29);
+      final max = Pouches.colorShares(all, 9);
+      expect(base.values.fold(0.0, (a, b) => a + b), closeTo(1, 1e-9));
+      expect(max.values.fold(0.0, (a, b) => a + b), closeTo(1, 1e-9));
+      expect(base[PouchColor.navy], closeTo(.04, 1e-9));
+      expect(lucky[PouchColor.navy]!, greaterThan(base[PouchColor.navy]!));
+      expect(max[PouchColor.navy]!, greaterThan(lucky[PouchColor.navy]!));
+      expect(max[PouchColor.navy]!, lessThan(.1));
+      expect(lucky[PouchColor.brown]!, lessThan(base[PouchColor.brown]!));
+    });
+
+    test('a newly unlocked colour still comes first with Fortune', () {
+      expect(
+        Pouches.pickColor(
+          [PouchColor.brown, PouchColor.copper, PouchColor.turquoise],
+          {PouchColor.brown: 3, PouchColor.copper: 1},
+          _Fixed(.999),
+          fortuneFactor: 1.4,
+        ),
+        PouchColor.turquoise,
+      );
+    });
+
+    test('seeded finds with full Fortune bring navy about 9.6 %', () {
+      final r = Random(77);
+      final all = PouchColor.values;
+      final found = {for (final c in all) c: 1};
+      var navy = 0;
+      for (var i = 0; i < 20000; i++) {
+        if (Pouches.pickColor(all, found, r, fortuneFactor: 1.47) ==
+            PouchColor.navy) {
+          navy++;
+        }
+      }
+      expect(
+        navy / 20000,
+        closeTo(Pouches.colorShares(all, 1.47)[PouchColor.navy]!, .01),
+      );
+    });
+
+    test('runs use the Fortune of the companion on the run', () {
+      final lucky = Companion.pebble().withSeal(
+        0,
+        const Seal(SealType.fortune, 5),
+      );
+      var game = at(14).copyWith(companions: [lucky]);
+      for (final c in PouchColor.values) {
+        game = game.hangingPouch(c, t0);
+      }
+      game = game.copyWith(pouches: game.pouches.copyWith(leash: const []));
+      final plain = game.copyWith(companions: [Companion.pebble()]);
+      // Same rolls: 0 finds, .95 picks the colour.
+      final a = plain.recordingRun(run(100), random: _Seq([0, .95]));
+      final b = game.recordingRun(run(100), random: _Seq([0, .95]));
+      expect(a.lastRun!.pouch, PouchColor.turquoise);
+      expect(lucky.fortuneFactor, greaterThan(1.2));
+      expect(b.lastRun!.pouch!.index, greaterThan(a.lastRun!.pouch!.index));
+    });
+  });
+
   group('warming and fading', () {
     test('runs walk pouches warm; a warm pouch opens for free', () {
       var game = at(1).hangingPouch(PouchColor.copper, t0);
@@ -391,6 +475,22 @@ class _Fixed implements Random {
 
   @override
   double nextDouble() => roll;
+
+  @override
+  bool nextBool() => true;
+
+  @override
+  int nextInt(int max) => 0;
+}
+
+class _Seq implements Random {
+  _Seq(this.rolls);
+
+  final List<double> rolls;
+  var _i = 0;
+
+  @override
+  double nextDouble() => rolls[_i++ % rolls.length];
 
   @override
   bool nextBool() => true;

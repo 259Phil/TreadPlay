@@ -110,8 +110,13 @@ void main() {
         'pouch-contents',
         'pouch-status',
         'pouch-chance',
+        'pouch-colors',
         'pouch-open',
       ], '$name leash');
+      expect(
+        tester.widget<Text>(find.byKey(const Key('pouch-colors'))).data,
+        'Colours: Brown 71 % · Copper 29 %',
+      );
 
       for (final color in PouchColor.values) {
         await tapKey(tester, 'pouch-clip-0');

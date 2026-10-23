@@ -269,7 +269,6 @@
   "forgeCaseNone": "Noch keine losen Siegel.",
   "forgeCase": "Vorrat",
   "forgeCaseEmpty": "Noch keine losen Siegel. Kaufe ein Siegel L1 im Tab Vorrat.",
-  "forgeStores": "Splitter {s}/5 · Glut {g}",
   "forgeGlutSource": "Glut kommt aus Beuteln. Ein Lauf ab 1 km ohne Beutel bringt trotzdem 1 Glut.",
   "forgeBuyTitle": "Neues Siegel L1 · {lp} LP",
   "forgeMeltTitle": "5 Splitter zu einem Siegel L1 schmelzen",
@@ -319,7 +318,7 @@
   "pouchToForge": "Zur Schmiede",
   "pouchContinue": "Weiter",
   "pouchChance": "Fundchance nach vollem Atem-Tank: {pct}",
-  "pouchFortune": "Fortune ×{f}",
+  "pouchFortune": "Fortune ×{f}, auch für seltenere Farben",
   "pouchRule": "Pro Lauf zählt ein voller Atem-Tank. Volle Leine: kein neuer Fund. Nicht warm gelaufene Beutel verblassen nach einem Tag.",
   "pouchCounts": "Gefunden {f} · geöffnet {o}",
   "pouchSplinters": "+{n} Splitter",
@@ -328,5 +327,13 @@
   "summaryLeashFull": "Leine voll: diesmal kein neuer Beutel.",
   "summaryPouchesWarm": "{n, plural, =1{1 Beutel warm gelaufen: gratis zu öffnen.} other{{n} Beutel warm gelaufen: gratis zu öffnen.}}",
   "summaryToLeash": "Zur Leine",
-  "homeLeash": "Leine"
+  "homeLeash": "Leine",
+  "storesSplinters": "Splitter {s}/5",
+  "storesGlut": "Glut {g}",
+  "pouchColorOdds": "Farben: {list}",
+  "pouchShortBrown": "Braun",
+  "pouchShortCopper": "Kupfer",
+  "pouchShortTurquoise": "Türkis",
+  "pouchShortNavy": "Navy",
+  "pouchColorShare": "{name} {pct}"
 }

@@ -11,6 +11,7 @@ import '../../state/providers.dart';
 import '../../theme.dart';
 import '../../widgets/format.dart';
 import '../../widgets/pouch_art.dart';
+import '../../widgets/stock_art.dart';
 
 class SummaryScreen extends ConsumerWidget {
   const SummaryScreen({super.key});
@@ -84,6 +85,7 @@ class SummaryScreen extends ConsumerWidget {
                 if (run.glut > 0)
                   ListTile(
                     key: const Key('summary-glut'),
+                    leading: const GlutIcon(size: 36),
                     title: Text(l.summaryGlut),
                     trailing: Text(
                       l.glutAmount(run.glut),

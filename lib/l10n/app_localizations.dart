@@ -1712,12 +1712,6 @@ abstract class AppLocalizations {
   /// **'No loose seals yet. Buy a seal L1 in the Case tab.'**
   String get forgeCaseEmpty;
 
-  /// No description provided for @forgeStores.
-  ///
-  /// In en, this message translates to:
-  /// **'Splinters {s}/5 · Glut {g}'**
-  String forgeStores(int s, int g);
-
   /// No description provided for @forgeGlutSource.
   ///
   /// In en, this message translates to:
@@ -2015,7 +2009,7 @@ abstract class AppLocalizations {
   /// No description provided for @pouchFortune.
   ///
   /// In en, this message translates to:
-  /// **'Fortune ×{f}'**
+  /// **'Fortune ×{f}, also for rarer colours'**
   String pouchFortune(String f);
 
   /// No description provided for @pouchRule.
@@ -2071,6 +2065,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Leash'**
   String get homeLeash;
+
+  /// No description provided for @storesSplinters.
+  ///
+  /// In en, this message translates to:
+  /// **'Splinters {s}/5'**
+  String storesSplinters(int s);
+
+  /// No description provided for @storesGlut.
+  ///
+  /// In en, this message translates to:
+  /// **'Glut {g}'**
+  String storesGlut(int g);
+
+  /// No description provided for @pouchColorOdds.
+  ///
+  /// In en, this message translates to:
+  /// **'Colours: {list}'**
+  String pouchColorOdds(String list);
+
+  /// No description provided for @pouchShortBrown.
+  ///
+  /// In en, this message translates to:
+  /// **'Brown'**
+  String get pouchShortBrown;
+
+  /// No description provided for @pouchShortCopper.
+  ///
+  /// In en, this message translates to:
+  /// **'Copper'**
+  String get pouchShortCopper;
+
+  /// No description provided for @pouchShortTurquoise.
+  ///
+  /// In en, this message translates to:
+  /// **'Turquoise'**
+  String get pouchShortTurquoise;
+
+  /// No description provided for @pouchShortNavy.
+  ///
+  /// In en, this message translates to:
+  /// **'Navy'**
+  String get pouchShortNavy;
+
+  /// No description provided for @pouchColorShare.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} {pct}'**
+  String pouchColorShare(String name, String pct);
 }
 
 class _AppLocalizationsDelegate

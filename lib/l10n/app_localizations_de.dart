@@ -968,11 +968,6 @@ class AppLocalizationsDe extends AppLocalizations {
       'Noch keine losen Siegel. Kaufe ein Siegel L1 im Tab Vorrat.';
 
   @override
-  String forgeStores(int s, int g) {
-    return 'Splitter $s/5 · Glut $g';
-  }
-
-  @override
   String get forgeGlutSource =>
       'Glut kommt aus Beuteln. Ein Lauf ab 1 km ohne Beutel bringt trotzdem 1 Glut.';
 
@@ -1159,7 +1154,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String pouchFortune(String f) {
-    return 'Fortune ×$f';
+    return 'Fortune ×$f, auch für seltenere Farben';
   }
 
   @override
@@ -1201,4 +1196,36 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get homeLeash => 'Leine';
+
+  @override
+  String storesSplinters(int s) {
+    return 'Splitter $s/5';
+  }
+
+  @override
+  String storesGlut(int g) {
+    return 'Glut $g';
+  }
+
+  @override
+  String pouchColorOdds(String list) {
+    return 'Farben: $list';
+  }
+
+  @override
+  String get pouchShortBrown => 'Braun';
+
+  @override
+  String get pouchShortCopper => 'Kupfer';
+
+  @override
+  String get pouchShortTurquoise => 'Türkis';
+
+  @override
+  String get pouchShortNavy => 'Navy';
+
+  @override
+  String pouchColorShare(String name, String pct) {
+    return '$name $pct';
+  }
 }

@@ -827,6 +827,10 @@ void main() {
     String textOf(WidgetTester tester, String key) =>
         tester.widget<Text>(find.byKey(Key(key))).data!;
 
+    /// The stores line as one text: "Splinters 1/5 · Glut 0".
+    String storesOf(WidgetTester tester, String key) =>
+        '${textOf(tester, '$key-splinters')} · ${textOf(tester, '$key-glut')}';
+
     /// All waymarks reached, so every forge level is open.
     GameData openAll(GameData g) => g.copyWith(
       wanderweg: WanderwegProgress(reachedAt: List.filled(waymarks.length, t0)),
@@ -845,7 +849,7 @@ void main() {
         textOf(tester, 'forge-hint'),
         'No loose seals yet. Buy a seal L1 in the Case tab.',
       );
-      expect(textOf(tester, 'forge-stores'), 'Splinters 0/5 · Glut 5');
+      expect(storesOf(tester, 'forge-stores'), 'Splinters 0/5 · Glut 5');
 
       await tapKey(tester, 'tab-case');
       await tapKey(tester, 'buy-stride');
@@ -869,7 +873,7 @@ void main() {
       await tester.tap(find.byKey(const Key('forge-result-ok')));
       await tester.pumpAndSettle();
       expect(find.text('13.0 LP'), findsOneWidget);
-      expect(textOf(tester, 'forge-stores'), 'Splinters 0/5 · Glut 2');
+      expect(storesOf(tester, 'forge-stores'), 'Splinters 0/5 · Glut 2');
       expect(find.byKey(const Key('case-stride@2')), findsOneWidget);
 
       // The new L2 stays picked; set it into Pebble.
@@ -928,7 +932,7 @@ void main() {
       expect(find.byKey(const Key('forge-failed')), findsOneWidget);
       await tester.tap(find.byKey(const Key('forge-result-ok')));
       await tester.pumpAndSettle();
-      expect(textOf(tester, 'forge-stores'), 'Splinters 3/5 · Glut 0');
+      expect(storesOf(tester, 'forge-stores'), 'Splinters 3/5 · Glut 0');
       expect(find.text('L1 ×1'), findsOneWidget);
       expect(find.text('87.0 LP'), findsOneWidget);
     });
@@ -1003,7 +1007,7 @@ void main() {
       expect(find.text('Not enough LP yet.'), findsOneWidget);
       expect(find.text('No loose seals yet.'), findsOneWidget);
       await tapKey(tester, 'melt-grit');
-      expect(textOf(tester, 'case-stores'), 'Splinters 1/5 · Glut 0');
+      expect(storesOf(tester, 'case-stores'), 'Splinters 1/5 · Glut 0');
       expect(button(tester, 'melt-grit').onPressed, isNull);
       await tapKey(tester, 'case-grit@1');
       await tapKey(tester, 'case-set');

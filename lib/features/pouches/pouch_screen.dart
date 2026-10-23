@@ -186,6 +186,13 @@ class _PouchScreenState extends ConsumerState<PouchScreen> {
             textAlign: TextAlign.center,
             style: const TextStyle(color: ForgeColors.muted, fontSize: 12),
           ),
+          if (game.unlocks.pouchColors.length > 1)
+            Text(
+              _colorLine(context, game),
+              key: const Key('pouch-colors'),
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: ForgeColors.muted, fontSize: 12),
+            ),
           const SizedBox(height: 2),
           Text(
             l.pouchRule,
@@ -218,6 +225,23 @@ class _PouchScreenState extends ConsumerState<PouchScreen> {
     return f > 1
         ? '$line · ${l.pouchFortune(formatNumber(context, f, pattern: '0.00'))}'
         : line;
+  }
+
+  /// "Colours: Brown 52 % · Copper 25 % · …" with the Fortune tilt.
+  String _colorLine(BuildContext context, GameData game) {
+    final l = AppLocalizations.of(context);
+    final shares = Pouches.colorShares(
+      game.unlocks.pouchColors,
+      game.activeCompanion.fortuneFactor,
+    );
+    final parts = [
+      for (final MapEntry(key: c, value: v) in shares.entries)
+        l.pouchColorShare(
+          pouchShortName(l, c),
+          '${formatNumber(context, v * 100, pattern: '0')} %',
+        ),
+    ];
+    return l.pouchColorOdds(parts.join(' · '));
   }
 
   Widget _openButton(BuildContext context, GameData game, int? selected) {

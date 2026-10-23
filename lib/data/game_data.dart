@@ -391,6 +391,7 @@ class GameData {
           next.unlocks.pouchColors,
           next.pouches.found,
           random,
+          fortuneFactor: next.fortuneFactorFor(run),
         );
         next = next.hangingPouch(found, end);
       }

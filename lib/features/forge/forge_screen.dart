@@ -13,6 +13,7 @@ import '../../widgets/companion_figure.dart';
 import '../../widgets/format.dart';
 import '../../widgets/lp_pill.dart';
 import '../../widgets/seal_art.dart';
+import '../../widgets/stock_art.dart';
 
 enum _Mode { up, combine }
 
@@ -491,6 +492,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
           const SizedBox(height: 6),
           _BuyRow(
             title: l.forgeMeltTitle,
+            leading: const SplitterIcon(size: 20),
             keyPrefix: 'melt',
             enabled: game.meltBlock() == null,
             onBuy: (t) => ref.read(gameProvider.notifier).meltSplinters(t),
@@ -747,25 +749,46 @@ class _Header extends StatelessWidget {
   }
 }
 
-/// "Splinters 4/5 · Glut 7".
+/// "Splinters 4/5 · Glut 7" with the painted splinter and Glut icons.
 class _StoresLine extends StatelessWidget {
   const _StoresLine({required this.game, this.textKey});
 
   final GameData game;
+
+  /// Key of the line; its two texts get "-splinters" and "-glut".
   final Key? textKey;
 
   @override
-  Widget build(BuildContext context) => Text(
-    key: textKey,
-    AppLocalizations.of(
-      context,
-    ).forgeStores(game.forge.splinters, game.forge.glut),
-    style: const TextStyle(
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final k = textKey;
+    final name = k is ValueKey<String> ? k.value : null;
+    const style = TextStyle(
       color: ForgeColors.text,
       fontWeight: FontWeight.w700,
       fontSize: 13,
-    ),
-  );
+    );
+    return Row(
+      key: k,
+      children: [
+        const SplitterIcon(size: 24),
+        const SizedBox(width: 4),
+        Text(
+          l.storesSplinters(game.forge.splinters),
+          key: name == null ? null : Key('$name-splinters'),
+          style: style,
+        ),
+        const SizedBox(width: 14),
+        const GlutIcon(size: 24),
+        const SizedBox(width: 4),
+        Text(
+          l.storesGlut(game.forge.glut),
+          key: name == null ? null : Key('$name-glut'),
+          style: style,
+        ),
+      ],
+    );
+  }
 }
 
 /// The loose seals as a sideways strip (one or two rows).
@@ -954,9 +977,11 @@ class _GlutSlider extends StatelessWidget {
           onPressed: glut < step.maxGlut ? () => onChanged(glut + 1) : null,
           icon: const Icon(Icons.add_circle_outline),
         ),
-        const SizedBox(width: 4),
+        const SizedBox(width: 2),
+        const GlutIcon(size: 22),
+        const SizedBox(width: 2),
         SizedBox(
-          width: 58,
+          width: 50,
           child: FittedBox(
             fit: BoxFit.scaleDown,
             alignment: Alignment.centerRight,
@@ -1057,10 +1082,12 @@ class _BuyRow extends StatelessWidget {
     required this.enabled,
     required this.onBuy,
     this.note,
+    this.leading,
   });
 
   final String title;
   final String? note;
+  final Widget? leading;
   final String keyPrefix;
   final bool enabled;
   final ValueChanged<SealType> onBuy;
@@ -1073,6 +1100,7 @@ class _BuyRow extends StatelessWidget {
       children: [
         Row(
           children: [
+            if (leading case final w?) ...[w, const SizedBox(width: 4)],
             Flexible(
               child: Text(
                 title,
@@ -1155,11 +1183,7 @@ class _ResultDialog extends StatelessWidget {
       backgroundColor: ForgeColors.surface,
       icon: made != null
           ? SealArt(seal: made, size: 140, showLevel: true)
-          : const Icon(
-              Icons.broken_image_outlined,
-              color: ForgeColors.stop,
-              size: 56,
-            ),
+          : const SplitterIcon(size: 96),
       title: Text(outcome.success ? l.forgeSuccessTitle : l.forgeFailTitle),
       content: Text(
         made != null

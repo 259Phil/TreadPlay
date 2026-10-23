@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../theme.dart';
+import '../../ui/skin.dart';
 import 'legal_texts.dart';
 
 /// Full privacy policy or terms, rendered from the Markdown-like source:
@@ -18,6 +19,7 @@ class LegalScreen extends StatelessWidget {
     final text = legalText(doc, Localizations.localeOf(context).languageCode);
     final blocks = text.split(RegExp(r'\n\s*\n'));
     return Scaffold(
+      backgroundColor: TreadSkin.of(context).canvas,
       appBar: AppBar(
         title: Text(
           doc == LegalDoc.privacy ? l.settingsPrivacyTitle : l.settingsTerms,
@@ -27,14 +29,15 @@ class LegalScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
           children: [
-            for (final block in blocks) ..._block(block.trim(), theme),
+            for (final block in blocks)
+              ..._block(block.trim(), theme, TreadSkin.of(context)),
           ],
         ),
       ),
     );
   }
 
-  List<Widget> _block(String block, ThemeData theme) {
+  List<Widget> _block(String block, ThemeData theme, TreadSkin skin) {
     final lines = block.split('\n').map((s) => s.trimRight()).toList();
     if (lines.first.startsWith('## ')) {
       return [
@@ -42,12 +45,14 @@ class LegalScreen extends StatelessWidget {
           padding: const EdgeInsets.only(top: 20, bottom: 6),
           child: Text(
             lines.first.substring(3),
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: TreadColors.brass,
-            ),
+            style: skin.style == TreadStyle.leather
+                ? skin.display(18, color: TreadColors.brass)
+                : theme.textTheme.titleMedium?.copyWith(
+                    color: TreadColors.brass,
+                  ),
           ),
         ),
-        if (lines.length > 1) ..._block(lines.skip(1).join('\n'), theme),
+        if (lines.length > 1) ..._block(lines.skip(1).join('\n'), theme, skin),
       ];
     }
     if (lines.every((s) => s.startsWith('- '))) {
@@ -58,7 +63,12 @@ class LegalScreen extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('•  ', style: theme.textTheme.bodyMedium),
+                Text(
+                  '•  ',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: TreadColors.brass,
+                  ),
+                ),
                 Expanded(
                   child: Text(
                     s.substring(2),

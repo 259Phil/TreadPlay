@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../domain/companion.dart';
 import '../../domain/world.dart';
+import '../../ui/skin.dart';
 import '../../widgets/companion_figure.dart';
 
 /// The taken-along companion standing large on the ground of its world.
@@ -17,6 +18,16 @@ class WorldScene extends StatelessWidget {
 
   /// How far the feet sink below the ground line, so they cover it.
   static const double footSink = 10;
+
+  /// Widest the creature may get, as a share of the scene width.
+  static const double maxWidthShare = 0.76;
+
+  /// Tallest the creature may get, as a share of the room above its feet.
+  static const double maxHeightShare = 0.84;
+
+  /// Visual size (√(body width × height) of the species' Common cutout) as a
+  /// share of the scene width, so every species reads equally large.
+  static const double presenceShare = 0.66;
 
   /// Pixel size shared by all world backgrounds.
   static const Size imageSize = Size(840, 1493);
@@ -49,13 +60,15 @@ class WorldScene extends StatelessWidget {
     final (alignment, groundY) = world.background == null
         ? (Alignment.bottomCenter, h * world.ground)
         : _fitGround(w, h, world.ground);
-    final top = topClear + 8;
+    final feet = groundY + footSink;
+    final room = max(h * 0.5, feet - topClear - 16);
     final place = companionPlacement(
       artKey: companion.artKey,
       centerX: w / 2,
-      groundY: groundY + footSink,
-      maxWidth: w * 0.9,
-      maxHeight: max(h * 0.5, groundY + footSink - top),
+      groundY: feet,
+      maxWidth: w * maxWidthShare,
+      maxHeight: room * maxHeightShare,
+      presence: min(w * presenceShare, room * 0.68),
     );
     final shadowW = place.body.width * 0.85;
     final shadowH = max(12.0, place.body.height * 0.08);
@@ -111,26 +124,46 @@ class _Backdrop extends StatelessWidget {
   Widget build(BuildContext context) {
     final background = world.background;
     if (background != null) {
+      final skin = TreadSkin.of(context);
+      final warm = skin.style == TreadStyle.leather;
+      final edge = warm ? skin.base : const Color(0xFF0F0E0D);
+      final image = Image.asset(
+        background,
+        fit: BoxFit.cover,
+        alignment: alignment,
+      );
       return Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(background, fit: BoxFit.cover, alignment: alignment),
-          const DecoratedBox(
+          // Style C: light and pastel worlds (Rokoko, Candy) are toned
+          // towards warm sepia and dimmed so they sit in the leather frame.
+          warm ? ColorFiltered(colorFilter: _warmTone, child: image) : image,
+          DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color(0xFF0F0E0D),
-                  Color(0x330F0E0D),
-                  Color(0x000F0E0D),
-                  Color(0x660F0E0D),
-                  Color(0xFF0F0E0D),
+                  edge,
+                  edge.withValues(alpha: .2),
+                  edge.withValues(alpha: 0),
+                  edge.withValues(alpha: .4),
+                  edge,
                 ],
-                stops: [0, 0.12, 0.5, 0.88, 1],
+                stops: const [0, 0.12, 0.5, 0.88, 1],
               ),
             ),
           ),
+          if (warm)
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  radius: .95,
+                  colors: [Color(0x00000000), Color(0x66140C06)],
+                  stops: [.6, 1],
+                ),
+              ),
+            ),
         ],
       );
     }
@@ -139,6 +172,16 @@ class _Backdrop extends StatelessWidget {
     );
   }
 }
+
+/// Mix of 35 % sepia into the world art, dimmed to 82 %: keeps the
+/// world's own colours readable but pulls pinks and whites into the warm
+/// leather palette.
+const _warmTone = ColorFilter.matrix(<double>[
+  0.646, 0.221, 0.054, 0, 0, //
+  0.100, 0.730, 0.048, 0, 0, //
+  0.078, 0.153, 0.571, 0, 0, //
+  0, 0, 0, 1, 0, //
+]);
 
 /// Flat colour world with a darker ground band.
 class _PlaceholderPainter extends CustomPainter {

@@ -5,9 +5,9 @@ import 'package:treadplay/domain/companion.dart';
 import 'package:treadplay/domain/world.dart';
 
 void main() {
-  test('Pebble is a common Moss from the medieval world', () {
+  test('Mossik is a common Moss from the medieval world', () {
     final pebble = Companion.pebble();
-    expect(pebble.name, 'Pebble');
+    expect(pebble.name, 'Mossik');
     expect(pebble.type, CompanionType.moss);
     expect(pebble.rarity, Rarity.common);
     expect(pebble.world, World.medieval);
@@ -61,7 +61,7 @@ void main() {
     }
   });
 
-  test('Gilt Legendary never rolls 10/10/10', () {
+  test('Frilla Legendary never rolls 10/10/10', () {
     final random = Random(7);
     for (var i = 0; i < 200; i++) {
       final gilt = Companion.rolled(

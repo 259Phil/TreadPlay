@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'gps_filter.dart';
 import 'movement.dart';
 
 /// Merges GPS distance and pedometer steps into one [MovementSample] per tick.
@@ -12,8 +13,9 @@ class MovementFuser {
   /// Pedometer distance per step when GPS has no usable fix.
   static const double strideM = 0.75;
 
-  /// GPS fixes worse than this are ignored.
-  static const double maxAccuracyM = 25;
+  /// GPS fixes worse than this are ignored (the [GpsFilter] gate is
+  /// stricter and adaptive; this is the last line).
+  static const double maxAccuracyM = GpsFilter.maxAccuracyM;
 
   /// Without a GPS fix for this long, distance comes from steps.
   static const Duration gpsStale = Duration(seconds: 5);
@@ -28,13 +30,21 @@ class MovementFuser {
   bool _hasStepCounter = false;
   int? _lastStepTotal;
   DateTime? _lastFix;
+  double? _gpsSpeedKmh;
   final List<(DateTime, double)> _window = [];
 
-  /// Distance in meters between two accepted GPS fixes.
-  void addGps(DateTime time, double meters, {required double accuracyM}) {
+  /// Distance in meters between two accepted GPS fixes. [speedKmh] is the
+  /// filter's walking speed; without it, speed is averaged from distance.
+  void addGps(
+    DateTime time,
+    double meters, {
+    required double accuracyM,
+    double? speedKmh,
+  }) {
     if (accuracyM > maxAccuracyM) return;
     _lastFix = time;
     _gpsM += meters;
+    _gpsSpeedKmh = speedKmh;
   }
 
   /// Cumulative pedometer count (since the device started, on Android).
@@ -60,7 +70,10 @@ class MovementFuser {
         ? Duration.zero
         : now.difference(_window.first.$1);
     final windowM = _window.skip(1).fold(0.0, (s, e) => s + e.$2);
-    final speedKmh = span == Duration.zero
+    final gpsSpeed = _gpsSpeedKmh;
+    final speedKmh = gpsLive && gpsSpeed != null
+        ? gpsSpeed
+        : span == Duration.zero
         ? 0.0
         : max(0.0, windowM / span.inMilliseconds * 3600);
 

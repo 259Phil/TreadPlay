@@ -278,6 +278,18 @@ abstract class AppLocalizations {
   /// **'Out of breath – tracking only'**
   String get hintNoBreath;
 
+  /// No description provided for @runWebGpsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the screen on and this page open – in the background the browser pauses GPS.'**
+  String get runWebGpsHint;
+
+  /// No description provided for @hintGpsWarmup.
+  ///
+  /// In en, this message translates to:
+  /// **'GPS is settling – one moment …'**
+  String get hintGpsWarmup;
+
   /// No description provided for @demoTitle.
   ///
   /// In en, this message translates to:
@@ -395,7 +407,7 @@ abstract class AppLocalizations {
   /// No description provided for @tabShelf.
   ///
   /// In en, this message translates to:
-  /// **'Shelf'**
+  /// **'Den'**
   String get tabShelf;
 
   /// No description provided for @typeMoss.
@@ -515,7 +527,7 @@ abstract class AppLocalizations {
   /// No description provided for @shelfNothingHere.
   ///
   /// In en, this message translates to:
-  /// **'Nothing on the shelf with these filters.'**
+  /// **'Nobody in the den with these filters.'**
   String get shelfNothingHere;
 
   /// No description provided for @worldMedieval.
@@ -599,7 +611,7 @@ abstract class AppLocalizations {
   /// No description provided for @shelfCount.
   ///
   /// In en, this message translates to:
-  /// **'Shelf {count}/{cap}'**
+  /// **'Den {count}/{cap}'**
   String shelfCount(int count, int cap);
 
   /// No description provided for @marketBuyFor.
@@ -623,7 +635,7 @@ abstract class AppLocalizations {
   /// No description provided for @marketShelfFull.
   ///
   /// In en, this message translates to:
-  /// **'Your shelf is full ({cap}/{cap}). Sell a companion first.'**
+  /// **'Your den is full ({cap}/{cap}). Sell a companion first.'**
   String marketShelfFull(int cap);
 
   /// No description provided for @marketNotEnoughLp.
@@ -641,7 +653,7 @@ abstract class AppLocalizations {
   /// No description provided for @marketLastCompanion.
   ///
   /// In en, this message translates to:
-  /// **'{name} stays until a second companion joins your shelf.'**
+  /// **'{name} stays until a second companion joins your den.'**
   String marketLastCompanion(String name);
 
   /// No description provided for @marketSellSwitches.
@@ -728,18 +740,6 @@ abstract class AppLocalizations {
   /// **'{stat} seal'**
   String sealName(String stat);
 
-  /// No description provided for @sealBonus.
-  ///
-  /// In en, this message translates to:
-  /// **'+{n} {stat}'**
-  String sealBonus(int n, String stat);
-
-  /// No description provided for @forgeAlong.
-  ///
-  /// In en, this message translates to:
-  /// **'Seals go to the companion you have along.'**
-  String get forgeAlong;
-
   /// No description provided for @forgeFreeSockets.
   ///
   /// In en, this message translates to:
@@ -749,31 +749,13 @@ abstract class AppLocalizations {
   /// No description provided for @forgeRule.
   ///
   /// In en, this message translates to:
-  /// **'Each seal adds +1 to its stat, up to +3 per stat. Paid in LP.'**
+  /// **'Each seal raises its stat by a share: L1 +4 %, L2 +9 %, L3 +15 %, L4 +22 %, L5 +31 %.'**
   String get forgeRule;
-
-  /// No description provided for @forgeStatCount.
-  ///
-  /// In en, this message translates to:
-  /// **'+{n} of +3'**
-  String forgeStatCount(int n);
-
-  /// No description provided for @forgeSet.
-  ///
-  /// In en, this message translates to:
-  /// **'Set'**
-  String get forgeSet;
-
-  /// No description provided for @forgeMaxed.
-  ///
-  /// In en, this message translates to:
-  /// **'Max'**
-  String get forgeMaxed;
 
   /// No description provided for @forgeNeedsSpirit.
   ///
   /// In en, this message translates to:
-  /// **'Forging only at 100 % Spirit.'**
+  /// **'Seals are set only at 100 % Spirit.'**
   String get forgeNeedsSpirit;
 
   /// No description provided for @forgeNotEnoughLp.
@@ -791,31 +773,31 @@ abstract class AppLocalizations {
   /// No description provided for @forgeSellNote.
   ///
   /// In en, this message translates to:
-  /// **'Seals stay on this companion. Selling it removes them; LP are not refunded.'**
+  /// **'Selling a companion puts its seals back into the case.'**
   String get forgeSellNote;
 
   /// No description provided for @forgeClearHint.
   ///
   /// In en, this message translates to:
-  /// **'Tap a filled socket to remove its seal.'**
+  /// **'Tap a seal to take it out, an empty socket to set one.'**
   String get forgeClearHint;
 
   /// No description provided for @forgeClearTitle.
   ///
   /// In en, this message translates to:
-  /// **'Remove {seal}?'**
+  /// **'Take out {seal}?'**
   String forgeClearTitle(String seal);
 
   /// No description provided for @forgeClearBody.
   ///
   /// In en, this message translates to:
-  /// **'The socket will be empty again. LP are not refunded.'**
+  /// **'It goes back into the case. Nothing is lost.'**
   String get forgeClearBody;
 
   /// No description provided for @forgeClearAction.
   ///
   /// In en, this message translates to:
-  /// **'Remove'**
+  /// **'Take out'**
   String get forgeClearAction;
 
   /// No description provided for @forgeClearKeep.
@@ -853,6 +835,1614 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Movement access was off, so this run earned no LP.'**
   String get summaryNoLp;
+
+  /// No description provided for @settingsHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Run history'**
+  String get settingsHistory;
+
+  /// No description provided for @historyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Run history'**
+  String get historyTitle;
+
+  /// No description provided for @historyTotals.
+  ///
+  /// In en, this message translates to:
+  /// **'{km} km · {runs} runs · {lp} LP in total'**
+  String historyTotals(String km, int runs, String lp);
+
+  /// No description provided for @historyEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No runs yet. Your runs show up here after you stop.'**
+  String get historyEmpty;
+
+  /// No description provided for @historyLocalNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Stored only on this device. No route, no map.'**
+  String get historyLocalNote;
+
+  /// No description provided for @historyErase.
+  ///
+  /// In en, this message translates to:
+  /// **'Erase local record'**
+  String get historyErase;
+
+  /// No description provided for @historyEraseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Erase local record?'**
+  String get historyEraseTitle;
+
+  /// No description provided for @historyEraseBody.
+  ///
+  /// In en, this message translates to:
+  /// **'All stored runs on this device are deleted. Your lifetime totals for milestones stay.'**
+  String get historyEraseBody;
+
+  /// No description provided for @historyErased.
+  ///
+  /// In en, this message translates to:
+  /// **'Run history erased.'**
+  String get historyErased;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @runDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Run'**
+  String get runDetailTitle;
+
+  /// No description provided for @date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get date;
+
+  /// No description provided for @breathUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Breath used'**
+  String get breathUsed;
+
+  /// No description provided for @sweetSpotShare.
+  ///
+  /// In en, this message translates to:
+  /// **'In sweet spot'**
+  String get sweetSpotShare;
+
+  /// No description provided for @videoTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional video: +{lp} LP ({left} left today)'**
+  String videoTooltip(String lp, int left);
+
+  /// No description provided for @videoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional video'**
+  String get videoTitle;
+
+  /// No description provided for @videoBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch a short video for +{lp} LP. Up to {max} a day, each worth a little less. Running always earns more.'**
+  String videoBody(String lp, int max);
+
+  /// No description provided for @videoWatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch'**
+  String get videoWatch;
+
+  /// No description provided for @videoEarned.
+  ///
+  /// In en, this message translates to:
+  /// **'+{lp} LP from the video'**
+  String videoEarned(String lp);
+
+  /// No description provided for @videoSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Video closed early. No LP this time.'**
+  String get videoSkipped;
+
+  /// No description provided for @videoFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'No video available right now.'**
+  String get videoFailed;
+
+  /// No description provided for @videoUsedUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s videos are used up. New ones tomorrow.'**
+  String get videoUsedUp;
+
+  /// No description provided for @settingsSaveGame.
+  ///
+  /// In en, this message translates to:
+  /// **'Save game'**
+  String get settingsSaveGame;
+
+  /// No description provided for @saveHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your save game lives only on this device. Export it as a file to keep a copy or to move to a new phone.'**
+  String get saveHint;
+
+  /// No description provided for @saveExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Export save game'**
+  String get saveExport;
+
+  /// No description provided for @saveNoExportYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No export yet'**
+  String get saveNoExportYet;
+
+  /// No description provided for @saveLastExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Last export: {date}'**
+  String saveLastExport(String date);
+
+  /// No description provided for @saveImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Import save game'**
+  String get saveImport;
+
+  /// No description provided for @saveImportSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Replaces the save game on this device'**
+  String get saveImportSub;
+
+  /// No description provided for @saveDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete save game'**
+  String get saveDelete;
+
+  /// No description provided for @saveShareSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Treadplay save game'**
+  String get saveShareSubject;
+
+  /// No description provided for @saveExported.
+  ///
+  /// In en, this message translates to:
+  /// **'Save game exported.'**
+  String get saveExported;
+
+  /// No description provided for @saveDownloaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Save game downloaded.'**
+  String get saveDownloaded;
+
+  /// No description provided for @saveImportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import save game?'**
+  String get saveImportTitle;
+
+  /// No description provided for @saveImportSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'This save holds {companions} companions, {lp} LP and {runs} stored runs. Exported: {date}.\n\nReplace overwrites your current save game on this device.'**
+  String saveImportSummary(int companions, String lp, int runs, String date);
+
+  /// No description provided for @saveReplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace'**
+  String get saveReplace;
+
+  /// No description provided for @saveImported.
+  ///
+  /// In en, this message translates to:
+  /// **'Save game imported.'**
+  String get saveImported;
+
+  /// No description provided for @saveErrorNotASave.
+  ///
+  /// In en, this message translates to:
+  /// **'This file is not a Treadplay save game.'**
+  String get saveErrorNotASave;
+
+  /// No description provided for @saveErrorNewer.
+  ///
+  /// In en, this message translates to:
+  /// **'This save game comes from a newer Treadplay version. Update the app first.'**
+  String get saveErrorNewer;
+
+  /// No description provided for @saveErrorDamaged.
+  ///
+  /// In en, this message translates to:
+  /// **'This save game is damaged and can\'t be loaded. Your current game is unchanged.'**
+  String get saveErrorDamaged;
+
+  /// No description provided for @saveErrorDuringRun.
+  ///
+  /// In en, this message translates to:
+  /// **'Not possible during a run.'**
+  String get saveErrorDuringRun;
+
+  /// No description provided for @saveDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete save game?'**
+  String get saveDeleteTitle;
+
+  /// No description provided for @saveDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Companions, seals, LP, Breath, run history and lifetime totals are removed. You start again with Mossik.'**
+  String get saveDeleteBody;
+
+  /// No description provided for @saveDeleteReallyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Really delete everything?'**
+  String get saveDeleteReallyTitle;
+
+  /// No description provided for @saveDeleteReallyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This cannot be undone. Without an export the save game is gone.'**
+  String get saveDeleteReallyBody;
+
+  /// No description provided for @saveDeletePermanently.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete permanently'**
+  String get saveDeletePermanently;
+
+  /// No description provided for @saveDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Save game deleted. Fresh start with Mossik.'**
+  String get saveDeleted;
+
+  /// No description provided for @saveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {error}'**
+  String saveError(String error);
+
+  /// No description provided for @wwTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trail'**
+  String get wwTitle;
+
+  /// No description provided for @wwWaymark.
+  ///
+  /// In en, this message translates to:
+  /// **'Waymark {n}'**
+  String wwWaymark(int n);
+
+  /// No description provided for @wwSettingsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'{reached} of {total} waymarks · next at {km} km'**
+  String wwSettingsSub(int reached, int total, String km);
+
+  /// No description provided for @wwAllReached.
+  ///
+  /// In en, this message translates to:
+  /// **'All {total} waymarks reached. The trail keeps growing.'**
+  String wwAllReached(int total);
+
+  /// No description provided for @wwLastAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Last at waymark {n}'**
+  String wwLastAt(int n);
+
+  /// No description provided for @wwStartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The trail begins'**
+  String get wwStartTitle;
+
+  /// No description provided for @wwStartLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Every valid run counts. The first waymark is {km} km away.'**
+  String wwStartLine(String km);
+
+  /// No description provided for @wwNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next waymark {n}'**
+  String wwNext(int n);
+
+  /// No description provided for @wwKmTask.
+  ///
+  /// In en, this message translates to:
+  /// **'{km} km in total'**
+  String wwKmTask(String km);
+
+  /// No description provided for @wwKmValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} / {target} km'**
+  String wwKmValue(String done, String target);
+
+  /// No description provided for @wwLater.
+  ///
+  /// In en, this message translates to:
+  /// **'later'**
+  String get wwLater;
+
+  /// No description provided for @wwLaterNote.
+  ///
+  /// In en, this message translates to:
+  /// **'“later”: not in the game yet, already counts as done.'**
+  String get wwLaterNote;
+
+  /// No description provided for @wwUnlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'unlocked'**
+  String get wwUnlocked;
+
+  /// No description provided for @wwComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'comes with an update'**
+  String get wwComingSoon;
+
+  /// No description provided for @wwYou.
+  ///
+  /// In en, this message translates to:
+  /// **'you'**
+  String get wwYou;
+
+  /// No description provided for @wwYouLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{km} km to go'**
+  String wwYouLeft(String km);
+
+  /// No description provided for @wwYouTask.
+  ///
+  /// In en, this message translates to:
+  /// **'task open'**
+  String get wwYouTask;
+
+  /// No description provided for @wwReachedOne.
+  ///
+  /// In en, this message translates to:
+  /// **'Waymark {n} reached · {unlock}'**
+  String wwReachedOne(int n, String unlock);
+
+  /// No description provided for @wwReachedMany.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} waymarks reached'**
+  String wwReachedMany(int count);
+
+  /// No description provided for @wwOpenTrail.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the trail'**
+  String get wwOpenTrail;
+
+  /// No description provided for @wwFromWaymark.
+  ///
+  /// In en, this message translates to:
+  /// **'from waymark {n}'**
+  String wwFromWaymark(int n);
+
+  /// No description provided for @wwLineLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'The messenger’s line waits at this waymark.'**
+  String get wwLineLocked;
+
+  /// No description provided for @wwForgeLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'The Forge opens at waymark 2 of the trail ({km} km).'**
+  String wwForgeLocked(String km);
+
+  /// No description provided for @wwClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get wwClose;
+
+  /// No description provided for @wwTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks'**
+  String get wwTasks;
+
+  /// No description provided for @wwNoTask.
+  ///
+  /// In en, this message translates to:
+  /// **'No task, only distance.'**
+  String get wwNoTask;
+
+  /// No description provided for @wwTaskBrownPouch.
+  ///
+  /// In en, this message translates to:
+  /// **'Open a brown pouch'**
+  String get wwTaskBrownPouch;
+
+  /// No description provided for @wwTaskCopperPouch.
+  ///
+  /// In en, this message translates to:
+  /// **'Open a copper pouch'**
+  String get wwTaskCopperPouch;
+
+  /// No description provided for @wwTaskTurquoisePouch.
+  ///
+  /// In en, this message translates to:
+  /// **'Open a turquoise pouch'**
+  String get wwTaskTurquoisePouch;
+
+  /// No description provided for @wwTaskSealPlaced.
+  ///
+  /// In en, this message translates to:
+  /// **'Forge a seal and set it'**
+  String get wwTaskSealPlaced;
+
+  /// No description provided for @wwTaskSealsForged.
+  ///
+  /// In en, this message translates to:
+  /// **'Forge {n} seals in total'**
+  String wwTaskSealsForged(int n);
+
+  /// No description provided for @wwTaskSealL3.
+  ///
+  /// In en, this message translates to:
+  /// **'One seal at L3'**
+  String get wwTaskSealL3;
+
+  /// No description provided for @wwTaskMessenger.
+  ///
+  /// In en, this message translates to:
+  /// **'Meet a messenger'**
+  String get wwTaskMessenger;
+
+  /// No description provided for @wwTaskSweet58.
+  ///
+  /// In en, this message translates to:
+  /// **'1 run with Sweet Spot ≥ 58 %'**
+  String get wwTaskSweet58;
+
+  /// No description provided for @wwTaskSweet71.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} runs with Sweet Spot ≥ 71 %'**
+  String wwTaskSweet71(int n);
+
+  /// No description provided for @wwTaskLeash.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill the leash (a pouch on all 4 clips)'**
+  String get wwTaskLeash;
+
+  /// No description provided for @wwTaskBuy.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy a second companion in the Market'**
+  String get wwTaskBuy;
+
+  /// No description provided for @wwTaskLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'A companion at level {n}'**
+  String wwTaskLevel(int n);
+
+  /// No description provided for @wwTaskCombine.
+  ///
+  /// In en, this message translates to:
+  /// **'Combine once'**
+  String get wwTaskCombine;
+
+  /// No description provided for @wwUnlockBrownPouch.
+  ///
+  /// In en, this message translates to:
+  /// **'Brown pouch'**
+  String get wwUnlockBrownPouch;
+
+  /// No description provided for @wwUnlockForge.
+  ///
+  /// In en, this message translates to:
+  /// **'Forge (seals L1)'**
+  String get wwUnlockForge;
+
+  /// No description provided for @wwUnlockMarketMedievalJungle.
+  ///
+  /// In en, this message translates to:
+  /// **'Market +2 species (Medieval, Jungle)'**
+  String get wwUnlockMarketMedievalJungle;
+
+  /// No description provided for @wwUnlockCopperPouch.
+  ///
+  /// In en, this message translates to:
+  /// **'Copper pouch'**
+  String get wwUnlockCopperPouch;
+
+  /// No description provided for @wwUnlockForgeL2.
+  ///
+  /// In en, this message translates to:
+  /// **'Forging L2'**
+  String get wwUnlockForgeL2;
+
+  /// No description provided for @wwUnlockWorldUnderwater.
+  ///
+  /// In en, this message translates to:
+  /// **'World Underwater + species'**
+  String get wwUnlockWorldUnderwater;
+
+  /// No description provided for @wwUnlockLeashClip4.
+  ///
+  /// In en, this message translates to:
+  /// **'4th leash clip'**
+  String get wwUnlockLeashClip4;
+
+  /// No description provided for @wwUnlockForgeL3.
+  ///
+  /// In en, this message translates to:
+  /// **'Forging L3'**
+  String get wwUnlockForgeL3;
+
+  /// No description provided for @wwUnlockMarketEgyptPirate.
+  ///
+  /// In en, this message translates to:
+  /// **'Market +2 species (Egypt, Pirates)'**
+  String get wwUnlockMarketEgyptPirate;
+
+  /// No description provided for @wwUnlockTurquoisePouch.
+  ///
+  /// In en, this message translates to:
+  /// **'Turquoise pouch'**
+  String get wwUnlockTurquoisePouch;
+
+  /// No description provided for @wwUnlockWorldSteampunk.
+  ///
+  /// In en, this message translates to:
+  /// **'World Steampunk + species'**
+  String get wwUnlockWorldSteampunk;
+
+  /// No description provided for @wwUnlockForgeL4.
+  ///
+  /// In en, this message translates to:
+  /// **'Forging L4'**
+  String get wwUnlockForgeL4;
+
+  /// No description provided for @wwUnlockCombineL3.
+  ///
+  /// In en, this message translates to:
+  /// **'Combining L3'**
+  String get wwUnlockCombineL3;
+
+  /// No description provided for @wwUnlockNavyPouch.
+  ///
+  /// In en, this message translates to:
+  /// **'Navy pouch'**
+  String get wwUnlockNavyPouch;
+
+  /// No description provided for @wwUnlockWorldSpaceRobot.
+  ///
+  /// In en, this message translates to:
+  /// **'Worlds Space + Robot + species'**
+  String get wwUnlockWorldSpaceRobot;
+
+  /// No description provided for @wwUnlockForgeL5.
+  ///
+  /// In en, this message translates to:
+  /// **'Forging L5'**
+  String get wwUnlockForgeL5;
+
+  /// No description provided for @wwUnlockShelfPlus2.
+  ///
+  /// In en, this message translates to:
+  /// **'Den +2 slots (12→14)'**
+  String get wwUnlockShelfPlus2;
+
+  /// No description provided for @wwUnlockCombineL5.
+  ///
+  /// In en, this message translates to:
+  /// **'Combining L5'**
+  String get wwUnlockCombineL5;
+
+  /// No description provided for @wwUnlockWorldRococoCandy.
+  ///
+  /// In en, this message translates to:
+  /// **'Worlds Rococo + Candy + species'**
+  String get wwUnlockWorldRococoCandy;
+
+  /// No description provided for @wwLine1.
+  ///
+  /// In en, this message translates to:
+  /// **'A companion doesn’t grow in a den. It grows beside you, step by step.'**
+  String get wwLine1;
+
+  /// No description provided for @wwLine2.
+  ///
+  /// In en, this message translates to:
+  /// **'What you find along the way belongs to you both.'**
+  String get wwLine2;
+
+  /// No description provided for @wwLine3.
+  ///
+  /// In en, this message translates to:
+  /// **'New tracks in the Market. But no companion gets far if it is only carried.'**
+  String get wwLine3;
+
+  /// No description provided for @wwLine4.
+  ///
+  /// In en, this message translates to:
+  /// **'A seal only holds what the trail has put into it.'**
+  String get wwLine4;
+
+  /// No description provided for @wwLine5.
+  ///
+  /// In en, this message translates to:
+  /// **'Two equal seals, one fire. Patience is the third part.'**
+  String get wwLine5;
+
+  /// No description provided for @wwLine6.
+  ///
+  /// In en, this message translates to:
+  /// **'At the right pace you hear each other breathe.'**
+  String get wwLine6;
+
+  /// No description provided for @wwLine7.
+  ///
+  /// In en, this message translates to:
+  /// **'One more clip means more that comes home with you.'**
+  String get wwLine7;
+
+  /// No description provided for @wwLine8.
+  ///
+  /// In en, this message translates to:
+  /// **'The first ember in the brass. It only burns because you walked.'**
+  String get wwLine8;
+
+  /// No description provided for @wwLine9.
+  ///
+  /// In en, this message translates to:
+  /// **'Far lands send their creatures. They are looking for someone to walk with.'**
+  String get wwLine9;
+
+  /// No description provided for @wwLine10.
+  ///
+  /// In en, this message translates to:
+  /// **'A full leash is a full trail.'**
+  String get wwLine10;
+
+  /// No description provided for @wwLine11.
+  ///
+  /// In en, this message translates to:
+  /// **'Steam and cogs. Even machines only learn on the way.'**
+  String get wwLine11;
+
+  /// No description provided for @wwLine12.
+  ///
+  /// In en, this message translates to:
+  /// **'Forged five times. Now your hands know it.'**
+  String get wwLine12;
+
+  /// No description provided for @wwLine13.
+  ///
+  /// In en, this message translates to:
+  /// **'Two powers in one seal, like two who walk the same trail.'**
+  String get wwLine13;
+
+  /// No description provided for @wwLine14.
+  ///
+  /// In en, this message translates to:
+  /// **'Two together don’t make the trail shorter, but brighter.'**
+  String get wwLine14;
+
+  /// No description provided for @wwLine15.
+  ///
+  /// In en, this message translates to:
+  /// **'Even between the stars only the next step counts.'**
+  String get wwLine15;
+
+  /// No description provided for @wwLine16.
+  ///
+  /// In en, this message translates to:
+  /// **'The crown is not given. It is walked.'**
+  String get wwLine16;
+
+  /// No description provided for @wwLine17.
+  ///
+  /// In en, this message translates to:
+  /// **'More room in the den. The growing still happens outside.'**
+  String get wwLine17;
+
+  /// No description provided for @wwLine18.
+  ///
+  /// In en, this message translates to:
+  /// **'Whoever keeps the beat, the ember follows.'**
+  String get wwLine18;
+
+  /// No description provided for @wwLine19.
+  ///
+  /// In en, this message translates to:
+  /// **'No end, only a bend. The trail grows with you.'**
+  String get wwLine19;
+
+  /// No description provided for @forgeIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Seals wait in the case. Set them into the companion you have along.'**
+  String get forgeIntro;
+
+  /// No description provided for @forgeCompanionLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} · {rarity} · {total} sockets'**
+  String forgeCompanionLine(String name, String rarity, int total);
+
+  /// No description provided for @sealLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Level {n}'**
+  String sealLevel(int n);
+
+  /// No description provided for @sealLevelShort.
+  ///
+  /// In en, this message translates to:
+  /// **'L{n}'**
+  String sealLevelShort(int n);
+
+  /// No description provided for @sealStatBonus.
+  ///
+  /// In en, this message translates to:
+  /// **'{stat} +{pct} %'**
+  String sealStatBonus(String stat, String pct);
+
+  /// No description provided for @sealComboName.
+  ///
+  /// In en, this message translates to:
+  /// **'{a} + {b}'**
+  String sealComboName(String a, String b);
+
+  /// No description provided for @sealComboBonus.
+  ///
+  /// In en, this message translates to:
+  /// **'+{pct} % / +{pct} %'**
+  String sealComboBonus(String pct);
+
+  /// No description provided for @statBonus.
+  ///
+  /// In en, this message translates to:
+  /// **'+{pct} %'**
+  String statBonus(String pct);
+
+  /// No description provided for @statCapped.
+  ///
+  /// In en, this message translates to:
+  /// **'+{pct} % (cap)'**
+  String statCapped(String pct);
+
+  /// No description provided for @forgeModeUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Forge up'**
+  String get forgeModeUp;
+
+  /// No description provided for @forgeModeCombine.
+  ///
+  /// In en, this message translates to:
+  /// **'Combine'**
+  String get forgeModeCombine;
+
+  /// No description provided for @forgeUpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Forge: 2 equal seals + Glut'**
+  String get forgeUpTitle;
+
+  /// No description provided for @forgeCombineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Combine: 2 different seals + Glut'**
+  String get forgeCombineTitle;
+
+  /// No description provided for @forgeGlutCost.
+  ///
+  /// In en, this message translates to:
+  /// **'+ {n} Glut'**
+  String forgeGlutCost(int n);
+
+  /// No description provided for @forgeLpCost.
+  ///
+  /// In en, this message translates to:
+  /// **'+ {lp} LP'**
+  String forgeLpCost(String lp);
+
+  /// No description provided for @forgeFailNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Fail chance {pct} % · then 1 seal turns into 3 splinters'**
+  String forgeFailNote(String pct);
+
+  /// No description provided for @forgeGlutRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Glut {min}–{max}: each extra Glut lowers the fail chance.'**
+  String forgeGlutRange(int min, int max);
+
+  /// No description provided for @forgeGlutFixed.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs exactly {n} Glut.'**
+  String forgeGlutFixed(int n);
+
+  /// No description provided for @forgePickSeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a seal in the case below.'**
+  String get forgePickSeal;
+
+  /// No description provided for @forgePickPartner.
+  ///
+  /// In en, this message translates to:
+  /// **'Now pick a seal of another stat at the same level.'**
+  String get forgePickPartner;
+
+  /// No description provided for @forgeCaseNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No loose seals yet.'**
+  String get forgeCaseNone;
+
+  /// No description provided for @forgeCase.
+  ///
+  /// In en, this message translates to:
+  /// **'Case'**
+  String get forgeCase;
+
+  /// No description provided for @forgeCaseEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No loose seals yet. Buy a seal L1 in the Case tab.'**
+  String get forgeCaseEmpty;
+
+  /// No description provided for @forgeGlutSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Glut comes from pouches. A run of 1 km or more without a pouch still brings 1 Glut.'**
+  String get forgeGlutSource;
+
+  /// No description provided for @forgeBuyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New seal L1 · {lp} LP'**
+  String forgeBuyTitle(String lp);
+
+  /// No description provided for @forgeMeltTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Melt 5 splinters into a seal L1'**
+  String get forgeMeltTitle;
+
+  /// No description provided for @forgeAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Forge'**
+  String get forgeAction;
+
+  /// No description provided for @forgeCombineAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Combine'**
+  String get forgeCombineAction;
+
+  /// No description provided for @forgeSetAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Set into {name}'**
+  String forgeSetAction(String name);
+
+  /// No description provided for @forgeLevelLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Forging L{n} opens at waymark {wm}.'**
+  String forgeLevelLocked(int n, int wm);
+
+  /// No description provided for @forgeCombineLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Combining L{n} opens at waymark {wm}.'**
+  String forgeCombineLocked(int n, int wm);
+
+  /// No description provided for @forgeNeedsPair.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs 2 equal seals in the case.'**
+  String get forgeNeedsPair;
+
+  /// No description provided for @forgeNeedsGlut.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough Glut yet.'**
+  String get forgeNeedsGlut;
+
+  /// No description provided for @forgeTopLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'L5 is the highest level.'**
+  String get forgeTopLevel;
+
+  /// No description provided for @forgeComboFinal.
+  ///
+  /// In en, this message translates to:
+  /// **'Combined seals are not forged further.'**
+  String get forgeComboFinal;
+
+  /// No description provided for @forgeBadCombine.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs two single seals of different stats at L3 or L5.'**
+  String get forgeBadCombine;
+
+  /// No description provided for @forgeSuccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Forged'**
+  String get forgeSuccessTitle;
+
+  /// No description provided for @forgeSuccessBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{seal} is now in the case.'**
+  String forgeSuccessBody(String seal);
+
+  /// No description provided for @forgeFailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The fire failed'**
+  String get forgeFailTitle;
+
+  /// No description provided for @forgeFailBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{seal} fell to 3 splinters. The other seal is back in the case.'**
+  String forgeFailBody(String seal);
+
+  /// No description provided for @forgeOk.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get forgeOk;
+
+  /// No description provided for @forgeLadder.
+  ///
+  /// In en, this message translates to:
+  /// **'Levels'**
+  String get forgeLadder;
+
+  /// No description provided for @forgeLadderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Seal levels'**
+  String get forgeLadderTitle;
+
+  /// No description provided for @forgeLadderNote.
+  ///
+  /// In en, this message translates to:
+  /// **'At most +47 % per stat from all seals together. Combined seals free a socket but give less in total.'**
+  String get forgeLadderNote;
+
+  /// No description provided for @forgePickTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a seal'**
+  String get forgePickTitle;
+
+  /// No description provided for @summaryGlut.
+  ///
+  /// In en, this message translates to:
+  /// **'Glut for the Forge'**
+  String get summaryGlut;
+
+  /// No description provided for @glutAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'+{n} Glut'**
+  String glutAmount(int n);
+
+  /// No description provided for @pouchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pouches'**
+  String get pouchTitle;
+
+  /// No description provided for @pouchBrown.
+  ///
+  /// In en, this message translates to:
+  /// **'Brown pouch'**
+  String get pouchBrown;
+
+  /// No description provided for @pouchCopper.
+  ///
+  /// In en, this message translates to:
+  /// **'Copper pouch'**
+  String get pouchCopper;
+
+  /// No description provided for @pouchTurquoise.
+  ///
+  /// In en, this message translates to:
+  /// **'Turquoise pouch'**
+  String get pouchTurquoise;
+
+  /// No description provided for @pouchNavy.
+  ///
+  /// In en, this message translates to:
+  /// **'Navy pouch'**
+  String get pouchNavy;
+
+  /// No description provided for @pouchContentsBrown.
+  ///
+  /// In en, this message translates to:
+  /// **'Glut 1–2, plus a seal L1 or 2 splinters'**
+  String get pouchContentsBrown;
+
+  /// No description provided for @pouchContentsCopper.
+  ///
+  /// In en, this message translates to:
+  /// **'Glut 2, plus 1–2 of: seal L1–L2, 2 Glut, 2 splinters'**
+  String get pouchContentsCopper;
+
+  /// No description provided for @pouchContentsTurquoise.
+  ///
+  /// In en, this message translates to:
+  /// **'Glut 2–3, plus 2 of: seal L1–L2, 2 Glut, 3 splinters'**
+  String get pouchContentsTurquoise;
+
+  /// No description provided for @pouchContentsNavy.
+  ///
+  /// In en, this message translates to:
+  /// **'Glut 3, plus 2 of: seal L1–L3, 3 Glut, 3 splinters'**
+  String get pouchContentsNavy;
+
+  /// No description provided for @pouchLeash.
+  ///
+  /// In en, this message translates to:
+  /// **'Leash {n}/{clips}'**
+  String pouchLeash(int n, int clips);
+
+  /// No description provided for @pouchEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No pouch on the leash. Runs find pouches; a full Breath tank gives the best chance.'**
+  String get pouchEmpty;
+
+  /// No description provided for @pouchLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Pouches start at waymark 1 ({km} km).'**
+  String pouchLocked(String km);
+
+  /// No description provided for @pouchWarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk it open: {done} / {total} km'**
+  String pouchWarm(String done, String total);
+
+  /// No description provided for @pouchWarmShort.
+  ///
+  /// In en, this message translates to:
+  /// **'{done}/{total} km'**
+  String pouchWarmShort(String done, String total);
+
+  /// No description provided for @pouchReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Walked warm: opens for free.'**
+  String get pouchReady;
+
+  /// No description provided for @pouchReadyShort.
+  ///
+  /// In en, this message translates to:
+  /// **'warm'**
+  String get pouchReadyShort;
+
+  /// No description provided for @pouchFades.
+  ///
+  /// In en, this message translates to:
+  /// **'Stays about {h} h more unless a run warms it.'**
+  String pouchFades(int h);
+
+  /// No description provided for @pouchOpenLp.
+  ///
+  /// In en, this message translates to:
+  /// **'Open · {lp} LP'**
+  String pouchOpenLp(int lp);
+
+  /// No description provided for @pouchOpenFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get pouchOpenFree;
+
+  /// No description provided for @pouchNotEnoughLp.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough LP. Or walk it warm.'**
+  String get pouchNotEnoughLp;
+
+  /// No description provided for @pouchOpened.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} opened'**
+  String pouchOpened(String name);
+
+  /// No description provided for @pouchIntoCase.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything is in the Forge case now.'**
+  String get pouchIntoCase;
+
+  /// No description provided for @pouchToForge.
+  ///
+  /// In en, this message translates to:
+  /// **'To the Forge'**
+  String get pouchToForge;
+
+  /// No description provided for @pouchContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get pouchContinue;
+
+  /// No description provided for @pouchChance.
+  ///
+  /// In en, this message translates to:
+  /// **'Find chance after a full Breath tank: {pct}'**
+  String pouchChance(String pct);
+
+  /// No description provided for @pouchFortune.
+  ///
+  /// In en, this message translates to:
+  /// **'Fortune ×{f}, also for rarer colours'**
+  String pouchFortune(String f);
+
+  /// No description provided for @pouchRule.
+  ///
+  /// In en, this message translates to:
+  /// **'One full Breath tank counts per run. A full leash finds nothing new. Pouches not walked warm fade after a day.'**
+  String get pouchRule;
+
+  /// No description provided for @pouchCounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Found {f} · opened {o}'**
+  String pouchCounts(int f, int o);
+
+  /// No description provided for @pouchSplinters.
+  ///
+  /// In en, this message translates to:
+  /// **'+{n} splinters'**
+  String pouchSplinters(int n);
+
+  /// No description provided for @pouchPick.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a pouch on the leash.'**
+  String get pouchPick;
+
+  /// No description provided for @summaryPouchFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Pouch found'**
+  String get summaryPouchFound;
+
+  /// No description provided for @summaryLeashFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Leash full: no new pouch this time.'**
+  String get summaryLeashFull;
+
+  /// No description provided for @summaryPouchesWarm.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{1 pouch walked warm: free to open.} other{{n} pouches walked warm: free to open.}}'**
+  String summaryPouchesWarm(int n);
+
+  /// No description provided for @summaryToLeash.
+  ///
+  /// In en, this message translates to:
+  /// **'To the leash'**
+  String get summaryToLeash;
+
+  /// No description provided for @homeLeash.
+  ///
+  /// In en, this message translates to:
+  /// **'Leash'**
+  String get homeLeash;
+
+  /// No description provided for @homeLeashOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open leash'**
+  String get homeLeashOpen;
+
+  /// No description provided for @homeLeashClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close leash'**
+  String get homeLeashClose;
+
+  /// No description provided for @storesSplinters.
+  ///
+  /// In en, this message translates to:
+  /// **'Splinters {s}/5'**
+  String storesSplinters(int s);
+
+  /// No description provided for @storesGlut.
+  ///
+  /// In en, this message translates to:
+  /// **'Glut {g}'**
+  String storesGlut(int g);
+
+  /// No description provided for @pouchColorOdds.
+  ///
+  /// In en, this message translates to:
+  /// **'Colours: {list}'**
+  String pouchColorOdds(String list);
+
+  /// No description provided for @pouchShortBrown.
+  ///
+  /// In en, this message translates to:
+  /// **'Brown'**
+  String get pouchShortBrown;
+
+  /// No description provided for @pouchShortCopper.
+  ///
+  /// In en, this message translates to:
+  /// **'Copper'**
+  String get pouchShortCopper;
+
+  /// No description provided for @pouchShortTurquoise.
+  ///
+  /// In en, this message translates to:
+  /// **'Turquoise'**
+  String get pouchShortTurquoise;
+
+  /// No description provided for @pouchShortNavy.
+  ///
+  /// In en, this message translates to:
+  /// **'Navy'**
+  String get pouchShortNavy;
+
+  /// No description provided for @pouchColorShare.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} {pct}'**
+  String pouchColorShare(String name, String pct);
+
+  /// One-line flavour text for the companion species pebble.
+  ///
+  /// In en, this message translates to:
+  /// **'A stone with a heart – and moss.'**
+  String get flavourPebble;
+
+  /// One-line flavour text for the companion species lumen.
+  ///
+  /// In en, this message translates to:
+  /// **'Glows brighter the farther you go.'**
+  String get flavourLumen;
+
+  /// One-line flavour text for the companion species coil.
+  ///
+  /// In en, this message translates to:
+  /// **'Ball, shell, friend.'**
+  String get flavourCoil;
+
+  /// One-line flavour text for the companion species gilt.
+  ///
+  /// In en, this message translates to:
+  /// **'Frills first, questions later.'**
+  String get flavourGilt;
+
+  /// One-line flavour text for the companion species hookfin.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick, sharp and a little cheeky.'**
+  String get flavourHookfin;
+
+  /// One-line flavour text for the companion species valve.
+  ///
+  /// In en, this message translates to:
+  /// **'Whistles when it’s time to go.'**
+  String get flavourValve;
+
+  /// One-line flavour text for the companion species dune.
+  ///
+  /// In en, this message translates to:
+  /// **'Sand in its ears, wanderlust in its eyes.'**
+  String get flavourDune;
+
+  /// One-line flavour text for the companion species brine.
+  ///
+  /// In en, this message translates to:
+  /// **'Pops up where you least expect it.'**
+  String get flavourBrine;
+
+  /// One-line flavour text for the companion species vine.
+  ///
+  /// In en, this message translates to:
+  /// **'Grows on you – literally.'**
+  String get flavourVine;
+
+  /// One-line flavour text for the companion species glaze.
+  ///
+  /// In en, this message translates to:
+  /// **'Sweet, with crystal edges.'**
+  String get flavourGlaze;
+
+  /// No description provided for @msgGreetRuhu.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{Hoo-hoo! There you are.} 1{Ruhu here, just landed.} 2{Good day, fellow wanderer!} 3{Hoo … I saw you on the path.} 4{Oh, how lovely to meet you!} 5{Softly, softly – Ruhu is here.} other{Hoo-hoo! There you are.}}'**
+  String msgGreetRuhu(String n);
+
+  /// No description provided for @msgGiftRuhu.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{I hung a brown pouch on your leash.} 1{It lay under a hedge. Now it hangs on your leash.} 2{A small pouch, but tied with care.} 3{For your steps today – a pouch for the leash.} 4{Not much, but honestly found. It’s already hanging.} 5{Walk it warm and it opens by itself.} other{I hung a brown pouch on your leash.}}'**
+  String msgGiftRuhu(String n);
+
+  /// No description provided for @msgTaskRuhu.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{Would you help me? There’s a reward after.} 1{I have a small favour to ask.} 2{A task, no hurry at all.} 3{If you have time: I need your legs.} 4{Do this for me and it will pay off.} 5{Just a little thing, I promise.} other{Would you help me? There’s a reward after.}}'**
+  String msgTaskRuhu(String n);
+
+  /// No description provided for @msgGreetKolk.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{Kraa! Kolk reporting.} 1{Kraa, kraa! Nicely walked!} 2{Psst, Kolk here.} 3{Kraa! Guess who’s here.} 4{Hello, pacemaker!} 5{Kraa! I was waiting for you.} other{Kraa! Kolk reporting.}}'**
+  String msgGreetKolk(String n);
+
+  /// No description provided for @msgGiftKolk.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{It shone by the path – now it hangs on your leash.} 1{A copper pouch! I didn’t steal it. Almost.} 2{Found for you, brought to you.} 3{Copper jingles so nicely. It’s on your leash.} 4{Keep the beat and I’ll bring more.} 5{I carried it over three rooftops.} other{It shone by the path – now it hangs on your leash.}}'**
+  String msgGiftKolk(String n);
+
+  /// No description provided for @msgTaskKolk.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{Kraa! I’ve got a task for you.} 1{Want to earn something? Listen.} 2{A raven never forgets – nor a reward.} 3{Do this and I’ll leave something shiny.} 4{Small bet: can you do it?} 5{Kraa! Here’s a task, no hurry.} other{Kraa! I’ve got a task for you.}}'**
+  String msgTaskKolk(String n);
+
+  /// No description provided for @msgGreetFlimm.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{A little light flickers – Flimm is here.} 1{Sssh … I followed your light.} 2{Good evening, even if it’s day.} 3{Flimm here, very quietly.} 4{Your steps are glowing today.} 5{I came with the wind.} other{A little light flickers – Flimm is here.}}'**
+  String msgGreetFlimm(String n);
+
+  /// No description provided for @msgGiftFlimm.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{A turquoise pouch, as rare as a clear sky.} 1{I hung it gently on your leash.} 2{It shimmers like my lantern. For you.} 3{Not everyone gets one of these. You do.} 4{Walk it warm and it will show its light.} 5{The evening breeze gave it to me.} other{A turquoise pouch, as rare as a clear sky.}}'**
+  String msgGiftFlimm(String n);
+
+  /// No description provided for @msgTaskFlimm.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{Will you help me feed my light?} 1{A small wish, no deadline.} 2{If you like, I’ll show you the way.} 3{Follow this task like a firefly.} 4{Do this and my lantern will reward you.} 5{Just a thread of light of a task.} other{Will you help me feed my light?}}'**
+  String msgTaskFlimm(String n);
+
+  /// No description provided for @msgGreetVesper.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{Greetings. Vesper has descended.} 1{The stars told me where you walk.} 2{I rarely come. Today I come to you.} 3{Don’t bow – keep walking instead.} 4{The night sky sends me.} 5{A rare evening for a rare guest.} other{Greetings. Vesper has descended.}}'**
+  String msgGreetVesper(String n);
+
+  /// No description provided for @msgGiftVesper.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{A navy pouch – the rarest of them all.} 1{From the treasury of the stars, onto your leash.} 2{Carry it with pride. It’s already hanging.} 3{Your Fortune called me. Here is its reward.} 4{Few ever see this velvet. You are one of them.} 5{Walk it warm – it holds great things.} other{A navy pouch – the rarest of them all.}}'**
+  String msgGiftVesper(String n);
+
+  /// No description provided for @msgTaskVesper.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{I set you a worthy task.} 1{Show me your endurance.} 2{A task from the stars, no hurry.} 3{Complete this and the sky will reward you.} 4{Big steps for a big reward.} 5{I’ll wait. Patience is my strength.} other{I set you a worthy task.}}'**
+  String msgTaskVesper(String n);
+
+  /// No description provided for @msgLineFull.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{Oh – your leash is full!} 1{No clip free, what a pity.} 2{Your leash is full, I’ll take it back with me.} 3{Hm, all taken. Open a few pouches!} 4{Full leash! I’ll come another time.} 5{Everything’s hanging already – next time.} other{Oh – your leash is full!}}'**
+  String msgLineFull(String n);
+
+  /// No description provided for @msgLineDone.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{Done! Here’s your reward.} 1{Task complete – well walked!} 2{As promised: your reward.} 3{You did that nicely.} 4{Done! The reward is in your case.} 5{Bravo – I knew you could.} other{Done! Here’s your reward.}}'**
+  String msgLineDone(String n);
+
+  /// No description provided for @msgTitleRuhu.
+  ///
+  /// In en, this message translates to:
+  /// **'Ruhu · owl of the field paths'**
+  String get msgTitleRuhu;
+
+  /// No description provided for @msgTitleKolk.
+  ///
+  /// In en, this message translates to:
+  /// **'Kolk · raven of the waysides'**
+  String get msgTitleKolk;
+
+  /// No description provided for @msgTitleFlimm.
+  ///
+  /// In en, this message translates to:
+  /// **'Flimm · lantern moth'**
+  String get msgTitleFlimm;
+
+  /// No description provided for @msgTitleVesper.
+  ///
+  /// In en, this message translates to:
+  /// **'Vesper · star owl'**
+  String get msgTitleVesper;
+
+  /// No description provided for @msgRankBrown.
+  ///
+  /// In en, this message translates to:
+  /// **'Brown messenger · common'**
+  String get msgRankBrown;
+
+  /// No description provided for @msgRankCopper.
+  ///
+  /// In en, this message translates to:
+  /// **'Copper messenger · uncommon'**
+  String get msgRankCopper;
+
+  /// No description provided for @msgRankTurquoise.
+  ///
+  /// In en, this message translates to:
+  /// **'Turquoise messenger · rare'**
+  String get msgRankTurquoise;
+
+  /// No description provided for @msgRankNavy.
+  ///
+  /// In en, this message translates to:
+  /// **'Navy messenger · very rare'**
+  String get msgRankNavy;
+
+  /// No description provided for @msgBrings.
+  ///
+  /// In en, this message translates to:
+  /// **'Brings you'**
+  String get msgBrings;
+
+  /// No description provided for @msgReward.
+  ///
+  /// In en, this message translates to:
+  /// **'Reward'**
+  String get msgReward;
+
+  /// No description provided for @msgThanks.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks'**
+  String get msgThanks;
+
+  /// No description provided for @msgAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get msgAccept;
+
+  /// No description provided for @msgPouchInstead.
+  ///
+  /// In en, this message translates to:
+  /// **'Rather the pouch'**
+  String get msgPouchInstead;
+
+  /// No description provided for @msgTaskOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Small task · optional'**
+  String get msgTaskOptional;
+
+  /// No description provided for @msgTaskNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Instead of the pouch: reward once done. No deadline.'**
+  String get msgTaskNote;
+
+  /// No description provided for @msgLeashFullNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Your leash is full, no clip for the pouch. Nothing is lost: your run brings its Glut as always.'**
+  String get msgLeashFullNote;
+
+  /// No description provided for @msgDoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Task done'**
+  String get msgDoneTitle;
+
+  /// No description provided for @msgDoneNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The reward is already in your seal case.'**
+  String get msgDoneNote;
+
+  /// No description provided for @msgBoard.
+  ///
+  /// In en, this message translates to:
+  /// **'Notice'**
+  String get msgBoard;
+
+  /// No description provided for @msgClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get msgClose;
+
+  /// No description provided for @msgFootnote.
+  ///
+  /// In en, this message translates to:
+  /// **'Only comes by luck after a run · more Fortune, rarer messengers'**
+  String get msgFootnote;
+
+  /// No description provided for @msgTaskWalk.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk {km} km'**
+  String msgTaskWalk(String km);
+
+  /// No description provided for @msgTaskSweet.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{1 run with ≥ 58 % Sweet Spot} other{{n} runs with ≥ 58 % Sweet Spot}}'**
+  String msgTaskSweet(int n);
+
+  /// No description provided for @msgTaskRuns.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{1 valid run of 1 km or more} other{{n} valid runs of 1 km or more}}'**
+  String msgTaskRuns(int n);
+
+  /// No description provided for @msgTaskOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{Open 1 pouch} other{Open {n} pouches}}'**
+  String msgTaskOpen(int n);
+
+  /// No description provided for @msgProgressKm.
+  ///
+  /// In en, this message translates to:
+  /// **'{a} / {b} km'**
+  String msgProgressKm(String a, String b);
+
+  /// No description provided for @msgProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{a} / {b}'**
+  String msgProgress(int a, int b);
 }
 
 class _AppLocalizationsDelegate

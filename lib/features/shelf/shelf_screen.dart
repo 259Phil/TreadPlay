@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../ui/skin.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/companion.dart';
@@ -40,6 +42,7 @@ class _ShelfScreenState extends ConsumerState<ShelfScreen> {
     ];
 
     return Scaffold(
+      backgroundColor: TreadSkin.of(context).canvas,
       appBar: AppBar(title: Text(l.tabShelf), actions: lpActions(game.lp)),
       body: CustomScrollView(
         slivers: [
@@ -95,6 +98,7 @@ class _ShelfScreenState extends ConsumerState<ShelfScreen> {
                     artKey: c.artKey,
                     world: c.world,
                     rarity: c.rarity,
+                    type: c.type,
                     name: c.name,
                     subtitle:
                         '${typeLabel(l, c.type)} · ${l.levelShort(c.level)}',
@@ -157,7 +161,11 @@ class _Filter<T> extends StatelessWidget {
                 : TreadColors.plate,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: active ? TreadColors.brass : const Color(0xFF3A424C),
+              color: active
+                  ? TreadColors.brass
+                  : kLeatherBuild
+                  ? const Color(0xFF6A5038)
+                  : const Color(0xFF3A424C),
             ),
           ),
           child: Padding(
@@ -212,6 +220,7 @@ class _Detail extends ConsumerWidget {
                       artKey: c.artKey,
                       world: c.world,
                       rarity: c.rarity,
+                      type: c.type,
                       name: c.name,
                       subtitle: l.levelShort(c.level),
                     ),
@@ -231,6 +240,18 @@ class _Detail extends ConsumerWidget {
                         worldLabel(l, c.world),
                         style: const TextStyle(color: TreadColors.muted),
                       ),
+                      if (speciesFlavour(l, c.speciesId) case final f?)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(
+                            f,
+                            style: const TextStyle(
+                              color: Color(0xFFD2B074),
+                              fontStyle: FontStyle.italic,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
                       const SizedBox(height: 8),
                       Text(
                         l.sweetSpotAt(

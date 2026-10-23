@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+
+import '../../ui/skin.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../data/game_data.dart';
+import '../../domain/wanderweg.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../router.dart';
 import '../../state/providers.dart';
+import '../../theme.dart';
+import '../../widgets/format.dart';
+import 'save_game_section.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -17,13 +23,20 @@ class SettingsScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final settings = ref.watch(settingsProvider);
     final notifier = ref.read(settingsProvider.notifier);
+    final totals = ref.watch(gameProvider.select((g) => g.totals));
+    final trail = ref.watch(gameProvider.select((g) => g.wanderweg));
 
     Widget section(String title, String body) => Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: theme.textTheme.titleSmall),
+          Text(
+            title,
+            style: TreadSkin.of(context).style == TreadStyle.leather
+                ? TreadSkin.of(context).display(16, color: TreadColors.brass)
+                : theme.textTheme.titleSmall,
+          ),
           const SizedBox(height: 4),
           Text(body, style: theme.textTheme.bodyMedium),
         ],
@@ -31,6 +44,7 @@ class SettingsScreen extends ConsumerWidget {
     );
 
     return Scaffold(
+      backgroundColor: TreadSkin.of(context).canvas,
       appBar: AppBar(title: Text(l.tabSettings)),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 24),
@@ -50,6 +64,26 @@ class SettingsScreen extends ConsumerWidget {
             title: Text(l.settingsKaching),
             value: settings.kaching,
             onChanged: notifier.setKaching,
+          ),
+          const Divider(),
+          ListTile(
+            leading: skinIcon(
+              context,
+              Icons.history,
+              SkinIcons.logbook,
+              size: 28,
+              color: TreadColors.brass,
+            ),
+            title: Text(l.settingsHistory),
+            subtitle: Text(
+              l.historyTotals(
+                formatKm(context, totals.distanceM),
+                totals.runs,
+                formatNumber(context, totals.lp),
+              ),
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push(AppRoutes.history),
           ),
           const Divider(),
           section(l.settingsHealthTitle, l.settingsHealthBody),
@@ -77,6 +111,30 @@ class SettingsScreen extends ConsumerWidget {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push(AppRoutes.terms),
           ),
+          const Divider(),
+          ListTile(
+            key: const Key('settings-trail'),
+            leading: skinIcon(
+              context,
+              Icons.signpost_outlined,
+              SkinIcons.waymark,
+              size: 28,
+              color: TreadColors.brass,
+            ),
+            title: Text(l.wwTitle),
+            subtitle: Text(switch (trail.next) {
+              final next? => l.wwSettingsSub(
+                trail.reached,
+                waymarks.length,
+                formatNumber(context, next.km, pattern: '0.0'),
+              ),
+              null => l.wwAllReached(waymarks.length),
+            }),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push(AppRoutes.wanderweg),
+          ),
+          const Divider(),
+          const SaveGameSection(),
           const Divider(),
           section(l.settingsCredits, l.creditsArtwork),
         ],

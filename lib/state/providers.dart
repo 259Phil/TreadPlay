@@ -9,6 +9,8 @@ import '../data/game_repository.dart';
 import '../data/movement_source.dart';
 import '../domain/breath.dart';
 import '../domain/companion.dart';
+import '../domain/forge.dart';
+import '../domain/pouch.dart';
 import '../domain/run_engine.dart';
 import '../domain/run_summary.dart';
 
@@ -48,15 +50,24 @@ class GameNotifier extends Notifier<GameData> {
     final now = _now();
     final saved = _repo.loadGame();
     final game = (saved ?? GameData.initial(now))
+        .advancingWanderweg(now)
         .regenerated(now)
+        .agingPouches(now)
         .withMarket(now, _random);
-    if (!identical(game.market, saved?.market)) _repo.saveGame(game);
+    if (!identical(game.market, saved?.market) ||
+        !identical(game.pouches, saved?.pouches) ||
+        !identical(game.wanderweg, saved?.wanderweg)) {
+      _repo.saveGame(game);
+    }
     return game;
   }
 
   Random get _random => ref.read(randomProvider);
 
-  void refreshBreath() => _set(state.regenerated(_now()));
+  void refreshBreath() {
+    final now = _now();
+    _set(state.regenerated(now).agingPouches(now));
+  }
 
   void refreshMarket() {
     final next = state.withMarket(_now(), _random);
@@ -79,17 +90,51 @@ class GameNotifier extends Notifier<GameData> {
     return true;
   }
 
-  /// Buys a seal and sets it into [companionId]. Not possible during a run.
-  bool forge(String companionId, SealType type) {
-    if (ref.read(runControllerProvider) != null) return false;
-    if (state.forgeBlock(companionId, type) != null) return false;
-    _set(state.forging(companionId, type));
+  bool get _running => ref.read(runControllerProvider) != null;
+
+  /// Buys a seal L1 into the seal case. Not possible during a run.
+  bool buySeal(SealType type) {
+    if (_running || state.buySealBlock() != null) return false;
+    _set(state.buyingSeal(type));
     return true;
   }
 
-  /// Removes the seal in [slot] of [companionId]. Not possible during a run.
+  /// Forges two equal seals up one level with [glut] Glut. Null when not
+  /// allowed (see [GameData.upgradeBlock]) or during a run.
+  ForgeOutcome? upgradeSeal(Seal seal, int glut) {
+    if (_running || state.upgradeBlock(seal, glut) != null) return null;
+    final (next, outcome) = state.upgrading(seal, glut, _random);
+    _set(next);
+    return outcome;
+  }
+
+  /// Combines two single seals of different stats. Null when not allowed
+  /// (see [GameData.combineBlock]) or during a run.
+  ForgeOutcome? combineSeals(Seal a, Seal b, int glut) {
+    if (_running || state.combineBlock(a, b, glut) != null) return null;
+    final (next, outcome) = state.combining(a, b, glut, _random);
+    _set(next);
+    return outcome;
+  }
+
+  /// Melts splinters into a seal L1 of [type]. Not possible during a run.
+  bool meltSplinters(SealType type) {
+    if (_running || state.meltBlock() != null) return false;
+    _set(state.meltingSplinters(type));
+    return true;
+  }
+
+  /// Sets [seal] from the case into [companionId]. Not during a run.
+  bool setSeal(String companionId, Seal seal) {
+    if (_running || state.setBlock(companionId, seal) != null) return false;
+    _set(state.settingSeal(companionId, seal));
+    return true;
+  }
+
+  /// Takes the seal in [slot] of [companionId] back into the case. Not
+  /// possible during a run.
   void clearSeal(String companionId, int slot) {
-    if (ref.read(runControllerProvider) != null) return;
+    if (_running) return;
     _set(state.clearingSeal(companionId, slot));
   }
 
@@ -101,10 +146,17 @@ class GameNotifier extends Notifier<GameData> {
     _set(state.takingAlong(companionId, _now()));
   }
 
+  /// Opens pouch [index] on the leash (free when warmed through, else for
+  /// LP). Returns what was inside; null when not possible or during a run.
+  List<PouchReward>? openPouch(int index) {
+    if (_running || state.openPouchBlock(index) != null) return null;
+    final (next, rewards) = state.openingPouch(index, _random);
+    _set(next);
+    return rewards;
+  }
+
   void completeRun(RunSummary run, {required double breathLeft}) {
-    var next = state.copyWith(
-      runs: [run, ...state.runs].take(GameData.maxStoredRuns).toList(),
-    );
+    var next = state.recordingRun(run, random: _random);
     if (run.valid) {
       next = next.copyWith(
         lp: next.lp + run.lp,
@@ -115,9 +167,59 @@ class GameNotifier extends Notifier<GameData> {
     refreshBreath();
   }
 
+  /// Takes the task the waiting messenger offers.
+  void acceptMessengerTask() => _set(state.acceptingTask());
+
+  /// Turns the offered task down: the messenger leaves its pouch instead.
+  void declineMessengerTask() => _set(state.decliningTask(_now()));
+
+  /// The waiting messenger delivery (or leash-full visit) was shown.
+  void dismissMessenger() => _set(state.dismissingVisit());
+
+  /// The "task done" note was shown.
+  void dismissMessengerDone() => _set(state.dismissingDone());
+
+  /// Replaces the whole game with an imported save. Not during a run.
+  bool importGame(GameData game) {
+    if (ref.read(runControllerProvider) != null) return false;
+    final now = _now();
+    _set(game.regenerated(now).withMarket(now, _random));
+    return true;
+  }
+
+  /// "Delete save game": everything goes, incl. totals and today's videos,
+  /// back to a fresh start with Pebble. Not during a run.
+  bool wipe() {
+    if (ref.read(runControllerProvider) != null) return false;
+    final now = _now();
+    _set(GameData.initial(now).withMarket(now, _random));
+    return true;
+  }
+
+  /// Deletes the stored run history; lifetime totals stay.
+  void eraseRuns() => _set(state.erasingRuns());
+
+  /// Pays today's next video reward after a fully watched video.
+  bool claimVideo() {
+    final next = state.claimingVideo(_now());
+    if (next == null) return false;
+    _set(next);
+    return true;
+  }
+
+  /// The player has seen the newly reached waymarks (bubble closed or the
+  /// trail opened).
+  void markWanderwegSeen() {
+    if (state.wanderweg.unseen == 0) return;
+    _set(state.copyWith(wanderweg: state.wanderweg.markedSeen()));
+  }
+
+  /// Every change also reaches the waymarks it allows; none is ever taken
+  /// back.
   void _set(GameData data) {
-    state = data;
-    _repo.saveGame(data);
+    final next = data.advancingWanderweg(_now());
+    state = next;
+    _repo.saveGame(next);
   }
 }
 
@@ -135,6 +237,8 @@ class SettingsNotifier extends Notifier<AppSettings> {
 
   void setMovementAccess(MovementAccess access) =>
       _set(state.copyWith(movementAccess: access));
+
+  void markExported(DateTime at) => _set(state.copyWith(lastExportAt: at));
 
   void _set(AppSettings s) {
     state = s;

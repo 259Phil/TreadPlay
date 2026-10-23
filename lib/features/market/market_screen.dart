@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../ui/skin.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/game_data.dart';
@@ -25,6 +27,7 @@ class MarketScreen extends ConsumerWidget {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
+        backgroundColor: TreadSkin.of(context).canvas,
         appBar: AppBar(
           title: Text(l.tabMarket),
           actions: lpActions(game.lp),
@@ -36,16 +39,39 @@ class MarketScreen extends ConsumerWidget {
             dividerHeight: 0,
             indicatorSize: TabBarIndicatorSize.tab,
             splashBorderRadius: BorderRadius.circular(20),
-            indicator: const BoxDecoration(
-              gradient: brassGradient,
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-            ),
-            labelColor: TreadColors.iron,
-            unselectedLabelColor: TreadColors.text,
-            labelStyle: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-            ),
+            indicator: kLeatherBuild
+                ? const ShapeDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0xFF5A4030), Color(0xFF3A281C)],
+                    ),
+                    shape: LeatherBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                      rim: 1.4,
+                      stitchInset: 4,
+                    ),
+                    shadows: [
+                      BoxShadow(
+                        color: Color(0x99000000),
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  )
+                : const BoxDecoration(
+                    gradient: brassGradient,
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                  ),
+            labelColor: kLeatherBuild
+                ? const Color(0xFFF6E2AA)
+                : TreadColors.iron,
+            unselectedLabelColor: kLeatherBuild
+                ? TreadColors.muted
+                : TreadColors.text,
+            labelStyle: kLeatherBuild
+                ? TreadSkin.of(context).display(16)
+                : const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
             tabs: [_PillTab(l.marketBuyTab), _PillTab(l.marketSellTab)],
           ),
         ),
@@ -126,7 +152,7 @@ class _Grid extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  l.shelfCount(game.companions.length, GameData.inventoryCap),
+                  l.shelfCount(game.companions.length, game.shelfSlots),
                   style: TextStyle(
                     color: game.shelfFull
                         ? TreadColors.copper
@@ -159,6 +185,7 @@ class _Grid extends StatelessWidget {
                   artKey: c.artKey,
                   world: c.world,
                   rarity: c.rarity,
+                  type: c.type,
                   name: c.name,
                   subtitle: rarityLabel(l, c.rarity),
                   stats: cardStats(context, c),
@@ -232,6 +259,7 @@ class _TradeSheet extends ConsumerWidget {
                       artKey: c.artKey,
                       world: c.world,
                       rarity: c.rarity,
+                      type: c.type,
                       name: c.name,
                       subtitle: l.levelShort(c.level),
                     ),
@@ -251,6 +279,18 @@ class _TradeSheet extends ConsumerWidget {
                         worldLabel(l, c.world),
                         style: const TextStyle(color: TreadColors.muted),
                       ),
+                      if (speciesFlavour(l, c.speciesId) case final f?)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(
+                            f,
+                            style: const TextStyle(
+                              color: Color(0xFFD2B074),
+                              fontStyle: FontStyle.italic,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
                       const SizedBox(height: 8),
                       Text(
                         l.sweetSpotAt(
@@ -271,7 +311,7 @@ class _TradeSheet extends ConsumerWidget {
             const SizedBox(height: 12),
             if (block != null)
               Text(
-                _blockText(l, block, c),
+                _blockText(l, block, c, ref.read(gameProvider).shelfSlots),
                 key: const Key('trade-block'),
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: TreadColors.copper),
@@ -286,7 +326,12 @@ class _TradeSheet extends ConsumerWidget {
             SizedBox(
               height: 52,
               child: FilledButton.icon(
-                icon: Icon(buying ? Icons.shopping_bag : Icons.sell),
+                icon: skinIcon(
+                  context,
+                  buying ? Icons.shopping_bag : Icons.sell,
+                  buying ? SkinIcons.buy : SkinIcons.sell,
+                  size: 24,
+                ),
                 label: Text(
                   buying
                       ? l.marketBuyFor(formatLpPrice(context, price))
@@ -309,11 +354,15 @@ class _TradeSheet extends ConsumerWidget {
   }
 }
 
-String _blockText(AppLocalizations l, TradeBlock block, Companion c) =>
-    switch (block) {
-      TradeBlock.gone => l.marketGone,
-      TradeBlock.shelfFull => l.marketShelfFull(GameData.inventoryCap),
-      TradeBlock.notEnoughLp => l.marketNotEnoughLp,
-      TradeBlock.needsSpirit => l.marketNeedsSpirit,
-      TradeBlock.lastCompanion => l.marketLastCompanion(c.name),
-    };
+String _blockText(
+  AppLocalizations l,
+  TradeBlock block,
+  Companion c,
+  int shelfSlots,
+) => switch (block) {
+  TradeBlock.gone => l.marketGone,
+  TradeBlock.shelfFull => l.marketShelfFull(shelfSlots),
+  TradeBlock.notEnoughLp => l.marketNotEnoughLp,
+  TradeBlock.needsSpirit => l.marketNeedsSpirit,
+  TradeBlock.lastCompanion => l.marketLastCompanion(c.name),
+};

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,12 +9,17 @@ import '../../domain/companion.dart';
 import '../../domain/run_summary.dart';
 import '../../l10n/app_localizations.dart';
 import '../legal/movement_notice.dart';
+import '../messenger/messenger_popup.dart';
 import '../../router.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
 import '../../widgets/format.dart';
 import '../../widgets/lp_pill.dart';
+import '../wanderweg/trail_entry.dart';
+import 'leash_drawer.dart';
+import 'video_button.dart';
 import 'world_scene.dart';
+import '../../ui/skin.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -23,9 +30,10 @@ class HomeScreen extends ConsumerWidget {
     final game = ref.watch(gameProvider);
     final companion = game.activeCompanion;
     final topInset = MediaQuery.paddingOf(context).top;
+    final skin = TreadSkin.of(context);
 
     return ColoredBox(
-      color: TreadColors.iron,
+      color: skin.canvas,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -40,24 +48,56 @@ class HomeScreen extends ConsumerWidget {
               tank: companion.tankSize,
             ),
           ),
-          Expanded(child: WorldScene(companion: companion)),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-            child: _NamePlate(companion: companion),
+          Expanded(
+            child: Stack(
+              children: [
+                Positioned.fill(child: WorldScene(companion: companion)),
+                const Positioned(
+                  top: 6,
+                  left: 14,
+                  right: 14,
+                  child: WaymarkReachedBubble(),
+                ),
+                if (game.unlocks.pouchColors.isNotEmpty)
+                  Positioned.fill(child: LeashDrawer(game: game)),
+              ],
+            ),
           ),
+          // Only while a messenger task is open; outside the scene so it
+          // never covers the companion.
+          if (game.messengers.task != null)
+            const Padding(
+              padding: EdgeInsets.fromLTRB(12, 8, 12, 0),
+              child: MessengerNotice(),
+            ),
+          const MessengerWatcher(),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
-            child: _StartButton(
-              label: l.startRun,
-              onPressed: () async {
-                await ensureMovementAccess(context, ref);
-                final access = ref.read(settingsProvider).movementAccess;
-                if (!context.mounted || access == MovementAccess.unasked) {
-                  return;
-                }
-                if (!ref.read(runControllerProvider.notifier).start()) return;
-                if (context.mounted) context.push(AppRoutes.run);
-              },
+            padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: SkinPanel(
+                    padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+                    child: _NamePlate(companion: companion),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                _StartButton(
+                  label: l.startRun,
+                  onPressed: () async {
+                    await ensureMovementAccess(context, ref);
+                    final access = ref.read(settingsProvider).movementAccess;
+                    if (!context.mounted || access == MovementAccess.unasked) {
+                      return;
+                    }
+                    if (!ref.read(runControllerProvider.notifier).start()) {
+                      return;
+                    }
+                    if (context.mounted) context.push(AppRoutes.run);
+                  },
+                ),
+              ],
             ),
           ),
         ],
@@ -78,56 +118,70 @@ class _Header extends StatelessWidget {
     final l = AppLocalizations.of(context);
     final r = lastRun;
     const small = TextStyle(color: TreadColors.muted, fontSize: 14);
-    return Row(
+    // Title row carries the small video button and the LP pill at the top
+    // edge; the last-run line gets the full width below so it never clips.
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Text(
                 l.appTitle,
                 maxLines: 1,
                 overflow: TextOverflow.fade,
                 softWrap: false,
-                style: serifTitle.copyWith(fontSize: 30),
+                style: TreadSkin.of(context).display(30),
               ),
-              Text.rich(
-                r == null
-                    ? TextSpan(
-                        text: l.todayKm(l.kmValue(formatNumber(context, 0))),
-                      )
-                    : TextSpan(
-                        text:
-                            '${l.lastRun}: ${l.kmValue(formatKm(context, r.distanceM))} · '
-                            '${formatDuration(r.duration)} · ',
-                        children: [
-                          TextSpan(
-                            text: r.valid
-                                ? l.lpAmount(formatNumber(context, r.lp))
-                                : l.invalidRun,
-                            style: TextStyle(
-                              color: r.valid
-                                  ? TreadColors.brass
-                                  : Theme.of(context).colorScheme.error,
-                            ),
-                          ),
-                        ],
-                      ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: small,
-              ),
-            ],
-          ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(right: 10),
+              child: VideoButton(),
+            ),
+            LpPill(lp: lp),
+          ],
         ),
-        Padding(
-          padding: const EdgeInsets.only(top: 6),
-          child: LpPill(lp: lp),
+        Row(
+          children: [
+            Expanded(child: _lastRunLine(context, l, r, small)),
+            const SizedBox(width: 8),
+            const TrailChip(),
+          ],
         ),
       ],
     );
   }
+
+  Widget _lastRunLine(
+    BuildContext context,
+    AppLocalizations l,
+    RunSummary? r,
+    TextStyle small,
+  ) => Text.rich(
+    r == null
+        ? TextSpan(text: l.todayKm(l.kmValue(formatNumber(context, 0))))
+        : TextSpan(
+            text:
+                '${l.lastRun}: ${l.kmValue(formatKm(context, r.distanceM))} · '
+                '${formatDuration(r.duration)} · ',
+            children: [
+              TextSpan(
+                text: r.valid
+                    ? l.lpAmount(formatNumber(context, r.lp))
+                    : l.invalidRun,
+                style: TextStyle(
+                  color: r.valid
+                      ? TreadColors.brass
+                      : Theme.of(context).colorScheme.error,
+                ),
+              ),
+            ],
+          ),
+    maxLines: 1,
+    overflow: TextOverflow.ellipsis,
+    style: small,
+  );
 }
 
 /// Name in serif, rarity and type, world and Spirit, sweet spot.
@@ -155,7 +209,7 @@ class _NamePlate extends StatelessWidget {
                     c.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: serifTitle.copyWith(fontSize: 30, height: 1.1),
+                    style: TreadSkin.of(context).display(26),
                   ),
                   Text.rich(
                     TextSpan(
@@ -220,7 +274,13 @@ class _BreathRow extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.air, size: 18, color: TreadColors.breath),
+              skinIcon(
+                context,
+                Icons.air,
+                SkinIcons.breath,
+                size: 18,
+                color: TreadColors.breath,
+              ),
               const SizedBox(width: 6),
               Text(
                 l.breath,
@@ -277,7 +337,7 @@ class _Segment extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            const ColoredBox(color: TreadColors.plate),
+            ColoredBox(color: TreadSkin.of(context).surface),
             FractionallySizedBox(
               alignment: Alignment.centerLeft,
               widthFactor: fill,
@@ -292,48 +352,80 @@ class _Segment extends StatelessWidget {
   }
 }
 
-/// The single wide brass Start button.
+/// The round brass Start button, bottom right.
 class _StartButton extends StatelessWidget {
   const _StartButton({required this.label, required this.onPressed});
 
   final String label;
   final VoidCallback onPressed;
 
+  static const _size = 92.0;
+
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(32)),
-        boxShadow: [BoxShadow(color: Color(0x99000000), blurRadius: 12)],
+    final s = TreadSkin.of(context);
+    final ring = switch (s.style) {
+      TreadStyle.forgeBrass => Border.all(
+        color: const Color(0xFF4A3B24),
+        width: 3,
       ),
-      child: Material(
-        shape: const StadiumBorder(),
-        clipBehavior: Clip.antiAlias,
-        child: Ink(
-          decoration: const BoxDecoration(gradient: brassGradient),
-          child: InkWell(
-            onTap: onPressed,
-            child: SizedBox(
-              height: 62,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.play_arrow,
-                    size: 30,
-                    color: TreadColors.iron,
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    label,
-                    style: const TextStyle(
-                      color: TreadColors.iron,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.5,
+      TreadStyle.ironPlain => Border.all(color: s.line, width: 2),
+      TreadStyle.leather => Border.all(
+        color: const Color(0xFF2E221A),
+        width: 4,
+      ),
+      TreadStyle.runeEmber => Border.all(color: s.accent, width: 2),
+    };
+    return Semantics(
+      button: true,
+      label: label,
+      excludeSemantics: true,
+      child: Container(
+        width: _size,
+        height: _size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: ring,
+          boxShadow: [
+            const BoxShadow(color: Color(0x99000000), blurRadius: 12),
+            if (s.style == TreadStyle.runeEmber)
+              BoxShadow(color: s.accent.withValues(alpha: .55), blurRadius: 18),
+          ],
+        ),
+        child: Material(
+          shape: const CircleBorder(),
+          clipBehavior: Clip.antiAlias,
+          child: Ink(
+            decoration: BoxDecoration(
+              gradient: s.style == TreadStyle.ironPlain
+                  ? LinearGradient(colors: [s.brass, s.brass])
+                  : const RadialGradient(
+                      center: Alignment(-.3, -.4),
+                      radius: .95,
+                      colors: [
+                        Color(0xFFF0D598),
+                        Color(0xFFC4A36A),
+                        Color(0xFF8E7046),
+                      ],
                     ),
-                  ),
-                ],
+            ),
+            child: InkWell(
+              onTap: onPressed,
+              child: CustomPaint(
+                foregroundPainter: _StartRing(s),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.play_arrow, size: 36, color: s.base),
+                    Text(
+                      s.displayText(label),
+                      style: s
+                          .display(16, color: s.base)
+                          .copyWith(height: 1, fontWeight: s.displayWeight),
+                    ),
+                    const SizedBox(height: 6),
+                  ],
+                ),
               ),
             ),
           ),
@@ -341,4 +433,60 @@ class _StartButton extends StatelessWidget {
       ),
     );
   }
+}
+
+class _StartRing extends CustomPainter {
+  _StartRing(this.s);
+  final TreadSkin s;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final c = size.center(Offset.zero);
+    final r = size.shortestSide / 2;
+    final p = Paint()..style = PaintingStyle.stroke;
+    switch (s.style) {
+      case TreadStyle.forgeBrass:
+        canvas.drawCircle(
+          c,
+          r - 6,
+          p
+            ..strokeWidth = 1
+            ..color = const Color(0xAA5A4628),
+        );
+        for (var i = 0; i < 8; i++) {
+          final a = i * math.pi / 4;
+          canvas.drawCircle(
+            c + Offset(math.cos(a), math.sin(a)) * (r - 9),
+            1.8,
+            Paint()..color = const Color(0xFF7A6238),
+          );
+        }
+      case TreadStyle.ironPlain:
+        break;
+      case TreadStyle.leather:
+        final path = Path()..addOval(Rect.fromCircle(center: c, radius: r - 7));
+        for (final m in path.computeMetrics()) {
+          for (var d = 0.0; d < m.length; d += 7) {
+            canvas.drawPath(
+              m.extractPath(d, d + 4),
+              Paint()
+                ..style = PaintingStyle.stroke
+                ..strokeWidth = 1.2
+                ..color = const Color(0xAA4A3420),
+            );
+          }
+        }
+      case TreadStyle.runeEmber:
+        canvas.drawCircle(
+          c,
+          r - 6,
+          p
+            ..strokeWidth = 1.2
+            ..color = const Color(0xAA6B3519),
+        );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_StartRing old) => old.s != s;
 }

@@ -6,6 +6,7 @@ import 'l10n/app_localizations.dart';
 import 'router.dart';
 import 'state/providers.dart';
 import 'theme.dart';
+import 'ui/skin.dart';
 
 class TreadplayApp extends ConsumerWidget {
   const TreadplayApp({super.key});
@@ -38,9 +39,20 @@ class _PhoneFrame extends StatelessWidget {
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
     if (media.size.width <= maxWidth) return child ?? const SizedBox();
-    return ColoredBox(
-      color: TreadColors.iron,
-      child: Center(
+    final skin = TreadSkin.of(context);
+    final column = Center(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          boxShadow: skin.backdrop == null
+              ? null
+              : const [
+                  BoxShadow(
+                    color: Color(0xCC000000),
+                    blurRadius: 28,
+                    spreadRadius: 2,
+                  ),
+                ],
+        ),
         child: SizedBox(
           width: maxWidth,
           child: MediaQuery(
@@ -48,6 +60,20 @@ class _PhoneFrame extends StatelessWidget {
             child: ClipRect(child: child),
           ),
         ),
+      ),
+    );
+    if (skin.backdrop == null) {
+      return ColoredBox(color: skin.base, child: column);
+    }
+    // Style C: the painted leather shows around the phone column, dimmed so
+    // the column stays the focus.
+    return SkinBackdrop(
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          const ColoredBox(color: Color(0x660A0604)),
+          column,
+        ],
       ),
     );
   }

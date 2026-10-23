@@ -193,4 +193,31 @@ void main() {
     expect(old.breathLeft, isNull);
     expect(old.earnsLp, isTrue);
   });
+
+  test('sweet-spot share is the time inside the range', () {
+    final engine = RunEngine(
+      companion: Companion.pebble(),
+      breathAtStart: 6,
+      startedAt: t0,
+    );
+    expect(engine.sweetSpotShare, isNull);
+    move(engine, 4.5, 300); // in band
+    move(engine, 12, 100); // out of band
+    expect(engine.sweetSpotShare, closeTo(0.75, 1e-9));
+    final summary = engine.finish();
+    expect(summary.sweetSpotShare, closeTo(0.75, 1e-9));
+    final copy = RunSummary.fromJson(summary.toJson());
+    expect(copy.sweetSpotShare, closeTo(0.75, 1e-9));
+  });
+
+  test('sweet-spot share also counts with an empty Breath bar', () {
+    final engine = RunEngine(
+      companion: Companion.pebble(),
+      breathAtStart: 0,
+      startedAt: t0,
+    );
+    move(engine, 4.5, 60);
+    expect(engine.lp, 0);
+    expect(engine.sweetSpotShare, 1);
+  });
 }

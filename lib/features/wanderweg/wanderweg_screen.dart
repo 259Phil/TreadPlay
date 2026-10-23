@@ -899,17 +899,25 @@ List<Widget> taskRows(
       share: (km / wm.km).clamp(0.0, 1.0),
     ),
     for (final t in wm.tasks)
-      _TaskRow(
-        done: counters.met(t),
-        waived: !t.counter.built,
-        label: taskLabel(l, t),
-        value: t.counter.built
-            ? '${math.min(counters[t.counter], t.target)} / ${t.target}'
-            : l.wwLater,
-        share: t.counter.built && t.target > 1
-            ? (counters[t.counter] / t.target).clamp(0.0, 1.0)
-            : null,
-      ),
+      // "1 seal at L3" asks for one seal, not for a count up to 3.
+      if (t.counter == WaymarkCounter.bestSealLevel)
+        _TaskRow(
+          done: counters.met(t),
+          label: taskLabel(l, t),
+          value: counters.met(t) ? '1 / 1' : '0 / 1',
+        )
+      else
+        _TaskRow(
+          done: counters.met(t),
+          waived: !t.counter.built,
+          label: taskLabel(l, t),
+          value: t.counter.built
+              ? '${math.min(counters[t.counter], t.target)} / ${t.target}'
+              : l.wwLater,
+          share: t.counter.built && t.target > 1
+              ? (counters[t.counter] / t.target).clamp(0.0, 1.0)
+              : null,
+        ),
   ];
 }
 

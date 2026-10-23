@@ -4,6 +4,7 @@ import '../domain/companion.dart';
 import '../l10n/app_localizations.dart';
 import '../theme.dart';
 import 'format.dart';
+import 'seal_art.dart';
 
 /// Stride, Grit, Fortune (seals included, brass when sealed) and Spirit.
 class CompanionStats extends StatelessWidget {
@@ -16,7 +17,21 @@ class CompanionStats extends StatelessWidget {
     final l = AppLocalizations.of(context);
     final c = companion;
 
-    Widget stat(String label, String value, {bool sealed = false}) => Expanded(
+    final anySeal = c.seals.isNotEmpty;
+
+    /// Blank line on unsealed tiles keeps the row even.
+    String? bonus(SealType t) {
+      if (c.sealCount(t) == 0) return anySeal ? '' : null;
+      final pct = pctText(context, c.sealBonus(t));
+      return c.sealCapped(t) ? l.statCapped(pct) : l.statBonus(pct);
+    }
+
+    Widget stat(
+      String label,
+      String value, {
+      bool sealed = false,
+      String? extra,
+    }) => Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 3),
         child: DecoratedBox(
@@ -49,6 +64,18 @@ class CompanionStats extends StatelessWidget {
                     color: sealed ? TreadColors.brass : null,
                   ),
                 ),
+                if (extra != null)
+                  Text(
+                    extra,
+                    maxLines: 1,
+                    overflow: TextOverflow.fade,
+                    softWrap: false,
+                    style: const TextStyle(
+                      color: TreadColors.brass,
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
               ],
             ),
           ),
@@ -62,18 +89,25 @@ class CompanionStats extends StatelessWidget {
           l.statStride,
           formatNumber(context, c.strideTotal),
           sealed: c.sealCount(SealType.stride) > 0,
+          extra: bonus(SealType.stride),
         ),
         stat(
           l.statGrit,
           formatNumber(context, c.gritTotal),
           sealed: c.sealCount(SealType.grit) > 0,
+          extra: bonus(SealType.grit),
         ),
         stat(
           l.statFortune,
           formatNumber(context, c.fortuneTotal),
           sealed: c.sealCount(SealType.fortune) > 0,
+          extra: bonus(SealType.fortune),
         ),
-        stat(l.statSpirit, l.percentValue(formatNumber(context, c.spirit))),
+        stat(
+          l.statSpirit,
+          l.percentValue(formatNumber(context, c.spirit)),
+          extra: anySeal ? '' : null,
+        ),
       ],
     );
   }

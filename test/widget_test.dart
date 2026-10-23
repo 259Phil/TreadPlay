@@ -12,6 +12,7 @@ import 'package:treadplay/data/game_data.dart';
 import 'package:treadplay/data/movement_source.dart';
 import 'package:treadplay/domain/breath.dart';
 import 'package:treadplay/domain/companion.dart';
+import 'package:treadplay/domain/forge.dart';
 import 'package:treadplay/domain/market.dart';
 import 'package:treadplay/domain/run_summary.dart';
 import 'package:treadplay/features/forge/forge_screen.dart';
@@ -30,6 +31,7 @@ void main() {
     Map<String, Object> saved = const {},
     RewardedAdService? ads,
     SaveFileIo? files,
+    Random? random,
   }) async {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 3;
@@ -41,7 +43,7 @@ void main() {
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
           clockProvider.overrideWithValue(() => t0),
-          randomProvider.overrideWithValue(Random(42)),
+          randomProvider.overrideWithValue(random ?? Random(42)),
           if (ads != null) rewardedAdServiceProvider.overrideWithValue(ads),
           if (files != null) saveFileIoProvider.overrideWithValue(files),
           movementSourceProvider.overrideWith(
@@ -786,6 +788,7 @@ void main() {
       WidgetTester tester,
       GameData game, {
       bool open = true,
+      Random? random,
     }) async {
       final seeded = open
           ? game.copyWith(wanderweg: const WanderwegProgress(legacyForge: true))
@@ -793,46 +796,94 @@ void main() {
       await pumpApp(
         tester,
         saved: {'flutter.game.v2': jsonEncode(seeded.toJson())},
+        random: random,
       );
       await tester.tap(find.widgetWithText(NavigationDestination, 'Forge'));
       await tester.pumpAndSettle();
+      // Tall enough that the whole Forge list is built.
+      tester.view.physicalSize = const Size(1080, 9000);
+      await tester.pumpAndSettle();
+      expect(find.byType(ForgeScreen), findsOneWidget);
     }
 
-    ButtonStyleButton sealButton(WidgetTester tester, String type) =>
+    Future<void> tapKey(WidgetTester tester, String key) async {
+      await tester.ensureVisible(find.byKey(Key(key)));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(Key(key)));
+      await tester.pumpAndSettle();
+    }
+
+    ButtonStyleButton button(WidgetTester tester, String key) =>
         tester.widget<ButtonStyleButton>(
           find.descendant(
-            of: find.byKey(Key('seal-$type')),
+            of: find.byKey(Key(key)),
             matching: find.bySubtype<ButtonStyleButton>(),
+            matchRoot: true,
           ),
         );
 
-    testWidgets('sets a seal on the companion along and shows it on Shelf', (
+    String textOf(WidgetTester tester, String key) =>
+        tester.widget<Text>(find.byKey(Key(key))).data!;
+
+    /// All waymarks reached, so every forge level is open.
+    GameData openAll(GameData g) => g.copyWith(
+      wanderweg: WanderwegProgress(reachedAt: List.filled(waymarks.length, t0)),
+    );
+
+    testWidgets('buys seals, forges one up and sets it on the companion', (
       tester,
     ) async {
-      await openForge(tester, GameData.initial(t0).copyWith(lp: 100));
-      expect(find.text('Pebble'), findsWidgets);
-      expect(find.text('1 of 1 sockets free'), findsOneWidget);
-      expect(find.text('Empty'), findsOneWidget);
-      expect(find.text('Set · 40 LP'), findsNWidgets(3));
-      final card = find.descendant(
-        of: find.byType(ForgeScreen),
-        matching: find.byType(CompanionCard),
+      final start = openAll(
+        GameData.initial(
+          t0,
+        ).copyWith(lp: 100, forge: const ForgeState(glut: 5)),
       );
-      Rect tag(String text) =>
-          tester.getRect(find.descendant(of: card, matching: find.text(text)));
-      expect(tag('Along').overlaps(tag('COMMON')), isFalse);
+      await pumpApp(
+        tester,
+        saved: {'flutter.game.v2': jsonEncode(start.toJson())},
+        random: _FixedRandom(0.99),
+      );
+      await tester.tap(find.widgetWithText(NavigationDestination, 'Forge'));
+      await tester.pumpAndSettle();
+      // Tall enough that the whole Forge list is built.
+      tester.view.physicalSize = const Size(1080, 9000);
+      await tester.pumpAndSettle();
+      expect(find.byType(ForgeScreen), findsOneWidget);
+      expect(find.text('No loose seals yet. Buy a seal L1 below.'), findsOne);
+      expect(textOf(tester, 'forge-stores'), 'Splinters 0/5 · Glut 5');
 
-      await tester.ensureVisible(find.text('Set · 40 LP').first);
+      await tapKey(tester, 'buy-stride');
+      await tapKey(tester, 'buy-stride');
+      expect(find.text('26.0 LP'), findsOneWidget);
+      expect(find.text('L1 ×2'), findsOneWidget);
+
+      await tapKey(tester, 'case-stride@1');
+      expect(textOf(tester, 'forge-fail'), startsWith('Fail chance 12 %'));
+      await tapKey(tester, 'glut-plus');
+      await tapKey(tester, 'glut-plus');
+      expect(textOf(tester, 'forge-fail'), startsWith('Fail chance 7.5 %'));
+      expect(find.text('+ 3 Glut'), findsOneWidget);
+      expect(find.text('+ 13 LP'), findsOneWidget);
+      expect(find.byKey(const Key('forge-result')), findsOneWidget);
+
+      await tapKey(tester, 'forge-go');
+      expect(find.byKey(const Key('forge-success')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('forge-result-ok')));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Set · 40 LP').first);
-      await tester.pumpAndSettle();
-      expect(find.text('60.0 LP'), findsOneWidget);
-      expect(find.text('+1 Stride'), findsOneWidget);
-      expect(find.text('0 of 1 sockets free'), findsOneWidget);
-      expect(find.text('No empty socket left.'), findsOneWidget);
-      for (final t in SealType.values) {
-        expect(sealButton(tester, t.name).onPressed, isNull);
-      }
+      expect(find.text('13.0 LP'), findsOneWidget);
+      expect(textOf(tester, 'forge-stores'), 'Splinters 0/5 · Glut 2');
+      expect(find.byKey(const Key('case-stride@2')), findsOneWidget);
+
+      // The new L2 stays picked; set it into Pebble.
+      await tapKey(tester, 'forge-set');
+      expect(find.byKey(const Key('case-stride@2')), findsNothing);
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('charm-slot-0')),
+          matching: find.text('Stride +9 %'),
+        ),
+        findsOneWidget,
+      );
 
       await tester.tap(find.widgetWithText(NavigationDestination, 'Shelf'));
       await tester.pumpAndSettle();
@@ -841,28 +892,127 @@ void main() {
       expect(
         find.descendant(
           of: find.byKey(const Key('charm-slot-0')),
-          matching: find.text('+1 Stride'),
+          matching: find.text('Level 2'),
         ),
         findsOneWidget,
       );
     });
 
-    testWidgets('Spirit below 100 % locks the forge', (tester) async {
-      final start = GameData.initial(t0).copyWith(lp: 1000);
+    testWidgets('a failed forge leaves one seal and 3 splinters', (
+      tester,
+    ) async {
+      final start = openAll(
+        GameData.initial(t0).copyWith(
+          lp: 100,
+          forge: const ForgeState(stock: {'grit@1': 2}, glut: 1),
+        ),
+      );
+      await openForge(tester, start, open: false, random: _FixedRandom(0.01));
+      await tapKey(tester, 'case-grit@1');
+      await tapKey(tester, 'forge-go');
+      expect(find.byKey(const Key('forge-failed')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('forge-result-ok')));
+      await tester.pumpAndSettle();
+      expect(textOf(tester, 'forge-stores'), 'Splinters 3/5 · Glut 0');
+      expect(find.text('L1 ×1'), findsOneWidget);
+      expect(find.text('87.0 LP'), findsOneWidget);
+    });
+
+    testWidgets('combines two L3 seals of different stats', (tester) async {
+      final start = openAll(
+        GameData.initial(t0).copyWith(
+          lp: 500,
+          forge: const ForgeState(stock: {'grit@3': 1, 'stride@3': 1}, glut: 5),
+        ),
+      );
+      await openForge(tester, start, open: false, random: _FixedRandom(0.99));
+      await tester.tap(find.byKey(const Key('mode-combine')));
+      await tester.pumpAndSettle();
+      await tapKey(tester, 'case-stride@3');
+      expect(
+        textOf(tester, 'forge-hint'),
+        'Now pick a seal of another stat at the same level.',
+      );
+      await tapKey(tester, 'case-grit@3');
+      expect(textOf(tester, 'forge-fail'), startsWith('Fail chance 17 %'));
+      await tapKey(tester, 'forge-go');
+      expect(find.byKey(const Key('forge-success')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('forge-result-ok')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('case-stride+grit@3')), findsOneWidget);
+      expect(find.text('403.0 LP'), findsOneWidget);
+    });
+
+    testWidgets('a level not yet reached on the trail is locked', (
+      tester,
+    ) async {
+      final start = GameData.initial(t0).copyWith(
+        lp: 500,
+        forge: const ForgeState(stock: {'stride@1': 2}, glut: 5),
+      );
+      await openForge(tester, start);
+      await tapKey(tester, 'case-stride@1');
+      expect(textOf(tester, 'forge-hint'), 'Forging L2 opens at waymark 5.');
+      expect(button(tester, 'forge-go').onPressed, isNull);
+    });
+
+    testWidgets('Spirit below 100 % keeps seals in the case', (tester) async {
+      final start = GameData.initial(
+        t0,
+      ).copyWith(lp: 1000, forge: const ForgeState(stock: {'stride@1': 1}));
       await openForge(
         tester,
         start.replaceCompanion(start.activeCompanion.copyWith(spirit: 80)),
       );
-      expect(find.text('Forging only at 100 % Spirit.'), findsOneWidget);
-      for (final t in SealType.values) {
-        expect(sealButton(tester, t.name).onPressed, isNull);
-      }
+      await tapKey(tester, 'case-stride@1');
+      expect(button(tester, 'forge-set').onPressed, isNull);
+      expect(find.text('Seals are set only at 100 % Spirit.'), findsOneWidget);
     });
 
-    testWidgets('too little LP disables the seal', (tester) async {
-      await openForge(tester, GameData.initial(t0).copyWith(lp: 39));
-      expect(sealButton(tester, 'stride').onPressed, isNull);
-      expect(find.textContaining('Not enough LP yet.'), findsNWidgets(3));
+    testWidgets('too little LP disables buying', (tester) async {
+      await openForge(tester, GameData.initial(t0).copyWith(lp: 36));
+      for (final t in SealType.values) {
+        expect(button(tester, 'buy-${t.name}').onPressed, isNull);
+      }
+      expect(find.text('Not enough LP yet.'), findsOneWidget);
+    });
+
+    testWidgets('a set seal goes back into the case when taken out', (
+      tester,
+    ) async {
+      final pebble = Companion.pebble().withSeal(
+        0,
+        const Seal(SealType.grit, 4),
+      );
+      await openForge(
+        tester,
+        GameData.initial(t0).copyWith(companions: [pebble]),
+      );
+      expect(find.text('Grit +22 %'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('charm-slot-0')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('forge-clear-confirm')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('case-grit@4')), findsOneWidget);
+    });
+
+    testWidgets('the level sheet shows every level', (tester) async {
+      await openForge(tester, GameData.initial(t0));
+      await tester.tap(find.byKey(const Key('forge-ladder')));
+      await tester.pumpAndSettle();
+      final sheet = find.byKey(const Key('forge-ladder-sheet'));
+      expect(sheet, findsOneWidget);
+      for (final pct in ['+4 %', '+9 %', '+15 %', '+22 %', '+31 %']) {
+        expect(
+          find.descendant(of: sheet, matching: find.text(pct)),
+          findsWidgets,
+          reason: pct,
+        );
+      }
+      expect(
+        find.descendant(of: sheet, matching: find.text('+19 % / +19 %')),
+        findsOneWidget,
+      );
     });
 
     testWidgets('a new game finds the forge closed until waymark 2', (
@@ -876,10 +1026,26 @@ void main() {
       expect(find.byKey(const Key('forge-block')), findsOneWidget);
       expect(find.textContaining('waymark 2'), findsOneWidget);
       for (final t in SealType.values) {
-        expect(sealButton(tester, t.name).onPressed, isNull);
+        expect(button(tester, 'buy-${t.name}').onPressed, isNull);
       }
     });
   });
+}
+
+/// nextDouble always gives [roll]; nextBool is true.
+class _FixedRandom implements Random {
+  _FixedRandom(this.roll);
+
+  final double roll;
+
+  @override
+  double nextDouble() => roll;
+
+  @override
+  bool nextBool() => true;
+
+  @override
+  int nextInt(int max) => 0;
 }
 
 class _FakeSaveFiles extends SaveFileIo {

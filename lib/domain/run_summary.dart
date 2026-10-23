@@ -17,6 +17,7 @@ class RunSummary {
     this.tankSize,
     this.earnsLp = true,
     this.sweetSpotShare,
+    this.glut = 0,
   });
 
   final String companionId;
@@ -39,7 +40,26 @@ class RunSummary {
   /// saved before it was tracked.
   final double? sweetSpotShare;
 
+  /// Glut this run brought for the Forge.
+  final int glut;
+
   Duration? get pace => paceOf(duration, distanceM);
+
+  RunSummary withGlut(int glut) => RunSummary(
+    companionId: companionId,
+    startedAt: startedAt,
+    duration: duration,
+    distanceM: distanceM,
+    steps: steps,
+    lp: lp,
+    breathUsed: breathUsed,
+    valid: valid,
+    breathLeft: breathLeft,
+    tankSize: tankSize,
+    earnsLp: earnsLp,
+    sweetSpotShare: sweetSpotShare,
+    glut: glut,
+  );
 
   Map<String, Object?> toJson() => {
     'companionId': companionId,
@@ -54,6 +74,7 @@ class RunSummary {
     'tankSize': tankSize,
     'earnsLp': earnsLp,
     if (sweetSpotShare case final s?) 'sweetSpotShare': s,
+    if (glut > 0) 'glut': glut,
   };
 
   factory RunSummary.fromJson(Map<String, Object?> json) => RunSummary(
@@ -69,5 +90,6 @@ class RunSummary {
     tankSize: json['tankSize'] as int?,
     earnsLp: json['earnsLp'] as bool? ?? true,
     sweetSpotShare: (json['sweetSpotShare'] as num?)?.toDouble(),
+    glut: json['glut'] as int? ?? 0,
   );
 }

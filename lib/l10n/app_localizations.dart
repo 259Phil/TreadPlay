@@ -728,18 +728,6 @@ abstract class AppLocalizations {
   /// **'{stat} seal'**
   String sealName(String stat);
 
-  /// No description provided for @sealBonus.
-  ///
-  /// In en, this message translates to:
-  /// **'+{n} {stat}'**
-  String sealBonus(int n, String stat);
-
-  /// No description provided for @forgeAlong.
-  ///
-  /// In en, this message translates to:
-  /// **'Seals go to the companion you have along.'**
-  String get forgeAlong;
-
   /// No description provided for @forgeFreeSockets.
   ///
   /// In en, this message translates to:
@@ -749,31 +737,13 @@ abstract class AppLocalizations {
   /// No description provided for @forgeRule.
   ///
   /// In en, this message translates to:
-  /// **'Each seal adds +1 to its stat, up to +3 per stat. Paid in LP.'**
+  /// **'Each seal raises its stat by a share: L1 +4 %, L2 +9 %, L3 +15 %, L4 +22 %, L5 +31 %.'**
   String get forgeRule;
-
-  /// No description provided for @forgeStatCount.
-  ///
-  /// In en, this message translates to:
-  /// **'+{n} of +3'**
-  String forgeStatCount(int n);
-
-  /// No description provided for @forgeSet.
-  ///
-  /// In en, this message translates to:
-  /// **'Set'**
-  String get forgeSet;
-
-  /// No description provided for @forgeMaxed.
-  ///
-  /// In en, this message translates to:
-  /// **'Max'**
-  String get forgeMaxed;
 
   /// No description provided for @forgeNeedsSpirit.
   ///
   /// In en, this message translates to:
-  /// **'Forging only at 100 % Spirit.'**
+  /// **'Seals are set only at 100 % Spirit.'**
   String get forgeNeedsSpirit;
 
   /// No description provided for @forgeNotEnoughLp.
@@ -791,31 +761,31 @@ abstract class AppLocalizations {
   /// No description provided for @forgeSellNote.
   ///
   /// In en, this message translates to:
-  /// **'Seals stay on this companion. Selling it removes them; LP are not refunded.'**
+  /// **'Selling a companion puts its seals back into the case.'**
   String get forgeSellNote;
 
   /// No description provided for @forgeClearHint.
   ///
   /// In en, this message translates to:
-  /// **'Tap a filled socket to remove its seal.'**
+  /// **'Tap a seal to take it out, an empty socket to set one.'**
   String get forgeClearHint;
 
   /// No description provided for @forgeClearTitle.
   ///
   /// In en, this message translates to:
-  /// **'Remove {seal}?'**
+  /// **'Take out {seal}?'**
   String forgeClearTitle(String seal);
 
   /// No description provided for @forgeClearBody.
   ///
   /// In en, this message translates to:
-  /// **'The socket will be empty again. LP are not refunded.'**
+  /// **'It goes back into the case. Nothing is lost.'**
   String get forgeClearBody;
 
   /// No description provided for @forgeClearAction.
   ///
   /// In en, this message translates to:
-  /// **'Remove'**
+  /// **'Take out'**
   String get forgeClearAction;
 
   /// No description provided for @forgeClearKeep.
@@ -1603,6 +1573,288 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No end, only a bend. The trail grows with you.'**
   String get wwLine19;
+
+  /// No description provided for @forgeIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Seals wait in the case. Set them into the companion you have along.'**
+  String get forgeIntro;
+
+  /// No description provided for @forgeCompanionLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} · {rarity} · {total} sockets'**
+  String forgeCompanionLine(String name, String rarity, int total);
+
+  /// No description provided for @sealLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Level {n}'**
+  String sealLevel(int n);
+
+  /// No description provided for @sealLevelShort.
+  ///
+  /// In en, this message translates to:
+  /// **'L{n}'**
+  String sealLevelShort(int n);
+
+  /// No description provided for @sealStatBonus.
+  ///
+  /// In en, this message translates to:
+  /// **'{stat} +{pct} %'**
+  String sealStatBonus(String stat, String pct);
+
+  /// No description provided for @sealComboName.
+  ///
+  /// In en, this message translates to:
+  /// **'{a} + {b}'**
+  String sealComboName(String a, String b);
+
+  /// No description provided for @sealComboBonus.
+  ///
+  /// In en, this message translates to:
+  /// **'+{pct} % / +{pct} %'**
+  String sealComboBonus(String pct);
+
+  /// No description provided for @statBonus.
+  ///
+  /// In en, this message translates to:
+  /// **'+{pct} %'**
+  String statBonus(String pct);
+
+  /// No description provided for @statCapped.
+  ///
+  /// In en, this message translates to:
+  /// **'+{pct} % (cap)'**
+  String statCapped(String pct);
+
+  /// No description provided for @forgeModeUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Forge up'**
+  String get forgeModeUp;
+
+  /// No description provided for @forgeModeCombine.
+  ///
+  /// In en, this message translates to:
+  /// **'Combine'**
+  String get forgeModeCombine;
+
+  /// No description provided for @forgeUpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Forge: 2 equal seals + Glut'**
+  String get forgeUpTitle;
+
+  /// No description provided for @forgeCombineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Combine: 2 different seals + Glut'**
+  String get forgeCombineTitle;
+
+  /// No description provided for @forgeGlutCost.
+  ///
+  /// In en, this message translates to:
+  /// **'+ {n} Glut'**
+  String forgeGlutCost(int n);
+
+  /// No description provided for @forgeLpCost.
+  ///
+  /// In en, this message translates to:
+  /// **'+ {lp} LP'**
+  String forgeLpCost(String lp);
+
+  /// No description provided for @forgeFailNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Fail chance {pct} % · then 1 seal turns into 3 splinters'**
+  String forgeFailNote(String pct);
+
+  /// No description provided for @forgeGlutRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Glut {min}–{max}: each extra Glut lowers the fail chance.'**
+  String forgeGlutRange(int min, int max);
+
+  /// No description provided for @forgeGlutFixed.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs exactly {n} Glut.'**
+  String forgeGlutFixed(int n);
+
+  /// No description provided for @forgePickSeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a seal in the case below.'**
+  String get forgePickSeal;
+
+  /// No description provided for @forgePickPartner.
+  ///
+  /// In en, this message translates to:
+  /// **'Now pick a seal of another stat at the same level.'**
+  String get forgePickPartner;
+
+  /// No description provided for @forgeCase.
+  ///
+  /// In en, this message translates to:
+  /// **'Case'**
+  String get forgeCase;
+
+  /// No description provided for @forgeCaseEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No loose seals yet. Buy a seal L1 below.'**
+  String get forgeCaseEmpty;
+
+  /// No description provided for @forgeStores.
+  ///
+  /// In en, this message translates to:
+  /// **'Splinters {s}/5 · Glut {g}'**
+  String forgeStores(int s, int g);
+
+  /// No description provided for @forgeGlutSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Glut: +1 for every run of 1 km or more.'**
+  String get forgeGlutSource;
+
+  /// No description provided for @forgeBuyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New seal L1 · {lp} LP'**
+  String forgeBuyTitle(String lp);
+
+  /// No description provided for @forgeMeltTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Melt 5 splinters into a seal L1'**
+  String get forgeMeltTitle;
+
+  /// No description provided for @forgeAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Forge'**
+  String get forgeAction;
+
+  /// No description provided for @forgeCombineAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Combine'**
+  String get forgeCombineAction;
+
+  /// No description provided for @forgeSetAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Set into {name}'**
+  String forgeSetAction(String name);
+
+  /// No description provided for @forgeLevelLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Forging L{n} opens at waymark {wm}.'**
+  String forgeLevelLocked(int n, int wm);
+
+  /// No description provided for @forgeCombineLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Combining L{n} opens at waymark {wm}.'**
+  String forgeCombineLocked(int n, int wm);
+
+  /// No description provided for @forgeNeedsPair.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs 2 equal seals in the case.'**
+  String get forgeNeedsPair;
+
+  /// No description provided for @forgeNeedsGlut.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough Glut yet.'**
+  String get forgeNeedsGlut;
+
+  /// No description provided for @forgeTopLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'L5 is the highest level.'**
+  String get forgeTopLevel;
+
+  /// No description provided for @forgeComboFinal.
+  ///
+  /// In en, this message translates to:
+  /// **'Combined seals are not forged further.'**
+  String get forgeComboFinal;
+
+  /// No description provided for @forgeBadCombine.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs two single seals of different stats at L3 or L5.'**
+  String get forgeBadCombine;
+
+  /// No description provided for @forgeSuccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Forged'**
+  String get forgeSuccessTitle;
+
+  /// No description provided for @forgeSuccessBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{seal} is now in the case.'**
+  String forgeSuccessBody(String seal);
+
+  /// No description provided for @forgeFailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The fire failed'**
+  String get forgeFailTitle;
+
+  /// No description provided for @forgeFailBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{seal} fell to 3 splinters. The other seal is back in the case.'**
+  String forgeFailBody(String seal);
+
+  /// No description provided for @forgeOk.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get forgeOk;
+
+  /// No description provided for @forgeLadder.
+  ///
+  /// In en, this message translates to:
+  /// **'Levels'**
+  String get forgeLadder;
+
+  /// No description provided for @forgeLadderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Seal levels'**
+  String get forgeLadderTitle;
+
+  /// No description provided for @forgeLadderNote.
+  ///
+  /// In en, this message translates to:
+  /// **'At most +47 % per stat from all seals together. Combined seals free a socket but give less in total.'**
+  String get forgeLadderNote;
+
+  /// No description provided for @forgePickTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a seal'**
+  String get forgePickTitle;
+
+  /// No description provided for @summaryGlut.
+  ///
+  /// In en, this message translates to:
+  /// **'Glut for the Forge'**
+  String get summaryGlut;
+
+  /// No description provided for @glutAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'+{n} Glut'**
+  String glutAmount(int n);
 }
 
 class _AppLocalizationsDelegate

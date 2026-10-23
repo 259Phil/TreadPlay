@@ -3,7 +3,10 @@ import 'dart:math';
 import '../data/companion_art.dart';
 import '../data/companion_cutouts.dart';
 import '../data/species.dart';
+import 'seal.dart';
 import 'world.dart';
+
+export 'seal.dart' show Seal, SealType;
 
 enum CompanionType {
   moss(sweetSpotKmh: 4.5, rangeKmh: 2.5),
@@ -67,9 +70,8 @@ double levelFactor(int level) {
   return 1 + 0.04 * (min(l, 18) - 1) + 0.02 * max(0, l - 18);
 }
 
-/// A seal set into a charm socket; each adds +1 to its stat. Saved by
-/// [name] in [Companion.charms].
-enum SealType { stride, grit, fortune }
+/// Most a stat can gain from all its seals together (+47 %).
+const double sealCap = 0.47;
 
 /// One owned creature that can be taken along on a run.
 class Companion {
@@ -138,8 +140,18 @@ class Companion {
   /// Durability in percent (0–100). At 0 the companion earns no LP.
   final double spirit;
 
-  /// Seal id per charm slot, null when empty. Length = [Rarity.charmSlots].
+  /// Seal code per charm slot (see [Seal.code]), null when empty.
+  /// Length = [Rarity.charmSlots].
   final List<String?> charms;
+
+  /// The seals set into the charms, in slot order (empty slots skipped).
+  List<Seal> get seals => [
+    for (final c in charms)
+      if (Seal.tryParse(c) case final s?) s,
+  ];
+
+  /// Seal in charm [slot], or null when empty.
+  Seal? sealAt(int slot) => Seal.tryParse(charms[slot]);
 
   Species get species => speciesById[speciesId]!;
 
@@ -155,8 +167,19 @@ class Companion {
 
   String get imageAsset => 'assets/companions/$artKey.png';
 
-  /// Seals of [type] set into this companion's charms.
-  int sealCount(SealType type) => charms.where((s) => s == type.name).length;
+  /// Seals set into this companion that raise [type].
+  int sealCount(SealType type) =>
+      seals.where((s) => s.stats.contains(type)).length;
+
+  /// Sum of the seal bonuses on [type] before the cap.
+  double rawSealBonus(SealType type) =>
+      seals.fold(0, (sum, s) => sum + s.bonusOn(type));
+
+  /// Seal bonus on [type] as a fraction, at most [sealCap].
+  double sealBonus(SealType type) => min(rawSealBonus(type), sealCap);
+
+  /// True when the seals on [type] reach (or would pass) the cap.
+  bool sealCapped(SealType type) => rawSealBonus(type) >= sealCap - 1e-9;
 
   /// First empty charm socket, or null when all are filled.
   int? get freeSocket {
@@ -164,11 +187,20 @@ class Companion {
     return i < 0 ? null : i;
   }
 
-  double get strideTotal => stride + sealCount(SealType.stride);
+  double get strideTotal => stride * (1 + sealBonus(SealType.stride));
 
-  double get gritTotal => grit + sealCount(SealType.grit);
+  double get gritTotal => grit * (1 + sealBonus(SealType.grit));
 
-  double get fortuneTotal => fortune + sealCount(SealType.fortune);
+  double get fortuneTotal => fortune * (1 + sealBonus(SealType.fortune));
+
+  /// Grit: Spirit loss per run is divided by (1 + Grit bonus), so +31 %
+  /// loses about 24 % less. Spirit does not drop in this version yet; the
+  /// factor is ready for it.
+  double get spiritLossFactor => 1 / (1 + sealBonus(SealType.grit));
+
+  /// Fortune: pouch and messenger chances after a run are multiplied by
+  /// this (never above 100 %). Pouches and messengers are not built yet.
+  double get fortuneFactor => 1 + sealBonus(SealType.fortune);
 
   /// Breath cap while this companion is taken along.
   int get tankSize => rarity.tankSize;
@@ -196,11 +228,14 @@ class Companion {
     charms: charms ?? this.charms,
   );
 
-  /// Puts [sealId] into charm [slot] (or clears it with null).
-  Companion withCharm(int slot, String? sealId) {
+  /// Puts the seal [code] into charm [slot] (or clears it with null).
+  Companion withCharm(int slot, String? code) {
     RangeError.checkValidIndex(slot, charms, 'slot');
-    return copyWith(charms: [...charms]..[slot] = sealId);
+    return copyWith(charms: [...charms]..[slot] = code);
   }
+
+  /// Puts [seal] into charm [slot].
+  Companion withSeal(int slot, Seal seal) => withCharm(slot, seal.code);
 
   Map<String, Object?> toJson() => {
     'id': id,
@@ -228,7 +263,8 @@ class Companion {
       spirit: (json['spirit']! as num).toDouble(),
       charms: [
         for (var i = 0; i < rarity.charmSlots; i++)
-          i < saved.length ? saved[i] as String? : null,
+          // Bare stat names from before seal levels become level codes.
+          i < saved.length ? Seal.normalize(saved[i] as String?) : null,
       ],
     );
   }

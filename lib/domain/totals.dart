@@ -24,7 +24,8 @@ class Totals {
   final double lp;
   final int runs;
 
-  /// Seals set in the Forge.
+  /// Seals made in the Forge: bought L1, forged up, combined or melted
+  /// from splinters. Saves from before seal levels counted each seal set.
   final int forgeUses;
 
   /// Valid runs with a Sweet Spot share of at least 58 % / 71 % (Wanderweg).

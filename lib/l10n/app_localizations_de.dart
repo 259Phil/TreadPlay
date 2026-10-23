@@ -368,35 +368,16 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String sealBonus(int n, String stat) {
-    return '+$n $stat';
-  }
-
-  @override
-  String get forgeAlong => 'Siegel gehen an den Gefährten, den du dabeihast.';
-
-  @override
   String forgeFreeSockets(int free, int total) {
     return '$free von $total Sockeln frei';
   }
 
   @override
   String get forgeRule =>
-      'Jedes Siegel gibt +1 auf seinen Wert, höchstens +3 pro Wert. Bezahlt wird mit LP.';
+      'Jedes Siegel hebt seinen Wert anteilig: St.1 +4 %, St.2 +9 %, St.3 +15 %, St.4 +22 %, St.5 +31 %.';
 
   @override
-  String forgeStatCount(int n) {
-    return '+$n von +3';
-  }
-
-  @override
-  String get forgeSet => 'Setzen';
-
-  @override
-  String get forgeMaxed => 'Max';
-
-  @override
-  String get forgeNeedsSpirit => 'Schmieden nur bei 100 % Mut.';
+  String get forgeNeedsSpirit => 'Einsetzen nur bei 100 % Mut.';
 
   @override
   String get forgeNotEnoughLp => 'Noch nicht genug LP.';
@@ -406,23 +387,23 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get forgeSellNote =>
-      'Siegel bleiben auf diesem Gefährten. Verkaufst du ihn, sind sie weg, LP gibt es nicht zurück.';
+      'Verkaufst du einen Gefährten, kommen seine Siegel zurück in den Vorrat.';
 
   @override
   String get forgeClearHint =>
-      'Tippe auf einen vollen Sockel, um das Siegel zu entfernen.';
+      'Tippe auf ein Siegel, um es herauszunehmen, oder auf einen leeren Sockel zum Einsetzen.';
 
   @override
   String forgeClearTitle(String seal) {
-    return '$seal entfernen?';
+    return '$seal herausnehmen?';
   }
 
   @override
   String get forgeClearBody =>
-      'Der Sockel ist danach wieder leer. LP gibt es nicht zurück.';
+      'Es kommt zurück in den Vorrat. Nichts geht verloren.';
 
   @override
-  String get forgeClearAction => 'Entfernen';
+  String get forgeClearAction => 'Herausnehmen';
 
   @override
   String get forgeClearKeep => 'Behalten';
@@ -887,4 +868,192 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get wwLine19 =>
       'Kein Ende, nur eine Biegung. Der Weg wächst mit euch.';
+
+  @override
+  String get forgeIntro =>
+      'Siegel liegen im Vorrat. Einsetzen kannst du sie beim Gefährten, den du dabeihast.';
+
+  @override
+  String forgeCompanionLine(String name, String rarity, int total) {
+    return '$name · $rarity · $total Sockel';
+  }
+
+  @override
+  String sealLevel(int n) {
+    return 'Stufe $n';
+  }
+
+  @override
+  String sealLevelShort(int n) {
+    return 'St.$n';
+  }
+
+  @override
+  String sealStatBonus(String stat, String pct) {
+    return '$stat +$pct %';
+  }
+
+  @override
+  String sealComboName(String a, String b) {
+    return '$a + $b';
+  }
+
+  @override
+  String sealComboBonus(String pct) {
+    return '+$pct % / +$pct %';
+  }
+
+  @override
+  String statBonus(String pct) {
+    return '+$pct %';
+  }
+
+  @override
+  String statCapped(String pct) {
+    return '+$pct % (Grenze)';
+  }
+
+  @override
+  String get forgeModeUp => 'Aufwerten';
+
+  @override
+  String get forgeModeCombine => 'Kombinieren';
+
+  @override
+  String get forgeUpTitle => 'Schmieden: 2 gleiche Siegel + Glut';
+
+  @override
+  String get forgeCombineTitle => 'Kombinieren: 2 verschiedene Siegel + Glut';
+
+  @override
+  String forgeGlutCost(int n) {
+    return '+ $n Glut';
+  }
+
+  @override
+  String forgeLpCost(String lp) {
+    return '+ $lp LP';
+  }
+
+  @override
+  String forgeFailNote(String pct) {
+    return 'Fehlschlag $pct % · dann wird 1 Siegel zu 3 Splittern';
+  }
+
+  @override
+  String forgeGlutRange(int min, int max) {
+    return 'Glut $min–$max: jede Glut mehr senkt den Fehlschlag.';
+  }
+
+  @override
+  String forgeGlutFixed(int n) {
+    return 'Braucht genau $n Glut.';
+  }
+
+  @override
+  String get forgePickSeal => 'Wähle unten im Vorrat ein Siegel.';
+
+  @override
+  String get forgePickPartner =>
+      'Wähle jetzt ein Siegel eines anderen Werts mit gleicher Stufe.';
+
+  @override
+  String get forgeCase => 'Vorrat';
+
+  @override
+  String get forgeCaseEmpty =>
+      'Noch keine losen Siegel. Kauf unten ein Siegel L1.';
+
+  @override
+  String forgeStores(int s, int g) {
+    return 'Splitter $s/5 · Glut $g';
+  }
+
+  @override
+  String get forgeGlutSource => 'Glut: +1 für jeden Lauf ab 1 km.';
+
+  @override
+  String forgeBuyTitle(String lp) {
+    return 'Neues Siegel L1 · $lp LP';
+  }
+
+  @override
+  String get forgeMeltTitle => '5 Splitter zu einem Siegel L1 schmelzen';
+
+  @override
+  String get forgeAction => 'Schmieden';
+
+  @override
+  String get forgeCombineAction => 'Kombinieren';
+
+  @override
+  String forgeSetAction(String name) {
+    return 'In $name einsetzen';
+  }
+
+  @override
+  String forgeLevelLocked(int n, int wm) {
+    return 'Schmieden St.$n öffnet an Wegmarke $wm.';
+  }
+
+  @override
+  String forgeCombineLocked(int n, int wm) {
+    return 'Kombinieren St.$n öffnet an Wegmarke $wm.';
+  }
+
+  @override
+  String get forgeNeedsPair => 'Braucht 2 gleiche Siegel im Vorrat.';
+
+  @override
+  String get forgeNeedsGlut => 'Noch nicht genug Glut.';
+
+  @override
+  String get forgeTopLevel => 'Stufe 5 ist die höchste Stufe.';
+
+  @override
+  String get forgeComboFinal => 'Kombi-Siegel werden nicht weiter geschmiedet.';
+
+  @override
+  String get forgeBadCombine =>
+      'Braucht zwei Einzelsiegel verschiedener Werte auf Stufe 3 oder 5.';
+
+  @override
+  String get forgeSuccessTitle => 'Geschmiedet';
+
+  @override
+  String forgeSuccessBody(String seal) {
+    return '$seal liegt jetzt im Vorrat.';
+  }
+
+  @override
+  String get forgeFailTitle => 'Fehlschlag';
+
+  @override
+  String forgeFailBody(String seal) {
+    return '$seal ist zu 3 Splittern zerfallen. Das andere Siegel liegt wieder im Vorrat.';
+  }
+
+  @override
+  String get forgeOk => 'OK';
+
+  @override
+  String get forgeLadder => 'Stufen';
+
+  @override
+  String get forgeLadderTitle => 'Siegel-Stufen';
+
+  @override
+  String get forgeLadderNote =>
+      'Höchstens +47 % pro Wert aus allen Siegeln zusammen. Kombi-Siegel machen einen Sockel frei, geben in Summe aber weniger.';
+
+  @override
+  String get forgePickTitle => 'Siegel einsetzen';
+
+  @override
+  String get summaryGlut => 'Glut für die Schmiede';
+
+  @override
+  String glutAmount(int n) {
+    return '+$n Glut';
+  }
 }

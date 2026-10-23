@@ -89,9 +89,14 @@ void main() {
       find.descendant(of: panel, matching: find.text('4 / 5')),
       findsOneWidget,
     );
+    // The seal L3 task is real now: no seal at L3 yet.
+    expect(
+      find.descendant(of: panel, matching: find.text('0 / 1')),
+      findsOneWidget,
+    );
     expect(
       find.descendant(of: panel, matching: find.text('later')),
-      findsOneWidget,
+      findsNothing,
     );
 
     await tester.tap(find.byKey(const Key('waymark-12')), warnIfMissed: false);

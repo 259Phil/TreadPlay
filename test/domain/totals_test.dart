@@ -44,9 +44,8 @@ void main() {
     expect(erased.totals.distanceM, closeTo(5500, 1e-6));
   });
 
-  test('forging counts a forge use', () {
+  test('buying a seal counts a forge use', () {
     final game = GameData.initial(t0).copyWith(lp: 100);
-    final id = game.activeCompanionId;
-    expect(game.forging(id, SealType.grit).totals.forgeUses, 1);
+    expect(game.buyingSeal(SealType.grit).totals.forgeUses, 1);
   });
 }

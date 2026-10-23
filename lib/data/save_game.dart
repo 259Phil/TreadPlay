@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import '../domain/companion.dart';
+import '../domain/forge.dart';
 import 'game_data.dart';
 import 'species.dart';
 
@@ -43,7 +44,12 @@ class SaveGame {
   /// 2: adds the Wanderweg (reached waymarks) and new lifetime counters.
   /// Version 1 files still import: [GameData.fromJson] grants them every
   /// waymark their km allow and counts the new totals from their runs.
-  static const int version = 2;
+  ///
+  /// 3: seal levels and the Forge ('forge': seal case, Glut, splinters,
+  /// counters). Version 1 and 2 files still import: their bare seals
+  /// (`stride`) become L[Seal.legacyLevel] seals and every forge use counts
+  /// as a placed seal.
+  static const int version = 3;
 
   static String fileName(DateTime now) {
     final stamp = now.toIso8601String().replaceAll(':', '-').split('.').first;
@@ -102,17 +108,27 @@ class SaveGame {
     );
   }
 
-  /// Version 1 games carry no 'wanderweg'; drop a stray one so the legacy
-  /// grant always applies to them.
+  /// Version 1 games carry no 'wanderweg', versions 1–2 no 'forge'; drop
+  /// stray ones so the legacy rules always apply to them. Bare seal names
+  /// are read as levelled seals by [Companion.fromJson].
   static Object? _migrate(Object? game, int fromVersion) {
-    if (fromVersion >= 2 || game is! Map<String, Object?>) return game;
-    return {...game}..remove('wanderweg');
+    if (game is! Map<String, Object?>) return game;
+    if (fromVersion >= 3) {
+      final f = game['forge'];
+      if (f != null &&
+          (f is! Map<String, Object?> ||
+              ForgeState.unknownCodes(f).isNotEmpty)) {
+        return null;
+      }
+      return game;
+    }
+    final next = {...game}..remove('forge');
+    if (fromVersion < 2) next.remove('wanderweg');
+    return next;
   }
-
-  static final Set<String> _seals = {for (final t in SealType.values) t.name};
 
   /// Only species and seals this app version knows.
   static bool _known(Companion c) =>
       speciesById.containsKey(c.speciesId) &&
-      c.charms.every((s) => s == null || _seals.contains(s));
+      c.charms.every((s) => s == null || Seal.tryParse(s) != null);
 }

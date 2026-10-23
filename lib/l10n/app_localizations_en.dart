@@ -367,35 +367,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String sealBonus(int n, String stat) {
-    return '+$n $stat';
-  }
-
-  @override
-  String get forgeAlong => 'Seals go to the companion you have along.';
-
-  @override
   String forgeFreeSockets(int free, int total) {
     return '$free of $total sockets free';
   }
 
   @override
   String get forgeRule =>
-      'Each seal adds +1 to its stat, up to +3 per stat. Paid in LP.';
+      'Each seal raises its stat by a share: L1 +4 %, L2 +9 %, L3 +15 %, L4 +22 %, L5 +31 %.';
 
   @override
-  String forgeStatCount(int n) {
-    return '+$n of +3';
-  }
-
-  @override
-  String get forgeSet => 'Set';
-
-  @override
-  String get forgeMaxed => 'Max';
-
-  @override
-  String get forgeNeedsSpirit => 'Forging only at 100 % Spirit.';
+  String get forgeNeedsSpirit => 'Seals are set only at 100 % Spirit.';
 
   @override
   String get forgeNotEnoughLp => 'Not enough LP yet.';
@@ -405,22 +386,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get forgeSellNote =>
-      'Seals stay on this companion. Selling it removes them; LP are not refunded.';
+      'Selling a companion puts its seals back into the case.';
 
   @override
-  String get forgeClearHint => 'Tap a filled socket to remove its seal.';
+  String get forgeClearHint =>
+      'Tap a seal to take it out, an empty socket to set one.';
 
   @override
   String forgeClearTitle(String seal) {
-    return 'Remove $seal?';
+    return 'Take out $seal?';
   }
 
   @override
-  String get forgeClearBody =>
-      'The socket will be empty again. LP are not refunded.';
+  String get forgeClearBody => 'It goes back into the case. Nothing is lost.';
 
   @override
-  String get forgeClearAction => 'Remove';
+  String get forgeClearAction => 'Take out';
 
   @override
   String get forgeClearKeep => 'Keep';
@@ -882,4 +863,191 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get wwLine19 => 'No end, only a bend. The trail grows with you.';
+
+  @override
+  String get forgeIntro =>
+      'Seals wait in the case. Set them into the companion you have along.';
+
+  @override
+  String forgeCompanionLine(String name, String rarity, int total) {
+    return '$name · $rarity · $total sockets';
+  }
+
+  @override
+  String sealLevel(int n) {
+    return 'Level $n';
+  }
+
+  @override
+  String sealLevelShort(int n) {
+    return 'L$n';
+  }
+
+  @override
+  String sealStatBonus(String stat, String pct) {
+    return '$stat +$pct %';
+  }
+
+  @override
+  String sealComboName(String a, String b) {
+    return '$a + $b';
+  }
+
+  @override
+  String sealComboBonus(String pct) {
+    return '+$pct % / +$pct %';
+  }
+
+  @override
+  String statBonus(String pct) {
+    return '+$pct %';
+  }
+
+  @override
+  String statCapped(String pct) {
+    return '+$pct % (cap)';
+  }
+
+  @override
+  String get forgeModeUp => 'Forge up';
+
+  @override
+  String get forgeModeCombine => 'Combine';
+
+  @override
+  String get forgeUpTitle => 'Forge: 2 equal seals + Glut';
+
+  @override
+  String get forgeCombineTitle => 'Combine: 2 different seals + Glut';
+
+  @override
+  String forgeGlutCost(int n) {
+    return '+ $n Glut';
+  }
+
+  @override
+  String forgeLpCost(String lp) {
+    return '+ $lp LP';
+  }
+
+  @override
+  String forgeFailNote(String pct) {
+    return 'Fail chance $pct % · then 1 seal turns into 3 splinters';
+  }
+
+  @override
+  String forgeGlutRange(int min, int max) {
+    return 'Glut $min–$max: each extra Glut lowers the fail chance.';
+  }
+
+  @override
+  String forgeGlutFixed(int n) {
+    return 'Needs exactly $n Glut.';
+  }
+
+  @override
+  String get forgePickSeal => 'Pick a seal in the case below.';
+
+  @override
+  String get forgePickPartner =>
+      'Now pick a seal of another stat at the same level.';
+
+  @override
+  String get forgeCase => 'Case';
+
+  @override
+  String get forgeCaseEmpty => 'No loose seals yet. Buy a seal L1 below.';
+
+  @override
+  String forgeStores(int s, int g) {
+    return 'Splinters $s/5 · Glut $g';
+  }
+
+  @override
+  String get forgeGlutSource => 'Glut: +1 for every run of 1 km or more.';
+
+  @override
+  String forgeBuyTitle(String lp) {
+    return 'New seal L1 · $lp LP';
+  }
+
+  @override
+  String get forgeMeltTitle => 'Melt 5 splinters into a seal L1';
+
+  @override
+  String get forgeAction => 'Forge';
+
+  @override
+  String get forgeCombineAction => 'Combine';
+
+  @override
+  String forgeSetAction(String name) {
+    return 'Set into $name';
+  }
+
+  @override
+  String forgeLevelLocked(int n, int wm) {
+    return 'Forging L$n opens at waymark $wm.';
+  }
+
+  @override
+  String forgeCombineLocked(int n, int wm) {
+    return 'Combining L$n opens at waymark $wm.';
+  }
+
+  @override
+  String get forgeNeedsPair => 'Needs 2 equal seals in the case.';
+
+  @override
+  String get forgeNeedsGlut => 'Not enough Glut yet.';
+
+  @override
+  String get forgeTopLevel => 'L5 is the highest level.';
+
+  @override
+  String get forgeComboFinal => 'Combined seals are not forged further.';
+
+  @override
+  String get forgeBadCombine =>
+      'Needs two single seals of different stats at L3 or L5.';
+
+  @override
+  String get forgeSuccessTitle => 'Forged';
+
+  @override
+  String forgeSuccessBody(String seal) {
+    return '$seal is now in the case.';
+  }
+
+  @override
+  String get forgeFailTitle => 'The fire failed';
+
+  @override
+  String forgeFailBody(String seal) {
+    return '$seal fell to 3 splinters. The other seal is back in the case.';
+  }
+
+  @override
+  String get forgeOk => 'OK';
+
+  @override
+  String get forgeLadder => 'Levels';
+
+  @override
+  String get forgeLadderTitle => 'Seal levels';
+
+  @override
+  String get forgeLadderNote =>
+      'At most +47 % per stat from all seals together. Combined seals free a socket but give less in total.';
+
+  @override
+  String get forgePickTitle => 'Set a seal';
+
+  @override
+  String get summaryGlut => 'Glut for the Forge';
+
+  @override
+  String glutAmount(int n) {
+    return '+$n Glut';
+  }
 }

@@ -9,6 +9,7 @@ import '../data/game_repository.dart';
 import '../data/movement_source.dart';
 import '../domain/breath.dart';
 import '../domain/companion.dart';
+import '../domain/forge.dart';
 import '../domain/run_engine.dart';
 import '../domain/run_summary.dart';
 
@@ -83,17 +84,51 @@ class GameNotifier extends Notifier<GameData> {
     return true;
   }
 
-  /// Buys a seal and sets it into [companionId]. Not possible during a run.
-  bool forge(String companionId, SealType type) {
-    if (ref.read(runControllerProvider) != null) return false;
-    if (state.forgeBlock(companionId, type) != null) return false;
-    _set(state.forging(companionId, type));
+  bool get _running => ref.read(runControllerProvider) != null;
+
+  /// Buys a seal L1 into the seal case. Not possible during a run.
+  bool buySeal(SealType type) {
+    if (_running || state.buySealBlock() != null) return false;
+    _set(state.buyingSeal(type));
     return true;
   }
 
-  /// Removes the seal in [slot] of [companionId]. Not possible during a run.
+  /// Forges two equal seals up one level with [glut] Glut. Null when not
+  /// allowed (see [GameData.upgradeBlock]) or during a run.
+  ForgeOutcome? upgradeSeal(Seal seal, int glut) {
+    if (_running || state.upgradeBlock(seal, glut) != null) return null;
+    final (next, outcome) = state.upgrading(seal, glut, _random);
+    _set(next);
+    return outcome;
+  }
+
+  /// Combines two single seals of different stats. Null when not allowed
+  /// (see [GameData.combineBlock]) or during a run.
+  ForgeOutcome? combineSeals(Seal a, Seal b, int glut) {
+    if (_running || state.combineBlock(a, b, glut) != null) return null;
+    final (next, outcome) = state.combining(a, b, glut, _random);
+    _set(next);
+    return outcome;
+  }
+
+  /// Melts splinters into a seal L1 of [type]. Not possible during a run.
+  bool meltSplinters(SealType type) {
+    if (_running || state.meltBlock() != null) return false;
+    _set(state.meltingSplinters(type));
+    return true;
+  }
+
+  /// Sets [seal] from the case into [companionId]. Not during a run.
+  bool setSeal(String companionId, Seal seal) {
+    if (_running || state.setBlock(companionId, seal) != null) return false;
+    _set(state.settingSeal(companionId, seal));
+    return true;
+  }
+
+  /// Takes the seal in [slot] of [companionId] back into the case. Not
+  /// possible during a run.
   void clearSeal(String companionId, int slot) {
-    if (ref.read(runControllerProvider) != null) return;
+    if (_running) return;
     _set(state.clearingSeal(companionId, slot));
   }
 

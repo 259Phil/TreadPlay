@@ -21,6 +21,7 @@ class GameData {
     this.totals = const Totals(),
     this.videos = const VideoRewards(),
     this.wanderweg = const WanderwegProgress(),
+    this.forge = const ForgeState(),
   });
 
   factory GameData.initial(DateTime now) {
@@ -61,13 +62,29 @@ class GameData {
   /// Reached waymarks of the Wanderweg.
   final WanderwegProgress wanderweg;
 
+  /// Seal case, Glut, splinters and Forge counters.
+  final ForgeState forge;
+
+  /// Seals set into companions, all of them.
+  Iterable<Seal> get setSeals => companions.expand((c) => c.seals);
+
+  /// Every seal the player owns: set ones and loose ones in the case.
+  Iterable<Seal> get ownedSeals => [
+    ...setSeals,
+    for (final (s, n) in forge.sealsInStock)
+      for (var i = 0; i < n; i++) s,
+  ];
+
   /// Everything a waymark task can count, from what the save holds.
+  /// Seal counters are retroactive: they also count what the save already
+  /// holds (set and loose seals), so older saves are never behind.
   WaymarkCounters get waymarkCounters {
-    final setSeals = companions.fold<int>(
-      0,
-      (n, c) => n + c.charms.where((s) => s != null).length,
-    );
-    final forged = totals.forgeUses > setSeals ? totals.forgeUses : setSeals;
+    final owned = ownedSeals.toList();
+    final set = setSeals.length;
+    final forged = max(totals.forgeUses, owned.length);
+    final placed = max(forge.placed, set);
+    final best = owned.fold<int>(forge.bestLevel, (n, s) => max(n, s.level));
+    final combined = max(forge.combines, owned.where((s) => s.combined).length);
     final bought = companions.where(_fromMarket).length;
     final maxLevel = companions.fold<int>(
       1,
@@ -77,7 +94,9 @@ class GameData {
       distanceM: totals.distanceM,
       values: {
         WaymarkCounter.sealsForged: forged,
-        WaymarkCounter.sealsPlaced: forged,
+        WaymarkCounter.sealsPlaced: placed,
+        WaymarkCounter.bestSealLevel: best,
+        WaymarkCounter.combines: combined,
         WaymarkCounter.sweetSpot58Runs: totals.sweetSpot58Runs,
         WaymarkCounter.sweetSpot71Runs: totals.sweetSpot71Runs,
         WaymarkCounter.companionsBought: totals.companionsBought > bought
@@ -148,35 +167,174 @@ class GameData {
     return null;
   }
 
-  /// Why a seal of [type] can't be set into [companionId] right now, or null
-  /// if it can.
-  ForgeBlock? forgeBlock(String companionId, SealType type) {
-    final c = companions.where((c) => c.id == companionId).firstOrNull;
-    if (c == null) return ForgeBlock.gone;
+  /// Why a new seal L1 can't be bought right now, or null if it can.
+  ForgeBlock? buySealBlock() {
     if (!unlocks.forge) return ForgeBlock.locked;
-    final cost = Forge.nextCost(c, type);
-    if (cost == null) return ForgeBlock.statMaxed;
-    if (c.freeSocket == null) return ForgeBlock.noSocket;
-    if (c.spirit < 100) return ForgeBlock.needsSpirit;
-    if (lp < cost) return ForgeBlock.notEnoughLp;
+    if (lp < Forge.sealCost) return ForgeBlock.notEnoughLp;
     return null;
   }
 
-  /// Pays for a seal of [type] and sets it into the first free socket.
-  /// Check [forgeBlock] first.
-  GameData forging(String companionId, SealType type) {
-    final c = companions.firstWhere((c) => c.id == companionId);
-    return replaceCompanion(c.withCharm(c.freeSocket!, type.name)).copyWith(
-      lp: lp - Forge.nextCost(c, type)!,
-      totals: totals.addingForgeUse(),
+  /// Pays [Forge.sealCost] for a seal L1 of [type]; it goes into the case.
+  /// Check [buySealBlock] first.
+  GameData buyingSeal(SealType type) => copyWith(
+    lp: lp - Forge.sealCost,
+    forge: forge.adding(Seal(type, 1)),
+    totals: totals.addingForgeUse(),
+  );
+
+  /// Why two [seal]s from the case can't be forged into the next level with
+  /// [glut] Glut, or null if they can.
+  ForgeBlock? upgradeBlock(Seal seal, int glut) {
+    if (!unlocks.forge) return ForgeBlock.locked;
+    final step = Forge.upgrades[seal.level];
+    if (seal.combined || step == null) return ForgeBlock.maxLevel;
+    if (seal.level + 1 > unlocks.forgeLevel) return ForgeBlock.levelLocked;
+    if (forge.count(seal) < 2) return ForgeBlock.needsPair;
+    if (!step.allows(glut)) return ForgeBlock.glutRange;
+    if (forge.glut < glut) return ForgeBlock.notEnoughGlut;
+    if (lp < step.lp) return ForgeBlock.notEnoughLp;
+    return null;
+  }
+
+  /// Forges two [seal]s up one level. LP and Glut are always spent; on a
+  /// fail one input falls to splinters and the other stays in the case.
+  /// Check [upgradeBlock] first.
+  (GameData, ForgeOutcome) upgrading(Seal seal, int glut, Random random) {
+    final step = Forge.upgrades[seal.level]!;
+    final paid = forge.copyWith(
+      glut: forge.glut - glut,
+      attempts: forge.attempts + 1,
+    );
+    if (Forge.rollsFail(step.failChance(glut), random)) {
+      return (
+        copyWith(lp: lp - step.lp, forge: _broken(paid, seal)),
+        ForgeOutcome.failed(seal),
+      );
+    }
+    final made = seal.nextLevel!;
+    return (
+      copyWith(
+        lp: lp - step.lp,
+        forge: paid.removing(seal, 2).adding(made),
+        totals: totals.addingForgeUse(),
+      ),
+      ForgeOutcome.success(made),
     );
   }
 
-  /// Stores [run] (newest first, capped) and counts it in [totals].
-  GameData recordingRun(RunSummary run) => copyWith(
-    runs: [run, ...runs].take(maxStoredRuns).toList(),
-    totals: totals.addingRun(run),
+  /// Why [a] and [b] can't be combined with [glut] Glut, or null if they
+  /// can: two single seals of different stats at the same level 3 or 5.
+  ForgeBlock? combineBlock(Seal a, Seal b, int glut) {
+    if (!unlocks.forge) return ForgeBlock.locked;
+    final step = Forge.combines[a.level];
+    if (a.combined ||
+        b.combined ||
+        a.type == b.type ||
+        a.level != b.level ||
+        step == null) {
+      return ForgeBlock.badCombine;
+    }
+    if (a.level > unlocks.combineLevel) return ForgeBlock.levelLocked;
+    if (forge.count(a) < 1 || forge.count(b) < 1) return ForgeBlock.needsPair;
+    if (!step.allows(glut)) return ForgeBlock.glutRange;
+    if (forge.glut < glut) return ForgeBlock.notEnoughGlut;
+    if (lp < step.lp) return ForgeBlock.notEnoughLp;
+    return null;
+  }
+
+  /// Combines [a] and [b] into one seal that raises both stats. On a fail
+  /// one of the two (picked by [random]) falls to splinters, the other
+  /// stays. Check [combineBlock] first.
+  (GameData, ForgeOutcome) combining(Seal a, Seal b, int glut, Random random) {
+    final step = Forge.combines[a.level]!;
+    final paid = forge.copyWith(
+      glut: forge.glut - glut,
+      attempts: forge.attempts + 1,
+    );
+    if (Forge.rollsFail(step.failChance(glut), random)) {
+      final broken = random.nextBool() ? a : b;
+      return (
+        copyWith(lp: lp - step.lp, forge: _broken(paid, broken)),
+        ForgeOutcome.failed(broken),
+      );
+    }
+    final made = Seal.combined(a.type, b.type, a.level);
+    return (
+      copyWith(
+        lp: lp - step.lp,
+        forge: paid
+            .removing(a)
+            .removing(b)
+            .adding(made)
+            .copyWith(combines: paid.combines + 1),
+        totals: totals.addingForgeUse(),
+      ),
+      ForgeOutcome.success(made),
+    );
+  }
+
+  static ForgeState _broken(ForgeState f, Seal seal) => f
+      .removing(seal)
+      .copyWith(
+        splinters: f.splinters + Forge.splintersOnFail,
+        fails: f.fails + 1,
+      );
+
+  /// Why splinters can't be melted into a seal L1 right now.
+  ForgeBlock? meltBlock() {
+    if (!unlocks.forge) return ForgeBlock.locked;
+    if (forge.splinters < Forge.splintersPerSeal) {
+      return ForgeBlock.needsSplinters;
+    }
+    return null;
+  }
+
+  /// Melts [Forge.splintersPerSeal] splinters into a seal L1 of [type].
+  GameData meltingSplinters(SealType type) => copyWith(
+    forge: forge
+        .copyWith(splinters: forge.splinters - Forge.splintersPerSeal)
+        .adding(Seal(type, 1)),
+    totals: totals.addingForgeUse(),
   );
+
+  /// Why [seal] from the case can't be set into [companionId] right now.
+  ForgeBlock? setBlock(String companionId, Seal seal) {
+    final c = companions.where((c) => c.id == companionId).firstOrNull;
+    if (c == null) return ForgeBlock.gone;
+    if (!unlocks.forge) return ForgeBlock.locked;
+    if (forge.count(seal) < 1) return ForgeBlock.needsPair;
+    if (c.freeSocket == null) return ForgeBlock.noSocket;
+    if (c.spirit < 100) return ForgeBlock.needsSpirit;
+    return null;
+  }
+
+  /// Moves [seal] from the case into the first free socket of
+  /// [companionId]. Check [setBlock] first.
+  GameData settingSeal(String companionId, Seal seal) {
+    final c = companions.firstWhere((c) => c.id == companionId);
+    return replaceCompanion(
+      c.withSeal(c.freeSocket!, seal),
+    ).copyWith(forge: forge.removing(seal).copyWith(placed: forge.placed + 1));
+  }
+
+  /// Glut a finished [run] brings: [Forge.glutPerRun] for a valid run of at
+  /// least [Forge.glutRunMinM] once the Forge is open.
+  int glutFor(RunSummary run) =>
+      run.valid && run.distanceM >= Forge.glutRunMinM && unlocks.forge
+      ? Forge.glutPerRun
+      : 0;
+
+  /// Stores [run] (newest first, capped), counts it in [totals] and adds
+  /// the Glut it brings (see [glutFor]).
+  GameData recordingRun(RunSummary run) {
+    final glut = glutFor(run);
+    final stored = glut == run.glut ? run : run.withGlut(glut);
+    return copyWith(
+      runs: [stored, ...runs].take(maxStoredRuns).toList(),
+      totals: totals.addingRun(run),
+      forge: glut == 0 ? forge : forge.copyWith(glut: forge.glut + glut),
+    );
+  }
 
   /// "Erase local record": drops the stored runs. [totals] stay, since they
   /// only hold sums for milestones, no dates or single runs.
@@ -193,10 +351,13 @@ class GameData {
     return copyWith(lp: lp + reward, videos: videos.claimed(now));
   }
 
-  /// Empties charm socket [slot] of [companionId]. LP are not refunded.
+  /// Takes the seal out of charm socket [slot] of [companionId]; it goes
+  /// back into the seal case, nothing is lost.
   GameData clearingSeal(String companionId, int slot) {
     final c = companions.firstWhere((c) => c.id == companionId);
-    return replaceCompanion(c.withCharm(slot, null));
+    final seal = c.sealAt(slot);
+    final next = replaceCompanion(c.withCharm(slot, null));
+    return seal == null ? next : next.copyWith(forge: forge.adding(seal));
   }
 
   /// Keeps the current market until its drift is due, then rolls a new one.
@@ -224,14 +385,19 @@ class GameData {
 
   /// Sells to the market. If it was taken along, the first remaining
   /// companion is taken along instead, under the usual [takingAlong] rule.
-  /// Check [sellBlock] first.
+  /// Its seals go back into the seal case. Check [sellBlock] first.
   GameData selling(String companionId, DateTime now) {
     final c = companions.firstWhere((c) => c.id == companionId);
     final next = c.id == activeCompanionId
         ? takingAlong(companions.firstWhere((o) => o.id != c.id).id, now)
         : this;
+    var case_ = next.forge;
+    for (final seal in c.seals) {
+      case_ = case_.adding(seal);
+    }
     return next.copyWith(
       lp: lp + market!.sellPriceOf(c),
+      forge: case_,
       companions: [
         for (final o in companions)
           if (o.id != c.id) o,
@@ -259,6 +425,7 @@ class GameData {
     Totals? totals,
     VideoRewards? videos,
     WanderwegProgress? wanderweg,
+    ForgeState? forge,
   }) => GameData(
     lp: lp ?? this.lp,
     companions: companions ?? this.companions,
@@ -269,6 +436,7 @@ class GameData {
     totals: totals ?? this.totals,
     videos: videos ?? this.videos,
     wanderweg: wanderweg ?? this.wanderweg,
+    forge: forge ?? this.forge,
   );
 
   GameData replaceCompanion(Companion companion) => copyWith(
@@ -287,6 +455,7 @@ class GameData {
     'totals': totals.toJson(),
     'videos': videos.toJson(),
     'wanderweg': wanderweg.toJson(),
+    'forge': forge.toJson(),
   };
 
   /// [now] dates the waymarks a save from before the trail is granted.
@@ -335,6 +504,11 @@ class GameData {
         final Map<String, Object?> w => WanderwegProgress.fromJson(w),
         _ => WanderwegProgress.legacy(totals.distanceM, now ?? DateTime.now()),
       },
+      // Saves from before the seal case: every forge use set one seal.
+      forge: switch (json['forge']) {
+        final Map<String, Object?> f => ForgeState.fromJson(f),
+        _ => ForgeState(placed: totals.forgeUses),
+      },
     );
   }
 
@@ -352,8 +526,22 @@ enum ForgeBlock {
   /// The Forge opens at waymark 2 of the Wanderweg.
   locked,
 
-  /// Already +[Forge.maxPerStat] on this stat.
-  statMaxed,
+  /// This level of forging or combining opens later on the trail.
+  levelLocked,
+
+  /// Already at L5, or a combined seal (those are not forged further).
+  maxLevel,
+
+  /// Not enough of these seals in the case (two equal ones to forge up).
+  needsPair,
+
+  /// Two single seals of different stats at the same level 3 or 5 needed.
+  badCombine,
+
+  /// Glut outside the recipe's min–max.
+  glutRange,
+  notEnoughGlut,
+  needsSplinters,
 
   /// Every charm socket holds a seal.
   noSocket,

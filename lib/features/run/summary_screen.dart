@@ -73,6 +73,17 @@ class SummaryScreen extends ConsumerWidget {
                 row(l.time, formatDuration(run.duration)),
                 row(l.pace, l.paceValue(formatPace(run.pace))),
                 row(l.sweetSpotShare, formatShare(context, run.sweetSpotShare)),
+                if (run.glut > 0)
+                  ListTile(
+                    key: const Key('summary-glut'),
+                    title: Text(l.summaryGlut),
+                    trailing: Text(
+                      l.glutAmount(run.glut),
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: TreadColors.brass,
+                      ),
+                    ),
+                  ),
                 if ((run.breathLeft, run.tankSize) case (
                   final left?,
                   final tank?,

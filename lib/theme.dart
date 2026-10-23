@@ -169,3 +169,27 @@ const brassGradient = LinearGradient(
   colors: [Color(0xFFF0CE8A), TreadColors.brass, Color(0xFFB98A44)],
   stops: [0, 0.5, 1],
 );
+
+/// Forge palette (V1.2 metal palette): cool iron base and surface, warm
+/// text, brass and the stop red. No pastel, pink or white surfaces.
+class ForgeColors {
+  static const base = Color(0xFF1A1D22);
+  static const surface = Color(0xFF2A3038);
+  static const raised = Color(0xFF323944);
+  static const line = Color(0xFF3B434E);
+  static const text = Color(0xFFE8E0D0);
+  static const muted = Color(0xFF9AA1AA);
+  static const brass = Color(0xFFC4A36A);
+  static const stop = Color(0xFF8B3A3A);
+  static const ember = Color(0xFFD9692F);
+}
+
+/// Frame metal of a seal level: grey stone, bronze, brass, glowing copper,
+/// brass with a red-hot core.
+Color sealLevelMetal(int level) => switch (level) {
+  <= 1 => const Color(0xFF7D838B),
+  2 => const Color(0xFF9A7A4E),
+  3 => ForgeColors.brass,
+  4 => const Color(0xFFD08A45),
+  _ => const Color(0xFFE0B872),
+};

@@ -9,14 +9,14 @@ enum WaymarkCounter {
   copperPouchesOpened(built: false),
   turquoisePouchesOpened(built: false),
 
-  /// Seals set in the Forge (lifetime).
+  /// Seals made in the Forge (lifetime; at least the seals owned now).
   sealsForged(built: true),
 
-  /// Seals set into a companion; same act as forging in this version.
+  /// Seals set into a companion (lifetime; at least the seals set now).
   sealsPlaced(built: true),
 
-  // TODO(wanderweg): seal levels (L2+) are not built yet.
-  sealsAtLevel3(built: false),
+  /// Highest seal level ever held (at least the best seal owned now).
+  bestSealLevel(built: true),
 
   // TODO(wanderweg): messengers are not built yet.
   messengersMet(built: false),
@@ -36,8 +36,8 @@ enum WaymarkCounter {
   // TODO(wanderweg): levelling is not built yet (level stays 1).
   companionLevel(built: false),
 
-  // TODO(wanderweg): combining seals is not built yet.
-  combines(built: false);
+  /// Successful combines (lifetime; at least the combined seals owned now).
+  combines(built: true);
 
   const WaymarkCounter({required this.built});
 
@@ -77,6 +77,12 @@ enum WaymarkUnlock {
   /// True when this version has a feature that the unlock actually opens.
   bool get wired => switch (this) {
     forge ||
+    forgeL2 ||
+    forgeL3 ||
+    forgeL4 ||
+    forgeL5 ||
+    combineL3 ||
+    combineL5 ||
     marketMedievalJungle ||
     worldUnderwater ||
     marketEgyptPirate ||
@@ -139,7 +145,7 @@ const List<Waymark> waymarks = [
   Waymark(11, 41.3, WaymarkUnlock.worldSteampunk),
   Waymark(12, 48.6, WaymarkUnlock.forgeL4, [
     WaymarkTask(WaymarkCounter.sealsForged, 5),
-    WaymarkTask(WaymarkCounter.sealsAtLevel3, 1),
+    WaymarkTask(WaymarkCounter.bestSealLevel, 3),
   ]),
   Waymark(13, 57.2, WaymarkUnlock.combineL3),
   Waymark(14, 66.9, WaymarkUnlock.navyPouch, [
@@ -251,9 +257,9 @@ class WanderwegProgress {
   }
 }
 
-/// Feature flags from the trail. [forge], [marketWorlds] and [shelfSlots]
-/// change the game in this version; the rest only exist as flags until their
-/// features are built.
+/// Feature flags from the trail. [forge], [forgeLevel], [combineLevel],
+/// [marketWorlds] and [shelfSlots] change the game in this version; the rest
+/// only exist as flags until their features are built.
 class WaymarkUnlocks {
   WaymarkUnlocks(
     this.progress, {

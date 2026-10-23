@@ -230,18 +230,6 @@
       }
     }
   },
-  "sealBonus": "+{n} {stat}",
-  "@sealBonus": {
-    "placeholders": {
-      "n": {
-        "type": "int"
-      },
-      "stat": {
-        "type": "String"
-      }
-    }
-  },
-  "forgeAlong": "Seals go to the companion you have along.",
   "forgeFreeSockets": "{free} of {total} sockets free",
   "@forgeFreeSockets": {
     "placeholders": {
@@ -253,25 +241,15 @@
       }
     }
   },
-  "forgeRule": "Each seal adds +1 to its stat, up to +3 per stat. Paid in LP.",
-  "forgeStatCount": "+{n} of +3",
-  "@forgeStatCount": {
-    "placeholders": {
-      "n": {
-        "type": "int"
-      }
-    }
-  },
-  "forgeSet": "Set",
-  "forgeMaxed": "Max",
-  "forgeNeedsSpirit": "Forging only at 100 % Spirit.",
+  "forgeRule": "Each seal raises its stat by a share: L1 +4 %, L2 +9 %, L3 +15 %, L4 +22 %, L5 +31 %.",
+  "forgeNeedsSpirit": "Seals are set only at 100 % Spirit.",
   "forgeNotEnoughLp": "Not enough LP yet.",
   "forgeNoSocket": "No empty socket left.",
-  "forgeSellNote": "Seals stay on this companion. Selling it removes them; LP are not refunded.",
-  "forgeClearHint": "Tap a filled socket to remove its seal.",
-  "forgeClearTitle": "Remove {seal}?",
-  "forgeClearBody": "The socket will be empty again. LP are not refunded.",
-  "forgeClearAction": "Remove",
+  "forgeSellNote": "Selling a companion puts its seals back into the case.",
+  "forgeClearHint": "Tap a seal to take it out, an empty socket to set one.",
+  "forgeClearTitle": "Take out {seal}?",
+  "forgeClearBody": "It goes back into the case. Nothing is lost.",
+  "forgeClearAction": "Take out",
   "forgeClearKeep": "Keep",
   "@forgeClearTitle": {
     "placeholders": {
@@ -610,5 +588,223 @@
   "wwLine16": "The crown is not given. It is walked.",
   "wwLine17": "More room on the shelf. The growing still happens outside.",
   "wwLine18": "Whoever keeps the beat, the ember follows.",
-  "wwLine19": "No end, only a bend. The trail grows with you."
+  "wwLine19": "No end, only a bend. The trail grows with you.",
+  "forgeIntro": "Seals wait in the case. Set them into the companion you have along.",
+  "forgeCompanionLine": "{name} · {rarity} · {total} sockets",
+  "@forgeCompanionLine": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "rarity": {
+        "type": "String"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "sealLevel": "Level {n}",
+  "@sealLevel": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "sealLevelShort": "L{n}",
+  "@sealLevelShort": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "sealStatBonus": "{stat} +{pct} %",
+  "@sealStatBonus": {
+    "placeholders": {
+      "stat": {
+        "type": "String"
+      },
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "sealComboName": "{a} + {b}",
+  "@sealComboName": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
+  },
+  "sealComboBonus": "+{pct} % / +{pct} %",
+  "@sealComboBonus": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "statBonus": "+{pct} %",
+  "@statBonus": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "statCapped": "+{pct} % (cap)",
+  "@statCapped": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "forgeModeUp": "Forge up",
+  "forgeModeCombine": "Combine",
+  "forgeUpTitle": "Forge: 2 equal seals + Glut",
+  "forgeCombineTitle": "Combine: 2 different seals + Glut",
+  "forgeGlutCost": "+ {n} Glut",
+  "@forgeGlutCost": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "forgeLpCost": "+ {lp} LP",
+  "@forgeLpCost": {
+    "placeholders": {
+      "lp": {
+        "type": "String"
+      }
+    }
+  },
+  "forgeFailNote": "Fail chance {pct} % · then 1 seal turns into 3 splinters",
+  "@forgeFailNote": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "forgeGlutRange": "Glut {min}–{max}: each extra Glut lowers the fail chance.",
+  "@forgeGlutRange": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "forgeGlutFixed": "Needs exactly {n} Glut.",
+  "@forgeGlutFixed": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "forgePickSeal": "Pick a seal in the case below.",
+  "forgePickPartner": "Now pick a seal of another stat at the same level.",
+  "forgeCase": "Case",
+  "forgeCaseEmpty": "No loose seals yet. Buy a seal L1 below.",
+  "forgeStores": "Splinters {s}/5 · Glut {g}",
+  "@forgeStores": {
+    "placeholders": {
+      "s": {
+        "type": "int"
+      },
+      "g": {
+        "type": "int"
+      }
+    }
+  },
+  "forgeGlutSource": "Glut: +1 for every run of 1 km or more.",
+  "forgeBuyTitle": "New seal L1 · {lp} LP",
+  "@forgeBuyTitle": {
+    "placeholders": {
+      "lp": {
+        "type": "String"
+      }
+    }
+  },
+  "forgeMeltTitle": "Melt 5 splinters into a seal L1",
+  "forgeAction": "Forge",
+  "forgeCombineAction": "Combine",
+  "forgeSetAction": "Set into {name}",
+  "@forgeSetAction": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "forgeLevelLocked": "Forging L{n} opens at waymark {wm}.",
+  "@forgeLevelLocked": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "wm": {
+        "type": "int"
+      }
+    }
+  },
+  "forgeCombineLocked": "Combining L{n} opens at waymark {wm}.",
+  "@forgeCombineLocked": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "wm": {
+        "type": "int"
+      }
+    }
+  },
+  "forgeNeedsPair": "Needs 2 equal seals in the case.",
+  "forgeNeedsGlut": "Not enough Glut yet.",
+  "forgeTopLevel": "L5 is the highest level.",
+  "forgeComboFinal": "Combined seals are not forged further.",
+  "forgeBadCombine": "Needs two single seals of different stats at L3 or L5.",
+  "forgeSuccessTitle": "Forged",
+  "forgeSuccessBody": "{seal} is now in the case.",
+  "@forgeSuccessBody": {
+    "placeholders": {
+      "seal": {
+        "type": "String"
+      }
+    }
+  },
+  "forgeFailTitle": "The fire failed",
+  "forgeFailBody": "{seal} fell to 3 splinters. The other seal is back in the case.",
+  "@forgeFailBody": {
+    "placeholders": {
+      "seal": {
+        "type": "String"
+      }
+    }
+  },
+  "forgeOk": "OK",
+  "forgeLadder": "Levels",
+  "forgeLadderTitle": "Seal levels",
+  "forgeLadderNote": "At most +47 % per stat from all seals together. Combined seals free a socket but give less in total.",
+  "forgePickTitle": "Set a seal",
+  "summaryGlut": "Glut for the Forge",
+  "glutAmount": "+{n} Glut",
+  "@glutAmount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  }
 }

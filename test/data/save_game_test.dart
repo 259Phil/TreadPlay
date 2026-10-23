@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:treadplay/data/game_data.dart';
 import 'package:treadplay/data/save_game.dart';
 import 'package:treadplay/domain/companion.dart';
+import 'package:treadplay/domain/forge.dart';
 import 'package:treadplay/domain/run_summary.dart';
 import 'package:treadplay/domain/totals.dart';
 import 'package:treadplay/domain/video_rewards.dart';
@@ -54,7 +55,8 @@ void main() {
     expect(jsonEncode(loaded.game.toJson()), jsonEncode(game.toJson()));
     expect(loaded.game.totals.forgeUses, 2);
     expect(loaded.game.videos.watched, 2);
-    expect(loaded.game.companions.single.charms.first, 'grit');
+    // A bare seal from before seal levels is read as an L2 seal.
+    expect(loaded.game.companions.single.charms.first, 'grit@2');
   });
 
   test('file name is a dated json file', () {
@@ -123,5 +125,111 @@ void main() {
     expect(errorOf(bytesOf(wrap(strange))), SaveGameError.damaged);
     final negative = sample().toJson()..['lp'] = -5;
     expect(errorOf(bytesOf(wrap(negative))), SaveGameError.damaged);
+  });
+
+  group('save format 3 (Forge)', () {
+    Map<String, Object?> wrap(Object? game, int version) => {
+      'format': 'treadplay-save',
+      'version': version,
+      'game': game,
+    };
+
+    GameData forged() {
+      final gilt = Companion.fresh(
+        id: 'm1-0',
+        speciesId: 'gilt',
+        rarity: Rarity.legendary,
+      ).withSeal(0, const Seal(SealType.stride, 5));
+      return GameData.initial(t0).copyWith(
+        companions: [Companion.pebble(), gilt],
+        forge: const ForgeState(
+          stock: {'grit@3': 2, 'stride+fortune@5': 1},
+          glut: 7,
+          splinters: 4,
+          placed: 3,
+          combines: 1,
+          bestLevel: 5,
+          attempts: 9,
+          fails: 2,
+        ),
+      );
+    }
+
+    test('export and import keep the whole forge state', () {
+      final game = forged();
+      final loaded = SaveGame.decode(SaveGame.encode(game, t0)).game;
+      expect(jsonEncode(loaded.toJson()), jsonEncode(game.toJson()));
+      expect(loaded.forge.glut, 7);
+      expect(loaded.forge.splinters, 4);
+      expect(loaded.forge.count(const Seal(SealType.grit, 3)), 2);
+      expect(
+        loaded.forge.count(Seal.combined(SealType.stride, SealType.fortune, 5)),
+        1,
+      );
+      expect(loaded.companions.last.sealAt(0), const Seal(SealType.stride, 5));
+    });
+
+    test(
+      'a version 2 file imports: bare seals become L2, uses count as set',
+      () {
+        final v2 = sample().toJson()..remove('forge');
+        (v2['companions']! as List<Object?>)[0] = {
+          ...sample().companions.single.toJson(),
+          'charms': ['stride'],
+        };
+        final loaded = SaveGame.decode(bytesOf(wrap(v2, 2))).game;
+        final pebble = loaded.companions.single;
+        expect(pebble.charms, ['stride@2']);
+        expect(pebble.sealBonus(SealType.stride), closeTo(0.09, 1e-9));
+        expect(loaded.forge.placed, 2);
+        expect(loaded.forge.glut, 0);
+        expect(loaded.forge.stock, isEmpty);
+        // Re-exported as version 3 and read again: unchanged.
+        final again = SaveGame.decode(SaveGame.encode(loaded, t0)).game;
+        expect(jsonEncode(again.toJson()), jsonEncode(loaded.toJson()));
+      },
+    );
+
+    test('a stray forge block in an old file is ignored', () {
+      final v2 = forged().toJson();
+      final loaded = SaveGame.decode(bytesOf(wrap(v2, 2))).game;
+      expect(loaded.forge.glut, 0);
+      expect(loaded.forge.stock, isEmpty);
+    });
+
+    test('version 1 files still import', () {
+      final v1 = sample().toJson()
+        ..remove('forge')
+        ..remove('wanderweg');
+      final loaded = SaveGame.decode(bytesOf(wrap(v1, 1))).game;
+      expect(loaded.companions.single.charms, ['grit@2']);
+      expect(loaded.wanderweg.legacyForge, isTrue);
+    });
+
+    test('unknown seals in the case or in a socket are rejected', () {
+      final badCase = forged().toJson();
+      (badCase['forge']! as Map<String, Object?>)['stock'] = {'stride@9': 1};
+      expect(
+        errorOf(bytesOf(wrap(badCase, SaveGame.version))),
+        SaveGameError.damaged,
+      );
+      final badSocket = forged().toJson();
+      final comps = badSocket['companions']! as List<Object?>;
+      comps[1] = {
+        ...(comps[1]! as Map<String, Object?>),
+        'charms': ['grit+grit@3', null, null],
+      };
+      expect(
+        errorOf(bytesOf(wrap(badSocket, SaveGame.version))),
+        SaveGameError.damaged,
+      );
+    });
+
+    test('local storage from before seal levels loads too', () {
+      final json = sample().toJson()..remove('forge');
+      final game = GameData.fromJson(json, now: t0);
+      expect(game.companions.single.charms, ['grit@2']);
+      expect(game.forge.placed, 2);
+    });
   });
 }

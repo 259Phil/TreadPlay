@@ -80,7 +80,8 @@ void main() {
     test('a set seal completes waymark 4', () {
       var game = walked(10);
       game = game
-          .forging('pebble-1', SealType.stride)
+          .buyingSeal(SealType.stride)
+          .settingSeal('pebble-1', const Seal(SealType.stride, 1))
           .copyWith(lp: 100)
           .advancingWanderweg(t1);
       expect(game.wanderweg.reached, 5);
@@ -99,7 +100,8 @@ void main() {
     test('waymark 6 waits for a sweet spot run, messengers are waived', () {
       var game = GameData.initial(t0)
           .copyWith(wanderweg: const WanderwegProgress(legacyForge: true))
-          .forging('pebble-1', SealType.grit)
+          .buyingSeal(SealType.grit)
+          .settingSeal('pebble-1', const Seal(SealType.grit, 1))
           .copyWith(lp: 0);
       game = walked(14, from: game);
       expect(game.wanderweg.reached, 5);
@@ -163,7 +165,10 @@ void main() {
   group('never re-lock', () {
     test('reached waymarks stay after the counters drop', () {
       var game = walked(10);
-      game = game.forging('pebble-1', SealType.stride).advancingWanderweg(t1);
+      game = game
+          .buyingSeal(SealType.stride)
+          .settingSeal('pebble-1', const Seal(SealType.stride, 1))
+          .advancingWanderweg(t1);
       expect(game.wanderweg.reached, 5);
       // Seal removed, runs erased: nothing is taken back.
       game = game
@@ -263,7 +268,7 @@ void main() {
       // Legacy grant: km only, so waymark 4's seal task is not asked.
       expect(loaded.wanderweg.reached, 5);
       expect(loaded.unlocks.forge, isTrue);
-      expect(SaveGame.version, 2);
+      expect(SaveGame.version, 3);
     });
   });
 }

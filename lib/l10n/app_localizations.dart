@@ -278,6 +278,18 @@ abstract class AppLocalizations {
   /// **'Out of breath – tracking only'**
   String get hintNoBreath;
 
+  /// No description provided for @runWebGpsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the screen on and this page open – in the background the browser pauses GPS.'**
+  String get runWebGpsHint;
+
+  /// No description provided for @hintGpsWarmup.
+  ///
+  /// In en, this message translates to:
+  /// **'GPS is settling – one moment …'**
+  String get hintGpsWarmup;
+
   /// No description provided for @demoTitle.
   ///
   /// In en, this message translates to:

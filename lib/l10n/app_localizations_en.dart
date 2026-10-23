@@ -115,6 +115,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hintNoBreath => 'Out of breath – tracking only';
 
   @override
+  String get runWebGpsHint =>
+      'Keep the screen on and this page open – in the background the browser pauses GPS.';
+
+  @override
+  String get hintGpsWarmup => 'GPS is settling – one moment …';
+
+  @override
   String get demoTitle => 'Simulator (debug build only)';
 
   @override

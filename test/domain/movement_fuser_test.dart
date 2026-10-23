@@ -41,4 +41,15 @@ void main() {
     fuser.addStepTotal(4);
     expect(fuser.tick(at(10)).distanceM, 4 * MovementFuser.strideM);
   });
+
+  test('the GPS filter speed is used while GPS is live', () {
+    final fuser = MovementFuser();
+    fuser.tick(at(0));
+    fuser.addGps(at(1), 6, accuracyM: 5, speedKmh: 5);
+    expect(fuser.tick(at(1)).speedKmh, 5);
+    fuser.addGps(at(2), 0, accuracyM: 5, speedKmh: 5);
+    final s = fuser.tick(at(2));
+    expect(s.distanceM, 0);
+    expect(s.speedKmh, 5);
+  });
 }

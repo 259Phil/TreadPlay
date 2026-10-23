@@ -30,6 +30,8 @@
   "hintOutside": "Außerhalb des Sweet Spots – Strecke zählt, keine LP",
   "hintInside": "Im Sweet Spot",
   "hintNoBreath": "Außer Puste – nur Tracking",
+  "runWebGpsHint": "Bildschirm an und diese Seite offen lassen – im Hintergrund pausiert der Browser das GPS.",
+  "hintGpsWarmup": "GPS wird genauer – kurz warten …",
   "demoTitle": "Simulator (nur Debug-Build)",
   "demoTimeLapse": "10× Zeit",
   "summaryTitle": "Lauf beendet",

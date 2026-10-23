@@ -82,6 +82,8 @@
   "hintOutside": "Outside the sweet spot – distance counts, no LP",
   "hintInside": "In the sweet spot",
   "hintNoBreath": "Out of breath – tracking only",
+  "runWebGpsHint": "Keep the screen on and this page open – in the background the browser pauses GPS.",
+  "hintGpsWarmup": "GPS is settling – one moment …",
   "demoTitle": "Simulator (debug build only)",
   "demoTimeLapse": "10× time",
   "summaryTitle": "Run complete",

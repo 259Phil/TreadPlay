@@ -6,8 +6,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../domain/gps_filter.dart';
 import '../domain/movement.dart';
 import '../domain/movement_fuser.dart';
+import 'screen_wake.dart';
 
 /// Source of movement samples during a run.
 abstract class MovementSource {
@@ -20,8 +22,30 @@ abstract class MovementSource {
 const bool simulatorFlag =
     !kReleaseMode && bool.fromEnvironment('TREADPLAY_SIM');
 
+/// Live GPS quality for the hidden developer readout on the run screen.
+class GpsReadout {
+  const GpsReadout({
+    required this.accuracyM,
+    required this.accepted,
+    required this.rejected,
+    required this.jumps,
+    required this.gaps,
+    required this.warmingUp,
+    required this.verdict,
+  });
+
+  final double? accuracyM;
+  final int accepted;
+  final int rejected;
+  final int jumps;
+  final int gaps;
+  final bool warmingUp;
+  final GpsVerdict? verdict;
+}
+
 /// GPS distance and pedometer steps from this device (GPS only on Web).
-/// Nothing is stored or sent: only the previous fix is held in memory to measure the next step.
+/// Nothing is stored or sent: only the last smoothed position is held in
+/// memory to measure the next step.
 class DeviceMovementSource implements MovementSource {
   static const Duration tick = Duration(seconds: 1);
 
@@ -29,14 +53,19 @@ class DeviceMovementSource implements MovementSource {
   StreamController<MovementSample>? _controller;
   StreamSubscription<Position>? _gps;
   StreamSubscription<StepCount>? _steps;
-  Position? _lastFix;
+  GpsFilter? _filter;
   int _session = 0;
+
+  /// Latest GPS quality (null while no run is active).
+  final ValueNotifier<GpsReadout?> readout = ValueNotifier(null);
 
   @override
   Stream<MovementSample> start(DateTime startedAt) {
     stop();
     final session = ++_session;
     final fuser = MovementFuser();
+    _filter = GpsFilter(checkFixAge: kIsWeb);
+    if (kIsWeb) ScreenWake.enable();
     final controller = StreamController<MovementSample>();
     _controller = controller;
     _timer = Timer.periodic(tick, (_) => controller.add(fuser.tick(_now())));
@@ -61,18 +90,36 @@ class DeviceMovementSource implements MovementSource {
   }
 
   void _onFix(MovementFuser fuser, Position p) {
-    if (p.accuracy > MovementFuser.maxAccuracyM) return;
-    final last = _lastFix;
-    _lastFix = p;
-    final meters = last == null
-        ? 0.0
-        : Geolocator.distanceBetween(
-            last.latitude,
-            last.longitude,
-            p.latitude,
-            p.longitude,
-          );
-    fuser.addGps(_now(), meters, accuracyM: p.accuracy);
+    final filter = _filter;
+    if (filter == null) return;
+    final now = _now();
+    final meters = filter.add(
+      GpsFix(
+        time: p.timestamp,
+        latitude: p.latitude,
+        longitude: p.longitude,
+        accuracyM: p.accuracy,
+      ),
+      receivedAt: now,
+    );
+    readout.value = GpsReadout(
+      accuracyM: filter.lastAccuracyM,
+      accepted: filter.accepted,
+      rejected: filter.rejected,
+      jumps: filter.jumps,
+      gaps: filter.gaps,
+      warmingUp: filter.warmingUp,
+      verdict: filter.lastVerdict,
+    );
+    // Rejected fixes do not count as a live GPS signal, so on phones the
+    // step counter takes over while GPS is unusable.
+    if (filter.lastVerdict != GpsVerdict.accepted) return;
+    fuser.addGps(
+      now,
+      meters,
+      accuracyM: p.accuracy,
+      speedKmh: filter.speedMps * 3.6,
+    );
   }
 
   Future<bool> _locationAllowed() async {
@@ -98,23 +145,31 @@ class DeviceMovementSource implements MovementSource {
     }
   }
 
-  LocationSettings _locationSettings() => switch (defaultTargetPlatform) {
-    TargetPlatform.android => AndroidSettings(
-      accuracy: LocationAccuracy.best,
-      distanceFilter: 0,
-      intervalDuration: tick,
-    ),
-    TargetPlatform.iOS => AppleSettings(
-      accuracy: LocationAccuracy.best,
-      activityType: ActivityType.fitness,
-      distanceFilter: 0,
-      pauseLocationUpdatesAutomatically: false,
-    ),
-    _ => const LocationSettings(
-      accuracy: LocationAccuracy.best,
-      distanceFilter: 0,
-    ),
-  };
+  LocationSettings _locationSettings() => kIsWeb
+      // Checked first: on a phone browser defaultTargetPlatform is android or
+      // iOS too. enableHighAccuracy on, no cached positions (maximumAge 0).
+      ? WebSettings(
+          accuracy: LocationAccuracy.best,
+          distanceFilter: 0,
+          maximumAge: Duration.zero,
+        )
+      : switch (defaultTargetPlatform) {
+          TargetPlatform.android => AndroidSettings(
+            accuracy: LocationAccuracy.best,
+            distanceFilter: 0,
+            intervalDuration: tick,
+          ),
+          TargetPlatform.iOS => AppleSettings(
+            accuracy: LocationAccuracy.best,
+            activityType: ActivityType.fitness,
+            distanceFilter: 0,
+            pauseLocationUpdatesAutomatically: false,
+          ),
+          _ => const LocationSettings(
+            accuracy: LocationAccuracy.best,
+            distanceFilter: 0,
+          ),
+        };
 
   @override
   void stop() {
@@ -125,7 +180,9 @@ class DeviceMovementSource implements MovementSource {
     _gps = null;
     _steps?.cancel();
     _steps = null;
-    _lastFix = null;
+    _filter = null;
+    readout.value = null;
+    if (kIsWeb) ScreenWake.disable();
     _controller?.close();
     _controller = null;
   }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,6 +30,9 @@ class _RunScreenState extends ConsumerState<RunScreen>
   );
   int _lastBlocks = 0;
   double _lastBlockLp = 0;
+
+  /// Hidden developer readout, toggled by a long press on the distance.
+  bool _gpsDebug = false;
 
   @override
   void dispose() {
@@ -62,6 +66,10 @@ class _RunScreenState extends ConsumerState<RunScreen>
     final theme = Theme.of(context);
     if (view == null) return const Scaffold();
     final e = view.engine;
+    final device = switch (ref.read(movementSourceProvider)) {
+      final DeviceMovementSource d => d,
+      _ => null,
+    };
     final hint = !e.earnsLp
         ? null
         : !e.canEarn
@@ -113,6 +121,9 @@ class _RunScreenState extends ConsumerState<RunScreen>
                       _Stat(
                         l.distance,
                         l.kmValue(formatKm(context, e.distanceM)),
+                        onLongPress: device == null
+                            ? null
+                            : () => setState(() => _gpsDebug = !_gpsDebug),
                       ),
                       _Stat(l.time, formatDuration(e.elapsed)),
                       _Stat(l.pace, l.paceValue(formatPace(e.pace))),
@@ -123,7 +134,17 @@ class _RunScreenState extends ConsumerState<RunScreen>
                   const SizedBox(height: 24),
                   SweetSpotGauge(type: e.companion.type, speedKmh: e.speedKmh),
                   const SizedBox(height: 4),
-                  if (hint != null) Text(hint, textAlign: TextAlign.center),
+                  if (hint != null) _GpsHint(device: device, hint: hint, l: l),
+                  if (kIsWeb && device != null && e.earnsLp)
+                    Text(
+                      l.runWebGpsHint,
+                      key: const Key('run-web-gps-hint'),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: TreadColors.muted,
+                        fontSize: 12,
+                      ),
+                    ),
                   const SizedBox(height: 24),
                   if (view.simulator case final sim?) ...[
                     _DemoPanel(sim: sim),
@@ -146,6 +167,12 @@ class _RunScreenState extends ConsumerState<RunScreen>
                   ),
                 ],
               ),
+              if (_gpsDebug && device != null)
+                Positioned(
+                  top: 4,
+                  left: 8,
+                  child: IgnorePointer(child: _GpsReadoutLine(device)),
+                ),
               IgnorePointer(
                 child: AnimatedBuilder(
                   animation: _kaching,
@@ -177,23 +204,71 @@ class _RunScreenState extends ConsumerState<RunScreen>
 }
 
 class _Stat extends StatelessWidget {
-  const _Stat(this.label, this.value);
+  const _Stat(this.label, this.value, {this.onLongPress});
 
   final String label;
   final String value;
+  final VoidCallback? onLongPress;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Expanded(
-      child: Column(
-        children: [
-          Text(value, style: theme.textTheme.titleLarge),
-          Text(label, style: theme.textTheme.bodySmall),
-        ],
+      child: GestureDetector(
+        onLongPress: onLongPress,
+        child: Column(
+          children: [
+            Text(value, style: theme.textTheme.titleLarge),
+            Text(label, style: theme.textTheme.bodySmall),
+          ],
+        ),
       ),
     );
   }
+}
+
+/// The pace hint, replaced while the GPS is still settling.
+class _GpsHint extends StatelessWidget {
+  const _GpsHint({required this.device, required this.hint, required this.l});
+
+  final DeviceMovementSource? device;
+  final String hint;
+  final AppLocalizations l;
+
+  @override
+  Widget build(BuildContext context) {
+    final d = device;
+    if (d == null) return Text(hint, textAlign: TextAlign.center);
+    return ValueListenableBuilder(
+      valueListenable: d.readout,
+      builder: (context, r, _) => Text(
+        r?.warmingUp == true ? l.hintGpsWarmup : hint,
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+}
+
+/// Developer-only GPS quality line (long press on the distance).
+class _GpsReadoutLine extends StatelessWidget {
+  const _GpsReadoutLine(this.device);
+
+  final DeviceMovementSource device;
+
+  @override
+  Widget build(BuildContext context) => ValueListenableBuilder(
+    valueListenable: device.readout,
+    builder: (context, r, _) => Text(
+      r == null
+          ? 'GPS –'
+          : 'GPS ±${r.accuracyM?.toStringAsFixed(0) ?? '?'} m · '
+                'ok ${r.accepted} · drop ${r.rejected} · '
+                'jump ${r.jumps} · gap ${r.gaps}'
+                '${r.warmingUp ? ' · warm-up' : ''} · ${r.verdict?.name ?? ''}',
+      key: const Key('run-gps-readout'),
+      style: const TextStyle(color: TreadColors.muted, fontSize: 10),
+    ),
+  );
 }
 
 class _DemoPanel extends ConsumerWidget {

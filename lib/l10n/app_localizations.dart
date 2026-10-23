@@ -2078,6 +2078,18 @@ abstract class AppLocalizations {
   /// **'Leash'**
   String get homeLeash;
 
+  /// No description provided for @homeLeashOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open leash'**
+  String get homeLeashOpen;
+
+  /// No description provided for @homeLeashClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close leash'**
+  String get homeLeashClose;
+
   /// No description provided for @storesSplinters.
   ///
   /// In en, this message translates to:

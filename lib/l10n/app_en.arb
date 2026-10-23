@@ -930,6 +930,8 @@
   },
   "summaryToLeash": "To the leash",
   "homeLeash": "Leash",
+  "homeLeashOpen": "Open leash",
+  "homeLeashClose": "Close leash",
   "storesSplinters": "Splinters {s}/5",
   "@storesSplinters": {
     "placeholders": {

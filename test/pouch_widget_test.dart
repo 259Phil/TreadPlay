@@ -102,6 +102,7 @@ void main() {
       tester,
     ) async {
       final c = await pump(tester, game(), size);
+      await tapKey(tester, 'home-leash-handle');
       await tapKey(tester, 'home-leash');
       expect(find.byType(PouchScreen), findsOneWidget);
       expectFits(tester, [
@@ -155,6 +156,7 @@ void main() {
 
   testWidgets('a cold pouch without enough LP waits', (tester) async {
     await pump(tester, game(lp: 3), const Size(390, 844));
+    await tapKey(tester, 'home-leash-handle');
     await tapKey(tester, 'home-leash');
     expect(find.byKey(const Key('pouch-no-lp')), findsOneWidget);
     await tapKey(tester, 'pouch-open');
@@ -164,6 +166,7 @@ void main() {
   testWidgets('no leash on home before waymark 1', (tester) async {
     await pump(tester, GameData.initial(t0), const Size(390, 844));
     expect(find.byKey(const Key('home-leash')), findsNothing);
+    expect(find.byKey(const Key('home-leash-handle')), findsNothing);
   });
 
   testWidgets('the summary shows the found pouch and leads to the leash', (
@@ -199,6 +202,7 @@ void main() {
   ) async {
     await pump(tester, game(reached: 6), const Size(390, 844));
     expect(find.byKey(const Key('home-leash-clip-locked-3')), findsOneWidget);
+    await tapKey(tester, 'home-leash-handle');
     await tapKey(tester, 'home-leash');
     expect(find.byKey(const Key('pouch-clip-locked-3')), findsOneWidget);
     expect(find.byKey(const Key('pouch-clip-3')), findsNothing);
@@ -207,6 +211,7 @@ void main() {
 
   testWidgets('at waymark 7 all four rings carry a pouch', (tester) async {
     await pump(tester, game(), const Size(390, 844));
+    await tapKey(tester, 'home-leash-handle');
     await tapKey(tester, 'home-leash');
     expect(find.byKey(const Key('pouch-clip-locked-3')), findsNothing);
     expect(find.byKey(const Key('pouch-clip-3')), findsOneWidget);

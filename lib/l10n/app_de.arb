@@ -330,6 +330,8 @@
   "summaryPouchesWarm": "{n, plural, =1{1 Beutel warm gelaufen: gratis zu öffnen.} other{{n} Beutel warm gelaufen: gratis zu öffnen.}}",
   "summaryToLeash": "Zur Leine",
   "homeLeash": "Leine",
+  "homeLeashOpen": "Leine öffnen",
+  "homeLeashClose": "Leine einfahren",
   "storesSplinters": "Splitter {s}/5",
   "storesGlut": "Glut {g}",
   "pouchColorOdds": "Farben: {list}",

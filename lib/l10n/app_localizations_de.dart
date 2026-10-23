@@ -1205,6 +1205,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get homeLeash => 'Leine';
 
   @override
+  String get homeLeashOpen => 'Leine öffnen';
+
+  @override
+  String get homeLeashClose => 'Leine einfahren';
+
+  @override
   String storesSplinters(int s) {
     return 'Splitter $s/5';
   }

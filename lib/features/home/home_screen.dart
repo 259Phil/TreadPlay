@@ -15,8 +15,8 @@ import '../../state/providers.dart';
 import '../../theme.dart';
 import '../../widgets/format.dart';
 import '../../widgets/lp_pill.dart';
-import '../../widgets/pouch_art.dart';
 import '../wanderweg/trail_entry.dart';
+import 'leash_drawer.dart';
 import 'video_button.dart';
 import 'world_scene.dart';
 import '../../ui/skin.dart';
@@ -59,11 +59,7 @@ class HomeScreen extends ConsumerWidget {
                   child: WaymarkReachedBubble(),
                 ),
                 if (game.unlocks.pouchColors.isNotEmpty)
-                  Positioned(
-                    bottom: 8,
-                    right: 14,
-                    child: _LeashChip(game: game),
-                  ),
+                  Positioned.fill(child: LeashDrawer(game: game)),
               ],
             ),
           ),
@@ -493,55 +489,4 @@ class _StartRing extends CustomPainter {
 
   @override
   bool shouldRepaint(_StartRing old) => old.s != s;
-}
-
-/// The leash in small at the edge of the world: the pouches found so far,
-/// warm ones glowing. Tap opens the pouch screen.
-class _LeashChip extends StatelessWidget {
-  const _LeashChip({required this.game});
-
-  final GameData game;
-
-  static const _railW = 184.0;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    final s = TreadSkin.of(context);
-    final leash = game.pouches.leash;
-    return Semantics(
-      button: true,
-      label: l.pouchLeash(leash.length, game.leashClips),
-      child: SkinChip(
-        key: const Key('home-leash'),
-        onTap: () => context.push(AppRoutes.pouches),
-        padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              s.displayText(l.homeLeash),
-              style: TextStyle(
-                color: s.brass,
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                letterSpacing: s.displayUpper ? 1 : 0,
-              ),
-            ),
-            SizedBox(
-              width: _railW,
-              child: LeashRail(
-                leash: leash,
-                clips: game.leashClips,
-                artSize: 36,
-                compact: true,
-                keyPrefix: 'home-leash-clip',
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

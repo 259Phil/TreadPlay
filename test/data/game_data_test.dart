@@ -9,13 +9,13 @@ import 'package:treadplay/domain/market.dart';
 void main() {
   final t0 = DateTime(2026, 1, 1, 8);
 
-  test('new games start with Pebble only, taken along', () {
+  test('new games start with Mossik only, taken along', () {
     final game = GameData.initial(t0);
-    expect(game.companions.map((c) => c.name), ['Pebble']);
-    expect(game.activeCompanion.name, 'Pebble');
+    expect(game.companions.map((c) => c.name), ['Mossik']);
+    expect(game.activeCompanion.name, 'Mossik');
   });
 
-  test('Pebble cannot be sold until a second companion exists', () {
+  test('Mossik cannot be sold until a second companion exists', () {
     final game = GameData.initial(t0);
     expect(game.canSell('pebble-1'), isFalse);
     final dune = Companion.fresh(
@@ -49,7 +49,7 @@ void main() {
     );
   }
 
-  test('switching to Gilt Legendary with an empty bar keeps it empty', () {
+  test('switching to Frilla Legendary with an empty bar keeps it empty', () {
     final game = withGilt(0).takingAlong('gilt-1', t0);
     expect(game.activeCompanionId, 'gilt-1');
     expect(game.breathCap, 12);
@@ -183,7 +183,7 @@ void main() {
       expect(two.sellBlock('pebble-1'), isNull);
     });
 
-    test('Pebble cannot be sold while it is the only companion', () {
+    test('Mossik cannot be sold while it is the only companion', () {
       final game = withLp(0);
       expect(game.sellBlock('pebble-1'), TradeBlock.lastCompanion);
       final two = game.copyWith(companions: [...game.companions, dune]);

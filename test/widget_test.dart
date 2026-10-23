@@ -58,11 +58,11 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('home shows Pebble and switching to German works', (
+  testWidgets('home shows Mossik and switching to German works', (
     tester,
   ) async {
     await pumpApp(tester);
-    expect(find.text('Pebble'), findsOneWidget);
+    expect(find.text('Mossik'), findsOneWidget);
     expect(find.text('6/6'), findsOneWidget);
     expect(find.text('Start'), findsWidgets);
 
@@ -196,7 +196,7 @@ void main() {
     expect(container.read(gameProvider).lp, 42);
   });
 
-  testWidgets('delete save game asks twice and resets to Pebble', (
+  testWidgets('delete save game asks twice and resets to Mossik', (
     tester,
   ) async {
     final rich = GameData.initial(t0).copyWith(
@@ -224,7 +224,7 @@ void main() {
     await tester.tap(find.text('Delete permanently'));
     await tester.pumpAndSettle();
     expect(
-      find.text('Save game deleted. Fresh start with Pebble.'),
+      find.text('Save game deleted. Fresh start with Mossik.'),
       findsOneWidget,
     );
 
@@ -368,15 +368,21 @@ void main() {
     );
     await tester.tap(find.widgetWithText(NavigationDestination, 'Den'));
     await tester.pumpAndSettle();
-    expect(find.text('Pebble'), findsOneWidget);
-    expect(find.text('Dune'), findsOneWidget);
+    expect(find.text('Mossik'), findsOneWidget);
+    expect(find.text('Sahri'), findsOneWidget);
     expect(find.text('Gale · Lv 1'), findsOneWidget);
     expect(find.text('Along'), findsOneWidget);
     expect(find.text('Not found yet'), findsNothing);
     expect(find.text('COMMON'), findsOneWidget);
     expect(find.text('RARE'), findsOneWidget);
 
-    await tester.tap(find.text('Dune'));
+    await tester.tap(find.text('Sahri'));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Sand in its ears, wanderlust in its eyes.'),
+      findsOneWidget,
+    );
+    await tester.ensureVisible(find.text('Take along'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Take along'));
     await tester.pumpAndSettle();
@@ -386,8 +392,8 @@ void main() {
 
     await tester.tap(find.widgetWithText(NavigationDestination, 'Home'));
     await tester.pumpAndSettle();
-    expect(find.text('Dune'), findsOneWidget);
-    expect(find.text('Pebble'), findsNothing);
+    expect(find.text('Sahri'), findsOneWidget);
+    expect(find.text('Mossik'), findsNothing);
 
     final container = ProviderScope.containerOf(
       tester.element(find.byType(Scaffold).first),
@@ -399,7 +405,7 @@ void main() {
     );
   });
 
-  testWidgets('taking Gilt along with an empty bar does not refill it', (
+  testWidgets('taking Frilla along with an empty bar does not refill it', (
     tester,
   ) async {
     final start = GameData.initial(t0);
@@ -523,7 +529,7 @@ void main() {
       expect(texts, isEmpty);
     }
 
-    testWidgets('fresh players see offers but cannot sell Pebble', (
+    testWidgets('fresh players see offers but cannot sell Mossik', (
       tester,
     ) async {
       await pumpApp(tester);
@@ -551,11 +557,11 @@ void main() {
 
       await tester.tap(find.text('Sell'));
       await tester.pumpAndSettle();
-      expect(find.text('Pebble'), findsOneWidget);
-      await tester.tap(find.text('Pebble'));
+      expect(find.text('Mossik'), findsOneWidget);
+      await tester.tap(find.text('Mossik'));
       await tester.pumpAndSettle();
       expect(
-        find.text('Pebble stays until a second companion joins your den.'),
+        find.text('Mossik stays until a second companion joins your den.'),
         findsOneWidget,
       );
       expect(tradeButton(tester, 'Sell ·').onPressed, isNull);
@@ -587,9 +593,12 @@ void main() {
 
       await tester.tap(find.text('Sell'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Pebble'));
+      await tester.tap(find.text('Mossik'));
       await tester.pumpAndSettle();
-      expect(find.text('Afterwards Gilt goes along with you.'), findsOneWidget);
+      expect(
+        find.text('Afterwards Frilla goes along with you.'),
+        findsOneWidget,
+      );
       expect(tradeButton(tester, 'Sell ·').onPressed, isNotNull);
     });
 
@@ -633,7 +642,7 @@ void main() {
       );
       await tester.tap(find.text('Sell'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Dune'));
+      await tester.tap(find.text('Sahri'));
       await tester.pumpAndSettle();
       expect(find.text('Trading only at 100 % Spirit.'), findsOneWidget);
       expect(tradeButton(tester, 'Sell ·').onPressed, isNull);
@@ -685,7 +694,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(container.read(gameProvider).lp, 0);
       expect(container.read(gameProvider).breath.points, 6);
-      expect(find.text('Pebble'), findsOneWidget);
+      expect(find.text('Mossik'), findsOneWidget);
 
       await tester.tap(find.byIcon(Icons.play_arrow));
       await tester.pumpAndSettle();
@@ -876,7 +885,7 @@ void main() {
       expect(storesOf(tester, 'forge-stores'), 'Splinters 0/5 · Glut 2');
       expect(find.byKey(const Key('case-stride@2')), findsOneWidget);
 
-      // The new L2 stays picked; set it into Pebble.
+      // The new L2 stays picked; set it into Mossik.
       await tapKey(tester, 'forge-set');
       expect(find.byKey(const Key('case-stride@2')), findsNothing);
       expect(
@@ -889,7 +898,7 @@ void main() {
 
       await tester.tap(find.widgetWithText(NavigationDestination, 'Den'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Pebble'));
+      await tester.tap(find.text('Mossik'));
       await tester.pumpAndSettle();
       expect(
         find.descendant(

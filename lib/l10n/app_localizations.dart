@@ -1091,7 +1091,7 @@ abstract class AppLocalizations {
   /// No description provided for @saveDeleteBody.
   ///
   /// In en, this message translates to:
-  /// **'Companions, seals, LP, Breath, run history and lifetime totals are removed. You start again with Pebble.'**
+  /// **'Companions, seals, LP, Breath, run history and lifetime totals are removed. You start again with Mossik.'**
   String get saveDeleteBody;
 
   /// No description provided for @saveDeleteReallyTitle.
@@ -1115,7 +1115,7 @@ abstract class AppLocalizations {
   /// No description provided for @saveDeleted.
   ///
   /// In en, this message translates to:
-  /// **'Save game deleted. Fresh start with Pebble.'**
+  /// **'Save game deleted. Fresh start with Mossik.'**
   String get saveDeleted;
 
   /// No description provided for @saveError.
@@ -2125,6 +2125,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{name} {pct}'**
   String pouchColorShare(String name, String pct);
+
+  /// One-line flavour text for the companion species pebble.
+  ///
+  /// In en, this message translates to:
+  /// **'A stone with a heart – and moss.'**
+  String get flavourPebble;
+
+  /// One-line flavour text for the companion species lumen.
+  ///
+  /// In en, this message translates to:
+  /// **'Glows brighter the farther you go.'**
+  String get flavourLumen;
+
+  /// One-line flavour text for the companion species coil.
+  ///
+  /// In en, this message translates to:
+  /// **'Ball, shell, friend.'**
+  String get flavourCoil;
+
+  /// One-line flavour text for the companion species gilt.
+  ///
+  /// In en, this message translates to:
+  /// **'Frills first, questions later.'**
+  String get flavourGilt;
+
+  /// One-line flavour text for the companion species hookfin.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick, sharp and a little cheeky.'**
+  String get flavourHookfin;
+
+  /// One-line flavour text for the companion species valve.
+  ///
+  /// In en, this message translates to:
+  /// **'Whistles when it’s time to go.'**
+  String get flavourValve;
+
+  /// One-line flavour text for the companion species dune.
+  ///
+  /// In en, this message translates to:
+  /// **'Sand in its ears, wanderlust in its eyes.'**
+  String get flavourDune;
+
+  /// One-line flavour text for the companion species brine.
+  ///
+  /// In en, this message translates to:
+  /// **'Pops up where you least expect it.'**
+  String get flavourBrine;
+
+  /// One-line flavour text for the companion species vine.
+  ///
+  /// In en, this message translates to:
+  /// **'Grows on you – literally.'**
+  String get flavourVine;
+
+  /// One-line flavour text for the companion species glaze.
+  ///
+  /// In en, this message translates to:
+  /// **'Sweet, with crystal edges.'**
+  String get flavourGlaze;
 }
 
 class _AppLocalizationsDelegate

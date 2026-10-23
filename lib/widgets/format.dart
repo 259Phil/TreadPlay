@@ -59,3 +59,19 @@ String formatPace(Duration? pace) {
   final s = pace.inSeconds.remainder(60).toString().padLeft(2, '0');
   return '$m:$s';
 }
+
+/// One-line flavour text for a species, or null for unknown ids.
+String? speciesFlavour(AppLocalizations l, String speciesId) =>
+    switch (speciesId) {
+      'pebble' => l.flavourPebble,
+      'lumen' => l.flavourLumen,
+      'coil' => l.flavourCoil,
+      'gilt' => l.flavourGilt,
+      'hookfin' => l.flavourHookfin,
+      'valve' => l.flavourValve,
+      'dune' => l.flavourDune,
+      'brine' => l.flavourBrine,
+      'vine' => l.flavourVine,
+      'glaze' => l.flavourGlaze,
+      _ => null,
+    };

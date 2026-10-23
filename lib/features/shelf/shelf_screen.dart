@@ -240,6 +240,18 @@ class _Detail extends ConsumerWidget {
                         worldLabel(l, c.world),
                         style: const TextStyle(color: TreadColors.muted),
                       ),
+                      if (speciesFlavour(l, c.speciesId) case final f?)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(
+                            f,
+                            style: const TextStyle(
+                              color: Color(0xFFD2B074),
+                              fontStyle: FontStyle.italic,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
                       const SizedBox(height: 8),
                       Text(
                         l.sweetSpotAt(

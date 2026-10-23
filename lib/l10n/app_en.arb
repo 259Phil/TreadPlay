@@ -377,11 +377,11 @@
   "saveErrorDamaged": "This save game is damaged and can't be loaded. Your current game is unchanged.",
   "saveErrorDuringRun": "Not possible during a run.",
   "saveDeleteTitle": "Delete save game?",
-  "saveDeleteBody": "Companions, seals, LP, Breath, run history and lifetime totals are removed. You start again with Pebble.",
+  "saveDeleteBody": "Companions, seals, LP, Breath, run history and lifetime totals are removed. You start again with Mossik.",
   "saveDeleteReallyTitle": "Really delete everything?",
   "saveDeleteReallyBody": "This cannot be undone. Without an export the save game is gone.",
   "saveDeletePermanently": "Delete permanently",
-  "saveDeleted": "Save game deleted. Fresh start with Pebble.",
+  "saveDeleted": "Save game deleted. Fresh start with Mossik.",
   "saveError": "Error: {error}",
   "@saveError": {
     "placeholders": {
@@ -968,5 +968,25 @@
         "type": "String"
       }
     }
-  }
+  },
+  "flavourPebble": "A stone with a heart – and moss.",
+  "@flavourPebble": {"description": "One-line flavour text for the companion species pebble."},
+  "flavourLumen": "Glows brighter the farther you go.",
+  "@flavourLumen": {"description": "One-line flavour text for the companion species lumen."},
+  "flavourCoil": "Ball, shell, friend.",
+  "@flavourCoil": {"description": "One-line flavour text for the companion species coil."},
+  "flavourGilt": "Frills first, questions later.",
+  "@flavourGilt": {"description": "One-line flavour text for the companion species gilt."},
+  "flavourHookfin": "Quick, sharp and a little cheeky.",
+  "@flavourHookfin": {"description": "One-line flavour text for the companion species hookfin."},
+  "flavourValve": "Whistles when it’s time to go.",
+  "@flavourValve": {"description": "One-line flavour text for the companion species valve."},
+  "flavourDune": "Sand in its ears, wanderlust in its eyes.",
+  "@flavourDune": {"description": "One-line flavour text for the companion species dune."},
+  "flavourBrine": "Pops up where you least expect it.",
+  "@flavourBrine": {"description": "One-line flavour text for the companion species brine."},
+  "flavourVine": "Grows on you – literally.",
+  "@flavourVine": {"description": "One-line flavour text for the companion species vine."},
+  "flavourGlaze": "Sweet, with crystal edges.",
+  "@flavourGlaze": {"description": "One-line flavour text for the companion species glaze."}
 }

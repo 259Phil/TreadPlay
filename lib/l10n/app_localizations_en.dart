@@ -578,7 +578,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saveDeleteBody =>
-      'Companions, seals, LP, Breath, run history and lifetime totals are removed. You start again with Pebble.';
+      'Companions, seals, LP, Breath, run history and lifetime totals are removed. You start again with Mossik.';
 
   @override
   String get saveDeleteReallyTitle => 'Really delete everything?';
@@ -591,7 +591,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveDeletePermanently => 'Delete permanently';
 
   @override
-  String get saveDeleted => 'Save game deleted. Fresh start with Pebble.';
+  String get saveDeleted => 'Save game deleted. Fresh start with Mossik.';
 
   @override
   String saveError(String error) {
@@ -1229,4 +1229,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String pouchColorShare(String name, String pct) {
     return '$name $pct';
   }
+
+  @override
+  String get flavourPebble => 'A stone with a heart – and moss.';
+
+  @override
+  String get flavourLumen => 'Glows brighter the farther you go.';
+
+  @override
+  String get flavourCoil => 'Ball, shell, friend.';
+
+  @override
+  String get flavourGilt => 'Frills first, questions later.';
+
+  @override
+  String get flavourHookfin => 'Quick, sharp and a little cheeky.';
+
+  @override
+  String get flavourValve => 'Whistles when it’s time to go.';
+
+  @override
+  String get flavourDune => 'Sand in its ears, wanderlust in its eyes.';
+
+  @override
+  String get flavourBrine => 'Pops up where you least expect it.';
+
+  @override
+  String get flavourVine => 'Grows on you – literally.';
+
+  @override
+  String get flavourGlaze => 'Sweet, with crystal edges.';
 }

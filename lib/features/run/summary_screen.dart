@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../domain/pouch.dart';
 import '../../l10n/app_localizations.dart';
 import '../history/history_screen.dart';
+import '../messenger/messenger_popup.dart';
 import '../wanderweg/trail_entry.dart';
 import '../../router.dart';
 import '../../state/providers.dart';
@@ -64,6 +65,7 @@ class SummaryScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
+                const MessengerWatcher(),
                 const WaymarkReachedBubble(dismissible: false),
                 const SizedBox(height: 8),
                 Text(

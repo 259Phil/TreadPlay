@@ -19,8 +19,8 @@ enum WaymarkCounter {
   /// Highest seal level ever held (at least the best seal owned now).
   bestSealLevel(built: true),
 
-  // TODO(wanderweg): messengers are not built yet.
-  messengersMet(built: false),
+  /// Messenger visits (lifetime, a leash-full visit counts too).
+  messengersMet(built: true),
 
   /// Valid runs with a Sweet Spot share of at least 58 %.
   sweetSpot58Runs(built: true),

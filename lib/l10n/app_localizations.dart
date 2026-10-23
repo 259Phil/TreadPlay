@@ -2185,6 +2185,252 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sweet, with crystal edges.'**
   String get flavourGlaze;
+
+  /// No description provided for @msgGreetRuhu.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{Hoo-hoo! There you are.} 1{Ruhu here, just landed.} 2{Good day, fellow wanderer!} 3{Hoo … I saw you on the path.} 4{Oh, how lovely to meet you!} 5{Softly, softly – Ruhu is here.} other{Hoo-hoo! There you are.}}'**
+  String msgGreetRuhu(String n);
+
+  /// No description provided for @msgGiftRuhu.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{I hung a brown pouch on your leash.} 1{It lay under a hedge. Now it hangs on your leash.} 2{A small pouch, but tied with care.} 3{For your steps today – a pouch for the leash.} 4{Not much, but honestly found. It’s already hanging.} 5{Walk it warm and it opens by itself.} other{I hung a brown pouch on your leash.}}'**
+  String msgGiftRuhu(String n);
+
+  /// No description provided for @msgTaskRuhu.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{Would you help me? There’s a reward after.} 1{I have a small favour to ask.} 2{A task, no hurry at all.} 3{If you have time: I need your legs.} 4{Do this for me and it will pay off.} 5{Just a little thing, I promise.} other{Would you help me? There’s a reward after.}}'**
+  String msgTaskRuhu(String n);
+
+  /// No description provided for @msgGreetKolk.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{Kraa! Kolk reporting.} 1{Kraa, kraa! Nicely walked!} 2{Psst, Kolk here.} 3{Kraa! Guess who’s here.} 4{Hello, pacemaker!} 5{Kraa! I was waiting for you.} other{Kraa! Kolk reporting.}}'**
+  String msgGreetKolk(String n);
+
+  /// No description provided for @msgGiftKolk.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{It shone by the path – now it hangs on your leash.} 1{A copper pouch! I didn’t steal it. Almost.} 2{Found for you, brought to you.} 3{Copper jingles so nicely. It’s on your leash.} 4{Keep the beat and I’ll bring more.} 5{I carried it over three rooftops.} other{It shone by the path – now it hangs on your leash.}}'**
+  String msgGiftKolk(String n);
+
+  /// No description provided for @msgTaskKolk.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{Kraa! I’ve got a task for you.} 1{Want to earn something? Listen.} 2{A raven never forgets – nor a reward.} 3{Do this and I’ll leave something shiny.} 4{Small bet: can you do it?} 5{Kraa! Here’s a task, no hurry.} other{Kraa! I’ve got a task for you.}}'**
+  String msgTaskKolk(String n);
+
+  /// No description provided for @msgGreetFlimm.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{A little light flickers – Flimm is here.} 1{Sssh … I followed your light.} 2{Good evening, even if it’s day.} 3{Flimm here, very quietly.} 4{Your steps are glowing today.} 5{I came with the wind.} other{A little light flickers – Flimm is here.}}'**
+  String msgGreetFlimm(String n);
+
+  /// No description provided for @msgGiftFlimm.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{A turquoise pouch, as rare as a clear sky.} 1{I hung it gently on your leash.} 2{It shimmers like my lantern. For you.} 3{Not everyone gets one of these. You do.} 4{Walk it warm and it will show its light.} 5{The evening breeze gave it to me.} other{A turquoise pouch, as rare as a clear sky.}}'**
+  String msgGiftFlimm(String n);
+
+  /// No description provided for @msgTaskFlimm.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{Will you help me feed my light?} 1{A small wish, no deadline.} 2{If you like, I’ll show you the way.} 3{Follow this task like a firefly.} 4{Do this and my lantern will reward you.} 5{Just a thread of light of a task.} other{Will you help me feed my light?}}'**
+  String msgTaskFlimm(String n);
+
+  /// No description provided for @msgGreetVesper.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{Greetings. Vesper has descended.} 1{The stars told me where you walk.} 2{I rarely come. Today I come to you.} 3{Don’t bow – keep walking instead.} 4{The night sky sends me.} 5{A rare evening for a rare guest.} other{Greetings. Vesper has descended.}}'**
+  String msgGreetVesper(String n);
+
+  /// No description provided for @msgGiftVesper.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{A navy pouch – the rarest of them all.} 1{From the treasury of the stars, onto your leash.} 2{Carry it with pride. It’s already hanging.} 3{Your Fortune called me. Here is its reward.} 4{Few ever see this velvet. You are one of them.} 5{Walk it warm – it holds great things.} other{A navy pouch – the rarest of them all.}}'**
+  String msgGiftVesper(String n);
+
+  /// No description provided for @msgTaskVesper.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{I set you a worthy task.} 1{Show me your endurance.} 2{A task from the stars, no hurry.} 3{Complete this and the sky will reward you.} 4{Big steps for a big reward.} 5{I’ll wait. Patience is my strength.} other{I set you a worthy task.}}'**
+  String msgTaskVesper(String n);
+
+  /// No description provided for @msgLineFull.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{Oh – your leash is full!} 1{No clip free, what a pity.} 2{Your leash is full, I’ll take it back with me.} 3{Hm, all taken. Open a few pouches!} 4{Full leash! I’ll come another time.} 5{Everything’s hanging already – next time.} other{Oh – your leash is full!}}'**
+  String msgLineFull(String n);
+
+  /// No description provided for @msgLineDone.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, select, 0{Done! Here’s your reward.} 1{Task complete – well walked!} 2{As promised: your reward.} 3{You did that nicely.} 4{Done! The reward is in your case.} 5{Bravo – I knew you could.} other{Done! Here’s your reward.}}'**
+  String msgLineDone(String n);
+
+  /// No description provided for @msgTitleRuhu.
+  ///
+  /// In en, this message translates to:
+  /// **'Ruhu · owl of the field paths'**
+  String get msgTitleRuhu;
+
+  /// No description provided for @msgTitleKolk.
+  ///
+  /// In en, this message translates to:
+  /// **'Kolk · raven of the waysides'**
+  String get msgTitleKolk;
+
+  /// No description provided for @msgTitleFlimm.
+  ///
+  /// In en, this message translates to:
+  /// **'Flimm · lantern moth'**
+  String get msgTitleFlimm;
+
+  /// No description provided for @msgTitleVesper.
+  ///
+  /// In en, this message translates to:
+  /// **'Vesper · star owl'**
+  String get msgTitleVesper;
+
+  /// No description provided for @msgRankBrown.
+  ///
+  /// In en, this message translates to:
+  /// **'Brown messenger · common'**
+  String get msgRankBrown;
+
+  /// No description provided for @msgRankCopper.
+  ///
+  /// In en, this message translates to:
+  /// **'Copper messenger · uncommon'**
+  String get msgRankCopper;
+
+  /// No description provided for @msgRankTurquoise.
+  ///
+  /// In en, this message translates to:
+  /// **'Turquoise messenger · rare'**
+  String get msgRankTurquoise;
+
+  /// No description provided for @msgRankNavy.
+  ///
+  /// In en, this message translates to:
+  /// **'Navy messenger · very rare'**
+  String get msgRankNavy;
+
+  /// No description provided for @msgBrings.
+  ///
+  /// In en, this message translates to:
+  /// **'Brings you'**
+  String get msgBrings;
+
+  /// No description provided for @msgReward.
+  ///
+  /// In en, this message translates to:
+  /// **'Reward'**
+  String get msgReward;
+
+  /// No description provided for @msgThanks.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks'**
+  String get msgThanks;
+
+  /// No description provided for @msgAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get msgAccept;
+
+  /// No description provided for @msgPouchInstead.
+  ///
+  /// In en, this message translates to:
+  /// **'Rather the pouch'**
+  String get msgPouchInstead;
+
+  /// No description provided for @msgTaskOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Small task · optional'**
+  String get msgTaskOptional;
+
+  /// No description provided for @msgTaskNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Instead of the pouch: reward once done. No deadline.'**
+  String get msgTaskNote;
+
+  /// No description provided for @msgLeashFullNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Your leash is full, no clip for the pouch. Nothing is lost: your run brings its Glut as always.'**
+  String get msgLeashFullNote;
+
+  /// No description provided for @msgDoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Task done'**
+  String get msgDoneTitle;
+
+  /// No description provided for @msgDoneNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The reward is already in your seal case.'**
+  String get msgDoneNote;
+
+  /// No description provided for @msgBoard.
+  ///
+  /// In en, this message translates to:
+  /// **'Notice'**
+  String get msgBoard;
+
+  /// No description provided for @msgClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get msgClose;
+
+  /// No description provided for @msgFootnote.
+  ///
+  /// In en, this message translates to:
+  /// **'Only comes by luck after a run · more Fortune, rarer messengers'**
+  String get msgFootnote;
+
+  /// No description provided for @msgTaskWalk.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk {km} km'**
+  String msgTaskWalk(String km);
+
+  /// No description provided for @msgTaskSweet.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{1 run with ≥ 58 % Sweet Spot} other{{n} runs with ≥ 58 % Sweet Spot}}'**
+  String msgTaskSweet(int n);
+
+  /// No description provided for @msgTaskRuns.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{1 valid run of 1 km or more} other{{n} valid runs of 1 km or more}}'**
+  String msgTaskRuns(int n);
+
+  /// No description provided for @msgTaskOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{Open 1 pouch} other{Open {n} pouches}}'**
+  String msgTaskOpen(int n);
+
+  /// No description provided for @msgProgressKm.
+  ///
+  /// In en, this message translates to:
+  /// **'{a} / {b} km'**
+  String msgProgressKm(String a, String b);
+
+  /// No description provided for @msgProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{a} / {b}'**
+  String msgProgress(int a, int b);
 }
 
 class _AppLocalizationsDelegate

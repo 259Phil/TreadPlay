@@ -9,7 +9,7 @@ import '../../domain/companion.dart';
 import '../../domain/run_summary.dart';
 import '../../l10n/app_localizations.dart';
 import '../legal/movement_notice.dart';
-import '../messenger/messenger_mock.dart';
+import '../messenger/messenger_popup.dart';
 import '../../router.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
@@ -64,15 +64,17 @@ class HomeScreen extends ConsumerWidget {
                     right: 14,
                     child: _LeashChip(game: game),
                   ),
-                if (kNpcVariant != '')
-                  const Positioned(
-                    left: 12,
-                    bottom: 8,
-                    child: MessengerHomeHint(),
-                  ),
               ],
             ),
           ),
+          // Only while a messenger task is open; outside the scene so it
+          // never covers the companion.
+          if (game.messengers.task != null)
+            const Padding(
+              padding: EdgeInsets.fromLTRB(12, 8, 12, 0),
+              child: MessengerNotice(),
+            ),
+          const MessengerWatcher(),
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
             child: Row(

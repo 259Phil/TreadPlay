@@ -110,7 +110,7 @@ void main() {
       expect(t.sweetSpot71Runs, 1);
     });
 
-    test('waymark 6 waits for a sweet spot run, messengers are waived', () {
+    test('waymark 6 waits for a sweet spot run and a messenger', () {
       var game = brownOpened()
           .copyWith(wanderweg: const WanderwegProgress(legacyForge: true))
           .buyingSeal(SealType.grit)
@@ -119,9 +119,17 @@ void main() {
       game = walked(14, from: game);
       expect(game.wanderweg.reached, 5);
       final c = game.waymarkCounters;
-      expect(c.met(const WaymarkTask(WaymarkCounter.messengersMet, 1)), isTrue);
+      expect(
+        c.met(const WaymarkTask(WaymarkCounter.messengersMet, 1)),
+        isFalse,
+      );
       game = game.recordingRun(run(100, share: 0.6)).advancingWanderweg(t1);
-      expect(game.wanderweg.reached, 6);
+      expect(game.wanderweg.reached, 5, reason: 'no messenger met yet');
+      // From waymark 5 the first messenger is sure after a valid run.
+      game = game.recordingRun(run(1200), random: Random(3));
+      expect(game.messengers.met, 1);
+      expect(game.lastRun!.messenger, isNotNull);
+      expect(game.advancingWanderweg(t1).wanderweg.reached, 6);
     });
 
     test('buying in the market counts for waymark 14', () {
@@ -285,7 +293,7 @@ void main() {
       // Legacy grant: km only, so waymark 4's seal task is not asked.
       expect(loaded.wanderweg.reached, 5);
       expect(loaded.unlocks.forge, isTrue);
-      expect(SaveGame.version, 4);
+      expect(SaveGame.version, 5);
     });
   });
 }

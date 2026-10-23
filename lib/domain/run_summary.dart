@@ -1,3 +1,4 @@
+import 'messenger.dart';
 import 'pouch.dart';
 
 /// Time per km, null below 10 m.
@@ -23,6 +24,7 @@ class RunSummary {
     this.pouch,
     this.leashFull = false,
     this.pouchesWarmed = 0,
+    this.messenger,
   });
 
   final String companionId;
@@ -57,6 +59,9 @@ class RunSummary {
   /// Pouches on the leash this run warmed all the way (free to open now).
   final int pouchesWarmed;
 
+  /// The messenger that came after this run, if any.
+  final Messenger? messenger;
+
   Duration? get pace => paceOf(duration, distanceM);
 
   RunSummary withRewards({
@@ -64,6 +69,7 @@ class RunSummary {
     PouchColor? pouch,
     bool leashFull = false,
     int pouchesWarmed = 0,
+    Messenger? messenger,
   }) => RunSummary(
     companionId: companionId,
     startedAt: startedAt,
@@ -81,6 +87,7 @@ class RunSummary {
     pouch: pouch,
     leashFull: leashFull,
     pouchesWarmed: pouchesWarmed,
+    messenger: messenger,
   );
 
   Map<String, Object?> toJson() => {
@@ -100,6 +107,7 @@ class RunSummary {
     if (pouch case final p?) 'pouch': p.name,
     if (leashFull) 'leashFull': true,
     if (pouchesWarmed > 0) 'pouchesWarmed': pouchesWarmed,
+    if (messenger case final m?) 'messenger': m.name,
   };
 
   factory RunSummary.fromJson(Map<String, Object?> json) => RunSummary(
@@ -119,5 +127,6 @@ class RunSummary {
     pouch: PouchColor.tryParse(json['pouch']),
     leashFull: json['leashFull'] as bool? ?? false,
     pouchesWarmed: json['pouchesWarmed'] as int? ?? 0,
+    messenger: Messenger.tryParse(json['messenger']),
   );
 }

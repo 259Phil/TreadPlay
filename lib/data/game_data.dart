@@ -4,6 +4,7 @@ import '../domain/breath.dart';
 import '../domain/companion.dart';
 import '../domain/forge.dart';
 import '../domain/market.dart';
+import '../domain/messenger.dart';
 import '../domain/pouch.dart';
 import '../domain/run_summary.dart';
 import '../domain/totals.dart';
@@ -24,6 +25,7 @@ class GameData {
     this.wanderweg = const WanderwegProgress(),
     this.forge = const ForgeState(),
     this.pouches = const PouchState(),
+    this.messengers = const MessengerState(),
   });
 
   factory GameData.initial(DateTime now) {
@@ -70,6 +72,9 @@ class GameData {
   /// The leash with its treat pouches and the pouch counters.
   final PouchState pouches;
 
+  /// Messenger visits, the open task and their counters.
+  final MessengerState messengers;
+
   /// Seals set into companions, all of them.
   Iterable<Seal> get setSeals => companions.expand((c) => c.seals);
 
@@ -114,6 +119,7 @@ class GameData {
           PouchColor.turquoise,
         ),
         WaymarkCounter.leashFilled: pouches.leashFills,
+        WaymarkCounter.messengersMet: messengers.met,
       },
     );
   }
@@ -396,12 +402,29 @@ class GameData {
         next = next.hangingPouch(found, end);
       }
     }
-    final glut = found == null ? next.glutFor(run) : 0;
+    var glut = found == null ? next.glutFor(run) : 0;
+    // An accepted messenger task counts this run (before a new visit).
+    next = next._progressingTask(run)._finishingTask();
+    Messenger? came;
+    // A messenger only comes when the run found no pouch, except the sure
+    // first one (the next waymark asks to meet it).
+    if (random != null && (found == null || next._firstMessengerSure)) {
+      final chance = next.messengerChanceFor(run);
+      if (chance > 0 && random.nextDouble() < chance) {
+        final (visited, visit) = next._visiting(run, end, random);
+        next = visited;
+        came = visit.messenger;
+        // A delivered pouch takes the place of the run Glut, as with a
+        // pouch the run found itself.
+        if (visit.kind == VisitKind.gift) glut = 0;
+      }
+    }
     final stored = run.withRewards(
       glut: glut,
       pouch: found,
       leashFull: run.valid && full,
       pouchesWarmed: warmed,
+      messenger: came,
     );
     return next.copyWith(
       runs: [stored, ...runs].take(maxStoredRuns).toList(),
@@ -411,8 +434,167 @@ class GameData {
     );
   }
 
-  /// Hangs a new [color] pouch on the leash if a clip is free. Runs use it
-  /// now; messengers ([PouchSource.messenger]) will use it next.
+  /// Chance that a messenger comes after [run]: only for a valid run of at
+  /// least [Messengers.minDistanceM] that found no pouch, from waymark
+  /// [Messengers.fromWaymark], while no visit is waiting and below the
+  /// [Messengers.dailyCap]. Scaled by Breath used and Fortune like the
+  /// pouch chance; the first messenger ever is sure from waymark
+  /// [Messengers.sureFromWaymark].
+  double messengerChanceFor(RunSummary run) {
+    if (!run.valid || run.distanceM < Messengers.minDistanceM) return 0;
+    if (wanderweg.reached < Messengers.fromWaymark ||
+        unlocks.pouchColors.isEmpty ||
+        messengers.pending != null) {
+      return 0;
+    }
+    final day = Messengers.dayKey(run.startedAt.add(run.duration));
+    if (messengers.todayOn(day) >= Messengers.dailyCap) return 0;
+    final chance = Messengers.chance(
+      breathUsed: run.breathUsed,
+      tankSize: run.tankSize ?? activeCompanion.tankSize,
+      fortuneFactor: fortuneFactorFor(run),
+    );
+    if (chance <= 0) return 0;
+    return _firstMessengerSure ? 1 : chance;
+  }
+
+  bool get _firstMessengerSure =>
+      messengers.met == 0 && wanderweg.reached >= Messengers.sureFromWaymark;
+
+  /// A messenger arrives at [now]: picks who (Fortune colour roll), what
+  /// (gift, task or leash full) and its lines.
+  (GameData, MessengerVisit) _visiting(
+    RunSummary run,
+    DateTime now,
+    Random random,
+  ) {
+    final m = Messengers.pick(
+      unlocks.pouchColors,
+      random,
+      fortuneFactor: fortuneFactorFor(run),
+    );
+    final VisitKind kind;
+    if (leashFull) {
+      kind = VisitKind.leashFull;
+    } else if (messengers.task == null &&
+        random.nextDouble() < Messengers.taskShare) {
+      kind = VisitKind.task;
+    } else {
+      kind = VisitKind.gift;
+    }
+    final last = {...messengers.lastLines};
+    int line(String pool) {
+      final i = Messengers.pickLine(pool, last, random);
+      last[pool] = i;
+      return i;
+    }
+
+    final greet = line('${m.name}.greet');
+    final say = switch (kind) {
+      VisitKind.gift => line('${m.name}.gift'),
+      VisitKind.task => line('${m.name}.task'),
+      VisitKind.leashFull => line('full'),
+    };
+    final visit = MessengerVisit(
+      messenger: m,
+      kind: kind,
+      at: now,
+      greet: greet,
+      line: say,
+      glut: kind == VisitKind.gift ? m.giftGlut : 0,
+      task: kind == VisitKind.task
+          ? Messengers.rollTask(m, random, line: say)
+          : null,
+    );
+    final day = Messengers.dayKey(now);
+    var next = copyWith(
+      messengers: messengers.copyWith(
+        met: messengers.met + 1,
+        day: day,
+        today: messengers.todayOn(day) + (kind == VisitKind.leashFull ? 0 : 1),
+        pending: () => visit,
+        lastLines: last,
+      ),
+    );
+    if (kind == VisitKind.gift) {
+      next = next
+          .hangingPouch(m.color, now, source: PouchSource.messenger)
+          .addingGlut(m.giftGlut);
+    }
+    return (next, visit);
+  }
+
+  GameData addingGlut(int n) =>
+      n <= 0 ? this : copyWith(forge: forge.copyWith(glut: forge.glut + n));
+
+  /// Counts [run] for the open task.
+  GameData _progressingTask(RunSummary run) {
+    final t = messengers.task;
+    if (t == null || !run.valid) return this;
+    final by = switch (t.type) {
+      TaskType.walk => run.distanceM.floor(),
+      TaskType.sweetSpotRuns => (run.sweetSpotShare ?? 0) >= .58 ? 1 : 0,
+      TaskType.validRuns => run.distanceM >= Messengers.minDistanceM ? 1 : 0,
+      TaskType.openPouches => 0,
+    };
+    return by == 0
+        ? this
+        : copyWith(messengers: messengers.copyWith(task: () => t.advanced(by)));
+  }
+
+  /// Pays a finished task into the case (Glut and splinters) and leaves a
+  /// "done" note; the Aushang disappears.
+  GameData _finishingTask() {
+    final t = messengers.task;
+    if (t == null || !t.done) return this;
+    return copyWith(
+      forge: forge.copyWith(
+        glut: forge.glut + t.glut,
+        splinters: forge.splinters + t.splinters,
+      ),
+      messengers: messengers.copyWith(
+        task: () => null,
+        done: () => t,
+        tasksDone: messengers.tasksDone + 1,
+      ),
+    );
+  }
+
+  /// Takes the task the waiting messenger offers (at most one is open).
+  GameData acceptingTask() {
+    final v = messengers.pending;
+    if (v == null || v.kind != VisitKind.task || messengers.task != null) {
+      return this;
+    }
+    return copyWith(
+      messengers: messengers.copyWith(pending: () => null, task: () => v.task),
+    );
+  }
+
+  /// Turns the offered task down: the messenger leaves its pouch and Glut
+  /// like a plain delivery (no pouch when the leash is full).
+  GameData decliningTask(DateTime now) {
+    final v = messengers.pending;
+    if (v == null || v.kind != VisitKind.task) return this;
+    return copyWith(messengers: messengers.copyWith(pending: () => null))
+        .hangingPouch(v.messenger.color, now, source: PouchSource.messenger)
+        .addingGlut(v.messenger.giftGlut);
+  }
+
+  /// The waiting gift / leash-full visit was shown.
+  GameData dismissingVisit() {
+    final v = messengers.pending;
+    if (v == null || v.kind == VisitKind.task) return this;
+    return copyWith(messengers: messengers.copyWith(pending: () => null));
+  }
+
+  /// The "task done" note was shown.
+  GameData dismissingDone() => messengers.done == null
+      ? this
+      : copyWith(messengers: messengers.copyWith(done: () => null));
+
+  /// Hangs a new [color] pouch on the leash if a clip is free. Runs and
+  /// messengers ([PouchSource.messenger]) both use it.
   GameData hangingPouch(
     PouchColor color,
     DateTime now, {
@@ -471,18 +653,24 @@ class GameData {
         ),
       };
     }
+    final t = messengers.task;
+    final counted = t != null && t.type == TaskType.openPouches
+        ? copyWith(messengers: messengers.copyWith(task: () => t.advanced(1)))
+        : this;
     return (
-      copyWith(
-        lp: lp - pouch.openLp,
-        forge: case_,
-        pouches: pouches.copyWith(
-          leash: [...pouches.leash]..removeAt(index),
-          opened: {
-            ...pouches.opened,
-            pouch.color: pouches.openedOf(pouch.color) + 1,
-          },
-        ),
-      ),
+      counted
+          .copyWith(forge: case_)
+          ._finishingTask()
+          .copyWith(
+            lp: lp - pouch.openLp,
+            pouches: pouches.copyWith(
+              leash: [...pouches.leash]..removeAt(index),
+              opened: {
+                ...pouches.opened,
+                pouch.color: pouches.openedOf(pouch.color) + 1,
+              },
+            ),
+          ),
       rewards,
     );
   }
@@ -578,6 +766,7 @@ class GameData {
     WanderwegProgress? wanderweg,
     ForgeState? forge,
     PouchState? pouches,
+    MessengerState? messengers,
   }) => GameData(
     lp: lp ?? this.lp,
     companions: companions ?? this.companions,
@@ -590,6 +779,7 @@ class GameData {
     wanderweg: wanderweg ?? this.wanderweg,
     forge: forge ?? this.forge,
     pouches: pouches ?? this.pouches,
+    messengers: messengers ?? this.messengers,
   );
 
   GameData replaceCompanion(Companion companion) => copyWith(
@@ -610,6 +800,7 @@ class GameData {
     'wanderweg': wanderweg.toJson(),
     'forge': forge.toJson(),
     'pouches': pouches.toJson(),
+    'messengers': messengers.toJson(),
   };
 
   /// [now] dates the waymarks a save from before the trail is granted.
@@ -667,6 +858,11 @@ class GameData {
       pouches: switch (json['pouches']) {
         final Map<String, Object?> p => PouchState.fromJson(p),
         _ => const PouchState(),
+      },
+      // Saves from before messengers: none met yet.
+      messengers: switch (json['messengers']) {
+        final Map<String, Object?> m => MessengerState.fromJson(m),
+        _ => const MessengerState(),
       },
     );
   }

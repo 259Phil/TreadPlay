@@ -53,7 +53,10 @@ class SaveGame {
   ///
   /// 4: treat pouches ('pouches': the leash and pouch counters). Older
   /// files still import with an empty leash.
-  static const int version = 4;
+  ///
+  /// 5: messengers ('messengers': visits met, the open task, today's
+  /// count). Older files still import with none met yet.
+  static const int version = 5;
 
   static String fileName(DateTime now) {
     final stamp = now.toIso8601String().replaceAll(':', '-').split('.').first;
@@ -125,14 +128,20 @@ class SaveGame {
               ForgeState.unknownCodes(f).isNotEmpty)) {
         return null;
       }
-      if (fromVersion < 4) return {...game}..remove('pouches');
+      if (fromVersion < 4) {
+        return {...game}
+          ..remove('pouches')
+          ..remove('messengers');
+      }
       final p = game['pouches'];
       if (p != null && PouchState.problems(p)) return null;
+      if (fromVersion < 5) return {...game}..remove('messengers');
       return game;
     }
     final next = {...game}
       ..remove('forge')
-      ..remove('pouches');
+      ..remove('pouches')
+      ..remove('messengers');
     if (fromVersion < 2) next.remove('wanderweg');
     return next;
   }

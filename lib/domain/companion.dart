@@ -199,7 +199,8 @@ class Companion {
   double get spiritLossFactor => 1 / (1 + sealBonus(SealType.grit));
 
   /// Fortune: pouch and messenger chances after a run are multiplied by
-  /// this (never above 100 %). Pouches and messengers are not built yet.
+  /// this (never above 100 %), and the pouch colour (which also picks the
+  /// messenger) leans to the rarer ones.
   double get fortuneFactor => 1 + sealBonus(SealType.fortune);
 
   /// Breath cap while this companion is taken along.

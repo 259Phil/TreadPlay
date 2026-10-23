@@ -1259,4 +1259,314 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get flavourGlaze => 'Sweet, with crystal edges.';
+
+  @override
+  String msgGreetRuhu(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'Hoo-hoo! There you are.',
+      '1': 'Ruhu here, just landed.',
+      '2': 'Good day, fellow wanderer!',
+      '3': 'Hoo … I saw you on the path.',
+      '4': 'Oh, how lovely to meet you!',
+      '5': 'Softly, softly – Ruhu is here.',
+      'other': 'Hoo-hoo! There you are.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgGiftRuhu(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'I hung a brown pouch on your leash.',
+      '1': 'It lay under a hedge. Now it hangs on your leash.',
+      '2': 'A small pouch, but tied with care.',
+      '3': 'For your steps today – a pouch for the leash.',
+      '4': 'Not much, but honestly found. It’s already hanging.',
+      '5': 'Walk it warm and it opens by itself.',
+      'other': 'I hung a brown pouch on your leash.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgTaskRuhu(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'Would you help me? There’s a reward after.',
+      '1': 'I have a small favour to ask.',
+      '2': 'A task, no hurry at all.',
+      '3': 'If you have time: I need your legs.',
+      '4': 'Do this for me and it will pay off.',
+      '5': 'Just a little thing, I promise.',
+      'other': 'Would you help me? There’s a reward after.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgGreetKolk(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'Kraa! Kolk reporting.',
+      '1': 'Kraa, kraa! Nicely walked!',
+      '2': 'Psst, Kolk here.',
+      '3': 'Kraa! Guess who’s here.',
+      '4': 'Hello, pacemaker!',
+      '5': 'Kraa! I was waiting for you.',
+      'other': 'Kraa! Kolk reporting.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgGiftKolk(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'It shone by the path – now it hangs on your leash.',
+      '1': 'A copper pouch! I didn’t steal it. Almost.',
+      '2': 'Found for you, brought to you.',
+      '3': 'Copper jingles so nicely. It’s on your leash.',
+      '4': 'Keep the beat and I’ll bring more.',
+      '5': 'I carried it over three rooftops.',
+      'other': 'It shone by the path – now it hangs on your leash.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgTaskKolk(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'Kraa! I’ve got a task for you.',
+      '1': 'Want to earn something? Listen.',
+      '2': 'A raven never forgets – nor a reward.',
+      '3': 'Do this and I’ll leave something shiny.',
+      '4': 'Small bet: can you do it?',
+      '5': 'Kraa! Here’s a task, no hurry.',
+      'other': 'Kraa! I’ve got a task for you.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgGreetFlimm(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'A little light flickers – Flimm is here.',
+      '1': 'Sssh … I followed your light.',
+      '2': 'Good evening, even if it’s day.',
+      '3': 'Flimm here, very quietly.',
+      '4': 'Your steps are glowing today.',
+      '5': 'I came with the wind.',
+      'other': 'A little light flickers – Flimm is here.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgGiftFlimm(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'A turquoise pouch, as rare as a clear sky.',
+      '1': 'I hung it gently on your leash.',
+      '2': 'It shimmers like my lantern. For you.',
+      '3': 'Not everyone gets one of these. You do.',
+      '4': 'Walk it warm and it will show its light.',
+      '5': 'The evening breeze gave it to me.',
+      'other': 'A turquoise pouch, as rare as a clear sky.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgTaskFlimm(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'Will you help me feed my light?',
+      '1': 'A small wish, no deadline.',
+      '2': 'If you like, I’ll show you the way.',
+      '3': 'Follow this task like a firefly.',
+      '4': 'Do this and my lantern will reward you.',
+      '5': 'Just a thread of light of a task.',
+      'other': 'Will you help me feed my light?',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgGreetVesper(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'Greetings. Vesper has descended.',
+      '1': 'The stars told me where you walk.',
+      '2': 'I rarely come. Today I come to you.',
+      '3': 'Don’t bow – keep walking instead.',
+      '4': 'The night sky sends me.',
+      '5': 'A rare evening for a rare guest.',
+      'other': 'Greetings. Vesper has descended.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgGiftVesper(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'A navy pouch – the rarest of them all.',
+      '1': 'From the treasury of the stars, onto your leash.',
+      '2': 'Carry it with pride. It’s already hanging.',
+      '3': 'Your Fortune called me. Here is its reward.',
+      '4': 'Few ever see this velvet. You are one of them.',
+      '5': 'Walk it warm – it holds great things.',
+      'other': 'A navy pouch – the rarest of them all.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgTaskVesper(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'I set you a worthy task.',
+      '1': 'Show me your endurance.',
+      '2': 'A task from the stars, no hurry.',
+      '3': 'Complete this and the sky will reward you.',
+      '4': 'Big steps for a big reward.',
+      '5': 'I’ll wait. Patience is my strength.',
+      'other': 'I set you a worthy task.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgLineFull(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'Oh – your leash is full!',
+      '1': 'No clip free, what a pity.',
+      '2': 'Your leash is full, I’ll take it back with me.',
+      '3': 'Hm, all taken. Open a few pouches!',
+      '4': 'Full leash! I’ll come another time.',
+      '5': 'Everything’s hanging already – next time.',
+      'other': 'Oh – your leash is full!',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgLineDone(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'Done! Here’s your reward.',
+      '1': 'Task complete – well walked!',
+      '2': 'As promised: your reward.',
+      '3': 'You did that nicely.',
+      '4': 'Done! The reward is in your case.',
+      '5': 'Bravo – I knew you could.',
+      'other': 'Done! Here’s your reward.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get msgTitleRuhu => 'Ruhu · owl of the field paths';
+
+  @override
+  String get msgTitleKolk => 'Kolk · raven of the waysides';
+
+  @override
+  String get msgTitleFlimm => 'Flimm · lantern moth';
+
+  @override
+  String get msgTitleVesper => 'Vesper · star owl';
+
+  @override
+  String get msgRankBrown => 'Brown messenger · common';
+
+  @override
+  String get msgRankCopper => 'Copper messenger · uncommon';
+
+  @override
+  String get msgRankTurquoise => 'Turquoise messenger · rare';
+
+  @override
+  String get msgRankNavy => 'Navy messenger · very rare';
+
+  @override
+  String get msgBrings => 'Brings you';
+
+  @override
+  String get msgReward => 'Reward';
+
+  @override
+  String get msgThanks => 'Thanks';
+
+  @override
+  String get msgAccept => 'Accept';
+
+  @override
+  String get msgPouchInstead => 'Rather the pouch';
+
+  @override
+  String get msgTaskOptional => 'Small task · optional';
+
+  @override
+  String get msgTaskNote =>
+      'Instead of the pouch: reward once done. No deadline.';
+
+  @override
+  String get msgLeashFullNote =>
+      'Your leash is full, no clip for the pouch. Nothing is lost: your run brings its Glut as always.';
+
+  @override
+  String get msgDoneTitle => 'Task done';
+
+  @override
+  String get msgDoneNote => 'The reward is already in your seal case.';
+
+  @override
+  String get msgBoard => 'Notice';
+
+  @override
+  String get msgClose => 'Close';
+
+  @override
+  String get msgFootnote =>
+      'Only comes by luck after a run · more Fortune, rarer messengers';
+
+  @override
+  String msgTaskWalk(String km) {
+    return 'Walk $km km';
+  }
+
+  @override
+  String msgTaskSweet(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n runs with ≥ 58 % Sweet Spot',
+      one: '1 run with ≥ 58 % Sweet Spot',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String msgTaskRuns(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n valid runs of 1 km or more',
+      one: '1 valid run of 1 km or more',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String msgTaskOpen(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: 'Open $n pouches',
+      one: 'Open 1 pouch',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String msgProgressKm(String a, String b) {
+    return '$a / $b km';
+  }
+
+  @override
+  String msgProgress(int a, int b) {
+    return '$a / $b';
+  }
 }

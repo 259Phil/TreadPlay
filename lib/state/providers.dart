@@ -167,6 +167,18 @@ class GameNotifier extends Notifier<GameData> {
     refreshBreath();
   }
 
+  /// Takes the task the waiting messenger offers.
+  void acceptMessengerTask() => _set(state.acceptingTask());
+
+  /// Turns the offered task down: the messenger leaves its pouch instead.
+  void declineMessengerTask() => _set(state.decliningTask(_now()));
+
+  /// The waiting messenger delivery (or leash-full visit) was shown.
+  void dismissMessenger() => _set(state.dismissingVisit());
+
+  /// The "task done" note was shown.
+  void dismissMessengerDone() => _set(state.dismissingDone());
+
   /// Replaces the whole game with an imported save. Not during a run.
   bool importGame(GameData game) {
     if (ref.read(runControllerProvider) != null) return false;

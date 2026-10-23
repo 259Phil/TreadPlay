@@ -1265,4 +1265,314 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get flavourGlaze => 'Süß, aber mit Kristallkanten.';
+
+  @override
+  String msgGreetRuhu(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'Huhu! Da bist du ja.',
+      '1': 'Ruhu hier, gerade gelandet.',
+      '2': 'Guten Tag, Wanderfreund!',
+      '3': 'Huu … ich hab dich am Weg gesehen.',
+      '4': 'Ach, wie schön, dich zu treffen!',
+      '5': 'Leise, leise – Ruhu ist da.',
+      'other': 'Huhu! Da bist du ja.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgGiftRuhu(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'Ich hab dir einen braunen Beutel an die Leine gehängt.',
+      '1': 'Der lag unter einer Hecke. Jetzt hängt er an deiner Leine.',
+      '2': 'Ein kleiner Beutel, aber mit Liebe geschnürt.',
+      '3': 'Für deine Schritte heute – ein Beutel für die Leine.',
+      '4': 'Nicht viel, aber ehrlich gefunden. Er hängt schon.',
+      '5': 'Lauf ihn warm, dann öffnet er sich von allein.',
+      'other': 'Ich hab dir einen braunen Beutel an die Leine gehängt.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgTaskRuhu(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'Magst du mir helfen? Danach gibt’s einen Lohn.',
+      '1': 'Ich hätte da eine kleine Bitte an dich.',
+      '2': 'Ein Auftrag, ganz ohne Eile.',
+      '3': 'Wenn du Zeit hast: Ich brauche deine Beine.',
+      '4': 'Erledige das für mich, dann lohnt es sich.',
+      '5': 'Nur eine Kleinigkeit, versprochen.',
+      'other': 'Magst du mir helfen? Danach gibt’s einen Lohn.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgGreetKolk(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'Kraa! Kolk meldet sich.',
+      '1': 'Kraa, kraa! Gut gelaufen!',
+      '2': 'Psst, Kolk hier.',
+      '3': 'Kraa! Rate mal, wer da ist.',
+      '4': 'Hallo, Schrittmacher!',
+      '5': 'Kraa! Ich hab auf dich gewartet.',
+      'other': 'Kraa! Kolk meldet sich.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgGiftKolk(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'Glänzte am Wegrand – jetzt hängt’s an deiner Leine.',
+      '1': 'Ein Kupferbeutel! Ich hab ihn nicht geklaut. Fast.',
+      '2': 'Für dich gefunden, für dich gebracht.',
+      '3': 'Kupfer klimpert so schön. Er hängt schon an der Leine.',
+      '4': 'Bleib im Takt, dann bring ich mehr.',
+      '5': 'Den hab ich über drei Dächer getragen.',
+      'other': 'Glänzte am Wegrand – jetzt hängt’s an deiner Leine.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgTaskKolk(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'Kraa! Ich hab einen Auftrag für dich.',
+      '1': 'Willst du was verdienen? Hör zu.',
+      '2': 'Ein Rabe vergisst nie – auch keinen Lohn.',
+      '3': 'Mach das, und ich lass was Glänzendes da.',
+      '4': 'Kleine Wette: Schaffst du das?',
+      '5': 'Kraa! Hier eine Aufgabe, keine Eile.',
+      'other': 'Kraa! Ich hab einen Auftrag für dich.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgGreetFlimm(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'Ein Lichtlein flackert – Flimm ist da.',
+      '1': 'Sssst … ich bin deinem Licht gefolgt.',
+      '2': 'Guten Abend, auch wenn’s Tag ist.',
+      '3': 'Flimm hier, ganz leise.',
+      '4': 'Deine Schritte leuchten heute.',
+      '5': 'Ich kam mit dem Wind.',
+      'other': 'Ein Lichtlein flackert – Flimm ist da.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgGiftFlimm(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'Ein türkiser Beutel, so selten wie ein klarer Himmel.',
+      '1': 'Ich hab ihn sanft an deine Leine gehängt.',
+      '2': 'Er schimmert wie meine Laterne. Für dich.',
+      '3': 'Nicht jeder bekommt so einen. Du schon.',
+      '4': 'Lauf ihn warm, dann zeigt er sein Licht.',
+      '5': 'Den hat mir der Abendwind gegeben.',
+      'other': 'Ein türkiser Beutel, so selten wie ein klarer Himmel.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgTaskFlimm(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'Hilfst du mir, mein Licht zu nähren?',
+      '1': 'Ein kleiner Wunsch, ganz ohne Frist.',
+      '2': 'Wenn du magst, zeig ich dir den Weg.',
+      '3': 'Folge diesem Auftrag wie einem Glühwürmchen.',
+      '4': 'Tu dies, und meine Laterne lohnt es dir.',
+      '5': 'Nur ein Lichtfaden von einer Aufgabe.',
+      'other': 'Hilfst du mir, mein Licht zu nähren?',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgGreetVesper(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'Sei gegrüßt. Vesper ist herabgestiegen.',
+      '1': 'Die Sterne sagten mir, wo du läufst.',
+      '2': 'Selten komme ich. Heute komme ich zu dir.',
+      '3': 'Verneige dich nicht – lauf lieber weiter.',
+      '4': 'Der Nachthimmel schickt mich.',
+      '5': 'Ein seltener Abend für einen seltenen Gast.',
+      'other': 'Sei gegrüßt. Vesper ist herabgestiegen.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgGiftVesper(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'Ein nachtblauer Beutel – der seltenste von allen.',
+      '1': 'Aus der Schatzkammer der Sterne, an deine Leine.',
+      '2': 'Trag ihn mit Stolz. Er hängt schon.',
+      '3': 'Dein Glück hat mich gerufen. Hier ist sein Lohn.',
+      '4': 'Nur wenige sehen diesen Samt. Du gehörst dazu.',
+      '5': 'Lauf ihn warm – er birgt Großes.',
+      'other': 'Ein nachtblauer Beutel – der seltenste von allen.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgTaskVesper(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'Ich stelle dir eine würdige Aufgabe.',
+      '1': 'Zeig mir dein Durchhalten.',
+      '2': 'Ein Auftrag der Sterne, ohne Eile.',
+      '3': 'Vollende dies, und der Himmel lohnt es dir.',
+      '4': 'Große Schritte für einen großen Lohn.',
+      '5': 'Ich warte. Geduld ist meine Stärke.',
+      'other': 'Ich stelle dir eine würdige Aufgabe.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgLineFull(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'Oh – deine Leine ist ja voll!',
+      '1': 'Kein Haken mehr frei, schade.',
+      '2': 'Deine Leine ist voll, ich nehm ihn wieder mit.',
+      '3': 'Hm, alles belegt. Öffne ein paar Beutel!',
+      '4': 'Volle Leine! Ich komme ein andermal.',
+      '5': 'Da hängt schon alles voll – nächstes Mal.',
+      'other': 'Oh – deine Leine ist ja voll!',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String msgLineDone(String n) {
+    String _temp0 = intl.Intl.selectLogic(n, {
+      '0': 'Geschafft! Hier ist dein Lohn.',
+      '1': 'Auftrag erfüllt – gut gelaufen!',
+      '2': 'Wie versprochen: dein Lohn.',
+      '3': 'Das hast du fein gemacht.',
+      '4': 'Erledigt! Der Lohn liegt in deinem Kasten.',
+      '5': 'Bravo – ich wusste, du schaffst das.',
+      'other': 'Geschafft! Hier ist dein Lohn.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get msgTitleRuhu => 'Ruhu · Eule der Feldwege';
+
+  @override
+  String get msgTitleKolk => 'Kolk · Rabe der Wegränder';
+
+  @override
+  String get msgTitleFlimm => 'Flimm · Laternenfalter';
+
+  @override
+  String get msgTitleVesper => 'Vesper · Sterneule';
+
+  @override
+  String get msgRankBrown => 'Brauner Bote · häufig';
+
+  @override
+  String get msgRankCopper => 'Kupferbote · selten';
+
+  @override
+  String get msgRankTurquoise => 'Türkisbote · sehr selten';
+
+  @override
+  String get msgRankNavy => 'Nachtblau · äußerst selten';
+
+  @override
+  String get msgBrings => 'Bringt dir';
+
+  @override
+  String get msgReward => 'Lohn';
+
+  @override
+  String get msgThanks => 'Danke';
+
+  @override
+  String get msgAccept => 'Annehmen';
+
+  @override
+  String get msgPouchInstead => 'Beutel nehmen';
+
+  @override
+  String get msgTaskOptional => 'Kleiner Auftrag · freiwillig';
+
+  @override
+  String get msgTaskNote =>
+      'Statt des Beutels: Lohn, sobald erledigt. Keine Frist.';
+
+  @override
+  String get msgLeashFullNote =>
+      'Deine Leine ist voll, kein Haken für den Beutel. Nichts geht verloren: dein Lauf bringt seine Glut wie immer.';
+
+  @override
+  String get msgDoneTitle => 'Auftrag erledigt';
+
+  @override
+  String get msgDoneNote => 'Der Lohn liegt schon in deinem Siegelkasten.';
+
+  @override
+  String get msgBoard => 'Aushang';
+
+  @override
+  String get msgClose => 'Schließen';
+
+  @override
+  String get msgFootnote =>
+      'Kommt nur mit Glück nach einem Lauf · mehr Fortune, seltenere Boten';
+
+  @override
+  String msgTaskWalk(String km) {
+    return '$km km laufen';
+  }
+
+  @override
+  String msgTaskSweet(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n Läufe mit ≥ 58 % Sweet Spot',
+      one: '1 Lauf mit ≥ 58 % Sweet Spot',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String msgTaskRuns(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n gültige Läufe ab 1 km',
+      one: '1 gültiger Lauf ab 1 km',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String msgTaskOpen(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n Beutel öffnen',
+      one: '1 Beutel öffnen',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String msgProgressKm(String a, String b) {
+    return '$a / $b km';
+  }
+
+  @override
+  String msgProgress(int a, int b) {
+    return '$a / $b';
+  }
 }

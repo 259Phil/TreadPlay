@@ -178,8 +178,8 @@ class Pouch {
   }
 }
 
-/// Where a pouch came from. Messengers will bring pouches too (next step);
-/// they use the same [GameData.hangingPouch] path.
+/// Where a pouch came from: a run, or a messenger after a run. Both use
+/// the same [GameData.hangingPouch] path.
 enum PouchSource { run, messenger }
 
 /// The pouch side of a save: the leash and lifetime counters.

@@ -4,6 +4,7 @@ import '../domain/breath.dart';
 import '../domain/companion.dart';
 import '../domain/forge.dart';
 import '../domain/market.dart';
+import '../domain/pouch.dart';
 import '../domain/run_summary.dart';
 import '../domain/totals.dart';
 import '../domain/video_rewards.dart';
@@ -22,6 +23,7 @@ class GameData {
     this.videos = const VideoRewards(),
     this.wanderweg = const WanderwegProgress(),
     this.forge = const ForgeState(),
+    this.pouches = const PouchState(),
   });
 
   factory GameData.initial(DateTime now) {
@@ -65,6 +67,9 @@ class GameData {
   /// Seal case, Glut, splinters and Forge counters.
   final ForgeState forge;
 
+  /// The leash with its treat pouches and the pouch counters.
+  final PouchState pouches;
+
   /// Seals set into companions, all of them.
   Iterable<Seal> get setSeals => companions.expand((c) => c.seals);
 
@@ -103,6 +108,12 @@ class GameData {
             ? totals.companionsBought
             : bought,
         WaymarkCounter.companionLevel: maxLevel,
+        WaymarkCounter.brownPouchesOpened: pouches.openedOf(PouchColor.brown),
+        WaymarkCounter.copperPouchesOpened: pouches.openedOf(PouchColor.copper),
+        WaymarkCounter.turquoisePouchesOpened: pouches.openedOf(
+          PouchColor.turquoise,
+        ),
+        WaymarkCounter.leashFilled: pouches.leashFills,
       },
     );
   }
@@ -317,22 +328,161 @@ class GameData {
     ).copyWith(forge: forge.removing(seal).copyWith(placed: forge.placed + 1));
   }
 
-  /// Glut a finished [run] brings: [Forge.glutPerRun] for a valid run of at
-  /// least [Forge.glutRunMinM] once the Forge is open.
+  /// Clips on the leash: 3, the 4th from waymark 7.
+  int get leashClips => unlocks.leashClips;
+
+  bool get leashFull => pouches.leash.length >= leashClips;
+
+  /// Glut a finished [run] brings without a pouch: [Forge.glutPerRun] for a
+  /// valid run of at least [Forge.glutRunMinM] once the Forge is open.
   int glutFor(RunSummary run) =>
       run.valid && run.distanceM >= Forge.glutRunMinM && unlocks.forge
       ? Forge.glutPerRun
       : 0;
 
-  /// Stores [run] (newest first, capped), counts it in [totals] and adds
-  /// the Glut it brings (see [glutFor]).
-  GameData recordingRun(RunSummary run) {
-    final glut = glutFor(run);
-    final stored = glut == run.glut ? run : run.withGlut(glut);
-    return copyWith(
-      runs: [stored, ...runs].take(maxStoredRuns).toList(),
+  /// Fortune factor of the companion that went on [run].
+  double fortuneFactorFor(RunSummary run) =>
+      (companions.where((c) => c.id == run.companionId).firstOrNull ??
+              activeCompanion)
+          .fortuneFactor;
+
+  /// Pouch find chance of [run] (see [Pouches.chance]); 0 before waymark 1
+  /// or for an invalid run. The very first pouch is sure, so the first
+  /// Wanderweg task never waits on luck.
+  double pouchChanceFor(RunSummary run) {
+    if (!run.valid || unlocks.pouchColors.isEmpty) return 0;
+    final chance = Pouches.chance(
+      breathUsed: run.breathUsed,
+      tankSize: run.tankSize ?? activeCompanion.tankSize,
+      fortuneFactor: fortuneFactorFor(run),
+    );
+    return chance > 0 && pouches.foundTotal == 0 ? 1 : chance;
+  }
+
+  /// Stores [run] (newest first, capped) and counts it in [totals]. Then
+  /// the run warms the pouches on the leash, may find a new one (one roll
+  /// with [random], none when the leash is full) and, when it found none,
+  /// brings the small run Glut (see [glutFor]). Without [random] no pouch
+  /// is rolled.
+  GameData recordingRun(RunSummary run, {Random? random}) {
+    final end = run.startedAt.add(run.duration);
+    var next = copyWith(
       totals: totals.addingRun(run),
-      forge: glut == 0 ? forge : forge.copyWith(glut: forge.glut + glut),
+    ).agingPouches(run.startedAt).advancingWanderweg(end);
+    // Warming: every pouch on the leash walks along.
+    var warmed = 0;
+    if (run.valid && run.distanceM > 0 && next.pouches.leash.isNotEmpty) {
+      final leash = [
+        for (final p in next.pouches.leash)
+          p.ready ? p : p.warmed(run.distanceM, end),
+      ];
+      warmed = [
+        for (var i = 0; i < leash.length; i++)
+          if (leash[i].ready && !next.pouches.leash[i].ready) i,
+      ].length;
+      next = next.copyWith(pouches: next.pouches.copyWith(leash: leash));
+    }
+    PouchColor? found;
+    final full = next.leashFull && next.unlocks.pouchColors.isNotEmpty;
+    final chance = next.pouchChanceFor(run);
+    if (random != null && !full && chance > 0) {
+      if (random.nextDouble() < chance) {
+        found = Pouches.pickColor(
+          next.unlocks.pouchColors,
+          next.pouches.found,
+          random,
+        );
+        next = next.hangingPouch(found, end);
+      }
+    }
+    final glut = found == null ? next.glutFor(run) : 0;
+    final stored = run.withRewards(
+      glut: glut,
+      pouch: found,
+      leashFull: run.valid && full,
+      pouchesWarmed: warmed,
+    );
+    return next.copyWith(
+      runs: [stored, ...runs].take(maxStoredRuns).toList(),
+      forge: glut == 0
+          ? next.forge
+          : next.forge.copyWith(glut: next.forge.glut + glut),
+    );
+  }
+
+  /// Hangs a new [color] pouch on the leash if a clip is free. Runs use it
+  /// now; messengers ([PouchSource.messenger]) will use it next.
+  GameData hangingPouch(
+    PouchColor color,
+    DateTime now, {
+    PouchSource source = PouchSource.run,
+  }) {
+    if (leashFull) return this;
+    final leash = [...pouches.leash, Pouch(color: color, foundAt: now)];
+    return copyWith(
+      pouches: pouches.copyWith(
+        leash: leash,
+        found: {...pouches.found, color: pouches.foundOf(color) + 1},
+        leashFills:
+            leash.length >= Pouches.maxClips && leashClips >= Pouches.maxClips
+            ? pouches.leashFills + 1
+            : pouches.leashFills,
+      ),
+    );
+  }
+
+  /// Unwarmed pouches fade off the leash a day after they were found or
+  /// last warmed. Warmed-through pouches stay until opened.
+  GameData agingPouches(DateTime now) {
+    final keep = [
+      for (final p in pouches.leash)
+        if (!p.fadedBy(now)) p,
+    ];
+    if (keep.length == pouches.leash.length) return this;
+    return copyWith(
+      pouches: pouches.copyWith(
+        leash: keep,
+        faded: pouches.faded + pouches.leash.length - keep.length,
+      ),
+    );
+  }
+
+  /// Why pouch [index] on the leash can't be opened now, or null.
+  PouchBlock? openPouchBlock(int index) {
+    if (index < 0 || index >= pouches.leash.length) return PouchBlock.gone;
+    if (lp < pouches.leash[index].openLp) return PouchBlock.notEnoughLp;
+    return null;
+  }
+
+  /// Opens pouch [index]: free when warmed through, else for its
+  /// [Pouch.openLp]. Its contents are rolled with [random] and go into the
+  /// seal case (seals, Glut, splinters). Check [openPouchBlock] first.
+  (GameData, List<PouchReward>) openingPouch(int index, Random random) {
+    final pouch = pouches.leash[index];
+    final rewards = Pouches.roll(pouch.color, random);
+    var case_ = forge;
+    for (final r in rewards) {
+      case_ = switch (r.kind) {
+        PouchRewardKind.seal => case_.adding(r.seal!),
+        PouchRewardKind.glut => case_.copyWith(glut: case_.glut + r.amount),
+        PouchRewardKind.splinters => case_.copyWith(
+          splinters: case_.splinters + r.amount,
+        ),
+      };
+    }
+    return (
+      copyWith(
+        lp: lp - pouch.openLp,
+        forge: case_,
+        pouches: pouches.copyWith(
+          leash: [...pouches.leash]..removeAt(index),
+          opened: {
+            ...pouches.opened,
+            pouch.color: pouches.openedOf(pouch.color) + 1,
+          },
+        ),
+      ),
+      rewards,
     );
   }
 
@@ -426,6 +576,7 @@ class GameData {
     VideoRewards? videos,
     WanderwegProgress? wanderweg,
     ForgeState? forge,
+    PouchState? pouches,
   }) => GameData(
     lp: lp ?? this.lp,
     companions: companions ?? this.companions,
@@ -437,6 +588,7 @@ class GameData {
     videos: videos ?? this.videos,
     wanderweg: wanderweg ?? this.wanderweg,
     forge: forge ?? this.forge,
+    pouches: pouches ?? this.pouches,
   );
 
   GameData replaceCompanion(Companion companion) => copyWith(
@@ -456,6 +608,7 @@ class GameData {
     'videos': videos.toJson(),
     'wanderweg': wanderweg.toJson(),
     'forge': forge.toJson(),
+    'pouches': pouches.toJson(),
   };
 
   /// [now] dates the waymarks a save from before the trail is granted.
@@ -509,6 +662,11 @@ class GameData {
         final Map<String, Object?> f => ForgeState.fromJson(f),
         _ => ForgeState(placed: totals.forgeUses),
       },
+      // Saves from before pouches start with an empty leash.
+      pouches: switch (json['pouches']) {
+        final Map<String, Object?> p => PouchState.fromJson(p),
+        _ => const PouchState(),
+      },
     );
   }
 
@@ -546,6 +704,12 @@ enum ForgeBlock {
   /// Every charm socket holds a seal.
   noSocket,
   needsSpirit,
+  notEnoughLp,
+}
+
+enum PouchBlock {
+  /// No pouch at that clip (opened or faded).
+  gone,
   notEnoughLp,
 }
 

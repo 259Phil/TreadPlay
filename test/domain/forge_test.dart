@@ -532,7 +532,10 @@ void main() {
       }
       expect(WaymarkCounter.bestSealLevel.built, isTrue);
       expect(WaymarkCounter.combines.built, isTrue);
-      expect(WaymarkCounter.brownPouchesOpened.built, isFalse);
+      expect(WaymarkCounter.brownPouchesOpened.built, isTrue);
+      expect(WaymarkCounter.leashFilled.built, isTrue);
+      // Messengers come in a later step; their task stays waived.
+      expect(WaymarkCounter.messengersMet.built, isFalse);
     });
   });
 }

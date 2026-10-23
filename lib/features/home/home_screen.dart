@@ -12,6 +12,7 @@ import '../../state/providers.dart';
 import '../../theme.dart';
 import '../../widgets/format.dart';
 import '../../widgets/lp_pill.dart';
+import '../../widgets/pouch_art.dart';
 import '../wanderweg/trail_entry.dart';
 import 'video_button.dart';
 import 'world_scene.dart';
@@ -52,6 +53,12 @@ class HomeScreen extends ConsumerWidget {
                   right: 14,
                   child: WaymarkReachedBubble(),
                 ),
+                if (game.unlocks.pouchColors.isNotEmpty)
+                  Positioned(
+                    bottom: 8,
+                    right: 14,
+                    child: _LeashChip(game: game),
+                  ),
               ],
             ),
           ),
@@ -369,4 +376,77 @@ class _StartButton extends StatelessWidget {
       ),
     );
   }
+}
+
+/// The leash in small at the edge of the world: the pouches found so far,
+/// warm ones glowing. Tap opens the pouch screen.
+class _LeashChip extends StatelessWidget {
+  const _LeashChip({required this.game});
+
+  final GameData game;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final leash = game.pouches.leash;
+    return Semantics(
+      button: true,
+      label: l.pouchLeash(leash.length, game.leashClips),
+      child: Material(
+        color: const Color(0xD91A1D22),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: Color(0xFF7A6238)),
+        ),
+        child: InkWell(
+          key: const Key('home-leash'),
+          borderRadius: BorderRadius.circular(20),
+          onTap: () => context.push(AppRoutes.pouches),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(10, 4, 12, 4),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  l.homeLeash,
+                  style: const TextStyle(
+                    color: TreadColors.brass,
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                for (var i = 0; i < game.leashClips; i++)
+                  i < leash.length
+                      ? PouchArt(
+                          color: leash[i].color,
+                          size: 30,
+                          glow: leash[i].ready,
+                        )
+                      : const SizedBox(
+                          width: 30,
+                          height: 30,
+                          child: Center(child: _EmptyClip()),
+                        ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptyClip extends StatelessWidget {
+  const _EmptyClip();
+
+  @override
+  Widget build(BuildContext context) => Container(
+    width: 12,
+    height: 12,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      border: Border.all(color: const Color(0xFF59616B), width: 1.5),
+    ),
+  );
 }

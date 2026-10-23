@@ -7,6 +7,7 @@ import 'package:treadplay/data/game_data.dart';
 import 'package:treadplay/data/save_game.dart';
 import 'package:treadplay/data/species.dart';
 import 'package:treadplay/domain/companion.dart';
+import 'package:treadplay/domain/pouch.dart';
 import 'package:treadplay/domain/run_summary.dart';
 import 'package:treadplay/domain/totals.dart';
 import 'package:treadplay/domain/wanderweg.dart';
@@ -27,6 +28,13 @@ void main() {
     valid: valid,
     sweetSpotShare: share,
   );
+
+  /// A game that opened one brown pouch (the waymark 2 task).
+  GameData brownOpened([GameData? from]) {
+    final g = (from ?? GameData.initial(t0)).hangingPouch(PouchColor.brown, t0);
+    final lp = g.lp;
+    return g.copyWith(lp: 1000).openingPouch(0, Random(1)).$1.copyWith(lp: lp);
+  }
 
   GameData walked(double km, {GameData? from}) => (from ?? GameData.initial(t0))
       .recordingRun(run(km * 1000))
@@ -57,7 +65,11 @@ void main() {
     test('a waymark is reached exactly at its km', () {
       expect(walked(0.69).wanderweg.reached, 0);
       expect(walked(0.7).wanderweg.reached, 1);
-      expect(walked(0.7).wanderweg.reachedAt.single, t1);
+      // Reached when the run that crossed it ends.
+      expect(
+        walked(0.7).wanderweg.reachedAt.single,
+        t0.add(const Duration(minutes: 30)),
+      );
     });
 
     test('invalid runs do not move along the trail', () {
@@ -68,9 +80,10 @@ void main() {
     });
 
     test('distance-only waymarks fall one after the other', () {
-      // WM2 asks for a brown pouch (not built yet: counts as met), WM4 for a
-      // placed seal, which a fresh game does not have.
-      final game = walked(10);
+      // WM2 asks for an opened brown pouch, WM4 for a placed seal, which a
+      // fresh game does not have.
+      expect(walked(10).wanderweg.reached, 1);
+      final game = walked(10, from: brownOpened());
       expect(game.wanderweg.reached, 3);
       expect(game.wanderweg.next!.number, 4);
     });
@@ -78,7 +91,7 @@ void main() {
 
   group('tasks', () {
     test('a set seal completes waymark 4', () {
-      var game = walked(10);
+      var game = walked(10, from: brownOpened());
       game = game
           .buyingSeal(SealType.stride)
           .settingSeal('pebble-1', const Seal(SealType.stride, 1))
@@ -98,7 +111,7 @@ void main() {
     });
 
     test('waymark 6 waits for a sweet spot run, messengers are waived', () {
-      var game = GameData.initial(t0)
+      var game = brownOpened()
           .copyWith(wanderweg: const WanderwegProgress(legacyForge: true))
           .buyingSeal(SealType.grit)
           .settingSeal('pebble-1', const Seal(SealType.grit, 1))
@@ -164,7 +177,7 @@ void main() {
 
   group('never re-lock', () {
     test('reached waymarks stay after the counters drop', () {
-      var game = walked(10);
+      var game = walked(10, from: brownOpened());
       game = game
           .buyingSeal(SealType.stride)
           .settingSeal('pebble-1', const Seal(SealType.stride, 1))
@@ -183,7 +196,10 @@ void main() {
 
     test('progress can only grow', () {
       const p = WanderwegProgress();
-      final counters = WaymarkCounters(distanceM: 3000, values: const {});
+      final counters = WaymarkCounters(
+        distanceM: 3000,
+        values: const {WaymarkCounter.brownPouchesOpened: 1},
+      );
       final grown = p.advanced(counters, t1);
       expect(grown.reached, 2);
       final same = grown.advanced(
@@ -209,7 +225,8 @@ void main() {
     });
 
     test('waymarks open the Forge and the market pool step by step', () {
-      final game = walked(4.1);
+      expect(walked(4.1).unlocks.forge, isFalse);
+      final game = walked(4.1, from: brownOpened());
       expect(game.unlocks.forge, isTrue);
       expect(game.marketWorlds, {World.medieval, World.jungle});
     });
@@ -268,7 +285,7 @@ void main() {
       // Legacy grant: km only, so waymark 4's seal task is not asked.
       expect(loaded.wanderweg.reached, 5);
       expect(loaded.unlocks.forge, isTrue);
-      expect(SaveGame.version, 3);
+      expect(SaveGame.version, 4);
     });
   });
 }

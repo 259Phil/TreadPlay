@@ -1,13 +1,14 @@
+import 'pouch.dart';
 import 'world.dart';
 
 /// What a waymark task counts. Counters of features that are not in the game
 /// yet are [built] = false: their tasks are shown on the trail but count as
 /// met, so nobody gets stuck on something they cannot do.
 enum WaymarkCounter {
-  // TODO(wanderweg): pouches are not built yet; count openings once they are.
-  brownPouchesOpened(built: false),
-  copperPouchesOpened(built: false),
-  turquoisePouchesOpened(built: false),
+  /// Pouches of a colour opened (lifetime).
+  brownPouchesOpened(built: true),
+  copperPouchesOpened(built: true),
+  turquoisePouchesOpened(built: true),
 
   /// Seals made in the Forge (lifetime; at least the seals owned now).
   sealsForged(built: true),
@@ -27,8 +28,8 @@ enum WaymarkCounter {
   /// Valid runs with a Sweet Spot share of at least 71 %.
   sweetSpot71Runs(built: true),
 
-  // TODO(wanderweg): the leash (4 clips) is not built yet.
-  leashFilled(built: false),
+  /// Times all 4 leash clips held a pouch at once.
+  leashFilled(built: true),
 
   /// Companions bought in the Market (lifetime).
   companionsBought(built: true),
@@ -75,23 +76,8 @@ enum WaymarkUnlock {
   worldRococoCandy;
 
   /// True when this version has a feature that the unlock actually opens.
-  bool get wired => switch (this) {
-    forge ||
-    forgeL2 ||
-    forgeL3 ||
-    forgeL4 ||
-    forgeL5 ||
-    combineL3 ||
-    combineL5 ||
-    marketMedievalJungle ||
-    worldUnderwater ||
-    marketEgyptPirate ||
-    worldSteampunk ||
-    worldSpaceRobot ||
-    worldRococoCandy ||
-    shelfPlus2 => true,
-    _ => false,
-  };
+  /// Since the pouches and the leash every unlock is wired.
+  bool get wired => true;
 
   /// Worlds whose species join the Market pool.
   List<World> get marketWorlds => switch (this) {
@@ -257,9 +243,8 @@ class WanderwegProgress {
   }
 }
 
-/// Feature flags from the trail. [forge], [forgeLevel], [combineLevel],
-/// [marketWorlds] and [shelfSlots] change the game in this version; the rest
-/// only exist as flags until their features are built.
+/// Feature flags from the trail: the Forge and its levels, pouch colours,
+/// leash clips, Market worlds and shelf slots.
 class WaymarkUnlocks {
   WaymarkUnlocks(
     this.progress, {
@@ -294,11 +279,18 @@ class WaymarkUnlocks {
   int get shelfSlots =>
       baseShelfSlots + (has(WaymarkUnlock.shelfPlus2) ? 2 : 0);
 
-  // TODO(wanderweg): flags below have no feature behind them yet.
   bool get brownPouch => has(WaymarkUnlock.brownPouch);
   bool get copperPouch => has(WaymarkUnlock.copperPouch);
   bool get turquoisePouch => has(WaymarkUnlock.turquoisePouch);
   bool get navyPouch => has(WaymarkUnlock.navyPouch);
+
+  /// Pouch colours a run can find, lowest first; empty before waymark 1.
+  List<PouchColor> get pouchColors => [
+    if (brownPouch) PouchColor.brown,
+    if (copperPouch) PouchColor.copper,
+    if (turquoisePouch) PouchColor.turquoise,
+    if (navyPouch) PouchColor.navy,
+  ];
 
   /// Highest seal level the Forge may make (1 with the Forge, up to 5).
   int get forgeLevel => !forge

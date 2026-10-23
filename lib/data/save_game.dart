@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import '../domain/companion.dart';
 import '../domain/forge.dart';
+import '../domain/pouch.dart';
 import 'game_data.dart';
 import 'species.dart';
 
@@ -49,7 +50,10 @@ class SaveGame {
   /// counters). Version 1 and 2 files still import: their bare seals
   /// (`stride`) become L[Seal.legacyLevel] seals and every forge use counts
   /// as a placed seal.
-  static const int version = 3;
+  ///
+  /// 4: treat pouches ('pouches': the leash and pouch counters). Older
+  /// files still import with an empty leash.
+  static const int version = 4;
 
   static String fileName(DateTime now) {
     final stamp = now.toIso8601String().replaceAll(':', '-').split('.').first;
@@ -108,7 +112,8 @@ class SaveGame {
     );
   }
 
-  /// Version 1 games carry no 'wanderweg', versions 1–2 no 'forge'; drop
+  /// Version 1 games carry no 'wanderweg', versions 1–2 no 'forge', versions
+  /// 1–3 no 'pouches'; drop
   /// stray ones so the legacy rules always apply to them. Bare seal names
   /// are read as levelled seals by [Companion.fromJson].
   static Object? _migrate(Object? game, int fromVersion) {
@@ -120,9 +125,14 @@ class SaveGame {
               ForgeState.unknownCodes(f).isNotEmpty)) {
         return null;
       }
+      if (fromVersion < 4) return {...game}..remove('pouches');
+      final p = game['pouches'];
+      if (p != null && PouchState.problems(p)) return null;
       return game;
     }
-    final next = {...game}..remove('forge');
+    final next = {...game}
+      ..remove('forge')
+      ..remove('pouches');
     if (fromVersion < 2) next.remove('wanderweg');
     return next;
   }

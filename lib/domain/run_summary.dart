@@ -1,3 +1,5 @@
+import 'pouch.dart';
+
 /// Time per km, null below 10 m.
 Duration? paceOf(Duration time, double distanceM) => distanceM < 10
     ? null
@@ -18,6 +20,9 @@ class RunSummary {
     this.earnsLp = true,
     this.sweetSpotShare,
     this.glut = 0,
+    this.pouch,
+    this.leashFull = false,
+    this.pouchesWarmed = 0,
   });
 
   final String companionId;
@@ -40,12 +45,26 @@ class RunSummary {
   /// saved before it was tracked.
   final double? sweetSpotShare;
 
-  /// Glut this run brought for the Forge.
+  /// Glut this run brought for the Forge (only when it found no pouch).
   final int glut;
+
+  /// Pouch this run found, if any.
+  final PouchColor? pouch;
+
+  /// The leash was full, so the run could not find a pouch.
+  final bool leashFull;
+
+  /// Pouches on the leash this run warmed all the way (free to open now).
+  final int pouchesWarmed;
 
   Duration? get pace => paceOf(duration, distanceM);
 
-  RunSummary withGlut(int glut) => RunSummary(
+  RunSummary withRewards({
+    required int glut,
+    PouchColor? pouch,
+    bool leashFull = false,
+    int pouchesWarmed = 0,
+  }) => RunSummary(
     companionId: companionId,
     startedAt: startedAt,
     duration: duration,
@@ -59,6 +78,9 @@ class RunSummary {
     earnsLp: earnsLp,
     sweetSpotShare: sweetSpotShare,
     glut: glut,
+    pouch: pouch,
+    leashFull: leashFull,
+    pouchesWarmed: pouchesWarmed,
   );
 
   Map<String, Object?> toJson() => {
@@ -75,6 +97,9 @@ class RunSummary {
     'earnsLp': earnsLp,
     if (sweetSpotShare case final s?) 'sweetSpotShare': s,
     if (glut > 0) 'glut': glut,
+    if (pouch case final p?) 'pouch': p.name,
+    if (leashFull) 'leashFull': true,
+    if (pouchesWarmed > 0) 'pouchesWarmed': pouchesWarmed,
   };
 
   factory RunSummary.fromJson(Map<String, Object?> json) => RunSummary(
@@ -91,5 +116,8 @@ class RunSummary {
     earnsLp: json['earnsLp'] as bool? ?? true,
     sweetSpotShare: (json['sweetSpotShare'] as num?)?.toDouble(),
     glut: json['glut'] as int? ?? 0,
+    pouch: PouchColor.tryParse(json['pouch']),
+    leashFull: json['leashFull'] as bool? ?? false,
+    pouchesWarmed: json['pouchesWarmed'] as int? ?? 0,
   );
 }

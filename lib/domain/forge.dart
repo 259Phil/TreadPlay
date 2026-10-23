@@ -94,8 +94,9 @@ class Forge {
   /// Splinters that melt into one new seal L1.
   static const int splintersPerSeal = 5;
 
-  /// Until pouches exist, a valid run of at least this many metres brings
-  /// [glutPerRun] Glut once the Forge is open.
+  /// Pouches are the Glut source. A valid run of at least this many metres
+  /// that finds no pouch still brings [glutPerRun] Glut once the Forge is
+  /// open (the plan's small per-run drop), so no run ends empty.
   static const double glutRunMinM = 1000;
   static const int glutPerRun = 1;
 

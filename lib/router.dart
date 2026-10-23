@@ -9,6 +9,7 @@ import 'features/legal/legal_screen.dart';
 import 'features/legal/legal_texts.dart';
 import 'features/market/market_screen.dart';
 import 'features/run/run_screen.dart';
+import 'features/pouches/pouch_screen.dart';
 import 'features/run/summary_screen.dart';
 import 'features/settings/settings_screen.dart';
 import 'features/shelf/shelf_screen.dart';
@@ -28,6 +29,7 @@ class AppRoutes {
   static const terms = '/terms';
   static const history = '/history';
   static const wanderweg = '/wanderweg';
+  static const pouches = '/pouches';
   static String historyDetail(int index) => '$history/$index';
 }
 
@@ -66,6 +68,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.wanderweg,
         builder: (_, _) => const WanderwegScreen(),
       ),
+      GoRoute(path: AppRoutes.pouches, builder: (_, _) => const PouchScreen()),
       GoRoute(
         path: AppRoutes.privacy,
         builder: (_, _) => const LegalScreen(doc: LegalDoc.privacy),

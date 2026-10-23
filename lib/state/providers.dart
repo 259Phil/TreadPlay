@@ -10,6 +10,7 @@ import '../data/movement_source.dart';
 import '../domain/breath.dart';
 import '../domain/companion.dart';
 import '../domain/forge.dart';
+import '../domain/pouch.dart';
 import '../domain/run_engine.dart';
 import '../domain/run_summary.dart';
 
@@ -51,8 +52,10 @@ class GameNotifier extends Notifier<GameData> {
     final game = (saved ?? GameData.initial(now))
         .advancingWanderweg(now)
         .regenerated(now)
+        .agingPouches(now)
         .withMarket(now, _random);
     if (!identical(game.market, saved?.market) ||
+        !identical(game.pouches, saved?.pouches) ||
         !identical(game.wanderweg, saved?.wanderweg)) {
       _repo.saveGame(game);
     }
@@ -61,7 +64,10 @@ class GameNotifier extends Notifier<GameData> {
 
   Random get _random => ref.read(randomProvider);
 
-  void refreshBreath() => _set(state.regenerated(_now()));
+  void refreshBreath() {
+    final now = _now();
+    _set(state.regenerated(now).agingPouches(now));
+  }
 
   void refreshMarket() {
     final next = state.withMarket(_now(), _random);
@@ -140,8 +146,17 @@ class GameNotifier extends Notifier<GameData> {
     _set(state.takingAlong(companionId, _now()));
   }
 
+  /// Opens pouch [index] on the leash (free when warmed through, else for
+  /// LP). Returns what was inside; null when not possible or during a run.
+  List<PouchReward>? openPouch(int index) {
+    if (_running || state.openPouchBlock(index) != null) return null;
+    final (next, rewards) = state.openingPouch(index, _random);
+    _set(next);
+    return rewards;
+  }
+
   void completeRun(RunSummary run, {required double breathLeft}) {
-    var next = state.recordingRun(run);
+    var next = state.recordingRun(run, random: _random);
     if (run.valid) {
       next = next.copyWith(
         lp: next.lp + run.lp,

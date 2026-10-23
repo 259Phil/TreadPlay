@@ -1721,7 +1721,7 @@ abstract class AppLocalizations {
   /// No description provided for @forgeGlutSource.
   ///
   /// In en, this message translates to:
-  /// **'Glut: +1 for every run of 1 km or more.'**
+  /// **'Glut comes from pouches. A run of 1 km or more without a pouch still brings 1 Glut.'**
   String get forgeGlutSource;
 
   /// No description provided for @forgeBuyTitle.
@@ -1861,6 +1861,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'+{n} Glut'**
   String glutAmount(int n);
+
+  /// No description provided for @pouchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pouches'**
+  String get pouchTitle;
+
+  /// No description provided for @pouchBrown.
+  ///
+  /// In en, this message translates to:
+  /// **'Brown pouch'**
+  String get pouchBrown;
+
+  /// No description provided for @pouchCopper.
+  ///
+  /// In en, this message translates to:
+  /// **'Copper pouch'**
+  String get pouchCopper;
+
+  /// No description provided for @pouchTurquoise.
+  ///
+  /// In en, this message translates to:
+  /// **'Turquoise pouch'**
+  String get pouchTurquoise;
+
+  /// No description provided for @pouchNavy.
+  ///
+  /// In en, this message translates to:
+  /// **'Navy pouch'**
+  String get pouchNavy;
+
+  /// No description provided for @pouchContentsBrown.
+  ///
+  /// In en, this message translates to:
+  /// **'Glut 1–2, plus a seal L1 or 2 splinters'**
+  String get pouchContentsBrown;
+
+  /// No description provided for @pouchContentsCopper.
+  ///
+  /// In en, this message translates to:
+  /// **'Glut 2, plus 1–2 of: seal L1–L2, 2 Glut, 2 splinters'**
+  String get pouchContentsCopper;
+
+  /// No description provided for @pouchContentsTurquoise.
+  ///
+  /// In en, this message translates to:
+  /// **'Glut 2–3, plus 2 of: seal L1–L2, 2 Glut, 3 splinters'**
+  String get pouchContentsTurquoise;
+
+  /// No description provided for @pouchContentsNavy.
+  ///
+  /// In en, this message translates to:
+  /// **'Glut 3, plus 2 of: seal L1–L3, 3 Glut, 3 splinters'**
+  String get pouchContentsNavy;
+
+  /// No description provided for @pouchLeash.
+  ///
+  /// In en, this message translates to:
+  /// **'Leash {n}/{clips}'**
+  String pouchLeash(int n, int clips);
+
+  /// No description provided for @pouchEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No pouch on the leash. Runs find pouches; a full Breath tank gives the best chance.'**
+  String get pouchEmpty;
+
+  /// No description provided for @pouchLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Pouches start at waymark 1 ({km} km).'**
+  String pouchLocked(String km);
+
+  /// No description provided for @pouchWarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk it open: {done} / {total} km'**
+  String pouchWarm(String done, String total);
+
+  /// No description provided for @pouchWarmShort.
+  ///
+  /// In en, this message translates to:
+  /// **'{done}/{total} km'**
+  String pouchWarmShort(String done, String total);
+
+  /// No description provided for @pouchReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Walked warm: opens for free.'**
+  String get pouchReady;
+
+  /// No description provided for @pouchReadyShort.
+  ///
+  /// In en, this message translates to:
+  /// **'warm'**
+  String get pouchReadyShort;
+
+  /// No description provided for @pouchFades.
+  ///
+  /// In en, this message translates to:
+  /// **'Stays about {h} h more unless a run warms it.'**
+  String pouchFades(int h);
+
+  /// No description provided for @pouchOpenLp.
+  ///
+  /// In en, this message translates to:
+  /// **'Open · {lp} LP'**
+  String pouchOpenLp(int lp);
+
+  /// No description provided for @pouchOpenFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get pouchOpenFree;
+
+  /// No description provided for @pouchNotEnoughLp.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough LP. Or walk it warm.'**
+  String get pouchNotEnoughLp;
+
+  /// No description provided for @pouchOpened.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} opened'**
+  String pouchOpened(String name);
+
+  /// No description provided for @pouchIntoCase.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything is in the Forge case now.'**
+  String get pouchIntoCase;
+
+  /// No description provided for @pouchToForge.
+  ///
+  /// In en, this message translates to:
+  /// **'To the Forge'**
+  String get pouchToForge;
+
+  /// No description provided for @pouchContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get pouchContinue;
+
+  /// No description provided for @pouchChance.
+  ///
+  /// In en, this message translates to:
+  /// **'Find chance after a full Breath tank: {pct}'**
+  String pouchChance(String pct);
+
+  /// No description provided for @pouchFortune.
+  ///
+  /// In en, this message translates to:
+  /// **'Fortune ×{f}'**
+  String pouchFortune(String f);
+
+  /// No description provided for @pouchRule.
+  ///
+  /// In en, this message translates to:
+  /// **'One full Breath tank counts per run. A full leash finds nothing new. Pouches not walked warm fade after a day.'**
+  String get pouchRule;
+
+  /// No description provided for @pouchCounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Found {f} · opened {o}'**
+  String pouchCounts(int f, int o);
+
+  /// No description provided for @pouchSplinters.
+  ///
+  /// In en, this message translates to:
+  /// **'+{n} splinters'**
+  String pouchSplinters(int n);
+
+  /// No description provided for @pouchPick.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a pouch on the leash.'**
+  String get pouchPick;
+
+  /// No description provided for @summaryPouchFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Pouch found'**
+  String get summaryPouchFound;
+
+  /// No description provided for @summaryLeashFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Leash full: no new pouch this time.'**
+  String get summaryLeashFull;
+
+  /// No description provided for @summaryPouchesWarm.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{1 pouch walked warm: free to open.} other{{n} pouches walked warm: free to open.}}'**
+  String summaryPouchesWarm(int n);
+
+  /// No description provided for @summaryToLeash.
+  ///
+  /// In en, this message translates to:
+  /// **'To the leash'**
+  String get summaryToLeash;
+
+  /// No description provided for @homeLeash.
+  ///
+  /// In en, this message translates to:
+  /// **'Leash'**
+  String get homeLeash;
 }
 
 class _AppLocalizationsDelegate

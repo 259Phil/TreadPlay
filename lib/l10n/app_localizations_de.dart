@@ -973,7 +973,8 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get forgeGlutSource => 'Glut: +1 für jeden Lauf ab 1 km.';
+  String get forgeGlutSource =>
+      'Glut kommt aus Beuteln. Ein Lauf ab 1 km ohne Beutel bringt trotzdem 1 Glut.';
 
   @override
   String forgeBuyTitle(String lp) {
@@ -1059,4 +1060,145 @@ class AppLocalizationsDe extends AppLocalizations {
   String glutAmount(int n) {
     return '+$n Glut';
   }
+
+  @override
+  String get pouchTitle => 'Beutel';
+
+  @override
+  String get pouchBrown => 'Brauner Beutel';
+
+  @override
+  String get pouchCopper => 'Kupfer-Beutel';
+
+  @override
+  String get pouchTurquoise => 'Türkis-Beutel';
+
+  @override
+  String get pouchNavy => 'Navy-Beutel';
+
+  @override
+  String get pouchContentsBrown =>
+      'Glut 1–2, dazu ein Siegel L1 oder 2 Splitter';
+
+  @override
+  String get pouchContentsCopper =>
+      'Glut 2, dazu 1–2 Fächer: Siegel L1–L2, 2 Glut oder 2 Splitter';
+
+  @override
+  String get pouchContentsTurquoise =>
+      'Glut 2–3, dazu 2 Fächer: Siegel L1–L2, 2 Glut oder 3 Splitter';
+
+  @override
+  String get pouchContentsNavy =>
+      'Glut 3, dazu 2 Fächer: Siegel L1–L3, 3 Glut oder 3 Splitter';
+
+  @override
+  String pouchLeash(int n, int clips) {
+    return 'Leine $n/$clips';
+  }
+
+  @override
+  String get pouchEmpty =>
+      'Kein Beutel an der Leine. Läufe finden Beutel; ein voller Atem-Tank gibt die beste Chance.';
+
+  @override
+  String pouchLocked(String km) {
+    return 'Beutel gibt es ab Wegmarke 1 ($km km).';
+  }
+
+  @override
+  String pouchWarm(String done, String total) {
+    return 'Einlaufen: $done / $total km';
+  }
+
+  @override
+  String pouchWarmShort(String done, String total) {
+    return '$done/$total km';
+  }
+
+  @override
+  String get pouchReady => 'Warm gelaufen: öffnet sich gratis.';
+
+  @override
+  String get pouchReadyShort => 'warm';
+
+  @override
+  String pouchFades(int h) {
+    return 'Hängt noch etwa $h h, außer ein Lauf wärmt ihn.';
+  }
+
+  @override
+  String pouchOpenLp(int lp) {
+    return 'Öffnen · $lp LP';
+  }
+
+  @override
+  String get pouchOpenFree => 'Öffnen';
+
+  @override
+  String get pouchNotEnoughLp => 'Zu wenig LP. Oder lauf ihn warm.';
+
+  @override
+  String pouchOpened(String name) {
+    return '$name geöffnet';
+  }
+
+  @override
+  String get pouchIntoCase => 'Alles liegt jetzt im Vorrat der Schmiede.';
+
+  @override
+  String get pouchToForge => 'Zur Schmiede';
+
+  @override
+  String get pouchContinue => 'Weiter';
+
+  @override
+  String pouchChance(String pct) {
+    return 'Fundchance nach vollem Atem-Tank: $pct';
+  }
+
+  @override
+  String pouchFortune(String f) {
+    return 'Fortune ×$f';
+  }
+
+  @override
+  String get pouchRule =>
+      'Pro Lauf zählt ein voller Atem-Tank. Volle Leine: kein neuer Fund. Nicht warm gelaufene Beutel verblassen nach einem Tag.';
+
+  @override
+  String pouchCounts(int f, int o) {
+    return 'Gefunden $f · geöffnet $o';
+  }
+
+  @override
+  String pouchSplinters(int n) {
+    return '+$n Splitter';
+  }
+
+  @override
+  String get pouchPick => 'Tippe einen Beutel an der Leine an.';
+
+  @override
+  String get summaryPouchFound => 'Beutel gefunden';
+
+  @override
+  String get summaryLeashFull => 'Leine voll: diesmal kein neuer Beutel.';
+
+  @override
+  String summaryPouchesWarm(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n Beutel warm gelaufen: gratis zu öffnen.',
+      one: '1 Beutel warm gelaufen: gratis zu öffnen.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get summaryToLeash => 'Zur Leine';
+
+  @override
+  String get homeLeash => 'Leine';
 }

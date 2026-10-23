@@ -729,7 +729,7 @@
       }
     }
   },
-  "forgeGlutSource": "Glut: +1 for every run of 1 km or more.",
+  "forgeGlutSource": "Glut comes from pouches. A run of 1 km or more without a pouch still brings 1 Glut.",
   "forgeBuyTitle": "New seal L1 · {lp} LP",
   "@forgeBuyTitle": {
     "placeholders": {
@@ -807,5 +807,136 @@
         "type": "int"
       }
     }
-  }
+  },
+  "pouchTitle": "Pouches",
+  "pouchBrown": "Brown pouch",
+  "pouchCopper": "Copper pouch",
+  "pouchTurquoise": "Turquoise pouch",
+  "pouchNavy": "Navy pouch",
+  "pouchContentsBrown": "Glut 1–2, plus a seal L1 or 2 splinters",
+  "pouchContentsCopper": "Glut 2, plus 1–2 of: seal L1–L2, 2 Glut, 2 splinters",
+  "pouchContentsTurquoise": "Glut 2–3, plus 2 of: seal L1–L2, 2 Glut, 3 splinters",
+  "pouchContentsNavy": "Glut 3, plus 2 of: seal L1–L3, 3 Glut, 3 splinters",
+  "pouchLeash": "Leash {n}/{clips}",
+  "@pouchLeash": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "clips": {
+        "type": "int"
+      }
+    }
+  },
+  "pouchEmpty": "No pouch on the leash. Runs find pouches; a full Breath tank gives the best chance.",
+  "pouchLocked": "Pouches start at waymark 1 ({km} km).",
+  "@pouchLocked": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "pouchWarm": "Walk it open: {done} / {total} km",
+  "@pouchWarm": {
+    "placeholders": {
+      "done": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "pouchWarmShort": "{done}/{total} km",
+  "@pouchWarmShort": {
+    "placeholders": {
+      "done": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "pouchReady": "Walked warm: opens for free.",
+  "pouchReadyShort": "warm",
+  "pouchFades": "Stays about {h} h more unless a run warms it.",
+  "@pouchFades": {
+    "placeholders": {
+      "h": {
+        "type": "int"
+      }
+    }
+  },
+  "pouchOpenLp": "Open · {lp} LP",
+  "@pouchOpenLp": {
+    "placeholders": {
+      "lp": {
+        "type": "int"
+      }
+    }
+  },
+  "pouchOpenFree": "Open",
+  "pouchNotEnoughLp": "Not enough LP. Or walk it warm.",
+  "pouchOpened": "{name} opened",
+  "@pouchOpened": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pouchIntoCase": "Everything is in the Forge case now.",
+  "pouchToForge": "To the Forge",
+  "pouchContinue": "Continue",
+  "pouchChance": "Find chance after a full Breath tank: {pct}",
+  "@pouchChance": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "pouchFortune": "Fortune ×{f}",
+  "@pouchFortune": {
+    "placeholders": {
+      "f": {
+        "type": "String"
+      }
+    }
+  },
+  "pouchRule": "One full Breath tank counts per run. A full leash finds nothing new. Pouches not walked warm fade after a day.",
+  "pouchCounts": "Found {f} · opened {o}",
+  "@pouchCounts": {
+    "placeholders": {
+      "f": {
+        "type": "int"
+      },
+      "o": {
+        "type": "int"
+      }
+    }
+  },
+  "pouchSplinters": "+{n} splinters",
+  "@pouchSplinters": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "pouchPick": "Tap a pouch on the leash.",
+  "summaryPouchFound": "Pouch found",
+  "summaryLeashFull": "Leash full: no new pouch this time.",
+  "summaryPouchesWarm": "{n, plural, =1{1 pouch walked warm: free to open.} other{{n} pouches walked warm: free to open.}}",
+  "@summaryPouchesWarm": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "summaryToLeash": "To the leash",
+  "homeLeash": "Leash"
 }

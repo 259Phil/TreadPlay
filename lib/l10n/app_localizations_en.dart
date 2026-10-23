@@ -968,7 +968,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get forgeGlutSource => 'Glut: +1 for every run of 1 km or more.';
+  String get forgeGlutSource =>
+      'Glut comes from pouches. A run of 1 km or more without a pouch still brings 1 Glut.';
 
   @override
   String forgeBuyTitle(String lp) {
@@ -1054,4 +1055,144 @@ class AppLocalizationsEn extends AppLocalizations {
   String glutAmount(int n) {
     return '+$n Glut';
   }
+
+  @override
+  String get pouchTitle => 'Pouches';
+
+  @override
+  String get pouchBrown => 'Brown pouch';
+
+  @override
+  String get pouchCopper => 'Copper pouch';
+
+  @override
+  String get pouchTurquoise => 'Turquoise pouch';
+
+  @override
+  String get pouchNavy => 'Navy pouch';
+
+  @override
+  String get pouchContentsBrown => 'Glut 1–2, plus a seal L1 or 2 splinters';
+
+  @override
+  String get pouchContentsCopper =>
+      'Glut 2, plus 1–2 of: seal L1–L2, 2 Glut, 2 splinters';
+
+  @override
+  String get pouchContentsTurquoise =>
+      'Glut 2–3, plus 2 of: seal L1–L2, 2 Glut, 3 splinters';
+
+  @override
+  String get pouchContentsNavy =>
+      'Glut 3, plus 2 of: seal L1–L3, 3 Glut, 3 splinters';
+
+  @override
+  String pouchLeash(int n, int clips) {
+    return 'Leash $n/$clips';
+  }
+
+  @override
+  String get pouchEmpty =>
+      'No pouch on the leash. Runs find pouches; a full Breath tank gives the best chance.';
+
+  @override
+  String pouchLocked(String km) {
+    return 'Pouches start at waymark 1 ($km km).';
+  }
+
+  @override
+  String pouchWarm(String done, String total) {
+    return 'Walk it open: $done / $total km';
+  }
+
+  @override
+  String pouchWarmShort(String done, String total) {
+    return '$done/$total km';
+  }
+
+  @override
+  String get pouchReady => 'Walked warm: opens for free.';
+
+  @override
+  String get pouchReadyShort => 'warm';
+
+  @override
+  String pouchFades(int h) {
+    return 'Stays about $h h more unless a run warms it.';
+  }
+
+  @override
+  String pouchOpenLp(int lp) {
+    return 'Open · $lp LP';
+  }
+
+  @override
+  String get pouchOpenFree => 'Open';
+
+  @override
+  String get pouchNotEnoughLp => 'Not enough LP. Or walk it warm.';
+
+  @override
+  String pouchOpened(String name) {
+    return '$name opened';
+  }
+
+  @override
+  String get pouchIntoCase => 'Everything is in the Forge case now.';
+
+  @override
+  String get pouchToForge => 'To the Forge';
+
+  @override
+  String get pouchContinue => 'Continue';
+
+  @override
+  String pouchChance(String pct) {
+    return 'Find chance after a full Breath tank: $pct';
+  }
+
+  @override
+  String pouchFortune(String f) {
+    return 'Fortune ×$f';
+  }
+
+  @override
+  String get pouchRule =>
+      'One full Breath tank counts per run. A full leash finds nothing new. Pouches not walked warm fade after a day.';
+
+  @override
+  String pouchCounts(int f, int o) {
+    return 'Found $f · opened $o';
+  }
+
+  @override
+  String pouchSplinters(int n) {
+    return '+$n splinters';
+  }
+
+  @override
+  String get pouchPick => 'Tap a pouch on the leash.';
+
+  @override
+  String get summaryPouchFound => 'Pouch found';
+
+  @override
+  String get summaryLeashFull => 'Leash full: no new pouch this time.';
+
+  @override
+  String summaryPouchesWarm(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n pouches walked warm: free to open.',
+      one: '1 pouch walked warm: free to open.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get summaryToLeash => 'To the leash';
+
+  @override
+  String get homeLeash => 'Leash';
 }

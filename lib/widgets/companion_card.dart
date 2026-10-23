@@ -1,15 +1,18 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../domain/companion.dart';
 import '../domain/world.dart';
 import '../l10n/app_localizations.dart';
 import '../theme.dart';
-import 'card_designs.dart';
+import '../ui/skin.dart';
 import 'companion_figure.dart';
 import 'format.dart';
 
-/// Collectible card. The frame (rarity metal), rarity word, name and
-/// subtitle are drawn here; the image is only the creature on transparency.
+/// Collectible card: dark trading-card frame with brass corners, a brass
+/// name plate over the art, an element coin and rarity pips. The image is
+/// only the creature on transparency; everything else is drawn here.
 class CompanionCard extends StatelessWidget {
   const CompanionCard({
     super.key,
@@ -42,12 +45,12 @@ class CompanionCard extends StatelessWidget {
   /// Text on the brass pill at the bottom of the card, e.g. the price.
   final String? action;
 
-  /// Element of the companion; shown by the trial card designs.
+  /// Element of the companion; shown as a brass coin on the art.
   final CompanionType? type;
 
   static const double aspectRatio = 0.72;
 
-  /// Two-column card grid used by Shelf and Market; taller cards when they
+  /// Two-column card grid used by Gehege and Market; taller cards when they
   /// carry an [action] pill.
   static SliverGridDelegate grid({bool withAction = false}) =>
       SliverGridDelegateWithFixedCrossAxisCount(
@@ -58,282 +61,388 @@ class CompanionCard extends StatelessWidget {
       );
 
   @override
-  Widget build(BuildContext context) {
-    if (kCardDesign != 0) return cardDesign(this);
-    final metal = rarityMetal(rarity);
-    final glow = rarity == Rarity.legendary;
+  Widget build(BuildContext context) => _FrameCard(this);
+}
 
-    return Semantics(
-      button: onTap != null,
-      label: name,
-      child: GestureDetector(
-        onTap: onTap,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color.lerp(metal, Colors.white, 0.25)!,
-                metal,
-                Color.lerp(metal, Colors.black, 0.45)!,
-              ],
-            ),
-            boxShadow: [
-              const BoxShadow(color: Color(0xAA000000), blurRadius: 8),
-              if (glow)
-                BoxShadow(
-                  color: metal.withValues(alpha: 0.5),
-                  blurRadius: 14,
-                  spreadRadius: 1,
-                ),
-            ],
+/// Colour of the rarity pips and rarity word.
+Color rarityJewel(Rarity r) => switch (r) {
+  Rarity.common => const Color(0xFFB9B1A2),
+  Rarity.rare => const Color(0xFF3F7FD0),
+  Rarity.epic => const Color(0xFF9A52D2),
+  Rarity.legendary => const Color(0xFFE6A434),
+};
+
+IconData elementIcon(CompanionType t) => switch (t) {
+  CompanionType.moss => Icons.eco,
+  CompanionType.brook => Icons.water_drop,
+  CompanionType.gale => Icons.air,
+};
+
+Widget _scene(CompanionCard c) {
+  final bg = c.world.background;
+  final back = bg == null
+      ? ColoredBox(color: c.world.placeholder)
+      : Image.asset(
+          bg,
+          fit: BoxFit.cover,
+          alignment: Alignment.bottomCenter,
+          color: const Color(0x40000000),
+          colorBlendMode: BlendMode.darken,
+        );
+  return Stack(
+    fit: StackFit.expand,
+    children: [
+      const ColoredBox(color: Color(0xFF1E140F)),
+      back,
+      const DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0x00000000), Color(0x77000000)],
+            stops: [0.55, 1],
           ),
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(6, 22, 6, 4),
+        child: CompanionArt(c.artKey),
+      ),
+    ],
+  );
+}
+
+Widget _stats(List<(String, String)> s, Color label, Color value) => Row(
+  children: [
+    for (final (l, v) in s)
+      Expanded(
+        child: Column(
+          children: [
+            Text(
+              l,
+              maxLines: 1,
+              overflow: TextOverflow.fade,
+              softWrap: false,
+              style: TextStyle(color: label, fontSize: 10),
+            ),
+            Text(
+              v,
+              style: TextStyle(
+                color: value,
+                fontSize: 13.5,
+                fontWeight: FontWeight.w700,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
+            ),
+          ],
+        ),
+      ),
+  ],
+);
+
+Widget _pill(String text, {required BoxDecoration deco, required Color ink}) =>
+    DecoratedBox(
+      decoration: deco,
+      child: SizedBox(
+        height: 34,
+        child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(2),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        ColoredBox(
-                          color: Color.lerp(
-                            world.placeholder,
-                            TreadColors.iron,
-                            0.4,
-                          )!,
-                        ),
-                        if (world.background case final bg?)
-                          Image.asset(
-                            bg,
-                            fit: BoxFit.cover,
-                            alignment: Alignment.bottomCenter,
-                            color: const Color(0x40000000),
-                            colorBlendMode: BlendMode.darken,
-                          ),
-                        const DecoratedBox(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [Color(0x00000000), Color(0x88000000)],
-                              stops: [0.6, 1],
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 28, 8, 4),
-                          child: CompanionArt(artKey),
-                        ),
-                        Positioned(
-                          left: 8,
-                          right: 8,
-                          top: 8,
-                          child: switch (badge) {
-                            final b? => Wrap(
-                              alignment: WrapAlignment.spaceBetween,
-                              spacing: 4,
-                              runSpacing: 4,
-                              children: [
-                                _Tag(b),
-                                _RarityTag(rarity: rarity, color: metal),
-                              ],
-                            ),
-                            null => Align(
-                              alignment: Alignment.topRight,
-                              child: _RarityTag(rarity: rarity, color: metal),
-                            ),
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  _Plate(
-                    name: name,
-                    subtitle: subtitle,
-                    metal: metal,
-                    stats: stats,
-                    action: action,
-                  ),
-                ],
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            child: Text(
+              text,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: ink,
+                fontSize: 13.5,
+                fontWeight: FontWeight.w800,
               ),
             ),
           ),
         ),
       ),
     );
-  }
+
+class _Tag extends StatelessWidget {
+  const _Tag(this.text, {required this.bg, required this.ink});
+
+  final String text;
+  final Color bg;
+  final Color ink;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: BoxDecoration(
+      color: bg,
+      borderRadius: BorderRadius.circular(10),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: ink,
+          fontSize: 10.5,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+    ),
+  );
 }
 
-class _Plate extends StatelessWidget {
-  const _Plate({
-    required this.name,
-    required this.subtitle,
-    required this.metal,
-    this.stats,
-    this.action,
-  });
+Widget _tap(CompanionCard c, Widget child) => Semantics(
+  button: c.onTap != null,
+  label: c.name,
+  child: GestureDetector(onTap: c.onTap, child: child),
+);
 
-  final String name;
-  final String subtitle;
-  final Color metal;
-  final List<(String, String)>? stats;
-  final String? action;
+class _FrameCard extends StatelessWidget {
+  const _FrameCard(this.c);
+  final CompanionCard c;
 
   @override
   Widget build(BuildContext context) {
-    final s = stats;
-    final a = action;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: TreadColors.plate,
-        border: Border(top: BorderSide(color: metal.withValues(alpha: 0.5))),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: serifTitle.copyWith(fontSize: 18),
+    final l = AppLocalizations.of(context);
+    final skin = TreadSkin.of(context);
+    final metal = rarityJewel(c.rarity);
+    final s = c.stats;
+    final a = c.action;
+    return _tap(
+      c,
+      DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: brassGradient,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            const BoxShadow(
+              color: Color(0xAA000000),
+              blurRadius: 8,
+              offset: Offset(0, 3),
             ),
-            const SizedBox(height: 1),
-            Text(
-              subtitle,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: TreadColors.muted, fontSize: 12.5),
+            if (c.rarity == Rarity.legendary)
+              BoxShadow(color: metal.withValues(alpha: .4), blurRadius: 14),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(2.5),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: const Color(0xFF15100C),
+              borderRadius: BorderRadius.circular(10),
             ),
-            if (s != null) ...[
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  for (final (label, value) in s)
+            child: CustomPaint(
+              foregroundPainter: _CornerPainter(),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(7, 7, 7, 9),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
                     Expanded(
-                      child: Column(
+                      child: Stack(
                         children: [
-                          Text(
-                            label,
-                            maxLines: 1,
-                            overflow: TextOverflow.fade,
-                            softWrap: false,
-                            style: const TextStyle(
-                              color: TreadColors.muted,
-                              fontSize: 10.5,
+                          Positioned.fill(
+                            child: DecoratedBox(
+                              position: DecorationPosition.foreground,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(
+                                  color: const Color(0x99D2B074),
+                                ),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(6),
+                                child: _scene(c),
+                              ),
                             ),
                           ),
-                          Text(
-                            value,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              fontFeatures: [FontFeature.tabularFigures()],
+                          if (c.type case final t?)
+                            Positioned(left: 5, top: 5, child: _ElementCoin(t)),
+                          if (c.badge case final b?)
+                            Positioned(
+                              right: 5,
+                              top: 7,
+                              child: _Tag(
+                                b,
+                                bg: TreadColors.brass,
+                                ink: const Color(0xFF1A110B),
+                              ),
+                            ),
+                          Positioned(
+                            left: 4,
+                            right: 4,
+                            bottom: 5,
+                            child: _NamePlate(
+                              name: c.name,
+                              style: skin.display(
+                                15.5,
+                                color: const Color(0xFF2A1A0E),
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                ],
-              ),
-            ],
-            if (a != null) ...[
-              const SizedBox(height: 10),
-              DecoratedBox(
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                  gradient: brassGradient,
-                ),
-                child: SizedBox(
-                  height: 38,
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6),
-                      child: Text(
-                        a,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: TreadColors.iron,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w800,
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        for (var i = 0; i <= c.rarity.index; i++)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 3),
+                            child: Transform.rotate(
+                              angle: math.pi / 4,
+                              child: Container(
+                                width: 5.5,
+                                height: 5.5,
+                                decoration: BoxDecoration(
+                                  color: metal,
+                                  border: Border.all(
+                                    color: const Color(0xFF15100C),
+                                    width: .5,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        const SizedBox(width: 4),
+                        Text(
+                          rarityLabel(l, c.rarity).toUpperCase(),
+                          style: TextStyle(
+                            color: metal,
+                            fontSize: 9.5,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: .8,
+                          ),
                         ),
-                      ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            c.subtitle,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.right,
+                            style: const TextStyle(
+                              color: TreadColors.muted,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
+                    if (s != null) ...[
+                      const SizedBox(height: 6),
+                      _stats(s, TreadColors.muted, const Color(0xFFF2DCA8)),
+                    ],
+                    if (a != null) ...[
+                      const SizedBox(height: 8),
+                      _pill(
+                        a,
+                        deco: BoxDecoration(
+                          color: const Color(0xFF2A1D15),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: TreadColors.brass),
+                        ),
+                        ink: const Color(0xFFF2DCA8),
+                      ),
+                    ],
+                  ],
                 ),
               ),
-            ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NamePlate extends StatelessWidget {
+  const _NamePlate({required this.name, required this.style});
+  final String name;
+  final TextStyle style;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: const BoxDecoration(
+      gradient: brassGradient,
+      borderRadius: BorderRadius.all(Radius.circular(4)),
+      border: Border.fromBorderSide(BorderSide(color: Color(0xFF6E5030))),
+      boxShadow: [
+        BoxShadow(
+          color: Color(0xAA000000),
+          blurRadius: 4,
+          offset: Offset(0, 2),
+        ),
+      ],
+    ),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: Text(
+        name,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
+        style: style.copyWith(
+          shadows: const [
+            Shadow(color: Color(0x99FFF0C8), offset: Offset(0, 1)),
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
 }
 
-class _Tag extends StatelessWidget {
-  const _Tag(this.text);
-
-  final String text;
+class _ElementCoin extends StatelessWidget {
+  const _ElementCoin(this.type);
+  final CompanionType type;
 
   @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: TreadColors.brass,
-        borderRadius: BorderRadius.circular(12),
+  Widget build(BuildContext context) => Container(
+    width: 28,
+    height: 28,
+    decoration: const BoxDecoration(
+      shape: BoxShape.circle,
+      gradient: RadialGradient(
+        center: Alignment(-.3, -.4),
+        colors: [Color(0xFFF0D598), Color(0xFFC4A36A), Color(0xFF7E6038)],
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-        child: Text(
-          text,
-          style: const TextStyle(
-            color: TreadColors.iron,
-            fontSize: 11,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-      ),
-    );
-  }
+      border: Border.fromBorderSide(BorderSide(color: Color(0xFF4A3420))),
+      boxShadow: [BoxShadow(color: Color(0xAA000000), blurRadius: 3)],
+    ),
+    child: Icon(elementIcon(type), size: 16, color: const Color(0xFF2A1A0E)),
+  );
 }
 
-/// Rarity word on a small dark plate in the frame's metal.
-class _RarityTag extends StatelessWidget {
-  const _RarityTag({required this.rarity, required this.color});
-
-  final Rarity rarity;
-  final Color color;
+/// Small brass corner brackets on the dark frame.
+class _CornerPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final p = Paint()
+      ..color = const Color(0xFFD2B074)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.6
+      ..strokeCap = StrokeCap.round;
+    const d = 3.0, k = 12.0;
+    for (final (x, y, sx, sy) in [
+      (d, d, 1.0, 1.0),
+      (size.width - d, d, -1.0, 1.0),
+      (d, size.height - d, 1.0, -1.0),
+      (size.width - d, size.height - d, -1.0, -1.0),
+    ]) {
+      canvas.drawPath(
+        Path()
+          ..moveTo(x, y + k * sy)
+          ..lineTo(x, y)
+          ..lineTo(x + k * sx, y),
+        p,
+      );
+      canvas.drawCircle(
+        Offset(x + 4 * sx, y + 4 * sy),
+        1.3,
+        Paint()..color = const Color(0xFFD2B074),
+      );
+    }
+  }
 
   @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: const Color(0xCC0F0E0D),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.8)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-        child: Text(
-          rarityLabel(l, rarity).toUpperCase(),
-          style: TextStyle(
-            color: color,
-            fontSize: 10,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 0.8,
-          ),
-        ),
-      ),
-    );
-  }
+  bool shouldRepaint(_CornerPainter old) => false;
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../ui/skin.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/companion.dart';
@@ -40,6 +42,7 @@ class _ShelfScreenState extends ConsumerState<ShelfScreen> {
     ];
 
     return Scaffold(
+      backgroundColor: TreadSkin.of(context).canvas,
       appBar: AppBar(title: Text(l.tabShelf), actions: lpActions(game.lp)),
       body: CustomScrollView(
         slivers: [

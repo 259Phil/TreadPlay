@@ -32,7 +32,7 @@ class HomeScreen extends ConsumerWidget {
     final skin = TreadSkin.of(context);
 
     return ColoredBox(
-      color: skin.base,
+      color: skin.canvas,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

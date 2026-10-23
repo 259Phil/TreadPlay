@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../ui/skin.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/game_data.dart';
@@ -25,6 +27,7 @@ class MarketScreen extends ConsumerWidget {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
+        backgroundColor: TreadSkin.of(context).canvas,
         appBar: AppBar(
           title: Text(l.tabMarket),
           actions: lpActions(game.lp),

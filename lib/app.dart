@@ -6,6 +6,7 @@ import 'l10n/app_localizations.dart';
 import 'router.dart';
 import 'state/providers.dart';
 import 'theme.dart';
+import 'ui/skin.dart';
 
 class TreadplayApp extends ConsumerWidget {
   const TreadplayApp({super.key});
@@ -39,7 +40,7 @@ class _PhoneFrame extends StatelessWidget {
     final media = MediaQuery.of(context);
     if (media.size.width <= maxWidth) return child ?? const SizedBox();
     return ColoredBox(
-      color: TreadColors.iron,
+      color: TreadSkin.of(context).base,
       child: Center(
         child: SizedBox(
           width: maxWidth,

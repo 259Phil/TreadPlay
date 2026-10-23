@@ -3,7 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 /// The four style directions Philip picks from. Chosen at build time with
-/// `--dart-define=TREADPLAY_STYLE=A|B|C|D`; B is the default.
+/// `--dart-define=TREADPLAY_STYLE=A|B|C|D`; C (Philip's pick) is the
+/// default.
 enum TreadStyle {
   /// A "Schmiede-Messing": engraved brass frames, rivets, serif display.
   forgeBrass,
@@ -20,14 +21,25 @@ enum TreadStyle {
 
 const _styleDefine = String.fromEnvironment(
   'TREADPLAY_STYLE',
-  defaultValue: 'B',
+  defaultValue: 'C',
 );
 
 TreadStyle get buildStyle => switch (_styleDefine.toUpperCase()) {
   'A' => TreadStyle.forgeBrass,
-  'C' => TreadStyle.leather,
+  'B' => TreadStyle.ironPlain,
   'D' => TreadStyle.runeEmber,
-  _ => TreadStyle.ironPlain,
+  _ => TreadStyle.leather,
+};
+
+/// Warm backdrop of style C, chosen with `--dart-define=TREADPLAY_BG=1|2|3`:
+/// 1 deep brown leather (default), 2 dark aged parchment, 3 dark oak with a
+/// forge glow from below.
+const _bgDefine = String.fromEnvironment('TREADPLAY_BG', defaultValue: '1');
+
+int get buildBackdrop => switch (_bgDefine) {
+  '2' => 2,
+  '3' => 3,
+  _ => 1,
 };
 
 /// Design values and painters of one style, carried on the theme.
@@ -50,6 +62,7 @@ class TreadSkin extends ThemeExtension<TreadSkin> {
     required this.displayWeight,
     required this.displaySpacing,
     required this.displayUpper,
+    this.backdrop,
   });
 
   final TreadStyle style;
@@ -70,6 +83,12 @@ class TreadSkin extends ThemeExtension<TreadSkin> {
   final FontWeight displayWeight;
   final double displaySpacing;
   final bool displayUpper;
+
+  /// Full-screen painted backdrop behind the key screens (style C only).
+  final String? backdrop;
+
+  /// Screen fill: transparent where the backdrop shows through.
+  Color get canvas => backdrop == null ? base : Colors.transparent;
 
   static const bodyFont = 'Inter';
 
@@ -110,24 +129,7 @@ class TreadSkin extends ThemeExtension<TreadSkin> {
       displaySpacing: 1.2,
       displayUpper: true,
     ),
-    TreadStyle.leather => const TreadSkin(
-      style: TreadStyle.leather,
-      base: Color(0xFF1A1D22),
-      surface: Color(0xFF3A2A20),
-      raised: Color(0xFF47332A),
-      line: Color(0xFF5C4433),
-      text: Color(0xFFE8E0D0),
-      muted: Color(0xFFB3A48E),
-      brass: Color(0xFFC4A36A),
-      brassDeep: Color(0xFF7A6238),
-      accent: Color(0xFFB9925A),
-      stop: Color(0xFF8B3A3A),
-      radius: 10,
-      displayFont: 'AlegreyaSC',
-      displayWeight: FontWeight.w700,
-      displaySpacing: 0.4,
-      displayUpper: false,
-    ),
+    TreadStyle.leather => leather(buildBackdrop),
     TreadStyle.runeEmber => const TreadSkin(
       style: TreadStyle.runeEmber,
       base: Color(0xFF16181C),
@@ -147,6 +149,34 @@ class TreadSkin extends ThemeExtension<TreadSkin> {
       displayUpper: false,
     ),
   };
+
+  /// Style C on one of its three warm backdrops (see [buildBackdrop]).
+  static TreadSkin leather(int bg) => TreadSkin(
+    style: TreadStyle.leather,
+    base: switch (bg) {
+      2 => const Color(0xFF261C14),
+      3 => const Color(0xFF1B120C),
+      _ => const Color(0xFF1E140F),
+    },
+    surface: switch (bg) {
+      2 => const Color(0xFF33241A),
+      _ => const Color(0xFF3A2A20),
+    },
+    raised: const Color(0xFF47332A),
+    line: const Color(0xFF5C4433),
+    text: const Color(0xFFEDE4D3),
+    muted: const Color(0xFFBBAC95),
+    brass: const Color(0xFFD2B074),
+    brassDeep: const Color(0xFF7A6238),
+    accent: const Color(0xFFB9925A),
+    stop: const Color(0xFF8B3A3A),
+    radius: 10,
+    displayFont: 'AlegreyaSC',
+    displayWeight: FontWeight.w700,
+    displaySpacing: 0.4,
+    displayUpper: false,
+    backdrop: 'assets/backdrop/bg$bg.jpg',
+  );
 
   static TreadSkin of(BuildContext context) =>
       Theme.of(context).extension<TreadSkin>() ?? forStyle(buildStyle);
@@ -566,7 +596,12 @@ ButtonStyle skinButtonStyle(
 }) {
   final primary = kind == SkinButtonKind.primary;
   final danger = kind == SkinButtonKind.danger;
-  final fg = primary ? s.base : (danger ? s.text : s.brass);
+  final leather = s.style == TreadStyle.leather;
+  final fg = leather
+      ? (primary ? const Color(0xFF2A1A0C) : const Color(0xFFF2DCA8))
+      : primary
+      ? s.base
+      : (danger ? s.text : s.brass);
   final labelStyle = switch (s.style) {
     TreadStyle.ironPlain => const TextStyle(
       fontFamily: 'BarlowSemiCondensed',
@@ -580,10 +615,19 @@ ButtonStyle skinButtonStyle(
       fontSize: 15,
       letterSpacing: .6,
     ),
-    TreadStyle.leather => const TextStyle(
+    TreadStyle.leather => TextStyle(
       fontFamily: 'AlegreyaSC',
       fontWeight: FontWeight.w700,
-      fontSize: 16.5,
+      fontSize: 17,
+      shadows: [
+        primary
+            ? const Shadow(color: Color(0x88FFF3D0), offset: Offset(0, 1))
+            : const Shadow(
+                color: Color(0xCC000000),
+                offset: Offset(0, 1),
+                blurRadius: 1.5,
+              ),
+      ],
     ),
     TreadStyle.runeEmber => const TextStyle(
       fontFamily: 'Metamorphous',
@@ -598,7 +642,12 @@ ButtonStyle skinButtonStyle(
   );
   return ButtonStyle(
     minimumSize: WidgetStatePropertyAll(Size(0, height)),
-    padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 16)),
+    // Style C: the label sits on the raised plate, above its 3 px slab.
+    padding: WidgetStatePropertyAll(
+      leather
+          ? const EdgeInsets.fromLTRB(16, 0, 16, 3)
+          : const EdgeInsets.symmetric(horizontal: 16),
+    ),
     textStyle: WidgetStatePropertyAll(labelStyle),
     shape: WidgetStatePropertyAll(shape),
     foregroundColor: WidgetStateProperty.resolveWith(
@@ -607,13 +656,17 @@ ButtonStyle skinButtonStyle(
     backgroundColor: const WidgetStatePropertyAll(Colors.transparent),
     side: const WidgetStatePropertyAll(BorderSide.none),
     elevation: const WidgetStatePropertyAll(0),
-    overlayColor: WidgetStatePropertyAll(s.text.withValues(alpha: .08)),
+    overlayColor: WidgetStatePropertyAll(
+      leather ? Colors.transparent : s.text.withValues(alpha: .08),
+    ),
     backgroundBuilder: (context, states, child) => CustomPaint(
       painter: _ButtonPainter(
         s,
         kind,
         states.contains(WidgetState.disabled),
         shape.borderRadius.resolve(TextDirection.ltr),
+        pressed: states.contains(WidgetState.pressed),
+        hovered: states.contains(WidgetState.hovered),
       ),
       child: child,
     ),
@@ -621,11 +674,20 @@ ButtonStyle skinButtonStyle(
 }
 
 class _ButtonPainter extends CustomPainter {
-  _ButtonPainter(this.s, this.kind, this.disabled, this.radius);
+  _ButtonPainter(
+    this.s,
+    this.kind,
+    this.disabled,
+    this.radius, {
+    this.pressed = false,
+    this.hovered = false,
+  });
   final TreadSkin s;
   final SkinButtonKind kind;
   final bool disabled;
   final BorderRadius radius;
+  final bool pressed;
+  final bool hovered;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -633,6 +695,19 @@ class _ButtonPainter extends CustomPainter {
     final r = radius.toRRect(rect);
     final primary = kind == SkinButtonKind.primary;
     final danger = kind == SkinButtonKind.danger;
+    if (s.style == TreadStyle.leather) {
+      paintLeatherButton(
+        canvas,
+        size,
+        s,
+        radius,
+        kind: kind,
+        disabled: disabled,
+        pressed: pressed,
+        hovered: hovered,
+      );
+      return;
+    }
     if (disabled) {
       canvas.drawRRect(r, Paint()..color = s.raised);
       canvas.drawRRect(
@@ -779,7 +854,155 @@ class _ButtonPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_ButtonPainter old) =>
-      old.s != s || old.kind != kind || old.disabled != disabled;
+      old.s != s ||
+      old.kind != kind ||
+      old.disabled != disabled ||
+      old.pressed != pressed ||
+      old.hovered != hovered;
+}
+
+/// Style C buttons: a raised plate on a darker base slab, so they stand
+/// off the leather. Primary is polished brass, secondary burnished leather
+/// with a brass rim, danger oxblood with a brass rim. Pressed sinks the
+/// plate onto its slab; disabled is flat, unlit leather.
+void paintLeatherButton(
+  Canvas canvas,
+  Size size,
+  TreadSkin s,
+  BorderRadius radius, {
+  SkinButtonKind kind = SkinButtonKind.primary,
+  bool disabled = false,
+  bool pressed = false,
+  bool hovered = false,
+}) {
+  final rect = Offset.zero & size;
+  final primary = kind == SkinButtonKind.primary;
+  final danger = kind == SkinButtonKind.danger;
+  if (disabled) {
+    final r = radius.toRRect(rect.deflate(1));
+    canvas.drawRRect(r, Paint()..color = const Color(0xFF2B1F17));
+    canvas.drawRRect(
+      r,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.2
+        ..color = const Color(0xFF4A372A),
+    );
+    _dashedRRect(
+      canvas,
+      r.deflate(4),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1
+        ..color = const Color(0x665C4433),
+    );
+    return;
+  }
+  const lift = 3.0;
+  final sink = pressed ? lift - .5 : 0.0;
+  final slab = radius.toRRect(Rect.fromLTRB(0, lift, size.width, size.height));
+  final face = radius.toRRect(
+    Rect.fromLTRB(0, sink, size.width, size.height - lift + sink),
+  );
+  // Drop shadow under the whole button.
+  canvas.drawRRect(
+    slab.shift(Offset(0, pressed ? 1 : 3)),
+    Paint()
+      ..color = const Color(0x99000000)
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, pressed ? 2 : 5),
+  );
+  // Base slab (the edge the plate stands on).
+  canvas.drawRRect(
+    slab,
+    Paint()
+      ..color = primary
+          ? const Color(0xFF5E4523)
+          : (danger ? const Color(0xFF3A1414) : const Color(0xFF1A110B)),
+  );
+  final List<Color> colors = primary
+      ? const [
+          Color(0xFFF6E2AA),
+          Color(0xFFDDBB7C),
+          Color(0xFFB58E52),
+          Color(0xFF8F6C3A),
+        ]
+      : danger
+      ? const [
+          Color(0xFFB45A4E),
+          Color(0xFF8E3A32),
+          Color(0xFF6E2A24),
+          Color(0xFF521C18),
+        ]
+      : const [
+          Color(0xFF7A5A40),
+          Color(0xFF5C412E),
+          Color(0xFF452F21),
+          Color(0xFF34231A),
+        ];
+  final shade = pressed ? .16 : (hovered ? -.06 : 0.0);
+  Color tone(Color c) => shade >= 0
+      ? Color.lerp(c, Colors.black, shade)!
+      : Color.lerp(c, Colors.white, -shade)!;
+  canvas.drawRRect(
+    face,
+    Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [for (final c in colors) tone(c)],
+        stops: const [0, .38, .78, 1],
+      ).createShader(face.outerRect),
+  );
+  // Brass rim around secondary and danger plates; dark rim on brass.
+  final rimW = primary ? 1.2 : 2.0;
+  canvas.drawRRect(
+    face.deflate(rimW / 2),
+    Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = rimW
+      ..shader = primary
+          ? null
+          : LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                const Color(0xFFF0D598),
+                s.brass,
+                const Color(0xFF7A6238),
+              ],
+            ).createShader(face.outerRect)
+      ..color = const Color(0xFF4A3218),
+  );
+  // Top highlight line (the light catches the upper bevel).
+  if (!pressed) {
+    final y = face.top + rimW + 1.2;
+    final inset = radius.topLeft.x + 3;
+    canvas.drawLine(
+      Offset(inset, y),
+      Offset(size.width - inset, y),
+      Paint()
+        ..strokeWidth = 1.2
+        ..shader = LinearGradient(
+          colors: [
+            const Color(0x00FFF6DC),
+            Color(primary ? 0xCCFFF6DC : 0x66FFE6C0),
+            const Color(0x00FFF6DC),
+          ],
+        ).createShader(face.outerRect),
+    );
+  }
+  // Stitching inside the rim.
+  _dashedRRect(
+    canvas,
+    face.deflate(primary ? 4 : 5),
+    Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.1
+      ..strokeCap = StrokeCap.round
+      ..color = primary
+          ? const Color(0x995A3E1E)
+          : s.accent.withValues(alpha: .75),
+  );
 }
 
 /// Small label chip (counts, filters, status).
@@ -809,7 +1032,12 @@ class SkinChip extends StatelessWidget {
     final border = switch (s.style) {
       TreadStyle.forgeBrass => Border.all(color: s.brass, width: 1.2),
       TreadStyle.ironPlain => Border.all(color: selected ? s.brass : s.line),
-      TreadStyle.leather => Border.all(color: s.accent.withValues(alpha: .7)),
+      TreadStyle.leather => Border.all(
+        color: onTap != null || selected
+            ? s.brass.withValues(alpha: .9)
+            : s.accent.withValues(alpha: .7),
+        width: onTap != null ? 1.4 : 1,
+      ),
       TreadStyle.runeEmber => Border.all(color: selected ? s.accent : s.line),
     };
     final fill = switch (s.style) {
@@ -826,11 +1054,28 @@ class SkinChip extends StatelessWidget {
             color: selected ? Color.lerp(fill, s.brass, .18) : fill,
             borderRadius: radius,
             border: border,
+            gradient: s.style == TreadStyle.leather
+                ? LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: selected
+                        ? const [Color(0xFF6E5236), Color(0xFF4A3424)]
+                        : const [Color(0xF04A3527), Color(0xF02A1D15)],
+                  )
+                : null,
             boxShadow: s.style == TreadStyle.runeEmber && selected
                 ? [
                     BoxShadow(
                       color: s.accent.withValues(alpha: .4),
                       blurRadius: 6,
+                    ),
+                  ]
+                : s.style == TreadStyle.leather
+                ? const [
+                    BoxShadow(
+                      color: Color(0x99000000),
+                      blurRadius: 5,
+                      offset: Offset(0, 2),
                     ),
                   ]
                 : null,
@@ -881,9 +1126,20 @@ class SkinTabBar extends StatelessWidget implements PreferredSizeWidget {
         insets: const EdgeInsets.symmetric(horizontal: 14),
       ),
       TreadStyle.leather => BoxDecoration(
-        color: s.raised,
+        gradient: const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF7A5A40), Color(0xFF4E3727)],
+        ),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: s.accent.withValues(alpha: .8)),
+        border: Border.all(color: s.brass, width: 1.5),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0xAA000000),
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
       TreadStyle.runeEmber => BoxDecoration(
         border: Border(bottom: BorderSide(color: s.accent, width: 2)),
@@ -901,7 +1157,11 @@ class SkinTabBar extends StatelessWidget implements PreferredSizeWidget {
       tabs: tabs,
       labelStyle: label,
       unselectedLabelStyle: label,
-      labelColor: s.style == TreadStyle.runeEmber ? s.text : s.brass,
+      labelColor: switch (s.style) {
+        TreadStyle.runeEmber => s.text,
+        TreadStyle.leather => const Color(0xFFF6E2AA),
+        _ => s.brass,
+      },
       unselectedLabelColor: s.muted,
       indicator: indicator,
       indicatorSize: TabBarIndicatorSize.tab,
@@ -1087,10 +1347,89 @@ class LockBadge extends StatelessWidget {
   }
 }
 
+/// Style C: every Filled/Outlined/Text button in the app gets the raised
+/// plates, and screens get the warm base instead of the iron grey.
+ThemeData _leatherButtons(ThemeData base, TreadSkin s) => base.copyWith(
+  scaffoldBackgroundColor: s.base,
+  canvasColor: s.base,
+  colorScheme: base.colorScheme.copyWith(surface: s.base, onPrimary: s.base),
+  appBarTheme: base.appBarTheme.copyWith(
+    backgroundColor: Colors.transparent,
+    titleTextStyle: s.display(26),
+  ),
+  bottomSheetTheme: base.bottomSheetTheme.copyWith(backgroundColor: s.base),
+  snackBarTheme: base.snackBarTheme.copyWith(backgroundColor: s.surface),
+  cardTheme: base.cardTheme.copyWith(color: s.surface),
+  filledButtonTheme: FilledButtonThemeData(
+    style: skinButtonStyle(s, SkinButtonKind.primary),
+  ),
+  outlinedButtonTheme: OutlinedButtonThemeData(
+    style: skinButtonStyle(s, SkinButtonKind.secondary),
+  ),
+  textButtonTheme: TextButtonThemeData(
+    style: skinButtonStyle(
+      s,
+      SkinButtonKind.secondary,
+      height: 44,
+    ).copyWith(minimumSize: const WidgetStatePropertyAll(Size(64, 44))),
+  ),
+);
+
+/// The style's full-screen backdrop (style C: painted leather, parchment or
+/// oak), with a soft vignette so panels and text keep their contrast.
+class SkinBackdrop extends StatelessWidget {
+  const SkinBackdrop({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = TreadSkin.of(context);
+    final asset = s.backdrop;
+    if (asset == null) return ColoredBox(color: s.base, child: child);
+    return ColoredBox(
+      color: s.base,
+      child: Stack(
+        fit: StackFit.passthrough,
+        children: [
+          Positioned.fill(
+            child: ExcludeSemantics(
+              child: Image.asset(
+                asset,
+                fit: BoxFit.cover,
+                alignment: Alignment.bottomCenter,
+                gaplessPlayback: true,
+                errorBuilder: (_, _, _) => const SizedBox(),
+              ),
+            ),
+          ),
+          const Positioned.fill(
+            child: IgnorePointer(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(
+                    center: Alignment(0, -.2),
+                    radius: 1.15,
+                    colors: [Color(0x00000000), Color(0x8C0A0604)],
+                    stops: [.55, 1],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          child,
+        ],
+      ),
+    );
+  }
+}
+
 /// Shared ThemeData of a style. Screens outside the three key screens keep
 /// their own colours until the style is chosen.
 ThemeData applySkin(ThemeData base, TreadSkin s) {
-  return base.copyWith(
+  final leather = s.style == TreadStyle.leather;
+  final themed = leather ? _leatherButtons(base, s) : base;
+  return themed.copyWith(
     extensions: [s],
     textTheme: base.textTheme.apply(fontFamily: TreadSkin.bodyFont),
     primaryTextTheme: base.primaryTextTheme.apply(
@@ -1102,22 +1441,34 @@ ThemeData applySkin(ThemeData base, TreadSkin s) {
       dividerColor: Colors.transparent,
     ),
     navigationBarTheme: base.navigationBarTheme.copyWith(
-      backgroundColor: s.style == TreadStyle.leather
-          ? const Color(0xFF221913)
-          : const Color(0xFF14161A),
+      backgroundColor: leather ? Colors.transparent : const Color(0xFF14161A),
       iconTheme: WidgetStateProperty.resolveWith(
         (st) => IconThemeData(
           color: st.contains(WidgetState.selected) ? s.brass : s.muted,
         ),
       ),
       labelTextStyle: WidgetStateProperty.resolveWith(
-        (st) => TextStyle(
-          fontFamily: TreadSkin.bodyFont,
-          fontSize: 10.5,
-          letterSpacing: -.2,
-          fontWeight: FontWeight.w600,
-          color: st.contains(WidgetState.selected) ? s.brass : s.muted,
-        ),
+        (st) => leather
+            ? TextStyle(
+                fontFamily: 'AlegreyaSC',
+                fontSize: 11,
+                height: 1,
+                letterSpacing: -.25,
+                fontWeight: FontWeight.w700,
+                color: st.contains(WidgetState.selected)
+                    ? const Color(0xFFF6E2AA)
+                    : s.muted,
+                shadows: const [
+                  Shadow(color: Color(0xCC000000), offset: Offset(0, 1)),
+                ],
+              )
+            : TextStyle(
+                fontFamily: TreadSkin.bodyFont,
+                fontSize: 10.5,
+                letterSpacing: -.2,
+                fontWeight: FontWeight.w600,
+                color: st.contains(WidgetState.selected) ? s.brass : s.muted,
+              ),
       ),
     ),
     dialogTheme: DialogThemeData(

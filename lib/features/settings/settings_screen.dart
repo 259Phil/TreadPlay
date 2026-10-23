@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../ui/skin.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -37,6 +39,7 @@ class SettingsScreen extends ConsumerWidget {
     );
 
     return Scaffold(
+      backgroundColor: TreadSkin.of(context).canvas,
       appBar: AppBar(title: Text(l.tabSettings)),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 24),

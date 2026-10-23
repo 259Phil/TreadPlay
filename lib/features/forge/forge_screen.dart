@@ -139,9 +139,9 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
     );
 
     return Scaffold(
-      backgroundColor: skin.base,
+      backgroundColor: skin.canvas,
       appBar: AppBar(
-        backgroundColor: skin.base,
+        backgroundColor: skin.canvas,
         title: Text(skin.displayText(l.tabForge), style: skin.display(26)),
         actions: lpActions(game.lp),
       ),
@@ -586,7 +586,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: ForgeColors.surface,
+        backgroundColor: TreadSkin.of(context).surface,
         icon: SealArt(seal: seal, size: 88),
         title: Text(l.forgeClearTitle(sealTitle(l, seal))),
         content: Text(l.forgeClearBody),
@@ -793,16 +793,23 @@ class _CaseStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     final stock = game.forge.sealsInStock;
     if (stock.isEmpty) {
+      final skin = TreadSkin.of(context);
       return DecoratedBox(
         decoration: BoxDecoration(
-          color: ForgeColors.surface,
+          color: skin.style == TreadStyle.leather
+              ? const Color(0xCC241A14)
+              : ForgeColors.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: ForgeColors.line),
+          border: Border.all(
+            color: skin.style == TreadStyle.leather
+                ? skin.line
+                : ForgeColors.line,
+          ),
         ),
         child: Center(
           child: Text(
             AppLocalizations.of(context).forgeCaseNone,
-            style: const TextStyle(color: ForgeColors.muted),
+            style: TextStyle(color: skin.muted),
           ),
         ),
       );
@@ -1124,14 +1131,30 @@ class _BuyRow extends StatelessWidget {
                   child: OutlinedButton(
                     key: Key('$keyPrefix-${t.name}'),
                     onPressed: enabled ? () => onBuy(t) : null,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: ForgeColors.text,
-                      side: const BorderSide(color: ForgeColors.line),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.symmetric(horizontal: 6),
-                    ),
+                    style: TreadSkin.of(context).style == TreadStyle.leather
+                        ? skinButtonStyle(
+                            TreadSkin.of(context),
+                            SkinButtonKind.secondary,
+                            height: 40,
+                          ).copyWith(
+                            padding: const WidgetStatePropertyAll(
+                              EdgeInsets.fromLTRB(6, 0, 6, 3),
+                            ),
+                            textStyle: const WidgetStatePropertyAll(
+                              TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          )
+                        : OutlinedButton.styleFrom(
+                            foregroundColor: ForgeColors.text,
+                            side: const BorderSide(color: ForgeColors.line),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 6),
+                          ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

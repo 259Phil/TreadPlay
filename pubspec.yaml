@@ -43,6 +43,8 @@ flutter:
     - assets/wanderweg/
     - assets/seals/
     - assets/leash/
+    - assets/nav/
+    - assets/backdrop/
 
   fonts:
     - family: Inter

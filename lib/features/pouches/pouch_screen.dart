@@ -56,10 +56,10 @@ class _PouchScreenState extends ConsumerState<PouchScreen> {
     final game = ref.watch(gameProvider);
     final selected = _pick(game);
     final skin = TreadSkin.of(context);
-    return Scaffold(
-      backgroundColor: skin.base,
+    final scaffold = Scaffold(
+      backgroundColor: skin.canvas,
       appBar: AppBar(
-        backgroundColor: skin.base,
+        backgroundColor: skin.canvas,
         title: Text(skin.displayText(l.pouchTitle), style: skin.display(26)),
         actions: lpActions(game.lp),
       ),
@@ -78,6 +78,7 @@ class _PouchScreenState extends ConsumerState<PouchScreen> {
         ),
       ),
     );
+    return SkinBackdrop(child: scaffold);
   }
 
   static const _minHeight = 520.0;

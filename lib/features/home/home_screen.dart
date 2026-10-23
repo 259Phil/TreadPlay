@@ -9,6 +9,7 @@ import '../../domain/companion.dart';
 import '../../domain/run_summary.dart';
 import '../../l10n/app_localizations.dart';
 import '../legal/movement_notice.dart';
+import '../messenger/messenger_mock.dart';
 import '../../router.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
@@ -62,6 +63,12 @@ class HomeScreen extends ConsumerWidget {
                     bottom: 8,
                     right: 14,
                     child: _LeashChip(game: game),
+                  ),
+                if (kNpcVariant != '')
+                  const Positioned(
+                    left: 12,
+                    bottom: 8,
+                    child: MessengerHomeHint(),
                   ),
               ],
             ),

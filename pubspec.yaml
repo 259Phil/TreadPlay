@@ -45,6 +45,7 @@ flutter:
     - assets/leash/
     - assets/nav/
     - assets/backdrop/
+    - assets/npc/
 
   fonts:
     - family: Inter

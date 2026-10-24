@@ -965,6 +965,15 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wähle jetzt ein Siegel eines anderen Werts mit gleicher Stufe.';
 
   @override
+  String get forgeMysteryIdle => 'Die Zeichen schlafen …';
+
+  @override
+  String get forgeMysteryStir => 'Etwas regt sich …';
+
+  @override
+  String get forgeMysteryReady => 'Zwei Essenzen rufen einander …';
+
+  @override
   String get forgeCaseNone => 'Noch keine losen Siegel.';
 
   @override

@@ -122,7 +122,11 @@ Widget _recipePanel(BuildContext context, _RecipeParts r) {
   final up = r.mode == _Mode.up;
   final Widget card = SizedBox(
     height: 124,
-    child: up ? _IronCard(r) : _ParchmentCard(r),
+    child: up
+        ? _IronCard(r)
+        : forgeCombineLook == 0
+        ? _ParchmentCard(r)
+        : _MysteryCard(r, forgeCombineLook),
   );
   final body = Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,

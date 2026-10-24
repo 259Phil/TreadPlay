@@ -19,6 +19,7 @@ import '../../widgets/stock_art.dart';
 import '../../ui/skin.dart';
 
 part 'forge_recipe_look.dart';
+part 'forge_strike.dart';
 
 enum _Mode { up, combine }
 
@@ -37,9 +38,17 @@ class ForgeScreen extends ConsumerStatefulWidget {
 }
 
 class _ForgeScreenState extends ConsumerState<ForgeScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final TabController _tabs = TabController(length: 4, vsync: this)
     ..addListener(_onTab);
+
+  /// Drives the reveal after Schmieden / Kombinieren.
+  late final AnimationController _strikeAnim = AnimationController(vsync: this);
+
+  /// The running reveal, and the case as it was before the forge, shown
+  /// until the reveal ends so nothing gives the outcome away early.
+  _Strike? _strike;
+  GameData? _frozen;
   _Mode _mode = _Mode.up;
   Seal? _first;
   Seal? _second;
@@ -52,6 +61,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
 
   @override
   void dispose() {
+    _strikeAnim.dispose();
     _tabs.dispose();
     super.dispose();
   }
@@ -96,7 +106,8 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final game = ref.watch(gameProvider);
+    final live = ref.watch(gameProvider);
+    final game = _frozen ?? live;
     // Drop a selection that is no longer in the case.
     if (_first != null && game.forge.count(_first!) == 0) _first = null;
     if (_second != null && game.forge.count(_second!) == 0) _second = null;
@@ -126,11 +137,15 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
                 height: 40,
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
-                  child: key == 'tab-up'
-                      ? _TabWithIcon(palette: _ember, text: text)
-                      : key == 'tab-combine'
-                      ? _TabWithIcon(palette: _arcane, text: text)
-                      : Text(text),
+                  child: _TabWithIcon(
+                    icon: switch (key) {
+                      'tab-up' => _ember.icon,
+                      'tab-combine' => _arcane.icon,
+                      'tab-case' => 'assets/forge/icon_case.webp',
+                      _ => 'assets/forge/icon_ladder.webp',
+                    },
+                    text: text,
+                  ),
                 ),
               ),
           ],
@@ -157,12 +172,16 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
         actions: lpActions(game.lp),
       ),
       // Very short screens fall back to scrolling instead of overflowing.
-      body: LayoutBuilder(
-        builder: (context, box) => box.maxHeight >= _minHeight
-            ? content
-            : SingleChildScrollView(
-                child: SizedBox(height: _minHeight, child: content),
-              ),
+      // No taps or swipes while a forge is being revealed.
+      body: AbsorbPointer(
+        absorbing: _strike != null,
+        child: LayoutBuilder(
+          builder: (context, box) => box.maxHeight >= _minHeight
+              ? content
+              : SingleChildScrollView(
+                  child: SizedBox(height: _minHeight, child: content),
+                ),
+        ),
       ),
     );
   }
@@ -239,6 +258,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
               _RecipeParts(
                 mode: mode,
                 active: active,
+                strike: active ? _strike : null,
                 a: a,
                 b: b,
                 made: made,
@@ -448,12 +468,49 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
   }
 
   Future<void> _forge(BuildContext context) async {
+    if (_strike != null) return;
     final notifier = ref.read(gameProvider.notifier);
+    final before = ref.read(gameProvider);
     final a = _first!;
-    final outcome = _mode == _Mode.up
+    final mode = _mode;
+    final outcome = mode == _Mode.up
         ? notifier.upgradeSeal(a, _glut)
         : notifier.combineSeals(a, _second!, _glut);
     if (outcome == null || !context.mounted) return;
+    // The outcome is decided; reveal it after the hammer (or the triangle)
+    // unless the system asks for reduced motion.
+    if (!MediaQuery.disableAnimationsOf(context)) {
+      _strikeAnim.duration = mode == _Mode.up
+          ? _upStrikeTime
+          : _combineStrikeTime;
+      setState(() {
+        _frozen = before;
+        _strike = _Strike(_strikeAnim, outcome);
+      });
+      try {
+        await _strikeAnim.forward(from: 0).orCancel;
+      } on TickerCanceled {
+        return;
+      }
+      if (!mounted || !context.mounted) return;
+      // The last frame (cracked seal or lit level) stays behind the result;
+      // the case catches up once it is closed.
+      await showDialog<void>(
+        context: context,
+        builder: (context) => _ResultDialog(outcome: outcome),
+      );
+      if (!mounted) return;
+      setState(() {
+        _frozen = null;
+        _strike = null;
+        if (outcome.made case final made?) {
+          _first = made;
+          _second = null;
+          _resetGlut();
+        }
+      });
+      return;
+    }
     final made = outcome.made;
     if (made != null) {
       setState(() {

@@ -73,6 +73,7 @@ class _RecipeParts {
     required this.slider,
     required this.fail,
     required this.hint,
+    this.strike,
   });
 
   final _Mode mode;
@@ -85,6 +86,9 @@ class _RecipeParts {
   final Widget slider;
   final Widget fail;
   final Widget hint;
+
+  /// The running reveal of a forge in this tab, if any.
+  final _Strike? strike;
 }
 
 Widget _modeBackdrop(_Mode mode, Widget child) {
@@ -140,16 +144,16 @@ Widget _recipePanel(BuildContext context, _RecipeParts r) {
 
 /// Tab label with the mode's painted icon.
 class _TabWithIcon extends StatelessWidget {
-  const _TabWithIcon({required this.palette, required this.text});
+  const _TabWithIcon({required this.icon, required this.text});
 
-  final _Palette palette;
+  final String icon;
   final String text;
 
   @override
   Widget build(BuildContext context) => Row(
     mainAxisSize: MainAxisSize.min,
     children: [
-      Image.asset(palette.icon, width: 20, height: 20),
+      Image.asset(icon, width: 20, height: 20),
       const SizedBox(width: 4),
       Text(text),
     ],
@@ -404,44 +408,68 @@ class _IronCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final from = r.a?.level;
+    final strike = r.strike;
+    Widget ladder(double flash) => Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        for (var lv = 1; lv <= 5; lv++) ...[
+          if (lv > 1)
+            Container(
+              width: 8,
+              height: 2,
+              color: from != null && lv <= from + 1 && flash >= 0
+                  ? _ember.accent
+                  : const Color(0xFF4A403A),
+            ),
+          _LevelPip(
+            level: lv,
+            state: from == null
+                ? 0
+                : lv <= from
+                ? 1
+                : lv == from + 1
+                ? (flash < 0 ? 0 : 2)
+                : 0,
+            flash: from != null && lv == from + 1 ? math.max(0, flash) : 0,
+          ),
+        ],
+      ],
+    );
     return CustomPaint(
       painter: _IronPlate(),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
         child: Row(
           children: [
-            _Slot(seal: r.a, palette: _ember, size: 64, badge: '×2'),
+            _CrackOverlay(
+              strike: strike,
+              child: _Slot(seal: r.a, palette: _ember, size: 64, badge: '×2'),
+            ),
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset(_ember.icon, width: 44, height: 44),
-                  const SizedBox(height: 4),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      for (var lv = 1; lv <= 5; lv++) ...[
-                        if (lv > 1)
-                          Container(
-                            width: 8,
-                            height: 2,
-                            color: from != null && lv <= from + 1
-                                ? _ember.accent
-                                : const Color(0xFF4A403A),
-                          ),
-                        _LevelPip(
-                          level: lv,
-                          state: from == null
-                              ? 0
-                              : lv <= from
-                              ? 1
-                              : lv == from + 1
-                              ? 2
-                              : 0,
-                        ),
-                      ],
-                    ],
-                  ),
+                  _AnvilStrike(strike: strike),
+                  const SizedBox(height: 2),
+                  if (from == null || strike == null)
+                    ladder(0)
+                  else
+                    AnimatedBuilder(
+                      animation: strike.anim,
+                      builder: (context, _) {
+                        final t = strike.anim.value;
+                        if (t < _reveal) return ladder(0);
+                        final u = ((t - _reveal) / (1 - _reveal)).clamp(
+                          0.0,
+                          1.0,
+                        );
+                        // Success: the target level flares golden.
+                        // Fail: it goes dark.
+                        return ladder(
+                          strike.outcome.success ? math.sin(u * math.pi) : -1,
+                        );
+                      },
+                    ),
                 ],
               ),
             ),
@@ -454,9 +482,12 @@ class _IronCard extends StatelessWidget {
 }
 
 class _LevelPip extends StatelessWidget {
-  const _LevelPip({required this.level, required this.state});
+  const _LevelPip({required this.level, required this.state, this.flash = 0});
 
   final int level;
+
+  /// 0..1: the golden flare when a forge on this level succeeds.
+  final double flash;
 
   /// 0 not reached, 1 reached, 2 the level this forge makes.
   final int state;
@@ -470,7 +501,7 @@ class _LevelPip extends StatelessWidget {
       shape: BoxShape.circle,
       color: switch (state) {
         1 => const Color(0xFF8E4A22),
-        2 => _ember.glow,
+        2 => Color.lerp(_ember.glow, const Color(0xFFFFD86B), flash),
         _ => const Color(0xFF2A2522),
       },
       border: Border.all(
@@ -478,7 +509,17 @@ class _LevelPip extends StatelessWidget {
         width: 1,
       ),
       boxShadow: state == 2
-          ? [BoxShadow(color: _ember.glow.withValues(alpha: .8), blurRadius: 8)]
+          ? [
+              BoxShadow(
+                color: Color.lerp(
+                  _ember.glow,
+                  const Color(0xFFFFD86B),
+                  flash,
+                )!.withValues(alpha: .8),
+                blurRadius: 8 + 10 * flash,
+                spreadRadius: 3 * flash,
+              ),
+            ]
           : null,
     ),
     child: Text(
@@ -589,6 +630,13 @@ class _ParchmentCard extends StatelessWidget {
               Positioned.fill(
                 child: CustomPaint(painter: _InkDiagram(r.made != null)),
               ),
+              if (r.strike != null)
+                Positioned.fill(
+                  child: _TriangleGlow(
+                    strike: r.strike!,
+                    center: Offset(cx, (38 + (h - 36) * 2) / 3 + 6),
+                  ),
+                ),
               Positioned(
                 left: cx - 92 - 26,
                 top: h - 62,

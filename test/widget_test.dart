@@ -880,6 +880,68 @@ void main() {
       wanderweg: WanderwegProgress(reachedAt: List.filled(waymarks.length, t0)),
     );
 
+    testWidgets('the hammer reveals the outcome only after the last blow', (
+      tester,
+    ) async {
+      final start = openAll(
+        GameData.initial(t0).copyWith(
+          lp: 100,
+          forge: const ForgeState(glut: 5, stock: {'stride@1': 2}),
+        ),
+      );
+      await openForge(tester, start, open: false, random: _FixedRandom(0.99));
+      await tapKey(tester, 'case-stride@1');
+      await tester.tap(find.byKey(const Key('forge-go')));
+      await tester.pump(const Duration(milliseconds: 600));
+      // Mid-swing: no result yet, the case still shows the old stores and
+      // a second tap does nothing.
+      expect(find.byKey(const Key('forge-success')), findsNothing);
+      expect(storesOf(tester, 'forge-stores'), 'Splinters 0/5 · Glut 5');
+      await tester.tap(find.byKey(const Key('forge-go')), warnIfMissed: false);
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('forge-success')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('forge-result-ok')));
+      await tester.pumpAndSettle();
+      expect(storesOf(tester, 'forge-stores'), 'Splinters 0/5 · Glut 4');
+      expect(find.byKey(const Key('case-stride@2')), findsOneWidget);
+    });
+
+    testWidgets('a failed blow ends in the fail result', (tester) async {
+      final start = openAll(
+        GameData.initial(t0).copyWith(
+          lp: 100,
+          forge: const ForgeState(glut: 5, stock: {'stride@1': 2}),
+        ),
+      );
+      await openForge(tester, start, open: false, random: _FixedRandom(0));
+      await tapKey(tester, 'case-stride@1');
+      await tester.tap(find.byKey(const Key('forge-go')));
+      await tester.pump(const Duration(milliseconds: 600));
+      expect(find.byKey(const Key('forge-failed')), findsNothing);
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('forge-failed')), findsOneWidget);
+    });
+
+    testWidgets('reduced motion skips the hammer', (tester) async {
+      tester.platformDispatcher.accessibilityFeaturesTestValue =
+          const FakeAccessibilityFeatures(disableAnimations: true);
+      addTearDown(
+        tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+      );
+      final start = openAll(
+        GameData.initial(t0).copyWith(
+          lp: 100,
+          forge: const ForgeState(glut: 5, stock: {'stride@1': 2}),
+        ),
+      );
+      await openForge(tester, start, open: false, random: _FixedRandom(0.99));
+      await tapKey(tester, 'case-stride@1');
+      await tester.tap(find.byKey(const Key('forge-go')));
+      await tester.pump();
+      expect(find.byKey(const Key('forge-success')), findsOneWidget);
+      await tester.pumpAndSettle();
+    });
+
     testWidgets('buys seals, forges one up and sets it on the companion', (
       tester,
     ) async {

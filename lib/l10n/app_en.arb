@@ -1494,6 +1494,18 @@
       }
     }
   },
+  "baumLevels": "Levels {known} / {total}",
+  "@baumLevels": {
+    "description": "Recipe levels forged of all recipe levels in the forge tree.",
+    "placeholders": {
+      "known": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "baumSeen": "Seals {seen} / {total}",
   "@baumSeen": {
     "placeholders": {

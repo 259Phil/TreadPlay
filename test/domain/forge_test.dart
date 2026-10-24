@@ -797,4 +797,90 @@ void main() {
       expect(GameData.fromJson(back.toJson()).forge.seen, back.forge.seen);
     });
   });
+
+  group('lines of the tree (forged)', () {
+    test(
+      'a successful combine notes the exact seals, the first one counts',
+      () {
+        final g = game(lp: 200, stock: {'grit@3': 2, 'stride@3': 2}, glut: 9);
+        final (next, out) = g.combining(grit3, stride3, 4, _Fixed([0.5]));
+        expect(out.success, isTrue);
+        expect(next.forge.forged, {
+          'ausdauer@3': ['grit@3', 'stride@3'],
+        });
+        expect(next.forge.grown, isEmpty);
+        final (again, _) = next.combining(stride3, grit3, 4, _Fixed([0.5]));
+        expect(again.forge.forged['ausdauer@3'], ['grit@3', 'stride@3']);
+      },
+    );
+
+    test('a level-2 recipe links its level-1 recipe and the third seal', () {
+      final k2 = Seal.combined(SealType.stride, SealType.grit, 2);
+      final f = const ForgeState().forging(
+        Seal.triple(SealType.stride, SealType.grit, SealType.fortune, 2),
+        k2,
+        const Seal(SealType.fortune, 2),
+      );
+      expect(f.forged, {
+        'wanderstern@2': ['ausdauer@2', 'fortune@2'],
+      });
+    });
+
+    test('a failed combine draws no line', () {
+      final g = game(lp: 200, stock: {'grit@3': 1, 'stride@3': 1}, glut: 5);
+      final (a, outA) = g.combining(grit3, stride3, 4, _Fixed([0.1], [true]));
+      expect(outA.success, isFalse);
+      expect(a.forge.forged, isEmpty);
+    });
+
+    test('old saves link known recipe levels, sockets included', () {
+      final pebble = Companion.pebble().withSeal(
+        0,
+        Seal.combined(SealType.grit, SealType.fortune, 4),
+      );
+      final g = GameData.initial(t0).copyWith(
+        companions: [pebble],
+        forge: const ForgeState(
+          stock: {'stride+grit@2': 1},
+          recipes: {Recipe.spurenleser: 1},
+        ),
+      );
+      final json = g.toJson();
+      (json['forge']! as Map)
+        ..remove('seen')
+        ..remove('forged');
+      final back = GameData.fromJson(json).forge;
+      expect(back.forged, {
+        'ausdauer@2': ['stride@2', 'grit@2'],
+        'schutz@4': ['grit@4', 'fortune@4'],
+        'spurenleser@1': ['faehrte@1', 'grit@1'],
+      });
+      // A save that knew lines keeps exactly them.
+      final kept = GameData.fromJson(GameData.fromJson(json).toJson()).forge;
+      expect(kept.forged, back.forged);
+      final none = g.toJson();
+      (none['forge']! as Map)['forged'] = <String, Object?>{};
+      expect(GameData.fromJson(none).forge.forged, isEmpty);
+    });
+
+    test('grown lines round-trip; strays and bad keys are dropped', () {
+      final f = const ForgeState(
+        forged: {
+          'ausdauer@1': ['stride@1', 'grit@1'],
+          'faehrte@2': ['stride@2', 'fortune@2'],
+        },
+      ).growing(['ausdauer@1', 'glutherz@5']);
+      expect(f.grown, {'ausdauer@1'});
+      final g = GameData.initial(t0).copyWith(forge: f);
+      final json = g.toJson();
+      final forge = json['forge']! as Map;
+      expect(forge['grown'], ['ausdauer@1']);
+      (forge['forged']! as Map)['stride@1'] = ['grit@1', 'fortune@1'];
+      (forge['forged']! as Map)['nonsense@9'] = ['grit@1'];
+      forge['grown'] = ['ausdauer@1', 'schutz@3'];
+      final back = GameData.fromJson(json).forge;
+      expect(back.forged.keys, unorderedEquals(['ausdauer@1', 'faehrte@2']));
+      expect(back.grown, {'ausdauer@1'});
+    });
+  });
 }

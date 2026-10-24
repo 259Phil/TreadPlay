@@ -232,6 +232,13 @@ class GameNotifier extends Notifier<GameData> {
     return true;
   }
 
+  /// The forge tree has drawn the links of [keys] growing once.
+  void markLinksGrown(Iterable<String> keys) {
+    final next = state.forge.growing(keys);
+    if (identical(next, state.forge)) return;
+    _set(state.copyWith(forge: next));
+  }
+
   /// The player has seen the newly reached waymarks (bubble closed or the
   /// trail opened).
   void markWanderwegSeen() {

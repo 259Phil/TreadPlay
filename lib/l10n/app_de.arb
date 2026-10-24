@@ -460,6 +460,7 @@
   "recipeFxGlut": "{pct} %: +1 Glut je Lauf ab 1 km (1× am Tag)",
   "baumTitle": "SCHMIEDE-BAUM",
   "baumCount": "Rezepte {known} / {total}",
+  "baumLevels": "Stufen {known} / {total}",
   "baumSeen": "Siegel {seen} / {total}",
   "baumSingleSeen": "Einzelsiegel {stat} St.{level} · schon besessen",
   "baumSingleNever": "Einzelsiegel {stat} St.{level} · noch nie besessen",

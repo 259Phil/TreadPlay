@@ -332,6 +332,7 @@ class GameData {
             .removing(b)
             .adding(made)
             .discovering(made.recipe!, made.level)
+            .forging(made, a, b)
             .copyWith(combines: paid.combines + 1),
         totals: totals.addingForgeUse(),
       ),
@@ -1027,10 +1028,18 @@ class GameData {
       // Saves from before the seal case: every forge use set one seal.
       // Recipe seals already set count as discovered recipes (the case
       // itself is read in ForgeState.fromJson).
-      forge: switch (json['forge']) {
-        final Map<String, Object?> f => ForgeState.fromJson(f),
-        _ => ForgeState(placed: totals.forgeUses),
-      }.discoveringAll([for (final c in owned) ...c.seals]),
+      forge:
+          switch (json['forge']) {
+            final Map<String, Object?> f => ForgeState.fromJson(f),
+            _ => ForgeState(placed: totals.forgeUses),
+          }.discoveringAll([for (final c in owned) ...c.seals]).linkingIf(
+            // Saves from before recipe links: known recipe levels are linked
+            // to the matching seals.
+            switch (json['forge']) {
+              final Map<String, Object?> f => !f.containsKey('forged'),
+              _ => true,
+            },
+          ),
       // Saves from before pouches start with an empty leash.
       pouches: switch (json['pouches']) {
         final Map<String, Object?> p => PouchState.fromJson(p),

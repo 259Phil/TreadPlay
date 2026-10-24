@@ -181,6 +181,8 @@ class ForgeState {
     this.recipes = const {},
     this.glutherzDay,
     this.seen = const {},
+    this.forged = const {},
+    this.grown = const {},
   });
 
   /// Seal code → count of loose seals (not set into a companion).
@@ -213,6 +215,56 @@ class ForgeState {
   /// stat and level (`stride@3`), recipe seals by recipe and level
   /// (`ausdauer@2`). The Schmiede-Baum lights these.
   final Set<String> seen;
+
+  /// Recipe levels forged in Kombinieren → the two seals they were made
+  /// from, all as [seenKey]: `ausdauer@2` ← `stride@2`, `grit@2`;
+  /// `wanderstern@1` ← `ausdauer@1`, `fortune@1`. The Schmiede-Baum draws
+  /// these as its only links into recipes.
+  final Map<String, List<String>> forged;
+
+  /// Keys of [forged] whose links the tree already drew growing once.
+  final Set<String> grown;
+
+  /// [made] noted as forged from [a] and [b] (the first combine counts).
+  ForgeState forging(Seal made, Seal a, Seal b) {
+    final key = seenKey(made);
+    if (forged.containsKey(key)) return this;
+    return copyWith(
+      forged: {
+        ...forged,
+        key: [seenKey(a), seenKey(b)],
+      },
+    );
+  }
+
+  /// Older saves knew no [forged]: every recipe level ever owned is linked
+  /// to the matching stats (or level-1 recipe and third stat) at that
+  /// level, since combining always takes seals of one level.
+  ForgeState linkingKnown() {
+    final add = <String, List<String>>{};
+    for (final r in Recipe.values) {
+      for (var lv = 1; lv <= Seal.maxLevel; lv++) {
+        final key = '${r.name}@$lv';
+        if (!sawRecipe(r, lv) || forged.containsKey(key)) continue;
+        add[key] = r.tier == 1
+            ? ['${r.a.name}@$lv', '${r.b.name}@$lv']
+            : ['${r.base.name}@$lv', '${r.extra!.name}@$lv'];
+      }
+    }
+    return add.isEmpty ? this : copyWith(forged: {...forged, ...add});
+  }
+
+  /// [linkingKnown] when [old] is set.
+  ForgeState linkingIf(bool old) => old ? linkingKnown() : this;
+
+  /// [keys] of [forged] noted as drawn.
+  ForgeState growing(Iterable<String> keys) {
+    final add = {
+      for (final k in keys)
+        if (forged.containsKey(k)) k,
+    };
+    return grown.containsAll(add) ? this : copyWith(grown: {...grown, ...add});
+  }
 
   /// What [seen] notes for [s]: its stat (single) or recipe, and level.
   static String seenKey(Seal s) =>
@@ -307,6 +359,8 @@ class ForgeState {
     Map<Recipe, int>? recipes,
     String? glutherzDay,
     Set<String>? seen,
+    Map<String, List<String>>? forged,
+    Set<String>? grown,
   }) => ForgeState(
     stock: stock ?? this.stock,
     glut: glut ?? this.glut,
@@ -319,6 +373,8 @@ class ForgeState {
     recipes: recipes ?? this.recipes,
     glutherzDay: glutherzDay ?? this.glutherzDay,
     seen: seen ?? this.seen,
+    forged: forged ?? this.forged,
+    grown: grown ?? this.grown,
   );
 
   Map<String, Object?> toJson() => {
@@ -333,6 +389,10 @@ class ForgeState {
     'recipes': {for (final e in recipes.entries) e.key.name: e.value},
     'glutherzDay': ?glutherzDay,
     'seen': [...seen]..sort(),
+    'forged': {
+      for (final k in [...forged.keys]..sort()) k: forged[k],
+    },
+    'grown': [...grown]..sort(),
   };
 
   /// Unknown seal codes are dropped (an import checks them first, see
@@ -361,6 +421,17 @@ class ForgeState {
         }
       }
     }
+    final forged = <String, List<String>>{
+      if (json['forged'] case final Map<Object?, Object?> raw)
+        for (final e in raw.entries)
+          if (e.key case final String k
+              when _seenKeys.contains(k) && !_singleKeys.contains(k))
+            if (e.value case [
+              final String a,
+              final String b,
+            ] when _seenKeys.contains(a) && _seenKeys.contains(b))
+              k: [a, b],
+    };
     final state = ForgeState(
       stock: stock,
       glut: read('glut'),
@@ -379,6 +450,12 @@ class ForgeState {
         // Each discovered recipe was owned at least at its best level.
         for (final e in recipes.entries) '${e.key.name}@${e.value}',
       },
+      forged: forged,
+      grown: {
+        if (json['grown'] case final List<Object?> raw)
+          for (final k in raw)
+            if (k is String && forged.containsKey(k)) k,
+      },
     );
     // Seals in the case count as owned, recipe seals as discovered (older
     // saves had combined seals before recipes were noted).
@@ -392,6 +469,11 @@ class ForgeState {
       for (final r in Recipe.values) r.name,
     ])
       for (var lv = 1; lv <= Seal.maxLevel; lv++) '$n@$lv',
+  };
+
+  static final Set<String> _singleKeys = {
+    for (final t in SealType.values)
+      for (var lv = 1; lv <= Seal.maxLevel; lv++) '${t.name}@$lv',
   };
 
   /// Stock entries of [json] that are not valid seals; empty when fine.

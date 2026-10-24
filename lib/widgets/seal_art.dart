@@ -78,13 +78,6 @@ class SealArt extends StatelessWidget {
     if (seal.artScale != 1) {
       art = Transform.scale(scale: seal.artScale, child: art);
     }
-    // Level-2 recipe seals wear their recipe's colour.
-    if (seal.recipe case final r? when recipeTint(r) != null) {
-      art = ColorFiltered(
-        colorFilter: ColorFilter.mode(recipeTint(r)!, BlendMode.modulate),
-        child: art,
-      );
-    }
     if (dimmed) art = Opacity(opacity: 0.45, child: art);
     return SizedBox(
       width: size,

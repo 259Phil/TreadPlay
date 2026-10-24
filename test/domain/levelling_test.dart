@@ -330,7 +330,7 @@ void main() {
           .replaceCompanion(g0.activeCompanion.copyWith(level: 3, xp: 11))
           .copyWith(salves: const SalveStock({Salve.small: 2}));
       final bytes = SaveGame.encode(g, t0);
-      expect(jsonDecode(utf8.decode(bytes))['version'], 10);
+      expect(jsonDecode(utf8.decode(bytes))['version'], 11);
       final back = SaveGame.decode(bytes).game;
       expect(back.activeCompanion.level, 3);
       expect(back.activeCompanion.xp, 11);

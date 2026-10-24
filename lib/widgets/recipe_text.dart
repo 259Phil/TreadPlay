@@ -76,36 +76,28 @@ Color? recipeTint(Recipe r) => switch (r) {
   _ => null,
 };
 
-/// Emblem of [r] for the tree and the effect lists.
+/// Emblem of [recipe] at [level] (its frame climbs with the level, see
+/// [Seal.recipeAsset]) for the tree and the effect lists.
 class RecipeArt extends StatelessWidget {
-  const RecipeArt({super.key, required this.recipe, required this.size});
+  const RecipeArt({
+    super.key,
+    required this.recipe,
+    required this.size,
+    this.level = 3,
+  });
 
   final Recipe recipe;
   final double size;
+  final int level;
 
   @override
-  Widget build(BuildContext context) {
-    final r = recipe;
-    final img = Image.asset(
-      switch (r) {
-        Recipe.ausdauer => 'assets/forge/recipe_ausdauer.webp',
-        Recipe.faehrte => 'assets/forge/recipe_faehrte.webp',
-        Recipe.schutz => 'assets/forge/recipe_schutz.webp',
-        _ => 'assets/seals/seal_combo_l5.webp',
-      },
-      width: size,
-      height: size,
-      fit: BoxFit.contain,
-      filterQuality: FilterQuality.medium,
-    );
-    final tint = recipeTint(r);
-    return tint == null
-        ? img
-        : ColorFiltered(
-            colorFilter: ColorFilter.mode(tint, BlendMode.modulate),
-            child: img,
-          );
-  }
+  Widget build(BuildContext context) => Image.asset(
+    Seal.recipeAsset(recipe, level),
+    width: size,
+    height: size,
+    fit: BoxFit.contain,
+    filterQuality: FilterQuality.medium,
+  );
 }
 
 /// "Rezept-Effekte" of [companion]'s sockets, one line per recipe (the
@@ -151,7 +143,7 @@ class RecipeEffects extends StatelessWidget {
                 children: [
                   Opacity(
                     opacity: along ? 1 : .5,
-                    child: RecipeArt(recipe: r, size: 28),
+                    child: RecipeArt(recipe: r, size: 28, level: lv),
                   ),
                   const SizedBox(width: 8),
                   Expanded(

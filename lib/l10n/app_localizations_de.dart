@@ -1852,6 +1852,11 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String baumLevels(int known, int total) {
+    return 'Stufen $known / $total';
+  }
+
+  @override
   String baumSeen(int seen, int total) {
     return 'Siegel $seen / $total';
   }

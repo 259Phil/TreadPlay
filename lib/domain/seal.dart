@@ -244,12 +244,20 @@ class Seal {
   /// Painted art, sized so higher levels look bigger. Recipe seals have
   /// art for L3 and L5; L1–L2 use the L3 art and L4 the L5 art, drawn
   /// smaller by [artScale].
-  String get asset => combined
-      ? 'assets/seals/seal_combo_l${level <= 3 ? 3 : 5}.webp'
-      : 'assets/seals/seal_${type.name}_l$level.webp';
+  String get asset => switch (recipe) {
+    final r? => recipeAsset(r, level),
+    null when combined => 'assets/seals/seal_combo_l${level <= 3 ? 3 : 5}.webp',
+    null => 'assets/seals/seal_${type.name}_l$level.webp',
+  };
+
+  /// Recipe [r]'s emblem at [level], in a frame whose metal climbs with
+  /// the level: iron, bronze, brass with ember glow, engraved silver,
+  /// sparkling gold.
+  static String recipeAsset(Recipe r, int level) =>
+      'assets/seals/recipe_${r.name}_l${level.clamp(1, maxLevel)}.webp';
 
   /// How large [asset] is drawn (1 = full size).
-  double get artScale => !combined
+  double get artScale => !combined || recipe != null
       ? 1
       : switch (level) {
           1 => 0.7,

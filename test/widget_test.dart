@@ -1258,17 +1258,22 @@ void main() {
       final tab = find.byKey(const Key('forge-ladder-tab'));
       expect(tab, findsOneWidget);
       expect(textOf(tester, 'baum-count'), 'Recipes 0 / 6');
+      expect(textOf(tester, 'baum-levels'), 'Levels 0 / 30');
+      // Each recipe has five level nodes of its own, all dark.
       for (final r in Recipe.values) {
-        expect(find.byKey(Key('baum-${r.name}')), findsOneWidget);
-        expect(find.byKey(Key('baum-ready-${r.name}')), findsNothing);
+        for (var lv = 1; lv <= 5; lv++) {
+          expect(find.byKey(Key('baum-${r.name}-$lv')), findsOneWidget);
+          expect(find.byKey(Key('baum-ready-${r.name}-$lv')), findsNothing);
+          expect(find.byKey(Key('baum-lit-${r.name}-$lv')), findsNothing);
+        }
       }
       expect(
-        find.descendant(of: tab, matching: find.text('???')),
-        findsAtLeastNWidgets(6),
+        find.descendant(of: tab, matching: find.text('??? L3')),
+        findsNWidgets(6),
       );
       expect(find.text('Breath and iron …'), findsOneWidget);
       expect(textOf(tester, 'baum-detail-title'), '??? · UNDISCOVERED');
-      await tapKey(tester, 'baum-wanderstern');
+      await tapKey(tester, 'baum-wanderstern-1');
       expect(
         find.text('Forge Stamina first, then its level 2 opens.'),
         findsOneWidget,
@@ -1291,11 +1296,18 @@ void main() {
       );
       await tapKey(tester, 'tab-ladder');
       expect(textOf(tester, 'baum-count'), 'Recipes 1 / 6');
-      expect(find.text('Stamina'), findsOneWidget);
-      expect(find.byKey(const Key('baum-ready-wanderstern')), findsOneWidget);
-      expect(find.byKey(const Key('baum-ready-spurenleser')), findsNothing);
-      await tapKey(tester, 'baum-ausdauer');
-      expect(textOf(tester, 'baum-detail-title'), 'STAMINA');
+      expect(textOf(tester, 'baum-levels'), 'Levels 1 / 30');
+      // Only the level that was forged lights up.
+      expect(find.text('Stamina L2'), findsOneWidget);
+      expect(find.byKey(const Key('baum-lit-ausdauer-2')), findsOneWidget);
+      expect(find.byKey(const Key('baum-lit-ausdauer-1')), findsNothing);
+      expect(find.text('??? L1'), findsNWidgets(6));
+      // Ready is per level: Stamina L2 + Fortune L2 makes Wanderstern L2.
+      expect(find.byKey(const Key('baum-ready-wanderstern-2')), findsOneWidget);
+      expect(find.byKey(const Key('baum-ready-wanderstern-1')), findsNothing);
+      expect(find.byKey(const Key('baum-ready-spurenleser-2')), findsNothing);
+      await tapKey(tester, 'baum-ausdauer-2');
+      expect(textOf(tester, 'baum-detail-title'), 'STAMINA L2');
       expect(find.textContaining('Sweet spot ±0.3 km/h wider'), findsOneWidget);
       // The next level shows as a preview, the rest stays hidden.
       expect(find.textContaining('Sweet spot ±0.4 km/h wider'), findsOneWidget);

@@ -423,7 +423,7 @@ void main() {
 
     test('export and import keep the leash and the counts', () {
       final loaded = SaveGame.decode(SaveGame.encode(opened, t0)).game;
-      expect(SaveGame.version, 10);
+      expect(SaveGame.version, 11);
       expect(loaded.pouches.leash, hasLength(1));
       expect(loaded.pouches.leash.single.color, PouchColor.copper);
       expect(loaded.pouches.foundOf(PouchColor.copper), 1);

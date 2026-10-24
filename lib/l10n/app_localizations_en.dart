@@ -1845,6 +1845,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String baumLevels(int known, int total) {
+    return 'Levels $known / $total';
+  }
+
+  @override
   String baumSeen(int seen, int total) {
     return 'Seals $seen / $total';
   }

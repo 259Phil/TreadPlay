@@ -79,9 +79,11 @@ class SaveGame {
   /// (see [GameData.starterKey]).
   ///
   /// 10: seals ever owned ('seen' in 'forge', for the Schmiede-Baum).
+  /// 11: what each recipe level was forged from ('forged' and 'grown' in
+  /// 'forge', the tree's links).
   /// Older files still import: every seal in the case or a socket and every
   /// discovered recipe at its best level counts as owned.
-  static const int version = 10;
+  static const int version = 11;
 
   static String fileName(DateTime now) {
     final stamp = now.toIso8601String().replaceAll(':', '-').split('.').first;
@@ -117,9 +119,12 @@ class SaveGame {
     if (v > version) {
       throw const SaveGameException(SaveGameError.newerVersion);
     }
-    final json = _withoutSeen(
-      _withoutRecipes(
-        _withoutLevelling(_withHomeTempo(_migrate(raw['game'], v), v), v),
+    final json = _withoutLinks(
+      _withoutSeen(
+        _withoutRecipes(
+          _withoutLevelling(_withHomeTempo(_migrate(raw['game'], v), v), v),
+          v,
+        ),
         v,
       ),
       v,
@@ -239,6 +244,22 @@ class SaveGame {
       return {
         ...game,
         'forge': {...f}..remove('seen'),
+      };
+    }
+    return game;
+  }
+
+  /// Before version 11 nothing noted what a recipe was forged from: stray
+  /// 'forged' and 'grown' are dropped, the links are rebuilt from the
+  /// recipe levels owned.
+  static Object? _withoutLinks(Object? game, int fromVersion) {
+    if (fromVersion >= 11 || game is! Map<String, Object?>) return game;
+    if (game['forge'] case final Map<String, Object?> f) {
+      return {
+        ...game,
+        'forge': {...f}
+          ..remove('forged')
+          ..remove('grown'),
       };
     }
     return game;

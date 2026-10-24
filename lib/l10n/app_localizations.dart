@@ -2858,6 +2858,12 @@ abstract class AppLocalizations {
   /// **'Recipes {known} / {total}'**
   String baumCount(int known, int total);
 
+  /// Recipe levels forged of all recipe levels in the forge tree.
+  ///
+  /// In en, this message translates to:
+  /// **'Levels {known} / {total}'**
+  String baumLevels(int known, int total);
+
   /// No description provided for @baumSeen.
   ///
   /// In en, this message translates to:

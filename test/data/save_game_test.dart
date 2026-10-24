@@ -184,6 +184,30 @@ void main() {
       expect(old.forge.sawSingle(SealType.grit, 3), isTrue);
     });
 
+    test('the tree lines survive a save; older files relink from scratch', () {
+      final game = GameData.initial(t0).copyWith(
+        forge: const ForgeState(
+          seen: {'ausdauer@2'},
+          forged: {
+            'ausdauer@2': ['grit@2', 'stride@2'],
+            'faehrte@1': ['stride@1', 'fortune@1'],
+          },
+          grown: {'faehrte@1'},
+        ),
+      );
+      final loaded = SaveGame.decode(SaveGame.encode(game, t0)).game.forge;
+      expect(loaded.forged, game.forge.forged);
+      expect(loaded.grown, {'faehrte@1'});
+      final json = game.toJson();
+      final old = SaveGame.decode(bytesOf(wrap(json, 10))).game.forge;
+      // Version 10 knew no lines: stray ones are dropped and the known
+      // levels are linked again, none drawn yet.
+      expect(old.forged, {
+        'ausdauer@2': ['stride@2', 'grit@2'],
+      });
+      expect(old.grown, isEmpty);
+    });
+
     test('export and import keep the whole forge state', () {
       // The recipe seal in the case counts as a discovered recipe.
       final game = forged();

@@ -25,9 +25,35 @@ String salveName(AppLocalizations l, Salve s) => switch (s) {
 String salveEffect(AppLocalizations l, Salve s) =>
     s == Salve.large ? l.salveEffectFull : l.salveEffect(s.points.round());
 
-/// Drawn salve container: a flat tin, a jar, or a rune pot.
+/// Painted icon of [s]: a flat tin, a jar, or a rune pot.
+String salveAsset(Salve s) => 'assets/items/salve_${s.name}.webp';
+
+/// Salve container art: the painted icon ([salveAsset]); the drawn
+/// container stands in if the image can't be loaded.
 class SalveArt extends StatelessWidget {
   const SalveArt({super.key, required this.salve, required this.size});
+
+  final Salve salve;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) => SizedBox.square(
+    dimension: size,
+    child: Image.asset(
+      salveAsset(salve),
+      width: size,
+      height: size,
+      fit: BoxFit.contain,
+      filterQuality: FilterQuality.medium,
+      gaplessPlayback: true,
+      errorBuilder: (_, _, _) => DrawnSalveArt(salve: salve, size: size),
+    ),
+  );
+}
+
+/// Code-drawn salve container, the fallback of [SalveArt].
+class DrawnSalveArt extends StatelessWidget {
+  const DrawnSalveArt({super.key, required this.salve, required this.size});
 
   final Salve salve;
   final double size;

@@ -25,3 +25,7 @@ Future<void> deliverSaveFile(
 }
 
 bool get deliversByDownload => true;
+
+/// Web: the app keeps no file copies (exports go to the browser's downloads,
+/// picked files are only read in memory). Nothing to delete.
+Future<int> deleteLocalSaveCopies() async => 0;

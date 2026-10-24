@@ -581,14 +581,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get saveDeleteBody =>
-      'Gefährten, Siegel, LP, Puste, Laufhistorie und Gesamtwerte werden entfernt. Du startest neu mit Mossik.';
+      'Gefährten, Siegel, LP, Puste, Laufhistorie und Gesamtwerte werden entfernt, ebenso die Export-Kopien, die die App selbst abgelegt hat. Du startest neu mit Mossik. Dateien, die du woanders gespeichert oder geteilt hast, bleiben erhalten.';
 
   @override
   String get saveDeleteReallyTitle => 'Wirklich alles löschen?';
 
   @override
   String get saveDeleteReallyBody =>
-      'Das kann nicht rückgängig gemacht werden. Ohne Export ist der Spielstand weg.';
+      'Das kann nicht rückgängig gemacht werden. Zurück holt den Spielstand nur eine Export-Datei, die du außerhalb der App gespeichert hast.';
 
   @override
   String get saveDeletePermanently => 'Endgültig löschen';

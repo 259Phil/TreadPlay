@@ -46,7 +46,8 @@ Under Settings → Save game you can export your save as a file (treadplay-save-
 - Android and iOS: the app writes the file to its own app folder and opens the system share sheet. You decide where it goes (for example Files, mail, a cloud drive). Web: your browser downloads the file.
 - The app never uploads the file. We and others only receive it if you send it to them yourself. Wherever you store or send it, that service's terms apply. Anyone who has the file can import your game, so you are responsible for whom you share it with.
 - Import reads only the file you pick and replaces the current game after you confirm.
-- "Delete save game" (two confirmations) resets the game on this device to a fresh start; your settings stay. It does not delete files you already exported: delete copies you saved elsewhere yourself. The copy in the app folder is removed when you uninstall the app.
+- "Delete save game" (two confirmations) resets the game on this device to a fresh start and also deletes the save copies the app keeps in its own storage: the export copies in the app folder and the temporary copies from sharing and importing (Android: share and picker cache, iOS: imported files in the app's temporary folder). Your settings stay.
+- Files you saved or shared elsewhere (for example in Files, a mail or a cloud drive) are outside the app. The app cannot and does not delete them; delete them yourself if you no longer need them. After deleting, only such a file can bring the old game back.
 - Uninstalling the app (web: clearing the site data) deletes all local data. There is no account to erase on a server.
 
 ## 8. Web version
@@ -109,7 +110,8 @@ Unter Einstellungen → Spielstand kannst du deinen Spielstand als Datei exporti
 - Android und iOS: Die App legt die Datei in ihrem eigenen App-Ordner ab und öffnet das Teilen-Menü des Systems. Du entscheidest, wohin sie geht (zum Beispiel Dateien, Mail, ein Cloud-Speicher). Web: Dein Browser lädt die Datei herunter.
 - Die App lädt die Datei nie hoch. Wir und andere erhalten sie nur, wenn du sie selbst schickst. Wo du sie speicherst oder hinschickst, gelten die Bedingungen dieses Dienstes. Wer die Datei hat, kann deinen Spielstand importieren; du bist also selbst dafür verantwortlich, mit wem du sie teilst.
 - Import liest nur die Datei, die du auswählst, und ersetzt das aktuelle Spiel erst nach deiner Bestätigung.
-- „Spielstand löschen“ (zwei Bestätigungen) setzt das Spiel auf diesem Gerät auf einen frischen Start zurück; deine Einstellungen bleiben. Bereits exportierte Dateien löscht es nicht: Kopien, die du woanders gespeichert hast, löschst du selbst. Die Kopie im App-Ordner wird beim Deinstallieren der App entfernt.
+- „Spielstand löschen“ (zwei Bestätigungen) setzt das Spiel auf diesem Gerät auf einen frischen Start zurück und löscht auch die Spielstand-Kopien, die die App in ihrem eigenen Speicher hat: die Export-Kopien im App-Ordner und die Zwischenkopien vom Teilen und Importieren (Android: Teilen- und Auswahl-Cache, iOS: importierte Dateien im temporären Ordner der App). Deine Einstellungen bleiben.
+- Dateien, die du woanders gespeichert oder geteilt hast (zum Beispiel in Dateien, einer Mail oder einem Cloud-Speicher), liegen außerhalb der App. Die App kann und wird sie nicht löschen; lösche sie selbst, wenn du sie nicht mehr brauchst. Nach dem Löschen bringt nur eine solche Datei den alten Spielstand zurück.
 - App deinstallieren (Web: Websitedaten löschen) löscht alle lokalen Daten. Ein Konto zum Löschen auf einem Server gibt es nicht.
 
 ## 8. Web-Version

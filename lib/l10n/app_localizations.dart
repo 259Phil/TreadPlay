@@ -1091,7 +1091,7 @@ abstract class AppLocalizations {
   /// No description provided for @saveDeleteBody.
   ///
   /// In en, this message translates to:
-  /// **'Companions, seals, LP, Breath, run history and lifetime totals are removed. You start again with Mossik.'**
+  /// **'Companions, seals, LP, Breath, run history and lifetime totals are removed, and so are the export copies the app kept itself. You start again with Mossik. Files you saved or shared elsewhere stay.'**
   String get saveDeleteBody;
 
   /// No description provided for @saveDeleteReallyTitle.
@@ -1103,7 +1103,7 @@ abstract class AppLocalizations {
   /// No description provided for @saveDeleteReallyBody.
   ///
   /// In en, this message translates to:
-  /// **'This cannot be undone. Without an export the save game is gone.'**
+  /// **'This cannot be undone. Only an export file you saved outside the app can bring the save game back.'**
   String get saveDeleteReallyBody;
 
   /// No description provided for @saveDeletePermanently.

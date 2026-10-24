@@ -215,9 +215,16 @@ void main() {
         ),
       ],
     );
-    await pumpApp(tester, saved: {'game.v2': jsonEncode(rich.toJson())});
+    final files = _FakeSaveFiles(copies: 2);
+    await pumpApp(
+      tester,
+      saved: {'game.v2': jsonEncode(rich.toJson())},
+      files: files,
+    );
     await openSaveTile(tester, 'save-delete');
     expect(find.text('Delete save game?'), findsOneWidget);
+    expect(find.textContaining('export copies the app kept'), findsOneWidget);
+    expect(files.deleteCalls, 0);
     await tester.tap(find.text('Delete save game').last);
     await tester.pumpAndSettle();
     expect(find.text('Really delete everything?'), findsOneWidget);
@@ -240,6 +247,34 @@ void main() {
     expect(g.videos.watched, 0);
     final stored = container.read(gameRepositoryProvider).loadGame();
     expect(stored?.totals.runs, 0);
+    expect(files.deleteCalls, 1);
+    expect(files.copies, 0);
+  });
+
+  testWidgets('delete save game works when the app holds no copy', (
+    tester,
+  ) async {
+    final files = _FakeSaveFiles();
+    final rich = GameData.initial(t0).copyWith(lp: 500);
+    await pumpApp(
+      tester,
+      saved: {'game.v2': jsonEncode(rich.toJson())},
+      files: files,
+    );
+    await openSaveTile(tester, 'save-delete');
+    await tester.tap(find.text('Delete save game').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Delete permanently'));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Save game deleted. Fresh start with Mossik.'),
+      findsOneWidget,
+    );
+    expect(files.deleteCalls, 1);
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(Scaffold).first),
+    );
+    expect(container.read(gameProvider).lp, 0);
   });
 
   testWidgets('cancelling the first delete question keeps everything', (
@@ -1248,6 +1283,11 @@ class _FixedRandom implements Random {
 }
 
 class _FakeSaveFiles extends SaveFileIo {
+  _FakeSaveFiles({this.copies = 0});
+
+  /// App-internal copies the fake pretends to hold.
+  int copies;
+  int deleteCalls = 0;
   Uint8List? delivered;
   String? name;
   Uint8List? toPick;
@@ -1263,6 +1303,14 @@ class _FakeSaveFiles extends SaveFileIo {
   }) async {
     this.name = name;
     delivered = bytes;
+  }
+
+  @override
+  Future<int> deleteLocalCopies() async {
+    deleteCalls++;
+    final n = copies;
+    copies = 0;
+    return n;
   }
 
   @override

@@ -578,14 +578,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saveDeleteBody =>
-      'Companions, seals, LP, Breath, run history and lifetime totals are removed. You start again with Mossik.';
+      'Companions, seals, LP, Breath, run history and lifetime totals are removed, and so are the export copies the app kept itself. You start again with Mossik. Files you saved or shared elsewhere stay.';
 
   @override
   String get saveDeleteReallyTitle => 'Really delete everything?';
 
   @override
   String get saveDeleteReallyBody =>
-      'This cannot be undone. Without an export the save game is gone.';
+      'This cannot be undone. Only an export file you saved outside the app can bring the save game back.';
 
   @override
   String get saveDeletePermanently => 'Delete permanently';

@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Treadplay';
+  String get appTitle => 'TreadPlay';
 
   @override
   String get tabHome => 'Home';
@@ -165,7 +165,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsHealthBody =>
-      'Treadplay uses location (GPS) and the step counter only while a run is active and only on this device. Only the run summary is saved, no route. Nothing is uploaded.';
+      'TreadPlay uses location (GPS) and the step counter only while a run is active and only on this device. Only the run summary is saved, no route. Nothing is uploaded.';
 
   @override
   String get settingsPrivacyTitle => 'Privacy';
@@ -179,7 +179,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get creditsArtwork =>
-      'Artwork created with Grok (xAI) and edited by Treadplay.';
+      'Artwork created with Grok (xAI) and edited by TreadPlay.';
 
   @override
   String get appTagline => 'Walk with a companion.';
@@ -351,7 +351,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get movementNoticeBody =>
-      'To count a walk, Treadplay uses your location (GPS) and the step counter during the run. Readings stay on this device and are only used to measure distance and pace and to award LP. No route is saved and nothing is uploaded. If you deny, real movement earns no LP.';
+      'To count a walk, TreadPlay uses your location (GPS) and the step counter during the run. Readings stay on this device and are only used to measure distance and pace and to award LP. No route is saved and nothing is uploaded. If you deny, real movement earns no LP.';
 
   @override
   String get movementDeniedHint =>
@@ -540,7 +540,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveDelete => 'Delete save game';
 
   @override
-  String get saveShareSubject => 'Treadplay save game';
+  String get saveShareSubject => 'TreadPlay save game';
 
   @override
   String get saveExported => 'Save game exported.';
@@ -563,11 +563,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveImported => 'Save game imported.';
 
   @override
-  String get saveErrorNotASave => 'This file is not a Treadplay save game.';
+  String get saveErrorNotASave => 'This file is not a TreadPlay save game.';
 
   @override
   String get saveErrorNewer =>
-      'This save game comes from a newer Treadplay version. Update the app first.';
+      'This save game comes from a newer TreadPlay version. Update the app first.';
 
   @override
   String get saveErrorDamaged =>

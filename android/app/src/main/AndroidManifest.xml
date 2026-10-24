@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
     <application
-        android:label="Treadplay"
+        android:label="TreadPlay"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

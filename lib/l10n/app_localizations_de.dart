@@ -9,7 +9,7 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
-  String get appTitle => 'Treadplay';
+  String get appTitle => 'TreadPlay';
 
   @override
   String get tabHome => 'Start';
@@ -166,7 +166,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsHealthBody =>
-      'Treadplay nutzt Standort (GPS) und Schrittzähler nur während eines Laufs und nur auf diesem Gerät. Gespeichert wird nur die Zusammenfassung des Laufs, keine Route. Nichts wird hochgeladen.';
+      'TreadPlay nutzt Standort (GPS) und Schrittzähler nur während eines Laufs und nur auf diesem Gerät. Gespeichert wird nur die Zusammenfassung des Laufs, keine Route. Nichts wird hochgeladen.';
 
   @override
   String get settingsPrivacyTitle => 'Datenschutz';
@@ -180,7 +180,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get creditsArtwork =>
-      'Artwork erstellt mit Grok (xAI) und bearbeitet von Treadplay.';
+      'Artwork erstellt mit Grok (xAI) und bearbeitet von TreadPlay.';
 
   @override
   String get appTagline => 'Lauf mit einem Gefährten.';
@@ -352,7 +352,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get movementNoticeBody =>
-      'Damit ein Lauf zählt, nutzt Treadplay während des Laufs deinen Standort (GPS) und den Schrittzähler. Die Werte bleiben auf dem Gerät und dienen nur dazu, Strecke und Tempo zu messen und LP zu vergeben. Keine Route wird gespeichert, nichts wird hochgeladen. Lehnst du ab, gibt es keine LP aus echter Bewegung.';
+      'Damit ein Lauf zählt, nutzt TreadPlay während des Laufs deinen Standort (GPS) und den Schrittzähler. Die Werte bleiben auf dem Gerät und dienen nur dazu, Strecke und Tempo zu messen und LP zu vergeben. Keine Route wird gespeichert, nichts wird hochgeladen. Lehnst du ab, gibt es keine LP aus echter Bewegung.';
 
   @override
   String get movementDeniedHint =>
@@ -543,7 +543,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get saveDelete => 'Spielstand löschen';
 
   @override
-  String get saveShareSubject => 'Treadplay-Spielstand';
+  String get saveShareSubject => 'TreadPlay-Spielstand';
 
   @override
   String get saveExported => 'Spielstand exportiert.';
@@ -566,11 +566,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get saveImported => 'Spielstand importiert.';
 
   @override
-  String get saveErrorNotASave => 'Diese Datei ist kein Treadplay-Spielstand.';
+  String get saveErrorNotASave => 'Diese Datei ist kein TreadPlay-Spielstand.';
 
   @override
   String get saveErrorNewer =>
-      'Dieser Spielstand stammt aus einer neueren Treadplay-Version. Aktualisiere zuerst die App.';
+      'Dieser Spielstand stammt aus einer neueren TreadPlay-Version. Aktualisiere zuerst die App.';
 
   @override
   String get saveErrorDamaged =>

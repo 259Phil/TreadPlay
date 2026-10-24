@@ -9,13 +9,13 @@ import 'species.dart';
 
 /// Why a picked file can't be imported.
 enum SaveGameError {
-  /// Not JSON or not a Treadplay save at all.
+  /// Not JSON or not a TreadPlay save at all.
   notASave,
 
   /// Written by a newer app version than this one understands.
   newerVersion,
 
-  /// A Treadplay save, but its game data is incomplete or broken.
+  /// A TreadPlay save, but its game data is incomplete or broken.
   damaged,
 }
 

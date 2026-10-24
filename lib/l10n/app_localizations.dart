@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Treadplay'**
+  /// **'TreadPlay'**
   String get appTitle;
 
   /// No description provided for @tabHome.
@@ -371,7 +371,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsHealthBody.
   ///
   /// In en, this message translates to:
-  /// **'Treadplay uses location (GPS) and the step counter only while a run is active and only on this device. Only the run summary is saved, no route. Nothing is uploaded.'**
+  /// **'TreadPlay uses location (GPS) and the step counter only while a run is active and only on this device. Only the run summary is saved, no route. Nothing is uploaded.'**
   String get settingsHealthBody;
 
   /// No description provided for @settingsPrivacyTitle.
@@ -395,7 +395,7 @@ abstract class AppLocalizations {
   /// No description provided for @creditsArtwork.
   ///
   /// In en, this message translates to:
-  /// **'Artwork created with Grok (xAI) and edited by Treadplay.'**
+  /// **'Artwork created with Grok (xAI) and edited by TreadPlay.'**
   String get creditsArtwork;
 
   /// No description provided for @appTagline.
@@ -707,7 +707,7 @@ abstract class AppLocalizations {
   /// No description provided for @movementNoticeBody.
   ///
   /// In en, this message translates to:
-  /// **'To count a walk, Treadplay uses your location (GPS) and the step counter during the run. Readings stay on this device and are only used to measure distance and pace and to award LP. No route is saved and nothing is uploaded. If you deny, real movement earns no LP.'**
+  /// **'To count a walk, TreadPlay uses your location (GPS) and the step counter during the run. Readings stay on this device and are only used to measure distance and pace and to award LP. No route is saved and nothing is uploaded. If you deny, real movement earns no LP.'**
   String get movementNoticeBody;
 
   /// No description provided for @movementDeniedHint.
@@ -1025,7 +1025,7 @@ abstract class AppLocalizations {
   /// No description provided for @saveShareSubject.
   ///
   /// In en, this message translates to:
-  /// **'Treadplay save game'**
+  /// **'TreadPlay save game'**
   String get saveShareSubject;
 
   /// No description provided for @saveExported.
@@ -1067,13 +1067,13 @@ abstract class AppLocalizations {
   /// No description provided for @saveErrorNotASave.
   ///
   /// In en, this message translates to:
-  /// **'This file is not a Treadplay save game.'**
+  /// **'This file is not a TreadPlay save game.'**
   String get saveErrorNotASave;
 
   /// No description provided for @saveErrorNewer.
   ///
   /// In en, this message translates to:
-  /// **'This save game comes from a newer Treadplay version. Update the app first.'**
+  /// **'This save game comes from a newer TreadPlay version. Update the app first.'**
   String get saveErrorNewer;
 
   /// No description provided for @saveErrorDamaged.

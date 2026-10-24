@@ -174,7 +174,7 @@ void main() {
     );
     await openSaveTile(tester, 'save-import');
     expect(
-      find.text('This file is not a Treadplay save game.'),
+      find.text('This file is not a TreadPlay save game.'),
       findsOneWidget,
     );
     expect(find.text('Import save game?'), findsNothing);
@@ -190,7 +190,7 @@ void main() {
     );
     await tester.tap(find.byKey(const Key('save-import')));
     await tester.pumpAndSettle();
-    expect(find.textContaining('newer Treadplay version'), findsOneWidget);
+    expect(find.textContaining('newer TreadPlay version'), findsOneWidget);
     final container = ProviderScope.containerOf(
       tester.element(find.byType(Scaffold).first),
     );

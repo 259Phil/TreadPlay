@@ -71,11 +71,13 @@ class _RunScreenState extends ConsumerState<RunScreen>
       final DeviceMovementSource d => d,
       _ => null,
     };
+    // Standing still: no live tempo, the average would only show drift.
+    final standing = e.speedKmh < 0.5;
     final hint = !e.earnsLp
         ? null
         : !e.canEarn
         ? l.hintNoBreath
-        : e.speedKmh < 0.5
+        : standing
         ? l.hintStanding
         : e.inBand
         ? l.hintInside
@@ -144,7 +146,10 @@ class _RunScreenState extends ConsumerState<RunScreen>
                               : () => setState(() => _gpsDebug = !_gpsDebug),
                         ),
                         _Stat(l.time, formatDuration(e.elapsed)),
-                        _Stat(l.pace, l.paceValue(formatPace(e.pace))),
+                        _Stat(
+                          l.pace,
+                          l.paceValue(formatPace(standing ? null : e.pace)),
+                        ),
                       ],
                     ),
                   ),

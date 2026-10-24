@@ -12,6 +12,7 @@ import '../../widgets/companion_card.dart';
 import '../../widgets/companion_stats.dart';
 import '../../widgets/format.dart';
 import '../../widgets/lp_pill.dart';
+import 'salve_tab.dart';
 
 /// Buy companions for LP and sell them back, on the same card grid as
 /// Shelf. Offers drift every few hours; the moment is never shown.
@@ -27,7 +28,7 @@ class MarketScreen extends ConsumerWidget {
     final soon = market?.restocksSoon(ref.read(clockProvider)()) ?? false;
 
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         backgroundColor: TreadSkin.of(context).canvas,
         appBar: AppBar(
@@ -74,7 +75,11 @@ class MarketScreen extends ConsumerWidget {
             labelStyle: kLeatherBuild
                 ? TreadSkin.of(context).display(16)
                 : const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-            tabs: [_PillTab(l.marketBuyTab), _PillTab(l.marketSellTab)],
+            tabs: [
+              _PillTab(l.marketBuyTab),
+              _PillTab(l.marketSellTab),
+              _PillTab(l.marketSalvesTab),
+            ],
           ),
         ),
         body: market == null
@@ -95,6 +100,7 @@ class MarketScreen extends ConsumerWidget {
                     buying: false,
                     restockSoon: soon,
                   ),
+                  SalveTab(game: game, market: market),
                 ],
               ),
       ),

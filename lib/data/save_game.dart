@@ -64,7 +64,12 @@ class SaveGame {
   /// 7: the market carries its rolling rules ('generation' in 'market').
   /// Older files still import; their market (one species, one gait for
   /// fresh players) is rolled anew once on load, owned companions stay.
-  static const int version = 7;
+  ///
+  /// 8: levelling and Mutsalben ('xp' on companions, 'salves' in the game,
+  /// salve prices in 'market', Mut and XP on runs). Older files still
+  /// import: every companion keeps its level and Mut and starts at 0 XP,
+  /// the Vorrat holds no salves.
+  static const int version = 8;
 
   static String fileName(DateTime now) {
     final stamp = now.toIso8601String().replaceAll(':', '-').split('.').first;
@@ -100,7 +105,10 @@ class SaveGame {
     if (v > version) {
       throw const SaveGameException(SaveGameError.newerVersion);
     }
-    final json = _withHomeTempo(_migrate(raw['game'], v), v);
+    final json = _withoutLevelling(
+      _withHomeTempo(_migrate(raw['game'], v), v),
+      v,
+    );
     if (json is! Map<String, Object?>) {
       throw const SaveGameException(SaveGameError.damaged);
     }
@@ -175,6 +183,20 @@ class SaveGame {
           'offers': [for (final c in offers) fix(c)],
         };
       }
+    }
+    return next;
+  }
+
+  /// Before version 8 nothing levelled: stray 'xp' and 'salves' keys are
+  /// dropped, so every companion starts at 0 XP and the Vorrat is empty.
+  static Object? _withoutLevelling(Object? game, int fromVersion) {
+    if (fromVersion >= 8 || game is! Map<String, Object?>) return game;
+    final next = {...game}..remove('salves');
+    if (game['companions'] case final List<Object?> owned) {
+      next['companions'] = [
+        for (final c in owned)
+          c is Map<String, Object?> ? ({...c}..remove('xp')) : c,
+      ];
     }
     return next;
   }

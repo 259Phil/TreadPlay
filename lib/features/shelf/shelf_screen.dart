@@ -13,6 +13,7 @@ import '../../widgets/companion_card.dart';
 import '../../widgets/companion_stats.dart';
 import '../../widgets/format.dart';
 import '../../widgets/lp_pill.dart';
+import 'level_panel.dart';
 
 /// Card grid of owned companions.
 class ShelfScreen extends ConsumerStatefulWidget {
@@ -281,25 +282,12 @@ class _Detail extends ConsumerWidget {
             const SizedBox(height: 16),
             CompanionStats(companion: c),
             const SizedBox(height: 12),
+            LevelPanel(companion: c),
+            const SizedBox(height: 12),
             Text(l.charms, style: theme.textTheme.titleSmall),
             const SizedBox(height: 6),
             CharmSockets(companion: c),
             const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: null,
-                    child: Text(l.levelUp),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: OutlinedButton(onPressed: null, child: Text(l.repair)),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
             SizedBox(
               height: 52,
               child: FilledButton.icon(

@@ -5,6 +5,7 @@ import '../l10n/app_localizations.dart';
 import '../theme.dart';
 import '../ui/skin.dart';
 import 'format.dart';
+import 'salve_art.dart';
 import 'seal_art.dart';
 import 'stock_art.dart';
 
@@ -329,6 +330,12 @@ class PouchRewardTile extends StatelessWidget {
         l.pouchSplinters(reward.amount),
         '',
         ForgeColors.text,
+      ),
+      PouchRewardKind.salve => (
+        SalveArt(salve: reward.salve!, size: size),
+        salveName(l, reward.salve!),
+        salveEffect(l, reward.salve!),
+        salveHoney,
       ),
     };
     return DecoratedBox(

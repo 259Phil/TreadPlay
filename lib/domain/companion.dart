@@ -31,15 +31,41 @@ enum CompanionType {
 }
 
 enum Rarity {
-  common(code: 'c', tankSize: 6, lpPerBreath: 2.5, charmSlots: 1, baseStat: 10),
-  rare(code: 'r', tankSize: 8, lpPerBreath: 4.0, charmSlots: 2, baseStat: 14),
-  epic(code: 'e', tankSize: 10, lpPerBreath: 7.0, charmSlots: 2, baseStat: 20),
+  common(
+    code: 'c',
+    tankSize: 6,
+    lpPerBreath: 2.5,
+    charmSlots: 1,
+    baseStat: 10,
+    spiritPerBreath: 1.0,
+    levelCostFactor: 5,
+  ),
+  rare(
+    code: 'r',
+    tankSize: 8,
+    lpPerBreath: 4.0,
+    charmSlots: 2,
+    baseStat: 14,
+    spiritPerBreath: 1.2,
+    levelCostFactor: 10,
+  ),
+  epic(
+    code: 'e',
+    tankSize: 10,
+    lpPerBreath: 7.0,
+    charmSlots: 2,
+    baseStat: 20,
+    spiritPerBreath: 1.5,
+    levelCostFactor: 20,
+  ),
   legendary(
     code: 'l',
     tankSize: 12,
     lpPerBreath: 12.0,
     charmSlots: 3,
     baseStat: 28,
+    spiritPerBreath: 2.0,
+    levelCostFactor: 40,
   );
 
   const Rarity({
@@ -48,7 +74,16 @@ enum Rarity {
     required this.lpPerBreath,
     required this.charmSlots,
     required this.baseStat,
+    required this.spiritPerBreath,
+    required this.levelCostFactor,
   });
+
+  /// Mut (in percent points) a companion of this rarity loses per Breath
+  /// point used, before Grit.
+  final double spiritPerBreath;
+
+  /// LP to level up from level n is this times n.
+  final int levelCostFactor;
 
   /// Suffix of the art file, e.g. `pebble_r`.
   final String code;
@@ -73,6 +108,29 @@ const double statRoll = 0.08;
 
 const int maxLevel = 25;
 
+/// XP a companion needs to go from [level] to the next: 6 per level, so
+/// Lv 1→2 takes 6 XP (1.5 km in the sweet spot), Lv 24→25 takes 144.
+int xpForLevel(int level) => 6 * level;
+
+/// XP per Breath point used on a run (one point = 250 m in the sweet spot).
+const int xpPerBreath = 1;
+
+/// Levels at which the companion's tank holds one more Breath point: two
+/// in all by [maxLevel], so a 6-point Common ends at 8.
+const List<int> tankLevels = [10, 25];
+
+/// Extra tank points a companion at [level] has.
+int tankBonusAt(int level) => tankLevels.where((l) => level >= l).length;
+
+/// The next level that adds a tank point, null after the last one.
+int? nextTankLevel(int level) => tankLevels.where((l) => l > level).firstOrNull;
+
+/// Lowest Mut at which a seal can be set into a companion.
+const double sealSpiritMin = 50;
+
+/// Below this Mut the companion asks for a salve.
+const double lowSpirit = 30;
+
 double _roundStat(double value) => (value * 10).roundToDouble() / 10;
 
 /// Stride bonus from levels: +4 % per level up to 18, +2 % per level after.
@@ -96,6 +154,7 @@ class Companion {
     required this.fortune,
     required this.spirit,
     required this.charms,
+    this.xp = 0,
     CompanionType? tempo,
   }) : _tempo = tempo;
 
@@ -149,6 +208,10 @@ class Companion {
   final String speciesId;
   final Rarity rarity;
   final int level;
+
+  /// XP collected towards the next level (walking only). Kept when the
+  /// level-up is not paid yet; the rest carries over after a level-up.
+  final int xp;
 
   final CompanionType? _tempo;
   final double stride;
@@ -216,18 +279,74 @@ class Companion {
 
   double get fortuneTotal => fortune * (1 + sealBonus(SealType.fortune));
 
-  /// Grit: Spirit loss per run is divided by (1 + Grit bonus), so +31 %
-  /// loses about 24 % less. Spirit does not drop in this version yet; the
-  /// factor is ready for it.
-  double get spiritLossFactor => 1 / (1 + sealBonus(SealType.grit));
+  /// Grit: Mut loss is scaled by the rarity base over [gritTotal] (roll
+  /// plus seals). A base roll with full Grit seals (+47 %) loses about
+  /// 32 % less; a low roll a little more.
+  double get spiritLossFactor => rarity.baseStat / gritTotal;
+
+  /// Mut (percent points) this companion loses for [breathUsed] Breath
+  /// points used in the sweet spot, rounded to 0.1.
+  double spiritLossFor(double breathUsed) => breathUsed <= 0
+      ? 0
+      : ((breathUsed * rarity.spiritPerBreath * spiritLossFactor) * 10)
+                .roundToDouble() /
+            10;
+
+  /// Mut lost per Breath point with this companion's Grit.
+  double get spiritPerBreath => rarity.spiritPerBreath * spiritLossFactor;
+
+  /// XP for the next level, null at [maxLevel].
+  int? get xpToNext => level >= maxLevel ? null : xpForLevel(level);
+
+  /// True when enough XP is collected for the next level (LP still due).
+  bool get xpReady => xpToNext != null && xp >= xpToNext!;
+
+  /// LP the next level-up costs; null at [maxLevel].
+  double? get levelUpCost =>
+      level >= maxLevel ? null : (rarity.levelCostFactor * level).toDouble();
+
+  /// One level up: XP for it is used, the rest carries over. Check
+  /// [xpReady] first.
+  Companion leveledUp() => Companion(
+    id: id,
+    speciesId: speciesId,
+    rarity: rarity,
+    tempo: _tempo,
+    level: level + 1,
+    xp: level + 1 >= maxLevel ? 0 : xp - xpForLevel(level),
+    stride: stride,
+    grit: grit,
+    fortune: fortune,
+    spirit: spirit,
+    charms: charms,
+  );
+
+  /// After a valid run that used [breathUsed] Breath points in the sweet
+  /// spot: Mut drops (Grit softens it, never below 0) and XP grows.
+  Companion afterRun(double breathUsed) {
+    if (breathUsed <= 0) return this;
+    final gained = (breathUsed * xpPerBreath).round();
+    return copyWith(
+      spirit: max(0, ((spirit - spiritLossFor(breathUsed)) * 10).round() / 10),
+      xp: level >= maxLevel ? 0 : xp + gained,
+    );
+  }
+
+  /// Mut after a salve that adds [points] (never above 100).
+  Companion healed(double points) =>
+      copyWith(spirit: min(100, spirit + points));
+
+  /// Extra tank points from levels: one at each of [tankLevels].
+  int get tankBonus => tankBonusAt(level);
 
   /// Fortune: pouch and messenger chances after a run are multiplied by
   /// this (never above 100 %), and the pouch colour (which also picks the
   /// messenger) leans to the rarer ones.
   double get fortuneFactor => 1 + sealBonus(SealType.fortune);
 
-  /// Breath cap while this companion is taken along.
-  int get tankSize => rarity.tankSize;
+  /// Breath cap while this companion is taken along: the rarity's tank
+  /// plus one point at each of [tankLevels].
+  int get tankSize => rarity.tankSize + tankBonus;
 
   /// LP per Breath point: the rarity rate, scaled by this instance's Stride
   /// (roll plus seals) against the rarity base and by level.
@@ -241,12 +360,15 @@ class Companion {
     double? spirit,
     List<String?>? charms,
     CompanionType? tempo,
+    int? level,
+    int? xp,
   }) => Companion(
     id: id,
     speciesId: speciesId,
     rarity: rarity,
     tempo: tempo ?? _tempo,
-    level: level,
+    level: level ?? this.level,
+    xp: xp ?? this.xp,
     stride: stride ?? this.stride,
     grit: grit ?? this.grit,
     fortune: fortune ?? this.fortune,
@@ -269,6 +391,7 @@ class Companion {
     'rarity': rarity.name,
     if (_tempo ?? speciesById[speciesId]?.type case final t?) 'tempo': t.name,
     'level': level,
+    if (xp > 0) 'xp': xp,
     'stride': stride,
     'grit': grit,
     'fortune': fortune,
@@ -285,11 +408,13 @@ class Companion {
       rarity: rarity,
       // Missing (saves before version 6) or unknown: the species' home gait.
       tempo: CompanionType.tryParse(json['tempo']),
-      level: json['level']! as int,
+      level: (json['level']! as int).clamp(1, maxLevel),
+      // Saves before version 8 have no XP.
+      xp: max(0, (json['xp'] as num?)?.toInt() ?? 0),
       stride: _savedStat(json['stride'], rarity),
       grit: _savedStat(json['grit'], rarity),
       fortune: _savedStat(json['fortune'], rarity),
-      spirit: (json['spirit']! as num).toDouble(),
+      spirit: (json['spirit']! as num).toDouble().clamp(0.0, 100.0),
       charms: [
         for (var i = 0; i < rarity.charmSlots; i++)
           // Bare stat names from before seal levels become level codes.

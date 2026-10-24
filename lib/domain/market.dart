@@ -2,6 +2,7 @@ import 'dart:math';
 
 import '../data/species.dart';
 import 'companion.dart';
+import 'salve.dart';
 import 'world.dart';
 
 /// The local companion market. Offers and prices are rolled together and
@@ -14,6 +15,8 @@ class Market {
     required this.drift,
     required this.offers,
     this.generation = currentGeneration,
+    this.salveDrift = const {},
+    this.salveDeal,
   });
 
   /// A fresh set of [offerCount] offers. Every offer is a new instance whose
@@ -77,6 +80,14 @@ class Market {
         short--;
       }
     }
+    // Salve prices last, so every draw above stays as it was.
+    final salveDrift = {
+      for (final s in Salve.values)
+        s: 1 - priceDrift + 2 * priceDrift * random.nextDouble(),
+    };
+    final deal = random.nextDouble() < salveDealChance
+        ? Salve.values[random.nextInt(Salve.values.length)]
+        : null;
     return Market(
       nextDriftAt: now.add(Duration(minutes: minutes)),
       drift: drift,
@@ -84,8 +95,33 @@ class Market {
         for (var i = 0; i < offers.length; i++)
           offers[i].copyWith(tempo: gaits[i]),
       ],
+      salveDrift: salveDrift,
+      salveDeal: deal,
     );
   }
+
+  /// Chance per drift that one salve is on offer at [salveDealFactor].
+  static const double salveDealChance = 0.25;
+
+  /// Price factor of the salve on offer (−30 %).
+  static const double salveDealFactor = 0.7;
+
+  /// Sell price bonus per level above 1 (+3 %).
+  static const double sellLevelBonus = 0.03;
+
+  /// Price factor per salve for this drift (±20 %); missing = 1.
+  final Map<Salve, double> salveDrift;
+
+  /// The salve on offer this drift (−30 %), if any.
+  final Salve? salveDeal;
+
+  /// Whole LP, at least 1: the salve's base price times its drift, or
+  /// [salveDealFactor] of the base price while it is on offer.
+  double priceOfSalve(Salve s) => max(
+    1,
+    (s.price * (s == salveDeal ? salveDealFactor : (salveDrift[s] ?? 1)))
+        .roundToDouble(),
+  ).toDouble();
 
   /// Version of the rolling rules. A saved market from an older version is
   /// rolled anew once on load (see `GameData.withMarket`).
@@ -176,14 +212,18 @@ class Market {
   double priceOf(Companion c) =>
       (basePrice[c.rarity]! * (drift[c.id] ?? 1)).roundToDouble();
 
-  /// Whole LP: [sellShare] of the rarity's base price.
+  /// Whole LP: [sellShare] of the rarity's base price, plus
+  /// [sellLevelBonus] for every level above 1.
   double sellPriceOf(Companion c) =>
-      (basePrice[c.rarity]! * sellShare).roundToDouble();
+      (basePrice[c.rarity]! * sellShare * (1 + sellLevelBonus * (c.level - 1)))
+          .roundToDouble();
 
   Market without(String offerId) => Market(
     nextDriftAt: nextDriftAt,
     generation: generation,
     drift: drift,
+    salveDrift: salveDrift,
+    salveDeal: salveDeal,
     offers: [
       for (final c in offers)
         if (c.id != offerId) c,
@@ -195,6 +235,8 @@ class Market {
     'nextDriftAt': nextDriftAt.toIso8601String(),
     'drift': drift,
     'offers': [for (final c in offers) c.toJson()],
+    'salves': {for (final e in salveDrift.entries) e.key.name: e.value},
+    if (salveDeal case final d?) 'salveDeal': d.name,
   };
 
   factory Market.fromJson(Map<String, Object?> json) => Market(
@@ -208,6 +250,17 @@ class Market {
       for (final c in json['offers']! as List<Object?>)
         Companion.fromJson(c! as Map<String, Object?>),
     ],
+    // Markets saved before salves sell them at their base price.
+    salveDrift: {
+      if (json['salves'] case final Map<String, Object?> m)
+        for (final e in m.entries)
+          if ((Salve.tryParse(e.key), e.value) case (
+            final s?,
+            final num f,
+          ) when f > 0)
+            s: f.toDouble().clamp(1 - priceDrift, 1 + priceDrift),
+    },
+    salveDeal: Salve.tryParse(json['salveDeal']),
   );
 
   /// Swaps offers of the most frequent species for missing ones until

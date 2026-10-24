@@ -34,8 +34,8 @@ enum WaymarkCounter {
   /// Companions bought in the Market (lifetime).
   companionsBought(built: true),
 
-  // TODO(wanderweg): levelling is not built yet (level stays 1).
-  companionLevel(built: false),
+  /// Highest level of a companion on the shelf.
+  companionLevel(built: true),
 
   /// Successful combines (lifetime; at least the combined seals owned now).
   combines(built: true);

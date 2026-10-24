@@ -13,6 +13,7 @@ import '../domain/forge.dart';
 import '../domain/pouch.dart';
 import '../domain/run_engine.dart';
 import '../domain/run_summary.dart';
+import '../domain/salve.dart';
 
 final sharedPreferencesProvider = Provider<SharedPreferences>(
   (ref) => throw UnimplementedError('override in main'),
@@ -91,6 +92,30 @@ class GameNotifier extends Notifier<GameData> {
   }
 
   bool get _running => ref.read(runControllerProvider) != null;
+
+  /// Levels [companionId] up for LP once it has walked the XP. Not
+  /// possible during a run.
+  bool levelUp(String companionId) {
+    if (_running || state.levelUpBlock(companionId) != null) return false;
+    _set(state.levelingUp(companionId, _now()));
+    return true;
+  }
+
+  /// Buys one [salve] from the Market into the Vorrat. Not during a run.
+  bool buySalve(Salve salve) {
+    if (_running || state.buySalveBlock(salve) != null) return false;
+    _set(state.buyingSalve(salve));
+    return true;
+  }
+
+  /// Uses one [salve] from the Vorrat on [companionId]. Not during a run.
+  bool useSalve(String companionId, Salve salve) {
+    if (_running || state.useSalveBlock(companionId, salve) != null) {
+      return false;
+    }
+    _set(state.usingSalve(companionId, salve));
+    return true;
+  }
 
   /// Buys a seal L1 into the seal case. Not possible during a run.
   bool buySeal(SealType type) {

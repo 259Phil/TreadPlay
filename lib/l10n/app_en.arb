@@ -248,7 +248,7 @@
     }
   },
   "forgeRule": "Each seal raises its stat by a share: L1 +4 %, L2 +9 %, L3 +15 %, L4 +22 %, L5 +31 %.",
-  "forgeNeedsSpirit": "Seals are set only at 100 % Spirit.",
+  "forgeNeedsSpirit": "Seals are set only from 50 % Spirit.",
   "forgeNotEnoughLp": "Not enough LP yet.",
   "forgeNoSocket": "No empty socket left.",
   "forgeSellNote": "Selling a companion puts its seals back into the case.",
@@ -811,8 +811,8 @@
   "pouchCopper": "Copper pouch",
   "pouchTurquoise": "Turquoise pouch",
   "pouchNavy": "Navy pouch",
-  "pouchContentsBrown": "Glut 1–2, plus a seal L1 or 2 splinters",
-  "pouchContentsCopper": "Glut 2, plus 1–2 of: seal L1–L2, 2 Glut, 2 splinters",
+  "pouchContentsBrown": "Glut 1–2, plus a seal L1 or 2 splinters, rarely a small spirit salve",
+  "pouchContentsCopper": "Glut 2, plus 1–2 of: seal L1–L2, 2 Glut, 2 splinters, rarely a small spirit salve",
   "pouchContentsTurquoise": "Glut 2–3, plus 2 of: seal L1–L2, 2 Glut, 3 splinters",
   "pouchContentsNavy": "Glut 3, plus 2 of: seal L1–L3, 3 Glut, 3 splinters",
   "pouchLeash": "Leash {n}/{clips}",
@@ -1202,6 +1202,220 @@
       },
       "b": {
         "type": "int"
+      }
+    }
+  },
+  "salveSmall": "Small spirit salve",
+  "salveMedium": "Spirit salve jar",
+  "salveLarge": "Rune pot salve",
+  "salveEffect": "+{n} % Spirit",
+  "@salveEffect": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "salveEffectFull": "Spirit to 100 %",
+  "salveButton": "Spirit salve",
+  "salveSheetTitle": "Spirit salve for {name}",
+  "@salveSheetTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "salveSheetSpirit": "Spirit now {mut} %",
+  "@salveSheetSpirit": {
+    "placeholders": {
+      "mut": {
+        "type": "String"
+      }
+    }
+  },
+  "salveOwned": "{n} in stock",
+  "@salveOwned": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "salveUse": "Apply",
+  "salveNoneHint": "No salves in stock. The trader in the Market sells them.",
+  "salveFull": "Spirit is full.",
+  "salveApplied": "{name} is back at {mut} % Spirit.",
+  "@salveApplied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "mut": {
+        "type": "String"
+      }
+    }
+  },
+  "salveVorratTitle": "Spirit salves",
+  "salveVorratHint": "Tap a salve to apply it to {name}.",
+  "@salveVorratHint": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "salveVorratEmpty": "No salves yet. The Market trader has them.",
+  "levelXp": "XP {xp} / {need}",
+  "@levelXp": {
+    "placeholders": {
+      "xp": {
+        "type": "int"
+      },
+      "need": {
+        "type": "int"
+      }
+    }
+  },
+  "levelMax": "Highest level reached",
+  "levelNextLp": "Next level: +{pct} % LP per Breath point",
+  "@levelNextLp": {
+    "placeholders": {
+      "pct": {
+        "type": "int"
+      }
+    }
+  },
+  "levelNextTank": "Next level: +{pct} % LP per Breath point and +1 Breath tank",
+  "@levelNextTank": {
+    "placeholders": {
+      "pct": {
+        "type": "int"
+      }
+    }
+  },
+  "levelXpHint": "1 XP per Breath point used in the sweet spot",
+  "levelUpFor": "Level up · {lp} LP",
+  "@levelUpFor": {
+    "placeholders": {
+      "lp": {
+        "type": "String"
+      }
+    }
+  },
+  "levelNeedsXp": "{n} XP to walk",
+  "@levelNeedsXp": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "levelNeedsLp": "{lp} LP missing",
+  "@levelNeedsLp": {
+    "placeholders": {
+      "lp": {
+        "type": "String"
+      }
+    }
+  },
+  "levelUpDone": "{name} is level {level} now!",
+  "@levelUpDone": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "levelUpDoneTank": "{name} is level {level} now. Tank: {tank} Breath!",
+  "@levelUpDoneTank": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "level": {
+        "type": "int"
+      },
+      "tank": {
+        "type": "int"
+      }
+    }
+  },
+  "spiritLossLine": "Spirit −{loss} % per Breath point in the sweet spot",
+  "@spiritLossLine": {
+    "placeholders": {
+      "loss": {
+        "type": "String"
+      }
+    }
+  },
+  "spiritGritSaves": "Grit saves {pct} %",
+  "@spiritGritSaves": {
+    "placeholders": {
+      "pct": {
+        "type": "int"
+      }
+    }
+  },
+  "spiritLow": "{name} is down to {mut} % Spirit. At 0 % runs bring no LP – a spirit salve helps.",
+  "@spiritLow": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "mut": {
+        "type": "String"
+      }
+    }
+  },
+  "summarySpirit": "Spirit",
+  "summarySpiritValue": "{before} % → {after} %",
+  "@summarySpiritValue": {
+    "placeholders": {
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryXp": "XP",
+  "summaryXpValue": "+{n} XP",
+  "@summaryXpValue": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "summaryLevelReady": "{name} can level up – on the shelf.",
+  "@summaryLevelReady": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "marketSalvesTab": "Salves",
+  "marketSalvesIntro": "Spirit salves from the trader. Prices move with the Market; sometimes one is on offer.",
+  "marketSalveDeal": "Offer −30 %",
+  "marketSalveBuy": "Buy · {lp} LP",
+  "@marketSalveBuy": {
+    "placeholders": {
+      "lp": {
+        "type": "String"
+      }
+    }
+  },
+  "marketSalveBought": "{name} is in your stock now.",
+  "@marketSalveBought": {
+    "placeholders": {
+      "name": {
+        "type": "String"
       }
     }
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../domain/companion.dart';
 import '../../domain/pouch.dart';
 import '../../l10n/app_localizations.dart';
 import '../history/history_screen.dart';
@@ -23,6 +24,11 @@ class SummaryScreen extends ConsumerWidget {
     final l = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final run = ref.watch(gameProvider.select((g) => g.lastRun));
+    final companion = ref.watch(
+      gameProvider.select(
+        (g) => g.companions.where((c) => c.id == run?.companionId).firstOrNull,
+      ),
+    );
 
     Widget row(String label, String value) => ListTile(
       title: Text(label),
@@ -119,10 +125,49 @@ class SummaryScreen extends ConsumerWidget {
                             l.summaryBreathLeft,
                             l.breathValue(formatNumber(context, left), tank),
                           ),
+                        if (run.spiritAfter case final after?)
+                          ListTile(
+                            key: const Key('summary-spirit'),
+                            title: Text(l.summarySpirit),
+                            trailing: Text(
+                              l.summarySpiritValue(
+                                formatNumber(context, after + run.spiritLost),
+                                formatNumber(context, after),
+                              ),
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                color: after < lowSpirit
+                                    ? TreadColors.copper
+                                    : null,
+                              ),
+                            ),
+                          ),
+                        if (run.xpGained > 0)
+                          ListTile(
+                            key: const Key('summary-xp'),
+                            title: Text(l.summaryXp),
+                            trailing: Text(
+                              l.summaryXpValue(run.xpGained),
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                color: TreadColors.brass,
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                   ),
                 ),
+                if (run.levelReady && companion != null)
+                  Card(
+                    key: const Key('summary-level-ready'),
+                    child: ListTile(
+                      leading: const Icon(
+                        Icons.trending_up,
+                        color: TreadColors.brass,
+                      ),
+                      title: Text(l.summaryLevelReady(companion.name)),
+                      onTap: () => context.go(AppRoutes.shelf),
+                    ),
+                  ),
                 if (run.glut > 0)
                   ListTile(
                     key: const Key('summary-glut'),

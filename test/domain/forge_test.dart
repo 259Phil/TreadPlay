@@ -410,14 +410,18 @@ void main() {
       expect(g.setBlock('gilt-1', grit3), ForgeBlock.needsPair);
     });
 
-    test('a Common holds one seal; setting needs 100 % Spirit', () {
+    test('a Common holds one seal; setting needs 50 % Spirit', () {
       var g = game(stock: {'stride@1': 2});
       g = g.settingSeal('pebble-1', stride1);
       expect(g.setBlock('pebble-1', stride1), ForgeBlock.noSocket);
       final worn = game(
         stock: {'stride@1': 1},
-      ).replaceCompanion(gilt.copyWith(spirit: 99));
+      ).replaceCompanion(gilt.copyWith(spirit: 49.9));
       expect(worn.setBlock('gilt-1', stride1), ForgeBlock.needsSpirit);
+      final half = game(
+        stock: {'stride@1': 1},
+      ).replaceCompanion(gilt.copyWith(spirit: 50));
+      expect(half.setBlock('gilt-1', stride1), isNull);
     });
 
     test('taking a seal out puts it back into the case', () {
@@ -511,12 +515,16 @@ void main() {
       expect(withL3.waymarkCounters.reaches(wm12), isTrue);
     });
 
-    test('waymark 16 asks for a combine (levels still waived)', () {
+    test('waymark 16 asks for a combine and a companion at level 3', () {
       final wm16 = waymarks[15];
       final base = game().copyWith(totals: const Totals(distanceM: 90000));
       expect(base.waymarkCounters.reaches(wm16), isFalse);
       final combined = base.copyWith(forge: const ForgeState(combines: 1));
-      expect(combined.waymarkCounters.reaches(wm16), isTrue);
+      expect(combined.waymarkCounters.reaches(wm16), isFalse);
+      final lv2 = combined.replaceCompanion(gilt.copyWith(level: 2));
+      expect(lv2.waymarkCounters.reaches(wm16), isFalse);
+      final lv3 = combined.replaceCompanion(gilt.copyWith(level: 3));
+      expect(lv3.waymarkCounters.reaches(wm16), isTrue);
     });
 
     test('forge unlocks are wired now', () {
@@ -535,6 +543,7 @@ void main() {
       expect(WaymarkCounter.brownPouchesOpened.built, isTrue);
       expect(WaymarkCounter.leashFilled.built, isTrue);
       expect(WaymarkCounter.messengersMet.built, isTrue);
+      expect(WaymarkCounter.companionLevel.built, isTrue);
     });
   });
 }

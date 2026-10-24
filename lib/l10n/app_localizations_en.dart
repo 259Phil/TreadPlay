@@ -386,7 +386,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Each seal raises its stat by a share: L1 +4 %, L2 +9 %, L3 +15 %, L4 +22 %, L5 +31 %.';
 
   @override
-  String get forgeNeedsSpirit => 'Seals are set only at 100 % Spirit.';
+  String get forgeNeedsSpirit => 'Seals are set only from 50 % Spirit.';
 
   @override
   String get forgeNotEnoughLp => 'Not enough LP yet.';
@@ -1086,11 +1086,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pouchNavy => 'Navy pouch';
 
   @override
-  String get pouchContentsBrown => 'Glut 1–2, plus a seal L1 or 2 splinters';
+  String get pouchContentsBrown =>
+      'Glut 1–2, plus a seal L1 or 2 splinters, rarely a small spirit salve';
 
   @override
   String get pouchContentsCopper =>
-      'Glut 2, plus 1–2 of: seal L1–L2, 2 Glut, 2 splinters';
+      'Glut 2, plus 1–2 of: seal L1–L2, 2 Glut, 2 splinters, rarely a small spirit salve';
 
   @override
   String get pouchContentsTurquoise =>
@@ -1586,5 +1587,168 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String msgProgress(int a, int b) {
     return '$a / $b';
+  }
+
+  @override
+  String get salveSmall => 'Small spirit salve';
+
+  @override
+  String get salveMedium => 'Spirit salve jar';
+
+  @override
+  String get salveLarge => 'Rune pot salve';
+
+  @override
+  String salveEffect(int n) {
+    return '+$n % Spirit';
+  }
+
+  @override
+  String get salveEffectFull => 'Spirit to 100 %';
+
+  @override
+  String get salveButton => 'Spirit salve';
+
+  @override
+  String salveSheetTitle(String name) {
+    return 'Spirit salve for $name';
+  }
+
+  @override
+  String salveSheetSpirit(String mut) {
+    return 'Spirit now $mut %';
+  }
+
+  @override
+  String salveOwned(int n) {
+    return '$n in stock';
+  }
+
+  @override
+  String get salveUse => 'Apply';
+
+  @override
+  String get salveNoneHint =>
+      'No salves in stock. The trader in the Market sells them.';
+
+  @override
+  String get salveFull => 'Spirit is full.';
+
+  @override
+  String salveApplied(String name, String mut) {
+    return '$name is back at $mut % Spirit.';
+  }
+
+  @override
+  String get salveVorratTitle => 'Spirit salves';
+
+  @override
+  String salveVorratHint(String name) {
+    return 'Tap a salve to apply it to $name.';
+  }
+
+  @override
+  String get salveVorratEmpty => 'No salves yet. The Market trader has them.';
+
+  @override
+  String levelXp(int xp, int need) {
+    return 'XP $xp / $need';
+  }
+
+  @override
+  String get levelMax => 'Highest level reached';
+
+  @override
+  String levelNextLp(int pct) {
+    return 'Next level: +$pct % LP per Breath point';
+  }
+
+  @override
+  String levelNextTank(int pct) {
+    return 'Next level: +$pct % LP per Breath point and +1 Breath tank';
+  }
+
+  @override
+  String get levelXpHint => '1 XP per Breath point used in the sweet spot';
+
+  @override
+  String levelUpFor(String lp) {
+    return 'Level up · $lp LP';
+  }
+
+  @override
+  String levelNeedsXp(int n) {
+    return '$n XP to walk';
+  }
+
+  @override
+  String levelNeedsLp(String lp) {
+    return '$lp LP missing';
+  }
+
+  @override
+  String levelUpDone(String name, int level) {
+    return '$name is level $level now!';
+  }
+
+  @override
+  String levelUpDoneTank(String name, int level, int tank) {
+    return '$name is level $level now. Tank: $tank Breath!';
+  }
+
+  @override
+  String spiritLossLine(String loss) {
+    return 'Spirit −$loss % per Breath point in the sweet spot';
+  }
+
+  @override
+  String spiritGritSaves(int pct) {
+    return 'Grit saves $pct %';
+  }
+
+  @override
+  String spiritLow(String name, String mut) {
+    return '$name is down to $mut % Spirit. At 0 % runs bring no LP – a spirit salve helps.';
+  }
+
+  @override
+  String get summarySpirit => 'Spirit';
+
+  @override
+  String summarySpiritValue(String before, String after) {
+    return '$before % → $after %';
+  }
+
+  @override
+  String get summaryXp => 'XP';
+
+  @override
+  String summaryXpValue(int n) {
+    return '+$n XP';
+  }
+
+  @override
+  String summaryLevelReady(String name) {
+    return '$name can level up – on the shelf.';
+  }
+
+  @override
+  String get marketSalvesTab => 'Salves';
+
+  @override
+  String get marketSalvesIntro =>
+      'Spirit salves from the trader. Prices move with the Market; sometimes one is on offer.';
+
+  @override
+  String get marketSalveDeal => 'Offer −30 %';
+
+  @override
+  String marketSalveBuy(String lp) {
+    return 'Buy · $lp LP';
+  }
+
+  @override
+  String marketSalveBought(String name) {
+    return '$name is in your stock now.';
   }
 }

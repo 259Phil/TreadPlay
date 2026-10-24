@@ -233,9 +233,10 @@ class _NamePlate extends StatelessWidget {
                 Text(worldLabel(l, c.world), style: small),
                 Text(
                   '${l.statSpirit} ${l.percentValue(formatNumber(context, c.spirit))}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13.5,
                     fontWeight: FontWeight.w600,
+                    color: c.spirit < lowSpirit ? TreadColors.copper : null,
                   ),
                 ),
               ],
@@ -262,6 +263,17 @@ class _NamePlate extends StatelessWidget {
           ),
           style: small,
         ),
+        if (c.spirit < lowSpirit)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(
+              l.spiritLow(c.name, formatNumber(context, c.spirit)),
+              key: const Key('home-spirit-low'),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(color: TreadColors.copper, fontSize: 12),
+            ),
+          ),
       ],
     );
   }

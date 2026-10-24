@@ -319,7 +319,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get marketNotEnoughLp => 'Noch nicht genug LP.';
 
   @override
-  String get marketNeedsSpirit => 'Handel nur bei 100 % Spirit.';
+  String get marketNeedsSpirit => 'Handel nur bei 100 % Mut.';
 
   @override
   String marketLastCompanion(String name) {
@@ -387,7 +387,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Jedes Siegel hebt seinen Wert anteilig: St.1 +4 %, St.2 +9 %, St.3 +15 %, St.4 +22 %, St.5 +31 %.';
 
   @override
-  String get forgeNeedsSpirit => 'Einsetzen nur bei 100 % Mut.';
+  String get forgeNeedsSpirit => 'Einsetzen erst ab 50 % Mut.';
 
   @override
   String get forgeNotEnoughLp => 'Noch nicht genug LP.';
@@ -1092,11 +1092,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pouchContentsBrown =>
-      'Glut 1–2, dazu ein Siegel L1 oder 2 Splitter';
+      'Glut 1–2, dazu ein Siegel L1 oder 2 Splitter, selten eine kleine Mutsalbe';
 
   @override
   String get pouchContentsCopper =>
-      'Glut 2, dazu 1–2 Fächer: Siegel L1–L2, 2 Glut oder 2 Splitter';
+      'Glut 2, dazu 1–2 Fächer: Siegel L1–L2, 2 Glut oder 2 Splitter, selten eine kleine Mutsalbe';
 
   @override
   String get pouchContentsTurquoise =>
@@ -1592,5 +1592,169 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String msgProgress(int a, int b) {
     return '$a / $b';
+  }
+
+  @override
+  String get salveSmall => 'Kleine Mutsalbe';
+
+  @override
+  String get salveMedium => 'Mutsalbe im Tiegel';
+
+  @override
+  String get salveLarge => 'Runentopf-Salbe';
+
+  @override
+  String salveEffect(int n) {
+    return '+$n % Mut';
+  }
+
+  @override
+  String get salveEffectFull => 'Mut auf 100 %';
+
+  @override
+  String get salveButton => 'Mutsalbe';
+
+  @override
+  String salveSheetTitle(String name) {
+    return 'Mutsalbe für $name';
+  }
+
+  @override
+  String salveSheetSpirit(String mut) {
+    return 'Mut jetzt $mut %';
+  }
+
+  @override
+  String salveOwned(int n) {
+    return '$n im Vorrat';
+  }
+
+  @override
+  String get salveUse => 'Auftragen';
+
+  @override
+  String get salveNoneHint =>
+      'Keine Salben im Vorrat. Der Händler im Markt hat welche.';
+
+  @override
+  String get salveFull => 'Der Mut ist voll.';
+
+  @override
+  String salveApplied(String name, String mut) {
+    return '$name hat wieder $mut % Mut.';
+  }
+
+  @override
+  String get salveVorratTitle => 'Mutsalben';
+
+  @override
+  String salveVorratHint(String name) {
+    return 'Antippen, um sie $name aufzutragen.';
+  }
+
+  @override
+  String get salveVorratEmpty =>
+      'Noch keine Salben. Der Händler im Markt hat welche.';
+
+  @override
+  String levelXp(int xp, int need) {
+    return 'XP $xp / $need';
+  }
+
+  @override
+  String get levelMax => 'Höchstes Level erreicht';
+
+  @override
+  String levelNextLp(int pct) {
+    return 'Nächstes Level: +$pct % LP je Puste';
+  }
+
+  @override
+  String levelNextTank(int pct) {
+    return 'Nächstes Level: +$pct % LP je Puste und +1 Puste im Tank';
+  }
+
+  @override
+  String get levelXpHint => '1 XP je Puste im Sweet Spot';
+
+  @override
+  String levelUpFor(String lp) {
+    return 'Aufleveln · $lp LP';
+  }
+
+  @override
+  String levelNeedsXp(int n) {
+    return 'Noch $n XP erlaufen';
+  }
+
+  @override
+  String levelNeedsLp(String lp) {
+    return 'Es fehlen $lp LP';
+  }
+
+  @override
+  String levelUpDone(String name, int level) {
+    return '$name ist jetzt Level $level!';
+  }
+
+  @override
+  String levelUpDoneTank(String name, int level, int tank) {
+    return '$name ist jetzt Level $level. Tank: $tank Puste!';
+  }
+
+  @override
+  String spiritLossLine(String loss) {
+    return 'Mut −$loss % je Puste im Sweet Spot';
+  }
+
+  @override
+  String spiritGritSaves(int pct) {
+    return 'Grit spart $pct %';
+  }
+
+  @override
+  String spiritLow(String name, String mut) {
+    return '$name hat nur noch $mut % Mut. Bei 0 % gibt es keine LP – eine Mutsalbe hilft.';
+  }
+
+  @override
+  String get summarySpirit => 'Mut';
+
+  @override
+  String summarySpiritValue(String before, String after) {
+    return '$before % → $after %';
+  }
+
+  @override
+  String get summaryXp => 'XP';
+
+  @override
+  String summaryXpValue(int n) {
+    return '+$n XP';
+  }
+
+  @override
+  String summaryLevelReady(String name) {
+    return '$name kann aufleveln – im Gehege.';
+  }
+
+  @override
+  String get marketSalvesTab => 'Salben';
+
+  @override
+  String get marketSalvesIntro =>
+      'Mutsalben vom Händler. Die Preise schwanken mit dem Markt, manchmal ist eine im Angebot.';
+
+  @override
+  String get marketSalveDeal => 'Angebot −30 %';
+
+  @override
+  String marketSalveBuy(String lp) {
+    return 'Kaufen · $lp LP';
+  }
+
+  @override
+  String marketSalveBought(String name) {
+    return '$name liegt jetzt im Vorrat.';
   }
 }

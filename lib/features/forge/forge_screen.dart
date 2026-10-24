@@ -17,6 +17,7 @@ import '../../widgets/lp_pill.dart';
 import '../../widgets/seal_art.dart';
 import '../../widgets/stock_art.dart';
 import '../../ui/skin.dart';
+import 'salve_strip.dart';
 
 part 'forge_recipe_look.dart';
 part 'forge_grimoire.dart';
@@ -416,6 +417,8 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
                   .setSeal(game.activeCompanionId, a!),
             ),
           ),
+          const SizedBox(height: 4),
+          SalveStrip(key: const Key('case-salves'), game: game),
           const Spacer(),
           _BuyRow(
             title: l.forgeBuyTitle(formatNumber(context, Forge.sealCost * 1.0)),

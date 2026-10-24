@@ -761,7 +761,7 @@ abstract class AppLocalizations {
   /// No description provided for @forgeNeedsSpirit.
   ///
   /// In en, this message translates to:
-  /// **'Seals are set only at 100 % Spirit.'**
+  /// **'Seals are set only from 50 % Spirit.'**
   String get forgeNeedsSpirit;
 
   /// No description provided for @forgeNotEnoughLp.
@@ -1925,13 +1925,13 @@ abstract class AppLocalizations {
   /// No description provided for @pouchContentsBrown.
   ///
   /// In en, this message translates to:
-  /// **'Glut 1–2, plus a seal L1 or 2 splinters'**
+  /// **'Glut 1–2, plus a seal L1 or 2 splinters, rarely a small spirit salve'**
   String get pouchContentsBrown;
 
   /// No description provided for @pouchContentsCopper.
   ///
   /// In en, this message translates to:
-  /// **'Glut 2, plus 1–2 of: seal L1–L2, 2 Glut, 2 splinters'**
+  /// **'Glut 2, plus 1–2 of: seal L1–L2, 2 Glut, 2 splinters, rarely a small spirit salve'**
   String get pouchContentsCopper;
 
   /// No description provided for @pouchContentsTurquoise.
@@ -2467,6 +2467,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{a} / {b}'**
   String msgProgress(int a, int b);
+
+  /// No description provided for @salveSmall.
+  ///
+  /// In en, this message translates to:
+  /// **'Small spirit salve'**
+  String get salveSmall;
+
+  /// No description provided for @salveMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Spirit salve jar'**
+  String get salveMedium;
+
+  /// No description provided for @salveLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Rune pot salve'**
+  String get salveLarge;
+
+  /// No description provided for @salveEffect.
+  ///
+  /// In en, this message translates to:
+  /// **'+{n} % Spirit'**
+  String salveEffect(int n);
+
+  /// No description provided for @salveEffectFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Spirit to 100 %'**
+  String get salveEffectFull;
+
+  /// No description provided for @salveButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Spirit salve'**
+  String get salveButton;
+
+  /// No description provided for @salveSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Spirit salve for {name}'**
+  String salveSheetTitle(String name);
+
+  /// No description provided for @salveSheetSpirit.
+  ///
+  /// In en, this message translates to:
+  /// **'Spirit now {mut} %'**
+  String salveSheetSpirit(String mut);
+
+  /// No description provided for @salveOwned.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} in stock'**
+  String salveOwned(int n);
+
+  /// No description provided for @salveUse.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get salveUse;
+
+  /// No description provided for @salveNoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'No salves in stock. The trader in the Market sells them.'**
+  String get salveNoneHint;
+
+  /// No description provided for @salveFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Spirit is full.'**
+  String get salveFull;
+
+  /// No description provided for @salveApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is back at {mut} % Spirit.'**
+  String salveApplied(String name, String mut);
+
+  /// No description provided for @salveVorratTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Spirit salves'**
+  String get salveVorratTitle;
+
+  /// No description provided for @salveVorratHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a salve to apply it to {name}.'**
+  String salveVorratHint(String name);
+
+  /// No description provided for @salveVorratEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No salves yet. The Market trader has them.'**
+  String get salveVorratEmpty;
+
+  /// No description provided for @levelXp.
+  ///
+  /// In en, this message translates to:
+  /// **'XP {xp} / {need}'**
+  String levelXp(int xp, int need);
+
+  /// No description provided for @levelMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Highest level reached'**
+  String get levelMax;
+
+  /// No description provided for @levelNextLp.
+  ///
+  /// In en, this message translates to:
+  /// **'Next level: +{pct} % LP per Breath point'**
+  String levelNextLp(int pct);
+
+  /// No description provided for @levelNextTank.
+  ///
+  /// In en, this message translates to:
+  /// **'Next level: +{pct} % LP per Breath point and +1 Breath tank'**
+  String levelNextTank(int pct);
+
+  /// No description provided for @levelXpHint.
+  ///
+  /// In en, this message translates to:
+  /// **'1 XP per Breath point used in the sweet spot'**
+  String get levelXpHint;
+
+  /// No description provided for @levelUpFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Level up · {lp} LP'**
+  String levelUpFor(String lp);
+
+  /// No description provided for @levelNeedsXp.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} XP to walk'**
+  String levelNeedsXp(int n);
+
+  /// No description provided for @levelNeedsLp.
+  ///
+  /// In en, this message translates to:
+  /// **'{lp} LP missing'**
+  String levelNeedsLp(String lp);
+
+  /// No description provided for @levelUpDone.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is level {level} now!'**
+  String levelUpDone(String name, int level);
+
+  /// No description provided for @levelUpDoneTank.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is level {level} now. Tank: {tank} Breath!'**
+  String levelUpDoneTank(String name, int level, int tank);
+
+  /// No description provided for @spiritLossLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Spirit −{loss} % per Breath point in the sweet spot'**
+  String spiritLossLine(String loss);
+
+  /// No description provided for @spiritGritSaves.
+  ///
+  /// In en, this message translates to:
+  /// **'Grit saves {pct} %'**
+  String spiritGritSaves(int pct);
+
+  /// No description provided for @spiritLow.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is down to {mut} % Spirit. At 0 % runs bring no LP – a spirit salve helps.'**
+  String spiritLow(String name, String mut);
+
+  /// No description provided for @summarySpirit.
+  ///
+  /// In en, this message translates to:
+  /// **'Spirit'**
+  String get summarySpirit;
+
+  /// No description provided for @summarySpiritValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{before} % → {after} %'**
+  String summarySpiritValue(String before, String after);
+
+  /// No description provided for @summaryXp.
+  ///
+  /// In en, this message translates to:
+  /// **'XP'**
+  String get summaryXp;
+
+  /// No description provided for @summaryXpValue.
+  ///
+  /// In en, this message translates to:
+  /// **'+{n} XP'**
+  String summaryXpValue(int n);
+
+  /// No description provided for @summaryLevelReady.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} can level up – on the shelf.'**
+  String summaryLevelReady(String name);
+
+  /// No description provided for @marketSalvesTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Salves'**
+  String get marketSalvesTab;
+
+  /// No description provided for @marketSalvesIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Spirit salves from the trader. Prices move with the Market; sometimes one is on offer.'**
+  String get marketSalvesIntro;
+
+  /// No description provided for @marketSalveDeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer −30 %'**
+  String get marketSalveDeal;
+
+  /// No description provided for @marketSalveBuy.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy · {lp} LP'**
+  String marketSalveBuy(String lp);
+
+  /// No description provided for @marketSalveBought.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is in your stock now.'**
+  String marketSalveBought(String name);
 }
 
 class _AppLocalizationsDelegate

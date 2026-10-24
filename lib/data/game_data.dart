@@ -7,6 +7,7 @@ import '../domain/market.dart';
 import '../domain/messenger.dart';
 import '../domain/pouch.dart';
 import '../domain/run_summary.dart';
+import '../domain/salve.dart';
 import '../domain/totals.dart';
 import '../domain/video_rewards.dart';
 import '../domain/wanderweg.dart';
@@ -26,6 +27,7 @@ class GameData {
     this.forge = const ForgeState(),
     this.pouches = const PouchState(),
     this.messengers = const MessengerState(),
+    this.salves = const SalveStock(),
   });
 
   factory GameData.initial(DateTime now) {
@@ -74,6 +76,9 @@ class GameData {
 
   /// Messenger visits, the open task and their counters.
   final MessengerState messengers;
+
+  /// Mutsalben in the Vorrat.
+  final SalveStock salves;
 
   /// Seals set into companions, all of them.
   Iterable<Seal> get setSeals => companions.expand((c) => c.seals);
@@ -321,7 +326,7 @@ class GameData {
     if (!unlocks.forge) return ForgeBlock.locked;
     if (forge.count(seal) < 1) return ForgeBlock.needsPair;
     if (c.freeSocket == null) return ForgeBlock.noSocket;
-    if (c.spirit < 100) return ForgeBlock.needsSpirit;
+    if (c.spirit < sealSpiritMin) return ForgeBlock.needsSpirit;
     return null;
   }
 
@@ -332,6 +337,60 @@ class GameData {
     return replaceCompanion(
       c.withSeal(c.freeSocket!, seal),
     ).copyWith(forge: forge.removing(seal).copyWith(placed: forge.placed + 1));
+  }
+
+  /// Why [companionId] can't level up right now, or null if it can.
+  LevelBlock? levelUpBlock(String companionId) {
+    final c = companions.where((c) => c.id == companionId).firstOrNull;
+    if (c == null) return LevelBlock.gone;
+    final cost = c.levelUpCost;
+    if (cost == null) return LevelBlock.maxLevel;
+    if (!c.xpReady) return LevelBlock.needsXp;
+    if (lp < cost) return LevelBlock.notEnoughLp;
+    return null;
+  }
+
+  /// Levels [companionId] up for its [Companion.levelUpCost]. Breath is
+  /// settled first, so a bigger tank fills up by regenerating, not at once.
+  /// Check [levelUpBlock] first.
+  GameData levelingUp(String companionId, DateTime now) {
+    final c = companions.firstWhere((c) => c.id == companionId);
+    return regenerated(now)
+        .replaceCompanion(c.leveledUp())
+        .copyWith(lp: lp - c.levelUpCost!)
+        .advancingWanderweg(now);
+  }
+
+  /// Why [salve] can't be bought right now, or null if it can.
+  SalveBlock? buySalveBlock(Salve salve) {
+    final m = market;
+    if (m == null) return SalveBlock.gone;
+    if (lp < m.priceOfSalve(salve)) return SalveBlock.notEnoughLp;
+    return null;
+  }
+
+  /// Buys one [salve] at the Market's price into the Vorrat.
+  GameData buyingSalve(Salve salve) => copyWith(
+    lp: lp - market!.priceOfSalve(salve),
+    salves: salves.adding(salve),
+  );
+
+  /// Why [salve] can't be used on [companionId] right now, or null.
+  SalveBlock? useSalveBlock(String companionId, Salve salve) {
+    final c = companions.where((c) => c.id == companionId).firstOrNull;
+    if (c == null) return SalveBlock.gone;
+    if (salves.count(salve) < 1) return SalveBlock.noneLeft;
+    if (c.spirit >= 100) return SalveBlock.fullSpirit;
+    return null;
+  }
+
+  /// Uses one [salve] from the Vorrat on [companionId]. Check
+  /// [useSalveBlock] first.
+  GameData usingSalve(String companionId, Salve salve) {
+    final c = companions.firstWhere((c) => c.id == companionId);
+    return replaceCompanion(
+      c.healed(salve.points),
+    ).copyWith(salves: salves.removing(salve));
   }
 
   /// Clips on the leash: 3, the 4th from waymark 7.
@@ -419,13 +478,27 @@ class GameData {
         if (visit.kind == VisitKind.gift) glut = 0;
       }
     }
-    final stored = run.withRewards(
+    var stored = run.withRewards(
       glut: glut,
       pouch: found,
       leashFull: run.valid && full,
       pouchesWarmed: warmed,
       messenger: came,
     );
+    // Mut and XP: only Breath used in the sweet spot counts.
+    final along = next.companions
+        .where((c) => c.id == run.companionId)
+        .firstOrNull;
+    if (run.valid && run.breathUsed > 0 && along != null) {
+      final after = along.afterRun(run.breathUsed);
+      next = next.replaceCompanion(after);
+      stored = stored.withCompanion(
+        spiritLost: ((along.spirit - after.spirit) * 10).round() / 10,
+        spiritAfter: after.spirit,
+        xpGained: along.level >= maxLevel ? 0 : after.xp - along.xp,
+        levelReady: after.xpReady,
+      );
+    }
     return next.copyWith(
       runs: [stored, ...runs].take(maxStoredRuns).toList(),
       forge: glut == 0
@@ -642,8 +715,12 @@ class GameData {
   /// seal case (seals, Glut, splinters). Check [openPouchBlock] first.
   (GameData, List<PouchReward>) openingPouch(int index, Random random) {
     final pouch = pouches.leash[index];
-    final rewards = Pouches.roll(pouch.color, random);
+    final rewards = [
+      ...Pouches.roll(pouch.color, random),
+      ?Pouches.rollSalve(pouch.color, random),
+    ];
     var case_ = forge;
+    var stock = salves;
     for (final r in rewards) {
       case_ = switch (r.kind) {
         PouchRewardKind.seal => case_.adding(r.seal!),
@@ -651,7 +728,9 @@ class GameData {
         PouchRewardKind.splinters => case_.copyWith(
           splinters: case_.splinters + r.amount,
         ),
+        PouchRewardKind.salve => case_,
       };
+      if (r.salve case final s?) stock = stock.adding(s);
     }
     final t = messengers.task;
     final counted = t != null && t.type == TaskType.openPouches
@@ -659,7 +738,7 @@ class GameData {
         : this;
     return (
       counted
-          .copyWith(forge: case_)
+          .copyWith(forge: case_, salves: stock)
           ._finishingTask()
           .copyWith(
             lp: lp - pouch.openLp,
@@ -771,6 +850,7 @@ class GameData {
     ForgeState? forge,
     PouchState? pouches,
     MessengerState? messengers,
+    SalveStock? salves,
   }) => GameData(
     lp: lp ?? this.lp,
     companions: companions ?? this.companions,
@@ -784,6 +864,7 @@ class GameData {
     forge: forge ?? this.forge,
     pouches: pouches ?? this.pouches,
     messengers: messengers ?? this.messengers,
+    salves: salves ?? this.salves,
   );
 
   GameData replaceCompanion(Companion companion) => copyWith(
@@ -805,6 +886,7 @@ class GameData {
     'forge': forge.toJson(),
     'pouches': pouches.toJson(),
     'messengers': messengers.toJson(),
+    if (!salves.isEmpty) 'salves': salves.toJson(),
   };
 
   /// [now] dates the waymarks a save from before the trail is granted.
@@ -868,6 +950,8 @@ class GameData {
         final Map<String, Object?> m => MessengerState.fromJson(m),
         _ => const MessengerState(),
       },
+      // Saves from before salves: an empty Vorrat.
+      salves: SalveStock.fromJson(json['salves']),
     );
   }
 
@@ -906,6 +990,29 @@ enum ForgeBlock {
   noSocket,
   needsSpirit,
   notEnoughLp,
+}
+
+enum LevelBlock {
+  gone,
+
+  /// Already at [maxLevel].
+  maxLevel,
+
+  /// Not enough XP walked for the next level yet.
+  needsXp,
+  notEnoughLp,
+}
+
+enum SalveBlock {
+  /// No Market yet, or the companion is no longer owned.
+  gone,
+  notEnoughLp,
+
+  /// No salve of that size in the Vorrat.
+  noneLeft,
+
+  /// Mut is already at 100 %.
+  fullSpirit,
 }
 
 enum PouchBlock {

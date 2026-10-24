@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'salve.dart';
 import 'seal.dart';
 
 /// The four treat pouch colours. Colour is weight only: a higher colour
@@ -31,24 +32,34 @@ enum PouchColor {
       name is String ? values.asNameMap()[name] : null;
 }
 
-enum PouchRewardKind { seal, glut, splinters }
+enum PouchRewardKind { seal, glut, splinters, salve }
 
-/// One compartment of an opened pouch: a seal, or Glut, or splinters.
+/// One compartment of an opened pouch: a seal, or Glut, or splinters, or
+/// (rarely) a Mutsalbe.
 class PouchReward {
   const PouchReward.seal(Seal this.seal)
     : kind = PouchRewardKind.seal,
-      amount = 1;
+      amount = 1,
+      salve = null;
 
   const PouchReward.glut(this.amount)
     : kind = PouchRewardKind.glut,
-      seal = null;
+      seal = null,
+      salve = null;
 
   const PouchReward.splinters(this.amount)
     : kind = PouchRewardKind.splinters,
+      seal = null,
+      salve = null;
+
+  const PouchReward.salve(Salve this.salve)
+    : kind = PouchRewardKind.salve,
+      amount = 1,
       seal = null;
 
   final PouchRewardKind kind;
   final Seal? seal;
+  final Salve? salve;
   final int amount;
 
   @override
@@ -56,16 +67,18 @@ class PouchReward {
       other is PouchReward &&
       other.kind == kind &&
       other.amount == amount &&
-      other.seal?.code == seal?.code;
+      other.seal?.code == seal?.code &&
+      other.salve == salve;
 
   @override
-  int get hashCode => Object.hash(kind, amount, seal?.code);
+  int get hashCode => Object.hash(kind, amount, seal?.code, salve);
 
   @override
   String toString() => switch (kind) {
     PouchRewardKind.seal => 'seal ${seal!.code}',
     PouchRewardKind.glut => 'glut $amount',
     PouchRewardKind.splinters => 'splinters $amount',
+    PouchRewardKind.salve => 'salve ${salve!.name}',
   };
 }
 
@@ -401,6 +414,22 @@ class Pouches {
     return unlocked.last;
   }
 
+  /// Chance that a pouch of this colour also holds a small salve.
+  static const Map<PouchColor, double> salveChance = {
+    PouchColor.brown: 0.10,
+    PouchColor.copper: 0.10,
+  };
+
+  /// The rare small salve in a [color] pouch, rolled after [roll] so the
+  /// seals and Glut stay the same for the same seed.
+  static PouchReward? rollSalve(PouchColor color, Random random) {
+    final chance = salveChance[color];
+    if (chance == null) return null;
+    return random.nextDouble() < chance
+        ? const PouchReward.salve(Salve.small)
+        : null;
+  }
+
   /// Rolls the contents of a [color] pouch: Glut first, then 1–2 extra
   /// compartments. Seals are L1–L3 only, of a random stat.
   static List<PouchReward> roll(PouchColor color, Random random) {
@@ -428,6 +457,8 @@ class Pouches {
           ),
           PouchRewardKind.glut => PouchReward.glut(s.amount),
           PouchRewardKind.splinters => PouchReward.splinters(s.amount),
+          // Salves are rolled apart, see [rollSalve].
+          PouchRewardKind.salve => throw StateError('salve slot'),
         };
       }
     }

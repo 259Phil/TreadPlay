@@ -1152,17 +1152,17 @@ void main() {
       expect(button(tester, 'forge-go').onPressed, isNull);
     });
 
-    testWidgets('Spirit below 100 % keeps seals in the case', (tester) async {
+    testWidgets('Spirit below 50 % keeps seals in the case', (tester) async {
       final start = GameData.initial(
         t0,
       ).copyWith(lp: 1000, forge: const ForgeState(stock: {'stride@1': 1}));
       await openForge(
         tester,
-        start.replaceCompanion(start.activeCompanion.copyWith(spirit: 80)),
+        start.replaceCompanion(start.activeCompanion.copyWith(spirit: 40)),
       );
       await tapKey(tester, 'case-stride@1');
       expect(button(tester, 'forge-set').onPressed, isNull);
-      expect(find.text('Seals are set only at 100 % Spirit.'), findsOneWidget);
+      expect(find.text('Seals are set only from 50 % Spirit.'), findsOneWidget);
     });
 
     testWidgets('the Case tab buys, melts and sets seals', (tester) async {

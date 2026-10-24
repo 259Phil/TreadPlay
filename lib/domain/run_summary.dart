@@ -25,6 +25,10 @@ class RunSummary {
     this.leashFull = false,
     this.pouchesWarmed = 0,
     this.messenger,
+    this.spiritLost = 0,
+    this.spiritAfter,
+    this.xpGained = 0,
+    this.levelReady = false,
   });
 
   final String companionId;
@@ -62,14 +66,43 @@ class RunSummary {
   /// The messenger that came after this run, if any.
   final Messenger? messenger;
 
+  /// Mut the companion lost on this run (percent points, after Grit).
+  final double spiritLost;
+
+  /// The companion's Mut after the run; null for runs before Mut dropped.
+  final double? spiritAfter;
+
+  /// XP the companion gained on this run.
+  final int xpGained;
+
+  /// The companion has the XP for its next level after this run.
+  final bool levelReady;
+
   Duration? get pace => paceOf(duration, distanceM);
 
-  RunSummary withRewards({
-    required int glut,
-    PouchColor? pouch,
-    bool leashFull = false,
-    int pouchesWarmed = 0,
-    Messenger? messenger,
+  /// The companion's Mut and XP change from this run.
+  RunSummary withCompanion({
+    required double spiritLost,
+    required double spiritAfter,
+    required int xpGained,
+    required bool levelReady,
+  }) => _copy(
+    spiritLost: spiritLost,
+    spiritAfter: spiritAfter,
+    xpGained: xpGained,
+    levelReady: levelReady,
+  );
+
+  RunSummary _copy({
+    int? glut,
+    PouchColor? Function()? pouch,
+    bool? leashFull,
+    int? pouchesWarmed,
+    Messenger? Function()? messenger,
+    double? spiritLost,
+    double? spiritAfter,
+    int? xpGained,
+    bool? levelReady,
   }) => RunSummary(
     companionId: companionId,
     startedAt: startedAt,
@@ -83,11 +116,29 @@ class RunSummary {
     tankSize: tankSize,
     earnsLp: earnsLp,
     sweetSpotShare: sweetSpotShare,
+    glut: glut ?? this.glut,
+    pouch: pouch != null ? pouch() : this.pouch,
+    leashFull: leashFull ?? this.leashFull,
+    pouchesWarmed: pouchesWarmed ?? this.pouchesWarmed,
+    messenger: messenger != null ? messenger() : this.messenger,
+    spiritLost: spiritLost ?? this.spiritLost,
+    spiritAfter: spiritAfter ?? this.spiritAfter,
+    xpGained: xpGained ?? this.xpGained,
+    levelReady: levelReady ?? this.levelReady,
+  );
+
+  RunSummary withRewards({
+    required int glut,
+    PouchColor? pouch,
+    bool leashFull = false,
+    int pouchesWarmed = 0,
+    Messenger? messenger,
+  }) => _copy(
     glut: glut,
-    pouch: pouch,
+    pouch: () => pouch,
     leashFull: leashFull,
     pouchesWarmed: pouchesWarmed,
-    messenger: messenger,
+    messenger: () => messenger,
   );
 
   Map<String, Object?> toJson() => {
@@ -108,6 +159,10 @@ class RunSummary {
     if (leashFull) 'leashFull': true,
     if (pouchesWarmed > 0) 'pouchesWarmed': pouchesWarmed,
     if (messenger case final m?) 'messenger': m.name,
+    if (spiritLost > 0) 'spiritLost': spiritLost,
+    if (spiritAfter case final s?) 'spiritAfter': s,
+    if (xpGained > 0) 'xpGained': xpGained,
+    if (levelReady) 'levelReady': true,
   };
 
   factory RunSummary.fromJson(Map<String, Object?> json) => RunSummary(
@@ -128,5 +183,9 @@ class RunSummary {
     leashFull: json['leashFull'] as bool? ?? false,
     pouchesWarmed: json['pouchesWarmed'] as int? ?? 0,
     messenger: Messenger.tryParse(json['messenger']),
+    spiritLost: (json['spiritLost'] as num?)?.toDouble() ?? 0,
+    spiritAfter: (json['spiritAfter'] as num?)?.toDouble(),
+    xpGained: (json['xpGained'] as num?)?.toInt() ?? 0,
+    levelReady: json['levelReady'] as bool? ?? false,
   );
 }

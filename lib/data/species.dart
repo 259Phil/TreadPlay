@@ -11,6 +11,7 @@ class Species {
     required this.type,
   });
 
+  /// Save id; never changes, even when the display name does.
   final String id;
   final String name;
   final World world;
@@ -32,7 +33,7 @@ const List<Species> speciesCatalog = [
   ),
   Species(
     id: 'coil',
-    name: 'Kurlo',
+    name: 'Krullo',
     world: World.robot,
     type: CompanionType.moss,
   ),
@@ -50,7 +51,7 @@ const List<Species> speciesCatalog = [
   ),
   Species(
     id: 'valve',
-    name: 'Kettlo',
+    name: 'Kettrik',
     world: World.steampunk,
     type: CompanionType.moss,
   ),

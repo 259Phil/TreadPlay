@@ -365,13 +365,13 @@ abstract class AppLocalizations {
   /// No description provided for @settingsHealthTitle.
   ///
   /// In en, this message translates to:
-  /// **'Health data'**
+  /// **'Movement data'**
   String get settingsHealthTitle;
 
   /// No description provided for @settingsHealthBody.
   ///
   /// In en, this message translates to:
-  /// **'Treadplay reads steps and distance from Apple Health or Health Connect only while a run is active. Apple and Google store your health data independently of us. We never upload it.'**
+  /// **'Treadplay uses location (GPS) and the step counter only while a run is active and only on this device. Only the run summary is saved, no route. Nothing is uploaded.'**
   String get settingsHealthBody;
 
   /// No description provided for @settingsPrivacyTitle.
@@ -383,7 +383,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsPrivacyBody.
   ///
   /// In en, this message translates to:
-  /// **'Your routes and runs stay on this device. No account, no cloud.'**
+  /// **'Your runs and your save game stay on this device. No account, no cloud.'**
   String get settingsPrivacyBody;
 
   /// No description provided for @settingsCredits.
@@ -695,13 +695,13 @@ abstract class AppLocalizations {
   /// No description provided for @movementNoticeTitle.
   ///
   /// In en, this message translates to:
-  /// **'Movement and health'**
+  /// **'Movement and location'**
   String get movementNoticeTitle;
 
   /// No description provided for @movementNoticeBody.
   ///
   /// In en, this message translates to:
-  /// **'To count a walk, TreadPlay asks for motion or health access (Apple Health or Health Connect, location only if GPS is used for distance). Readings stay on this device and are only used to check your pace and award LP. Nothing is uploaded. If you deny, real movement earns no LP.'**
+  /// **'To count a walk, TreadPlay uses your location (GPS) and the step counter during the run. Readings stay on this device and are only used to measure distance and pace and to award LP. No route is saved and nothing is uploaded. If you deny, real movement earns no LP.'**
   String get movementNoticeBody;
 
   /// No description provided for @movementDeniedHint.
@@ -1091,7 +1091,7 @@ abstract class AppLocalizations {
   /// No description provided for @saveDeleteBody.
   ///
   /// In en, this message translates to:
-  /// **'Companions, seals, LP, Breath, run history and lifetime totals are removed. You start again with Mossik.'**
+  /// **'Companions, seals, LP, Breath, run history and lifetime totals are removed, and so are the export copies the app kept itself. You start again with Mossik. Files you saved or shared elsewhere stay.'**
   String get saveDeleteBody;
 
   /// No description provided for @saveDeleteReallyTitle.
@@ -1103,7 +1103,7 @@ abstract class AppLocalizations {
   /// No description provided for @saveDeleteReallyBody.
   ///
   /// In en, this message translates to:
-  /// **'This cannot be undone. Without an export the save game is gone.'**
+  /// **'This cannot be undone. Only an export file you saved outside the app can bring the save game back.'**
   String get saveDeleteReallyBody;
 
   /// No description provided for @saveDeletePermanently.
@@ -2219,7 +2219,7 @@ abstract class AppLocalizations {
   /// No description provided for @msgGreetKolk.
   ///
   /// In en, this message translates to:
-  /// **'{n, select, 0{Kraa! Kolk reporting.} 1{Kraa, kraa! Nicely walked!} 2{Psst, Kolk here.} 3{Kraa! Guess who’s here.} 4{Hello, pacemaker!} 5{Kraa! I was waiting for you.} other{Kraa! Kolk reporting.}}'**
+  /// **'{n, select, 0{Kraa! Krahni reporting.} 1{Kraa, kraa! Nicely walked!} 2{Psst, Krahni here.} 3{Kraa! Guess who’s here.} 4{Hello, pacemaker!} 5{Kraa! I was waiting for you.} other{Kraa! Krahni reporting.}}'**
   String msgGreetKolk(String n);
 
   /// No description provided for @msgGiftKolk.
@@ -2237,7 +2237,7 @@ abstract class AppLocalizations {
   /// No description provided for @msgGreetFlimm.
   ///
   /// In en, this message translates to:
-  /// **'{n, select, 0{A little light flickers – Flimm is here.} 1{Sssh … I followed your light.} 2{Good evening, even if it’s day.} 3{Flimm here, very quietly.} 4{Your steps are glowing today.} 5{I came with the wind.} other{A little light flickers – Flimm is here.}}'**
+  /// **'{n, select, 0{A little light flickers – Glimmsel is here.} 1{Sssh … I followed your light.} 2{Good evening, even if it’s day.} 3{Glimmsel here, very quietly.} 4{Your steps are glowing today.} 5{I came with the wind.} other{A little light flickers – Glimmsel is here.}}'**
   String msgGreetFlimm(String n);
 
   /// No description provided for @msgGiftFlimm.
@@ -2255,7 +2255,7 @@ abstract class AppLocalizations {
   /// No description provided for @msgGreetVesper.
   ///
   /// In en, this message translates to:
-  /// **'{n, select, 0{Greetings. Vesper has descended.} 1{The stars told me where you walk.} 2{I rarely come. Today I come to you.} 3{Don’t bow – keep walking instead.} 4{The night sky sends me.} 5{A rare evening for a rare guest.} other{Greetings. Vesper has descended.}}'**
+  /// **'{n, select, 0{Greetings. Sternuh has descended.} 1{The stars told me where you walk.} 2{I rarely come. Today I come to you.} 3{Don’t bow – keep walking instead.} 4{The night sky sends me.} 5{A rare evening for a rare guest.} other{Greetings. Sternuh has descended.}}'**
   String msgGreetVesper(String n);
 
   /// No description provided for @msgGiftVesper.
@@ -2291,19 +2291,19 @@ abstract class AppLocalizations {
   /// No description provided for @msgTitleKolk.
   ///
   /// In en, this message translates to:
-  /// **'Kolk · raven of the waysides'**
+  /// **'Krahni · raven of the waysides'**
   String get msgTitleKolk;
 
   /// No description provided for @msgTitleFlimm.
   ///
   /// In en, this message translates to:
-  /// **'Flimm · lantern moth'**
+  /// **'Glimmsel · lantern moth'**
   String get msgTitleFlimm;
 
   /// No description provided for @msgTitleVesper.
   ///
   /// In en, this message translates to:
-  /// **'Vesper · star owl'**
+  /// **'Sternuh · star owl'**
   String get msgTitleVesper;
 
   /// No description provided for @msgRankBrown.

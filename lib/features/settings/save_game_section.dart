@@ -12,7 +12,7 @@ import '../history/history_screen.dart' show formatRunDate;
 
 /// Export, import and delete of the local save game, like GrowCall's backup
 /// block: export as a file, import with an overwrite check, delete with two
-/// confirmations.
+/// confirmations; deleting also removes the app's own export copies.
 class SaveGameSection extends ConsumerStatefulWidget {
   const SaveGameSection({super.key});
 
@@ -110,6 +110,7 @@ class _SaveGameSectionState extends ConsumerState<SaveGameSection> {
     );
     if (!second || !mounted) return;
     final done = ref.read(gameProvider.notifier).wipe();
+    if (done) await ref.read(saveFileIoProvider).deleteLocalCopies();
     _snack(done ? l.saveDeleted : l.saveErrorDuringRun);
   });
 

@@ -11,7 +11,7 @@ import 'companion_figure.dart';
 import 'format.dart';
 
 /// Collectible card: dark trading-card frame with brass corners, a brass
-/// name plate over the art, an element coin and rarity pips. The image is
+/// name plate under the art, an element coin and rarity pips. The image is
 /// only the creature on transparency; everything else is drawn here.
 class CompanionCard extends StatelessWidget {
   const CompanionCard({
@@ -104,13 +104,22 @@ Widget _scene(CompanionCard c) {
           ),
         ),
       ),
-      Padding(
-        padding: const EdgeInsets.fromLTRB(6, 22, 6, 4),
-        child: CompanionArt(c.artKey),
-      ),
     ],
   );
 }
+
+/// Height of the brass name plate and its gap to the bottom of the art.
+const double _plateH = 26;
+const double _plateBottom = 5;
+
+/// The art gets its own window: below the element coin and badge, above
+/// the name plate, so no creature hides behind either.
+const EdgeInsets cardArtWindow = EdgeInsets.fromLTRB(
+  6,
+  34,
+  6,
+  _plateBottom + _plateH + 3,
+);
 
 Widget _stats(List<(String, String)> s, Color label, Color value) => Row(
   children: [
@@ -255,6 +264,15 @@ class _FrameCard extends StatelessWidget {
                               ),
                             ),
                           ),
+                          Positioned.fill(
+                            child: Padding(
+                              padding: cardArtWindow,
+                              child: CompanionArt(
+                                c.artKey,
+                                imageKey: ValueKey('card-art-${c.artKey}'),
+                              ),
+                            ),
+                          ),
                           if (c.type case final t?)
                             Positioned(left: 5, top: 5, child: _ElementCoin(t)),
                           if (c.badge case final b?)
@@ -270,8 +288,10 @@ class _FrameCard extends StatelessWidget {
                           Positioned(
                             left: 4,
                             right: 4,
-                            bottom: 5,
+                            bottom: _plateBottom,
+                            height: _plateH,
                             child: _NamePlate(
+                              key: const Key('card-plate'),
                               name: c.name,
                               style: skin.display(
                                 15.5,
@@ -356,7 +376,7 @@ class _FrameCard extends StatelessWidget {
 }
 
 class _NamePlate extends StatelessWidget {
-  const _NamePlate({required this.name, required this.style});
+  const _NamePlate({super.key, required this.name, required this.style});
   final String name;
   final TextStyle style;
 
@@ -375,16 +395,21 @@ class _NamePlate extends StatelessWidget {
       ],
     ),
     child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: Text(
-        name,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        textAlign: TextAlign.center,
-        style: style.copyWith(
-          shadows: const [
-            Shadow(color: Color(0x99FFF0C8), offset: Offset(0, 1)),
-          ],
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Center(
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: style.copyWith(
+              shadows: const [
+                Shadow(color: Color(0x99FFF0C8), offset: Offset(0, 1)),
+              ],
+            ),
+          ),
         ),
       ),
     ),

@@ -18,6 +18,14 @@ const _inkSoft = Color(0xFF6B5034);
 
 // ------------------------------------------------------------------ texts
 
+/// The name players see; the enum value names are save ids only.
+String messengerName(Messenger m) => switch (m) {
+  Messenger.ruhu => 'Ruhu',
+  Messenger.kolk => 'Krahni',
+  Messenger.flimm => 'Glimmsel',
+  Messenger.vesper => 'Sternuh',
+};
+
 String messengerTitle(AppLocalizations l, Messenger m) => switch (m) {
   Messenger.ruhu => l.msgTitleRuhu,
   Messenger.kolk => l.msgTitleKolk,
@@ -378,7 +386,7 @@ class MessengerNotice extends ConsumerWidget {
     final m = t.messenger;
     return Semantics(
       button: true,
-      label: '${l.msgBoard} ${m.name}',
+      label: '${l.msgBoard} ${messengerName(m)}',
       child: GestureDetector(
         key: const Key('messenger-notice'),
         onTap: () =>
@@ -407,7 +415,7 @@ class MessengerNotice extends ConsumerWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            '${l.msgBoard.toUpperCase()} · ${m.name[0].toUpperCase()}${m.name.substring(1)}',
+                            '${l.msgBoard.toUpperCase()} · ${messengerName(m)}',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(

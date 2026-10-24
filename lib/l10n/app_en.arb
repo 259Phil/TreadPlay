@@ -103,10 +103,10 @@
   },
   "settingsLanguage": "Language",
   "settingsKaching": "Ka-ching sound",
-  "settingsHealthTitle": "Health data",
-  "settingsHealthBody": "Treadplay reads steps and distance from Apple Health or Health Connect only while a run is active. Apple and Google store your health data independently of us. We never upload it.",
+  "settingsHealthTitle": "Movement data",
+  "settingsHealthBody": "Treadplay uses location (GPS) and the step counter only while a run is active and only on this device. Only the run summary is saved, no route. Nothing is uploaded.",
   "settingsPrivacyTitle": "Privacy",
-  "settingsPrivacyBody": "Your routes and runs stay on this device. No account, no cloud.",
+  "settingsPrivacyBody": "Your runs and your save game stay on this device. No account, no cloud.",
   "settingsCredits": "Credits",
   "creditsArtwork": "Artwork created with Grok (xAI) and edited by Treadplay.",
   "appTagline": "Walk with a companion.",
@@ -210,8 +210,8 @@
   "settingsMovement": "Movement access",
   "settingsMovementOn": "Real movement earns LP. Readings stay on this device.",
   "settingsMovementOff": "Off: real movement earns no LP.",
-  "movementNoticeTitle": "Movement and health",
-  "movementNoticeBody": "To count a walk, TreadPlay asks for motion or health access (Apple Health or Health Connect, location only if GPS is used for distance). Readings stay on this device and are only used to check your pace and award LP. Nothing is uploaded. If you deny, real movement earns no LP.",
+  "movementNoticeTitle": "Movement and location",
+  "movementNoticeBody": "To count a walk, TreadPlay uses your location (GPS) and the step counter during the run. Readings stay on this device and are only used to measure distance and pace and to award LP. No route is saved and nothing is uploaded. If you deny, real movement earns no LP.",
   "movementDeniedHint": "Movement access is off. Runs earn no LP until you allow it.",
   "movementNoticePrivacyLink": "Read the privacy policy",
   "movementAllow": "Allow",
@@ -377,9 +377,9 @@
   "saveErrorDamaged": "This save game is damaged and can't be loaded. Your current game is unchanged.",
   "saveErrorDuringRun": "Not possible during a run.",
   "saveDeleteTitle": "Delete save game?",
-  "saveDeleteBody": "Companions, seals, LP, Breath, run history and lifetime totals are removed. You start again with Mossik.",
+  "saveDeleteBody": "Companions, seals, LP, Breath, run history and lifetime totals are removed, and so are the export copies the app kept itself. You start again with Mossik. Files you saved or shared elsewhere stay.",
   "saveDeleteReallyTitle": "Really delete everything?",
-  "saveDeleteReallyBody": "This cannot be undone. Without an export the save game is gone.",
+  "saveDeleteReallyBody": "This cannot be undone. Only an export file you saved outside the app can bring the save game back.",
   "saveDeletePermanently": "Delete permanently",
   "saveDeleted": "Save game deleted. Fresh start with Mossik.",
   "saveError": "Error: {error}",
@@ -1035,7 +1035,7 @@
       }
     }
   },
-  "msgGreetKolk": "{n, select, 0{Kraa! Kolk reporting.} 1{Kraa, kraa! Nicely walked!} 2{Psst, Kolk here.} 3{Kraa! Guess who’s here.} 4{Hello, pacemaker!} 5{Kraa! I was waiting for you.} other{Kraa! Kolk reporting.}}",
+  "msgGreetKolk": "{n, select, 0{Kraa! Krahni reporting.} 1{Kraa, kraa! Nicely walked!} 2{Psst, Krahni here.} 3{Kraa! Guess who’s here.} 4{Hello, pacemaker!} 5{Kraa! I was waiting for you.} other{Kraa! Krahni reporting.}}",
   "@msgGreetKolk": {
     "placeholders": {
       "n": {
@@ -1059,7 +1059,7 @@
       }
     }
   },
-  "msgGreetFlimm": "{n, select, 0{A little light flickers – Flimm is here.} 1{Sssh … I followed your light.} 2{Good evening, even if it’s day.} 3{Flimm here, very quietly.} 4{Your steps are glowing today.} 5{I came with the wind.} other{A little light flickers – Flimm is here.}}",
+  "msgGreetFlimm": "{n, select, 0{A little light flickers – Glimmsel is here.} 1{Sssh … I followed your light.} 2{Good evening, even if it’s day.} 3{Glimmsel here, very quietly.} 4{Your steps are glowing today.} 5{I came with the wind.} other{A little light flickers – Glimmsel is here.}}",
   "@msgGreetFlimm": {
     "placeholders": {
       "n": {
@@ -1083,7 +1083,7 @@
       }
     }
   },
-  "msgGreetVesper": "{n, select, 0{Greetings. Vesper has descended.} 1{The stars told me where you walk.} 2{I rarely come. Today I come to you.} 3{Don’t bow – keep walking instead.} 4{The night sky sends me.} 5{A rare evening for a rare guest.} other{Greetings. Vesper has descended.}}",
+  "msgGreetVesper": "{n, select, 0{Greetings. Sternuh has descended.} 1{The stars told me where you walk.} 2{I rarely come. Today I come to you.} 3{Don’t bow – keep walking instead.} 4{The night sky sends me.} 5{A rare evening for a rare guest.} other{Greetings. Sternuh has descended.}}",
   "@msgGreetVesper": {
     "placeholders": {
       "n": {
@@ -1124,9 +1124,9 @@
     }
   },
   "msgTitleRuhu": "Ruhu · owl of the field paths",
-  "msgTitleKolk": "Kolk · raven of the waysides",
-  "msgTitleFlimm": "Flimm · lantern moth",
-  "msgTitleVesper": "Vesper · star owl",
+  "msgTitleKolk": "Krahni · raven of the waysides",
+  "msgTitleFlimm": "Glimmsel · lantern moth",
+  "msgTitleVesper": "Sternuh · star owl",
   "msgRankBrown": "Brown messenger · common",
   "msgRankCopper": "Copper messenger · uncommon",
   "msgRankTurquoise": "Turquoise messenger · rare",

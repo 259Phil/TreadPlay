@@ -27,6 +27,10 @@ class SaveFileIo {
     required String subject,
   }) => deliverSaveFile(name, bytes, subject: subject);
 
+  /// Removes the save copies kept in the app's own storage (export copy,
+  /// share and picker caches). Never touches files saved elsewhere.
+  Future<int> deleteLocalCopies() => deleteLocalSaveCopies();
+
   /// True on Web: the file is downloaded instead of shared.
   bool get downloads => deliversByDownload;
 }

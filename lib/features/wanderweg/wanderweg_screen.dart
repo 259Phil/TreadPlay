@@ -150,6 +150,7 @@ class _TrailContent extends StatelessWidget {
             height: sh + 1,
             child: Image.asset(
               trailSections[i].asset,
+              key: Key('trail-art-$i'),
               fit: BoxFit.cover,
               gaplessPlayback: true,
             ),
@@ -180,7 +181,11 @@ class _TrailContent extends StatelessWidget {
         Positioned.fill(
           child: IgnorePointer(
             child: CustomPaint(
-              painter: _EmberTrail(geo: geo, walkedS: companionS, nextS: nextS),
+              painter: _StitchTrail(
+                geo: geo,
+                walkedS: companionS,
+                nextS: nextS,
+              ),
             ),
           ),
         ),
@@ -227,8 +232,7 @@ class _TrailContent extends StatelessWidget {
         : wm.number == progress.reached + 1
         ? _CairnState.next
         : _CairnState.open;
-    final lit = state == _CairnState.reached;
-    final cw = h * (lit ? 239 / 360 : 246 / 360);
+    final cw = h * 0.64;
     final labelLeft = foot.dx > geo.width * 0.55;
     const labelW = 132.0;
     return [
@@ -240,7 +244,7 @@ class _TrailContent extends StatelessWidget {
         child: GestureDetector(
           key: Key('waymark-${wm.number}'),
           onTap: () => showWaymarkSheet(context, game, wm),
-          child: _Cairn(number: wm.number, state: state),
+          child: _Medallion(number: wm.number, state: state),
         ),
       ),
       Positioned(
@@ -263,21 +267,24 @@ class _Seam extends StatelessWidget {
   const _Seam();
 
   @override
-  Widget build(BuildContext context) => const IgnorePointer(
-    child: DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            (kLeatherBuild ? Color(0x001E140F) : Color(0x000F0E0D)),
-            (kLeatherBuild ? Color(0x991E140F) : Color(0x990F0E0D)),
-            (kLeatherBuild ? Color(0x001E140F) : Color(0x000F0E0D)),
-          ],
+  Widget build(BuildContext context) {
+    const c = kLeatherBuild ? Color(0xFF1E140F) : Color(0xFF0F0E0D);
+    return IgnorePointer(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              c.withValues(alpha: 0),
+              c.withValues(alpha: .6),
+              c.withValues(alpha: 0),
+            ],
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class _Fade extends StatelessWidget {
@@ -302,10 +309,49 @@ class _Fade extends StatelessWidget {
   );
 }
 
-/// Glowing ember dots on the walked part, faint brass dots up to the next
-/// waymark.
-class _EmberTrail extends CustomPainter {
-  _EmberTrail({required this.geo, required this.walkedS, required this.nextS});
+/// Arc-length samples of the trail between [from] and [to].
+Iterable<Offset> _along(
+  TrailGeometry geo,
+  double from,
+  double to,
+  double d,
+) sync* {
+  for (var s = from; s < to; s += d) {
+    yield geo.at(s);
+  }
+  yield geo.at(to);
+}
+
+Path _pathAlong(TrailGeometry geo, double from, double to) {
+  final path = Path();
+  var first = true;
+  for (final p in _along(geo, from, to, 6)) {
+    first ? path.moveTo(p.dx, p.dy) : path.lineTo(p.dx, p.dy);
+    first = false;
+  }
+  return path;
+}
+
+void _dashes(
+  Canvas canvas,
+  TrailGeometry geo,
+  double from,
+  double to,
+  double dash,
+  double gap,
+  Paint paint,
+) {
+  for (var s = from; s < to; s += dash + gap) {
+    final a = geo.at(s);
+    final b = geo.at(math.min(s + dash, to));
+    canvas.drawLine(a, b, paint);
+  }
+}
+
+/// Dark leather map: a tooled groove with a stitch line; the walked part
+/// is sewn in glowing brass thread.
+class _StitchTrail extends CustomPainter {
+  _StitchTrail({required this.geo, required this.walkedS, required this.nextS});
 
   final TrailGeometry geo;
   final double walkedS;
@@ -313,134 +359,141 @@ class _EmberTrail extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final step = geo.width * 0.036;
-    final glow = Paint()
-      ..color = TrailColors.ember.withValues(alpha: 0.55)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
-    final core = Paint()..color = TrailColors.emberCore;
-    for (var s = geo.startS + step * 0.5; s < walkedS - step * 0.6; s += step) {
-      final p = geo.at(s);
-      canvas.drawCircle(p, 4.2, glow);
-      canvas.drawCircle(p, 2.1, core);
+    final all = _pathAlong(geo, geo.startS, geo.endS);
+    canvas.drawPath(
+      all,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..color = const Color(0x66000000)
+        ..strokeWidth = 13
+        ..strokeCap = StrokeCap.round
+        ..strokeJoin = StrokeJoin.round,
+    );
+    canvas.drawPath(
+      all,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..color = const Color(0x22F0D9A8)
+        ..strokeWidth = 1
+        ..strokeJoin = StrokeJoin.round,
+    );
+    final thread = Paint()
+      ..color = const Color(0xB39C8462)
+      ..strokeWidth = 2.2
+      ..strokeCap = StrokeCap.round;
+    _dashes(canvas, geo, walkedS, geo.endS, 8, 6, thread);
+    if (walkedS > geo.startS) {
+      final glow = Paint()
+        ..color = TrailColors.ember.withValues(alpha: .55)
+        ..strokeWidth = 6
+        ..strokeCap = StrokeCap.round
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
+      _dashes(canvas, geo, geo.startS, walkedS, 8, 6, glow);
+      final gold = Paint()
+        ..color = const Color(0xFFF1C877)
+        ..strokeWidth = 2.6
+        ..strokeCap = StrokeCap.round;
+      _dashes(canvas, geo, geo.startS, walkedS, 8, 6, gold);
     }
-    final ahead = Paint()..color = TrailColors.brass.withValues(alpha: 0.45);
-    for (var s = walkedS + step; s < nextS; s += step * 1.2) {
-      canvas.drawCircle(geo.at(s), 1.5, ahead);
+    final ahead = Paint()..color = TrailColors.brass.withValues(alpha: .7);
+    final step = geo.width * 0.045;
+    for (var s = walkedS + step; s < nextS; s += step) {
+      canvas.drawCircle(geo.at(s), 1.6, ahead);
     }
   }
 
   @override
-  bool shouldRepaint(_EmberTrail old) =>
+  bool shouldRepaint(_StitchTrail old) =>
       old.walkedS != walkedS || old.nextS != nextS || old.geo != geo;
 }
 
-enum _CairnState { reached, next, open }
-
-class _Cairn extends StatelessWidget {
-  const _Cairn({required this.number, required this.state});
+/// Dark leather map waymark: a riveted brass medallion on the stitch line,
+/// glowing once reached.
+class _Medallion extends StatelessWidget {
+  const _Medallion({required this.number, required this.state});
 
   final int number;
   final _CairnState state;
 
   @override
-  Widget build(BuildContext context) {
-    final lit = state == _CairnState.reached;
-    final sprite = Image.asset(
-      lit
-          ? 'assets/wanderweg/cairn_lit.webp'
-          : 'assets/wanderweg/cairn_cold.webp',
-      fit: BoxFit.fill,
-    );
-    return LayoutBuilder(
-      builder: (context, box) {
-        final w = box.maxWidth;
-        final h = box.maxHeight;
-        final plate = lit
-            ? const Offset(0.482, 0.463)
-            : const Offset(0.48, 0.459);
-        final lantern = lit
-            ? const Offset(0.817, 0.578)
-            : const Offset(0.814, 0.567);
-        return Stack(
-          clipBehavior: Clip.none,
-          children: [
-            if (state == _CairnState.next)
-              Positioned(
-                left: -w * 0.25,
-                right: -w * 0.25,
-                bottom: -h * 0.07,
-                height: h * 0.18,
-                child: const _GroundRing(),
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, box) {
+      final d = math.min(box.maxWidth * 1.05, box.maxHeight * 0.66);
+      final reached = state == _CairnState.reached;
+      final open = state == _CairnState.open;
+      return Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.bottomCenter,
+        children: [
+          Positioned(
+            bottom: -d * 0.12,
+            width: d,
+            height: d,
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: reached
+                      ? const [Color(0xFFF6D08A), Color(0xFFB0813E)]
+                      : open
+                      ? const [Color(0xFF3A2A1E), Color(0xFF241812)]
+                      : const [Color(0xFF4A3322), Color(0xFF2A1C12)],
+                ),
+                border: Border.all(
+                  color: open ? const Color(0xFF6A5038) : TrailColors.brass,
+                  width: open ? 2 : 3,
+                ),
+                boxShadow: [
+                  const BoxShadow(color: Color(0xAA000000), blurRadius: 6),
+                  if (reached)
+                    BoxShadow(
+                      color: TrailColors.ember.withValues(alpha: .75),
+                      blurRadius: 18,
+                      spreadRadius: 2,
+                    ),
+                  if (state == _CairnState.next)
+                    BoxShadow(
+                      color: TrailColors.brass.withValues(alpha: .6),
+                      blurRadius: 12,
+                      spreadRadius: 1,
+                    ),
+                ],
               ),
-            if (lit)
-              Positioned(
-                left: lantern.dx * w - w * 0.55,
-                top: lantern.dy * h - w * 0.55,
-                width: w * 1.1,
-                height: w * 1.1,
-                child: const DecoratedBox(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [Color(0x88E08A3C), Color(0x00E08A3C)],
+              child: Container(
+                margin: EdgeInsets.all(d * 0.08),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: reached
+                        ? const Color(0x995A3A12)
+                        : const Color(0x55D2B074),
+                    width: 1,
+                  ),
+                ),
+                padding: EdgeInsets.all(d * 0.14),
+                child: FittedBox(
+                  child: Text(
+                    '$number',
+                    style: serifTitle.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: reached
+                          ? const Color(0xFF2A1C0C)
+                          : open
+                          ? TreadColors.muted
+                          : TrailColors.brass,
                     ),
                   ),
                 ),
               ),
-            Positioned.fill(
-              child: state == _CairnState.open
-                  ? ColorFiltered(
-                      colorFilter: const ColorFilter.matrix([
-                        0.30, 0.30, 0.10, 0, 0, //
-                        0.28, 0.30, 0.10, 0, 0, //
-                        0.26, 0.28, 0.12, 0, 0, //
-                        0, 0, 0, 1, 0,
-                      ]),
-                      child: sprite,
-                    )
-                  : sprite,
             ),
-            Positioned(
-              left: plate.dx * w - w * 0.2,
-              top: plate.dy * h - h * 0.08,
-              width: w * 0.4,
-              height: h * 0.16,
-              child: FittedBox(
-                child: Text(
-                  '$number',
-                  style: serifTitle.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: switch (state) {
-                      _CairnState.reached => const Color(0xFF2A1C0C),
-                      _CairnState.next => TrailColors.brass,
-                      _CairnState.open => TreadColors.muted,
-                    },
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _GroundRing extends StatelessWidget {
-  const _GroundRing();
-
-  @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      shape: BoxShape.rectangle,
-      borderRadius: const BorderRadius.all(Radius.elliptical(100, 40)),
-      border: Border.all(color: TrailColors.brass, width: 2),
-      boxShadow: const [
-        BoxShadow(color: Color(0x66C4A36A), blurRadius: 10, spreadRadius: 1),
-      ],
-    ),
+          ),
+        ],
+      );
+    },
   );
 }
+
+enum _CairnState { reached, next, open }
 
 class _CairnLabel extends StatelessWidget {
   const _CairnLabel({required this.waymark, required this.state});

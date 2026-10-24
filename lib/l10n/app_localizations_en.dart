@@ -161,18 +161,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsKaching => 'Ka-ching sound';
 
   @override
-  String get settingsHealthTitle => 'Health data';
+  String get settingsHealthTitle => 'Movement data';
 
   @override
   String get settingsHealthBody =>
-      'Treadplay reads steps and distance from Apple Health or Health Connect only while a run is active. Apple and Google store your health data independently of us. We never upload it.';
+      'Treadplay uses location (GPS) and the step counter only while a run is active and only on this device. Only the run summary is saved, no route. Nothing is uploaded.';
 
   @override
   String get settingsPrivacyTitle => 'Privacy';
 
   @override
   String get settingsPrivacyBody =>
-      'Your routes and runs stay on this device. No account, no cloud.';
+      'Your runs and your save game stay on this device. No account, no cloud.';
 
   @override
   String get settingsCredits => 'Credits';
@@ -344,11 +344,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsMovementOff => 'Off: real movement earns no LP.';
 
   @override
-  String get movementNoticeTitle => 'Movement and health';
+  String get movementNoticeTitle => 'Movement and location';
 
   @override
   String get movementNoticeBody =>
-      'To count a walk, TreadPlay asks for motion or health access (Apple Health or Health Connect, location only if GPS is used for distance). Readings stay on this device and are only used to check your pace and award LP. Nothing is uploaded. If you deny, real movement earns no LP.';
+      'To count a walk, TreadPlay uses your location (GPS) and the step counter during the run. Readings stay on this device and are only used to measure distance and pace and to award LP. No route is saved and nothing is uploaded. If you deny, real movement earns no LP.';
 
   @override
   String get movementDeniedHint =>
@@ -578,14 +578,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saveDeleteBody =>
-      'Companions, seals, LP, Breath, run history and lifetime totals are removed. You start again with Mossik.';
+      'Companions, seals, LP, Breath, run history and lifetime totals are removed, and so are the export copies the app kept itself. You start again with Mossik. Files you saved or shared elsewhere stay.';
 
   @override
   String get saveDeleteReallyTitle => 'Really delete everything?';
 
   @override
   String get saveDeleteReallyBody =>
-      'This cannot be undone. Without an export the save game is gone.';
+      'This cannot be undone. Only an export file you saved outside the app can bring the save game back.';
 
   @override
   String get saveDeletePermanently => 'Delete permanently';
@@ -1311,13 +1311,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String msgGreetKolk(String n) {
     String _temp0 = intl.Intl.selectLogic(n, {
-      '0': 'Kraa! Kolk reporting.',
+      '0': 'Kraa! Krahni reporting.',
       '1': 'Kraa, kraa! Nicely walked!',
-      '2': 'Psst, Kolk here.',
+      '2': 'Psst, Krahni here.',
       '3': 'Kraa! Guess who’s here.',
       '4': 'Hello, pacemaker!',
       '5': 'Kraa! I was waiting for you.',
-      'other': 'Kraa! Kolk reporting.',
+      'other': 'Kraa! Krahni reporting.',
     });
     return '$_temp0';
   }
@@ -1353,13 +1353,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String msgGreetFlimm(String n) {
     String _temp0 = intl.Intl.selectLogic(n, {
-      '0': 'A little light flickers – Flimm is here.',
+      '0': 'A little light flickers – Glimmsel is here.',
       '1': 'Sssh … I followed your light.',
       '2': 'Good evening, even if it’s day.',
-      '3': 'Flimm here, very quietly.',
+      '3': 'Glimmsel here, very quietly.',
       '4': 'Your steps are glowing today.',
       '5': 'I came with the wind.',
-      'other': 'A little light flickers – Flimm is here.',
+      'other': 'A little light flickers – Glimmsel is here.',
     });
     return '$_temp0';
   }
@@ -1395,13 +1395,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String msgGreetVesper(String n) {
     String _temp0 = intl.Intl.selectLogic(n, {
-      '0': 'Greetings. Vesper has descended.',
+      '0': 'Greetings. Sternuh has descended.',
       '1': 'The stars told me where you walk.',
       '2': 'I rarely come. Today I come to you.',
       '3': 'Don’t bow – keep walking instead.',
       '4': 'The night sky sends me.',
       '5': 'A rare evening for a rare guest.',
-      'other': 'Greetings. Vesper has descended.',
+      'other': 'Greetings. Sternuh has descended.',
     });
     return '$_temp0';
   }
@@ -1466,13 +1466,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get msgTitleRuhu => 'Ruhu · owl of the field paths';
 
   @override
-  String get msgTitleKolk => 'Kolk · raven of the waysides';
+  String get msgTitleKolk => 'Krahni · raven of the waysides';
 
   @override
-  String get msgTitleFlimm => 'Flimm · lantern moth';
+  String get msgTitleFlimm => 'Glimmsel · lantern moth';
 
   @override
-  String get msgTitleVesper => 'Vesper · star owl';
+  String get msgTitleVesper => 'Sternuh · star owl';
 
   @override
   String get msgRankBrown => 'Brown messenger · common';

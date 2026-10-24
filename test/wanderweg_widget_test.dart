@@ -12,6 +12,7 @@ import 'package:treadplay/domain/companion.dart';
 import 'package:treadplay/domain/run_summary.dart';
 import 'package:treadplay/domain/totals.dart';
 import 'package:treadplay/domain/wanderweg.dart';
+import 'package:treadplay/features/wanderweg/trail_layout.dart';
 import 'package:treadplay/features/wanderweg/wanderweg_screen.dart';
 import 'package:treadplay/state/providers.dart';
 
@@ -136,5 +137,29 @@ void main() {
     await tester.pumpAndSettle();
     expect(container.read(gameProvider).wanderweg.reached, 1);
     expect(find.text('Waymark 1 reached · Brown pouch'), findsOneWidget);
+  });
+
+  testWidgets('the leather map keeps all 19 waymarks readable', (tester) async {
+    await pumpApp(tester, at(45.1, reached: 11, forged: 4));
+    await tester.tap(find.byKey(const Key('trail-chip')));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    for (var i = 0; i < trailSections.length; i++) {
+      final art = tester.widget<Image>(
+        find.byKey(Key('trail-art-$i'), skipOffstage: false),
+      );
+      expect((art.image as AssetImage).assetName, trailSections[i].asset);
+    }
+    for (var n = 1; n <= 19; n++) {
+      final f = find.byKey(Key('waymark-$n'), skipOffstage: false);
+      expect(f, findsOneWidget);
+      expect(
+        find.descendant(of: f, matching: find.text('$n'), skipOffstage: false),
+        findsOneWidget,
+      );
+    }
+    await tester.tap(find.byKey(const Key('waymark-12')), warnIfMissed: false);
+    await tester.pumpAndSettle();
+    expect(find.text('Waymark 12 · 48.6 km'), findsOneWidget);
   });
 }

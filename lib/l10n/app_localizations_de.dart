@@ -162,18 +162,18 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsKaching => 'Ka-ching-Sound';
 
   @override
-  String get settingsHealthTitle => 'Gesundheitsdaten';
+  String get settingsHealthTitle => 'Bewegungsdaten';
 
   @override
   String get settingsHealthBody =>
-      'Treadplay liest Schritte und Distanz aus Apple Health oder Health Connect nur während eines Laufs. Apple und Google speichern deine Gesundheitsdaten unabhängig von uns. Wir laden sie nie hoch.';
+      'Treadplay nutzt Standort (GPS) und Schrittzähler nur während eines Laufs und nur auf diesem Gerät. Gespeichert wird nur die Zusammenfassung des Laufs, keine Route. Nichts wird hochgeladen.';
 
   @override
   String get settingsPrivacyTitle => 'Datenschutz';
 
   @override
   String get settingsPrivacyBody =>
-      'Deine Routen und Läufe bleiben auf diesem Gerät. Kein Konto, keine Cloud.';
+      'Deine Läufe und dein Spielstand bleiben auf diesem Gerät. Kein Konto, keine Cloud.';
 
   @override
   String get settingsCredits => 'Credits';
@@ -345,11 +345,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsMovementOff => 'Aus: Echte Bewegung bringt keine LP.';
 
   @override
-  String get movementNoticeTitle => 'Bewegung und Gesundheit';
+  String get movementNoticeTitle => 'Bewegung und Standort';
 
   @override
   String get movementNoticeBody =>
-      'Damit ein Lauf zählt, fragt TreadPlay Zugriff auf Bewegung oder Gesundheit (Apple Health bzw. Health Connect, Standort nur, wenn GPS für die Distanz genutzt wird). Die Werte bleiben auf dem Gerät und dienen nur dazu, dein Tempo zu prüfen und LP zu vergeben. Nichts wird hochgeladen. Lehnst du ab, gibt es keine LP aus echter Bewegung.';
+      'Damit ein Lauf zählt, nutzt TreadPlay während des Laufs deinen Standort (GPS) und den Schrittzähler. Die Werte bleiben auf dem Gerät und dienen nur dazu, Strecke und Tempo zu messen und LP zu vergeben. Keine Route wird gespeichert, nichts wird hochgeladen. Lehnst du ab, gibt es keine LP aus echter Bewegung.';
 
   @override
   String get movementDeniedHint =>
@@ -581,14 +581,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get saveDeleteBody =>
-      'Gefährten, Siegel, LP, Puste, Laufhistorie und Gesamtwerte werden entfernt. Du startest neu mit Mossik.';
+      'Gefährten, Siegel, LP, Puste, Laufhistorie und Gesamtwerte werden entfernt, ebenso die Export-Kopien, die die App selbst abgelegt hat. Du startest neu mit Mossik. Dateien, die du woanders gespeichert oder geteilt hast, bleiben erhalten.';
 
   @override
   String get saveDeleteReallyTitle => 'Wirklich alles löschen?';
 
   @override
   String get saveDeleteReallyBody =>
-      'Das kann nicht rückgängig gemacht werden. Ohne Export ist der Spielstand weg.';
+      'Das kann nicht rückgängig gemacht werden. Zurück holt den Spielstand nur eine Export-Datei, die du außerhalb der App gespeichert hast.';
 
   @override
   String get saveDeletePermanently => 'Endgültig löschen';
@@ -1317,13 +1317,13 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String msgGreetKolk(String n) {
     String _temp0 = intl.Intl.selectLogic(n, {
-      '0': 'Kraa! Kolk meldet sich.',
+      '0': 'Kraa! Krahni meldet sich.',
       '1': 'Kraa, kraa! Gut gelaufen!',
-      '2': 'Psst, Kolk hier.',
+      '2': 'Psst, Krahni hier.',
       '3': 'Kraa! Rate mal, wer da ist.',
       '4': 'Hallo, Schrittmacher!',
       '5': 'Kraa! Ich hab auf dich gewartet.',
-      'other': 'Kraa! Kolk meldet sich.',
+      'other': 'Kraa! Krahni meldet sich.',
     });
     return '$_temp0';
   }
@@ -1359,13 +1359,13 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String msgGreetFlimm(String n) {
     String _temp0 = intl.Intl.selectLogic(n, {
-      '0': 'Ein Lichtlein flackert – Flimm ist da.',
+      '0': 'Ein Lichtlein flackert – Glimmsel ist da.',
       '1': 'Sssst … ich bin deinem Licht gefolgt.',
       '2': 'Guten Abend, auch wenn’s Tag ist.',
-      '3': 'Flimm hier, ganz leise.',
+      '3': 'Glimmsel hier, ganz leise.',
       '4': 'Deine Schritte leuchten heute.',
       '5': 'Ich kam mit dem Wind.',
-      'other': 'Ein Lichtlein flackert – Flimm ist da.',
+      'other': 'Ein Lichtlein flackert – Glimmsel ist da.',
     });
     return '$_temp0';
   }
@@ -1401,13 +1401,13 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String msgGreetVesper(String n) {
     String _temp0 = intl.Intl.selectLogic(n, {
-      '0': 'Sei gegrüßt. Vesper ist herabgestiegen.',
+      '0': 'Sei gegrüßt. Sternuh ist herabgestiegen.',
       '1': 'Die Sterne sagten mir, wo du läufst.',
       '2': 'Selten komme ich. Heute komme ich zu dir.',
       '3': 'Verneige dich nicht – lauf lieber weiter.',
       '4': 'Der Nachthimmel schickt mich.',
       '5': 'Ein seltener Abend für einen seltenen Gast.',
-      'other': 'Sei gegrüßt. Vesper ist herabgestiegen.',
+      'other': 'Sei gegrüßt. Sternuh ist herabgestiegen.',
     });
     return '$_temp0';
   }
@@ -1472,13 +1472,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get msgTitleRuhu => 'Ruhu · Eule der Feldwege';
 
   @override
-  String get msgTitleKolk => 'Kolk · Rabe der Wegränder';
+  String get msgTitleKolk => 'Krahni · Rabe der Wegränder';
 
   @override
-  String get msgTitleFlimm => 'Flimm · Laternenfalter';
+  String get msgTitleFlimm => 'Glimmsel · Laternenfalter';
 
   @override
-  String get msgTitleVesper => 'Vesper · Sterneule';
+  String get msgTitleVesper => 'Sternuh · Sterneule';
 
   @override
   String get msgRankBrown => 'Brauner Bote · häufig';

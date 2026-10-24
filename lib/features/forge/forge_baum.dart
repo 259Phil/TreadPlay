@@ -271,7 +271,10 @@ class _SchmiedeBaumState extends ConsumerState<_SchmiedeBaum> {
           final midY = (p.dy + q.dy) / 2;
           path.cubicTo(p.dx, midY, q.dx, midY + 4, q.dx, q.dy);
         }
-        links.add((path, na.lit && nb.lit, nb.ready));
+        // A recipe takes its seals at any level, so a known recipe lights
+        // the branch from its stats' tops even if St.5 is still dark.
+        final lit = na.single && !nb.single ? nb.lit : na.lit && nb.lit;
+        links.add((path, lit, nb.ready));
       }
       return SingleChildScrollView(
         key: const Key('baum-scroll'),

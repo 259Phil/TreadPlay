@@ -19,7 +19,7 @@ import '../../widgets/stock_art.dart';
 import '../../ui/skin.dart';
 
 part 'forge_recipe_look.dart';
-part 'forge_mystery.dart';
+part 'forge_grimoire.dart';
 part 'forge_strike.dart';
 
 enum _Mode { up, combine }
@@ -483,9 +483,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
     if (!MediaQuery.disableAnimationsOf(context)) {
       _strikeAnim.duration = mode == _Mode.up
           ? _upStrikeTime
-          : forgeCombineLook == 0
-          ? _combineStrikeTime
-          : _mysteryStrikeTime;
+          : _combineStrikeTime;
       setState(() {
         _frozen = before;
         _strike = _Strike(_strikeAnim, outcome);

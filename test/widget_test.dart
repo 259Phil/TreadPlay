@@ -24,6 +24,7 @@ import 'package:treadplay/state/providers.dart';
 import 'package:treadplay/widgets/companion_card.dart';
 
 void main() {
+  setUpAll(() => forgeAmbientMotion = false);
   final t0 = DateTime(2026, 1, 1, 8);
 
   Future<void> pumpApp(
@@ -942,64 +943,63 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    for (final look in [1, 2, 3]) {
-      group('mysterious combine look $look', () {
-        setUp(() => forgeCombineLook = look);
-        tearDown(() => forgeCombineLook = 0);
+    group('grimoire combine view', () {
+      // The page drifts here; elsewhere it stays still so tests settle.
+      setUp(() => forgeAmbientMotion = true);
+      tearDown(() => forgeAmbientMotion = false);
 
-        GameData pair() => openAll(
-          GameData.initial(t0).copyWith(
-            lp: 500,
-            forge: const ForgeState(
-              stock: {'grit@3': 1, 'stride@3': 1},
-              glut: 5,
-            ),
-          ),
-        );
+      GameData pair() => openAll(
+        GameData.initial(t0).copyWith(
+          lp: 500,
+          forge: const ForgeState(stock: {'grit@3': 1, 'stride@3': 1}, glut: 5),
+        ),
+      );
 
-        // The look keeps moving (mist, runes, candles), so settle by time.
-        Future<void> tapAndWait(WidgetTester tester, String key) async {
-          await tester.tap(find.byKey(Key(key)));
-          for (var i = 0; i < 10; i++) {
-            await tester.pump(const Duration(milliseconds: 100));
-          }
+      // The look keeps moving (mist, runes, candles), so settle by time.
+      Future<void> tapAndWait(WidgetTester tester, String key) async {
+        await tester.tap(find.byKey(Key(key)));
+        for (var i = 0; i < 10; i++) {
+          await tester.pump(const Duration(milliseconds: 100));
         }
+      }
 
-        testWidgets('whispers instead of a diagram and fits 360x780', (
+      testWidgets('whispers, hides the result and fits 360x780', (
+        tester,
+      ) async {
+        await openForge(
           tester,
-        ) async {
-          await openForge(
-            tester,
-            pair(),
-            open: false,
-            size: const Size(360, 780),
-            random: _FixedRandom(0.99),
-          );
-          await tapAndWait(tester, 'tab-combine');
-          expect(textOf(tester, 'forge-whisper'), 'The signs are asleep …');
-          await tapAndWait(tester, 'case-stride@3');
-          expect(textOf(tester, 'forge-whisper'), 'Something stirs …');
-          await tapAndWait(tester, 'case-grit@3');
-          expect(
-            textOf(tester, 'forge-whisper'),
-            'Two essences call to each other …',
-          );
-          expect(textOf(tester, 'forge-fail'), startsWith('Fail chance 17 %'));
-          expect(find.byKey(const Key('forge-result')), findsOneWidget);
-          expect(tester.takeException(), isNull);
+          pair(),
+          open: false,
+          size: const Size(360, 780),
+          random: _FixedRandom(0.99),
+        );
+        await tapAndWait(tester, 'tab-combine');
+        expect(textOf(tester, 'forge-whisper'), 'The signs are asleep …');
+        await tapAndWait(tester, 'case-stride@3');
+        expect(textOf(tester, 'forge-whisper'), 'Something stirs …');
+        await tapAndWait(tester, 'case-grit@3');
+        expect(
+          textOf(tester, 'forge-whisper'),
+          'Two essences call to each other …',
+        );
+        expect(textOf(tester, 'forge-fail'), startsWith('Fail chance 17 %'));
+        expect(find.byKey(const Key('forge-result')), findsOneWidget);
+        expect(tester.takeException(), isNull);
 
-          await tester.tap(find.byKey(const Key('forge-go')));
-          await tester.pump(const Duration(milliseconds: 900));
-          expect(find.byKey(const Key('forge-success')), findsNothing);
-          for (var i = 0; i < 20; i++) {
-            await tester.pump(const Duration(milliseconds: 100));
-          }
-          expect(find.byKey(const Key('forge-success')), findsOneWidget);
-          await tapAndWait(tester, 'forge-result-ok');
-          expect(find.byKey(const Key('case-stride+grit@3')), findsOneWidget);
-        });
+        await tester.tap(find.byKey(const Key('forge-go')));
+        await tester.pump(const Duration(milliseconds: 900));
+        expect(find.byKey(const Key('forge-success')), findsNothing);
+        for (var i = 0; i < 20; i++) {
+          await tester.pump(const Duration(milliseconds: 100));
+        }
+        expect(find.byKey(const Key('forge-success')), findsOneWidget);
+        await tapAndWait(tester, 'forge-result-ok');
+        expect(find.byKey(const Key('case-stride+grit@3')), findsOneWidget);
+        // Back on Aufwerten the page stops drifting, so the screen settles.
+        await tester.tap(find.byKey(const Key('tab-up')));
+        await tester.pumpAndSettle();
       });
-    }
+    });
 
     testWidgets('buys seals, forges one up and sets it on the companion', (
       tester,

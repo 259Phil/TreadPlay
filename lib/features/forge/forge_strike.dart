@@ -5,7 +5,6 @@ part of 'forge_screen.dart';
 // Aufwerten: the hammer lifts off the small anvil and strikes three times,
 // the last blow heavier. Success: a golden burst and the target level lights
 // up. Failure: a dull blow, a grey puff and the seal cracks into splinters.
-// Kombinieren: the alchemy triangle glows, then shows the result.
 
 /// A running reveal: [anim] runs 0..1, [outcome] is what it will show.
 class _Strike {
@@ -16,7 +15,6 @@ class _Strike {
 }
 
 const _upStrikeTime = Duration(milliseconds: 1400);
-const _combineStrikeTime = Duration(milliseconds: 1100);
 
 /// The three blows, as points of the 0..1 timeline.
 const _hits = [0.20, 0.44, 0.80];
@@ -286,68 +284,4 @@ class _CrackPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_CrackPainter old) => old.u != u;
-}
-
-/// Kombinieren: the triangle's centre glows and pulses before the reveal,
-/// then flares teal on success or fades grey on a fail.
-class _TriangleGlow extends StatelessWidget {
-  const _TriangleGlow({required this.strike, required this.center});
-
-  final _Strike strike;
-  final Offset center;
-
-  @override
-  Widget build(BuildContext context) => IgnorePointer(
-    child: AnimatedBuilder(
-      animation: strike.anim,
-      builder: (context, _) => CustomPaint(
-        painter: _GlowPainter(
-          t: strike.anim.value,
-          success: strike.outcome.success,
-          center: center,
-        ),
-      ),
-    ),
-  );
-}
-
-class _GlowPainter extends CustomPainter {
-  _GlowPainter({required this.t, required this.success, required this.center});
-
-  final double t;
-  final bool success;
-  final Offset center;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    double a;
-    double radius;
-    Color color;
-    if (t < _reveal) {
-      final build = t / _reveal;
-      a = .3 + .45 * build * (.6 + .4 * math.sin(build * math.pi * 6));
-      radius = 22 + 16 * build;
-      color = const Color(0xFF3FBFB0);
-    } else {
-      final u = (t - _reveal) / (1 - _reveal);
-      a = (success ? .95 : .55) * (1 - u);
-      radius = success ? 38 + 60 * u : 38 - 10 * u;
-      color = success ? const Color(0xFF8FF0E2) : const Color(0xFF8C8580);
-    }
-    canvas.drawCircle(
-      center,
-      radius,
-      Paint()
-        ..shader = RadialGradient(
-          colors: [
-            color.withValues(alpha: a),
-            color.withValues(alpha: 0),
-          ],
-        ).createShader(Rect.fromCircle(center: center, radius: radius)),
-    );
-  }
-
-  @override
-  bool shouldRepaint(_GlowPainter old) =>
-      old.t != t || old.success != success || old.center != center;
 }

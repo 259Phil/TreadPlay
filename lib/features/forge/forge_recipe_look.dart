@@ -1,7 +1,7 @@
 part of 'forge_screen.dart';
 
-// "Eisen & Pergament": sets "Aufwerten" (riveted iron, ember, copper) apart
-// from "Kombinieren" (parchment recipe, teal, verdigris).
+// Sets "Aufwerten" (riveted iron, ember, copper) apart from "Kombinieren"
+// (the faded grimoire in forge_grimoire.dart, teal, verdigris).
 // Presentation only: every value shown comes from _recipe.
 
 class _Palette {
@@ -122,11 +122,7 @@ Widget _recipePanel(BuildContext context, _RecipeParts r) {
   final up = r.mode == _Mode.up;
   final Widget card = SizedBox(
     height: 124,
-    child: up
-        ? _IronCard(r)
-        : forgeCombineLook == 0
-        ? _ParchmentCard(r)
-        : _MysteryCard(r, forgeCombineLook),
+    child: up ? _IronCard(r) : _GrimoireCard(r),
   );
   final body = Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -270,14 +266,12 @@ class _Slot extends StatelessWidget {
     required this.palette,
     this.size = 58,
     this.badge,
-    this.ink = false,
   });
 
   final Seal? seal;
   final _Palette palette;
   final double size;
   final String? badge;
-  final bool ink;
 
   @override
   Widget build(BuildContext context) {
@@ -287,27 +281,17 @@ class _Slot extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: ink ? const Color(0x22FFFFFF) : const Color(0xCC1A120D),
-        border: Border.all(
-          color: ink ? const Color(0xFF4A3524) : palette.accent,
-          width: ink ? 1.4 : 2,
-        ),
-        boxShadow: ink
-            ? null
-            : [
-                BoxShadow(
-                  color: palette.glow.withValues(alpha: s == null ? .15 : .45),
-                  blurRadius: s == null ? 4 : 10,
-                ),
-              ],
+        color: const Color(0xCC1A120D),
+        border: Border.all(color: palette.accent, width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: palette.glow.withValues(alpha: s == null ? .15 : .45),
+            blurRadius: s == null ? 4 : 10,
+          ),
+        ],
       ),
       child: s == null
-          ? Icon(
-              Icons.add,
-              color: ink
-                  ? const Color(0x884A3524)
-                  : palette.accent.withValues(alpha: .6),
-            )
+          ? Icon(Icons.add, color: palette.accent.withValues(alpha: .6))
           : Center(
               child: SealArt(seal: s, size: size - 4),
             ),
@@ -348,13 +332,11 @@ class _ResultRing extends StatelessWidget {
     required this.seal,
     required this.palette,
     this.size = 70,
-    this.ink = false,
   });
 
   final Seal? seal;
   final _Palette palette;
   final double size;
-  final bool ink;
 
   @override
   Widget build(BuildContext context) {
@@ -364,30 +346,24 @@ class _ResultRing extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: ink
-            ? null
-            : RadialGradient(
-                colors: s == null
-                    ? [const Color(0xAA1A120D), const Color(0x661A120D)]
-                    : [
-                        palette.glow.withValues(alpha: .5),
-                        palette.glow.withValues(alpha: 0),
-                      ],
-              ),
+        gradient: RadialGradient(
+          colors: s == null
+              ? [const Color(0xAA1A120D), const Color(0x661A120D)]
+              : [
+                  palette.glow.withValues(alpha: .5),
+                  palette.glow.withValues(alpha: 0),
+                ],
+        ),
         border: Border.all(
-          color: ink
-              ? const Color(0xFF4A3524)
-              : palette.accent.withValues(alpha: s == null ? .35 : .9),
-          width: ink ? 2 : 1.5,
+          color: palette.accent.withValues(alpha: s == null ? .35 : .9),
+          width: 1.5,
         ),
       ),
       child: s == null
           ? Icon(
               Icons.question_mark_rounded,
               size: size * .32,
-              color: ink
-                  ? const Color(0x664A3524)
-                  : palette.accent.withValues(alpha: .4),
+              color: palette.accent.withValues(alpha: .4),
             )
           : Center(
               child: SealArt(
@@ -612,149 +588,6 @@ class _IronPlate extends CustomPainter {
 
   @override
   bool shouldRepaint(_IronPlate old) => false;
-}
-
-/// V3 Kombinieren: a parchment recipe sheet with an ink fusion diagram.
-class _ParchmentCard extends StatelessWidget {
-  const _ParchmentCard(this.r);
-
-  final _RecipeParts r;
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: _Parchment(),
-      child: LayoutBuilder(
-        builder: (context, box) {
-          final w = box.maxWidth;
-          final h = box.maxHeight;
-          final cx = w / 2;
-          return Stack(
-            children: [
-              Positioned.fill(
-                child: CustomPaint(painter: _InkDiagram(r.made != null)),
-              ),
-              if (r.strike != null)
-                Positioned.fill(
-                  child: _TriangleGlow(
-                    strike: r.strike!,
-                    center: Offset(cx, (38 + (h - 36) * 2) / 3 + 6),
-                  ),
-                ),
-              Positioned(
-                left: cx - 92 - 26,
-                top: h - 62,
-                child: _Slot(seal: r.a, palette: _arcane, size: 52, ink: true),
-              ),
-              Positioned(
-                left: cx + 92 - 26,
-                top: h - 62,
-                child: _Slot(seal: r.b, palette: _arcane, size: 52, ink: true),
-              ),
-              Positioned(
-                left: cx - 32,
-                top: 6,
-                child: _ResultRing(
-                  seal: r.made,
-                  palette: _arcane,
-                  size: 64,
-                  ink: true,
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _Parchment extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final r = RRect.fromRectAndRadius(
-      Offset.zero & size,
-      const Radius.circular(4),
-    );
-    canvas.drawShadow(Path()..addRRect(r), Colors.black, 4, false);
-    canvas.drawRRect(
-      r,
-      Paint()
-        ..shader = const RadialGradient(
-          radius: .9,
-          colors: [Color(0xFFEBDDBA), Color(0xFFD9C394), Color(0xFFB99A63)],
-          stops: [0, .65, 1],
-        ).createShader(Offset.zero & size),
-    );
-    final rng = math.Random(3);
-    for (var i = 0; i < 200; i++) {
-      canvas.drawCircle(
-        Offset(rng.nextDouble() * size.width, rng.nextDouble() * size.height),
-        .6 + rng.nextDouble() * 1.6,
-        Paint()..color = const Color(0x147A5A30),
-      );
-    }
-    canvas.drawRRect(
-      r.deflate(4),
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = .8
-        ..color = const Color(0x994A3524),
-    );
-  }
-
-  @override
-  bool shouldRepaint(_Parchment old) => false;
-}
-
-class _InkDiagram extends CustomPainter {
-  _InkDiagram(this.ready);
-
-  final bool ready;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final cx = size.width / 2;
-    final h = size.height;
-    const ink = Color(0xFF4A3524);
-    final pen = Paint()
-      ..color = ink
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.3;
-    final teal = Paint()
-      ..color = const Color(0xFF1F7A70)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2
-      ..strokeCap = StrokeCap.round;
-    // Alchemy triangle: both inputs at the base, the result at the apex.
-    final res = Offset(cx, 38);
-    final la = Offset(cx - 92, h - 36);
-    final lb = Offset(cx + 92, h - 36);
-    canvas.drawLine(la + const Offset(27, 0), lb - const Offset(27, 0), pen);
-    final centroid = Offset(cx, (res.dy + la.dy * 2) / 3 + 6);
-    canvas.drawCircle(centroid, 13, pen);
-    canvas.drawCircle(centroid, 3, Paint()..color = ink);
-    for (final from in [la, lb]) {
-      final dir = res - from;
-      final u = dir / dir.distance;
-      final start = from + u * 30;
-      final end = res - u * 36;
-      final line = ready ? teal : pen;
-      canvas.drawLine(start, end, line);
-      final n = Offset(-u.dy, u.dx);
-      canvas.drawPath(
-        Path()
-          ..moveTo(end.dx + u.dx * 2, end.dy + u.dy * 2)
-          ..lineTo(end.dx - u.dx * 8 + n.dx * 5, end.dy - u.dy * 8 + n.dy * 5)
-          ..lineTo(end.dx - u.dx * 8 - n.dx * 5, end.dy - u.dy * 8 - n.dy * 5)
-          ..close(),
-        Paint()..color = ready ? teal.color : ink,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(_InkDiagram old) => old.ready != ready;
 }
 
 // ---------------------------------------------------------------- button

@@ -46,6 +46,18 @@ double _hammerLift(double t, bool success) {
   return u >= 1 ? 0 : .14 * math.sin(u * math.pi);
 }
 
+/// How far the resting hammer floats above the anvil face (logical px);
+/// it drops onto the face for each blow and settles back afterwards.
+const _restRaise = 3.0;
+
+/// 1 while the hammer rests, 0 during the blows.
+double _restShare(double t) {
+  double smooth(double x) => x * x * (3 - 2 * x);
+  if (t < _hits[0]) return 1 - smooth((t / _hits[0]).clamp(0.0, 1.0));
+  if (t <= _hits[2]) return 0;
+  return smooth(((t - _hits[2]) / (1 - _hits[2])).clamp(0.0, 1.0));
+}
+
 /// The small anvil with its hammer, sparks, flash and smoke.
 class _AnvilStrike extends StatelessWidget {
   const _AnvilStrike({this.strike});
@@ -95,12 +107,15 @@ class _AnvilStrike extends StatelessWidget {
             top: -6,
             width: 36,
             height: 20,
-            child: Transform.rotate(
-              angle: -.35 + lift,
-              alignment: Alignment.centerRight,
-              child: Image.asset(
-                'assets/forge/hammer.webp',
-                fit: BoxFit.contain,
+            child: Transform.translate(
+              offset: Offset(0, -_restRaise * _restShare(t)),
+              child: Transform.rotate(
+                angle: -.35 + lift,
+                alignment: Alignment.centerRight,
+                child: Image.asset(
+                  'assets/forge/hammer.webp',
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
           ),

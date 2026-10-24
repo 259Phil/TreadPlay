@@ -1712,6 +1712,24 @@ abstract class AppLocalizations {
   /// **'Now pick a seal of another stat at the same level.'**
   String get forgePickPartner;
 
+  /// No description provided for @forgeMysteryIdle.
+  ///
+  /// In en, this message translates to:
+  /// **'The signs are asleep …'**
+  String get forgeMysteryIdle;
+
+  /// No description provided for @forgeMysteryStir.
+  ///
+  /// In en, this message translates to:
+  /// **'Something stirs …'**
+  String get forgeMysteryStir;
+
+  /// No description provided for @forgeMysteryReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Two essences call to each other …'**
+  String get forgeMysteryReady;
+
   /// No description provided for @forgeCaseNone.
   ///
   /// In en, this message translates to:

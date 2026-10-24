@@ -963,6 +963,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'Now pick a seal of another stat at the same level.';
 
   @override
+  String get forgeMysteryIdle => 'The signs are asleep …';
+
+  @override
+  String get forgeMysteryStir => 'Something stirs …';
+
+  @override
+  String get forgeMysteryReady => 'Two essences call to each other …';
+
+  @override
   String get forgeCaseNone => 'No loose seals yet.';
 
   @override

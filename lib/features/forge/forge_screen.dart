@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,6 +18,10 @@ import '../../widgets/seal_art.dart';
 import '../../widgets/stock_art.dart';
 import '../../ui/skin.dart';
 
+part 'forge_recipe_look.dart';
+part 'forge_grimoire.dart';
+part 'forge_strike.dart';
+
 enum _Mode { up, combine }
 
 /// The Forge: buys seals L1, forges two equal seals up a level, combines
@@ -33,9 +39,17 @@ class ForgeScreen extends ConsumerStatefulWidget {
 }
 
 class _ForgeScreenState extends ConsumerState<ForgeScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final TabController _tabs = TabController(length: 4, vsync: this)
     ..addListener(_onTab);
+
+  /// Drives the reveal after Schmieden / Kombinieren.
+  late final AnimationController _strikeAnim = AnimationController(vsync: this);
+
+  /// The running reveal, and the case as it was before the forge, shown
+  /// until the reveal ends so nothing gives the outcome away early.
+  _Strike? _strike;
+  GameData? _frozen;
   _Mode _mode = _Mode.up;
   Seal? _first;
   Seal? _second;
@@ -48,6 +62,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
 
   @override
   void dispose() {
+    _strikeAnim.dispose();
     _tabs.dispose();
     super.dispose();
   }
@@ -92,7 +107,8 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final game = ref.watch(gameProvider);
+    final live = ref.watch(gameProvider);
+    final game = _frozen ?? live;
     // Drop a selection that is no longer in the case.
     if (_first != null && game.forge.count(_first!) == 0) _first = null;
     if (_second != null && game.forge.count(_second!) == 0) _second = null;
@@ -120,7 +136,18 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
               Tab(
                 key: Key(key),
                 height: 40,
-                child: FittedBox(fit: BoxFit.scaleDown, child: Text(text)),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: _TabWithIcon(
+                    icon: switch (key) {
+                      'tab-up' => _ember.icon,
+                      'tab-combine' => _arcane.icon,
+                      'tab-case' => 'assets/forge/icon_case.webp',
+                      _ => 'assets/forge/icon_ladder.webp',
+                    },
+                    text: text,
+                  ),
+                ),
               ),
           ],
         ),
@@ -146,12 +173,16 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
         actions: lpActions(game.lp),
       ),
       // Very short screens fall back to scrolling instead of overflowing.
-      body: LayoutBuilder(
-        builder: (context, box) => box.maxHeight >= _minHeight
-            ? content
-            : SingleChildScrollView(
-                child: SizedBox(height: _minHeight, child: content),
-              ),
+      // No taps or swipes while a forge is being revealed.
+      body: AbsorbPointer(
+        absorbing: _strike != null,
+        child: LayoutBuilder(
+          builder: (context, box) => box.maxHeight >= _minHeight
+              ? content
+              : SingleChildScrollView(
+                  child: SizedBox(height: _minHeight, child: content),
+                ),
+        ),
       ),
     );
   }
@@ -215,84 +246,31 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
           : '';
     }
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-      child: Column(
-        key: Key(mode == _Mode.up ? 'forge-up-tab' : 'forge-combine-tab'),
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SkinPanel(
-            key: active ? const Key('forge-panel') : null,
-            padding: const EdgeInsets.fromLTRB(12, 9, 12, 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  mode == _Mode.up ? l.forgeUpTitle : l.forgeCombineTitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: ForgeColors.text,
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                SizedBox(
-                  height: 70,
-                  child: Row(
-                    children: [
-                      _Input(seal: a),
-                      const SizedBox(width: 4),
-                      _Input(seal: mode == _Mode.up ? a : b),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (step != null) ...[
-                                Text(
-                                  l.forgeGlutCost(_glut),
-                                  style: const TextStyle(
-                                    color: ForgeColors.brass,
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                Text(
-                                  l.forgeLpCost(
-                                    formatNumber(context, step.lp * 1.0),
-                                  ),
-                                  style: const TextStyle(
-                                    color: ForgeColors.muted,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
+    return _modeBackdrop(
+      mode,
+      Padding(
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+        child: Column(
+          key: Key(mode == _Mode.up ? 'forge-up-tab' : 'forge-combine-tab'),
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _recipePanel(
+              context,
+              _RecipeParts(
+                mode: mode,
+                active: active,
+                strike: active ? _strike : null,
+                a: a,
+                b: b,
+                made: made,
+                title: mode == _Mode.up ? l.forgeUpTitle : l.forgeCombineTitle,
+                costs: step == null
+                    ? null
+                    : _CostLine(
+                        glut: _glut,
+                        lp: formatNumber(context, step.lp * 1.0),
                       ),
-                      const Icon(Icons.arrow_forward, color: ForgeColors.text),
-                      const SizedBox(width: 4),
-                      SizedBox(
-                        width: 70,
-                        height: 70,
-                        child: made == null
-                            ? null
-                            : SealArt(
-                                key: const Key('forge-result'),
-                                seal: made,
-                                size: 70,
-                                showLevel: true,
-                              ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
+                slider: SizedBox(
                   height: 40,
                   child: step == null
                       ? null
@@ -303,7 +281,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
                           onChanged: (g) => setState(() => _glut = g),
                         ),
                 ),
-                SizedBox(
+                fail: SizedBox(
                   height: 16,
                   child: step == null
                       ? null
@@ -322,8 +300,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
                           ),
                         ),
                 ),
-                const SizedBox(height: 2),
-                SizedBox(
+                hint: SizedBox(
                   height: 28,
                   child: Text(
                     hint,
@@ -343,49 +320,50 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
                     ),
                   ),
                 ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            _StoresLine(
+              textKey: active ? const Key('forge-stores') : null,
+              game: game,
+            ),
+            const SizedBox(height: 4),
+            SizedBox(
+              height: 76,
+              child: _CaseStrip(game: game, selected: {?a, ?b}, onTap: _pick),
+            ),
+            const Spacer(),
+            Row(
+              children: [
+                Expanded(
+                  child: _TintButton(
+                    key: active ? const Key('forge-go') : null,
+                    palette: _paletteOf(mode),
+                    height: 50,
+                    label: mode == _Mode.up
+                        ? l.forgeAction
+                        : l.forgeCombineAction,
+                    onPressed: a == null || block != null || made == null
+                        ? null
+                        : () => _forge(context),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _SetButton(
+                    key: active ? const Key('forge-set') : null,
+                    game: game,
+                    seal: a,
+                    block: setBlock,
+                    onSet: () => ref
+                        .read(gameProvider.notifier)
+                        .setSeal(game.activeCompanionId, a!),
+                  ),
+                ),
               ],
             ),
-          ),
-          const SizedBox(height: 8),
-          _StoresLine(
-            textKey: active ? const Key('forge-stores') : null,
-            game: game,
-          ),
-          const SizedBox(height: 4),
-          SizedBox(
-            height: 76,
-            child: _CaseStrip(game: game, selected: {?a, ?b}, onTap: _pick),
-          ),
-          const Spacer(),
-          Row(
-            children: [
-              Expanded(
-                child: SkinButton(
-                  key: active ? const Key('forge-go') : null,
-                  height: 50,
-                  label: mode == _Mode.up
-                      ? l.forgeAction
-                      : l.forgeCombineAction,
-                  onPressed: a == null || block != null || made == null
-                      ? null
-                      : () => _forge(context),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _SetButton(
-                  key: active ? const Key('forge-set') : null,
-                  game: game,
-                  seal: a,
-                  block: setBlock,
-                  onSet: () => ref
-                      .read(gameProvider.notifier)
-                      .setSeal(game.activeCompanionId, a!),
-                ),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -491,12 +469,49 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
   }
 
   Future<void> _forge(BuildContext context) async {
+    if (_strike != null) return;
     final notifier = ref.read(gameProvider.notifier);
+    final before = ref.read(gameProvider);
     final a = _first!;
-    final outcome = _mode == _Mode.up
+    final mode = _mode;
+    final outcome = mode == _Mode.up
         ? notifier.upgradeSeal(a, _glut)
         : notifier.combineSeals(a, _second!, _glut);
     if (outcome == null || !context.mounted) return;
+    // The outcome is decided; reveal it after the hammer (or the triangle)
+    // unless the system asks for reduced motion.
+    if (!MediaQuery.disableAnimationsOf(context)) {
+      _strikeAnim.duration = mode == _Mode.up
+          ? _upStrikeTime
+          : _combineStrikeTime;
+      setState(() {
+        _frozen = before;
+        _strike = _Strike(_strikeAnim, outcome);
+      });
+      try {
+        await _strikeAnim.forward(from: 0).orCancel;
+      } on TickerCanceled {
+        return;
+      }
+      if (!mounted || !context.mounted) return;
+      // The last frame (cracked seal or lit level) stays behind the result;
+      // the case catches up once it is closed.
+      await showDialog<void>(
+        context: context,
+        builder: (context) => _ResultDialog(outcome: outcome),
+      );
+      if (!mounted) return;
+      setState(() {
+        _frozen = null;
+        _strike = null;
+        if (outcome.made case final made?) {
+          _first = made;
+          _second = null;
+          _resetGlut();
+        }
+      });
+      return;
+    }
     final made = outcome.made;
     if (made != null) {
       setState(() {
@@ -606,44 +621,6 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
     if (ok == true) {
       ref.read(gameProvider.notifier).clearSeal(companion.id, slot);
     }
-  }
-}
-
-/// One empty or filled input slot of the forge recipe.
-class _Input extends StatelessWidget {
-  const _Input({required this.seal});
-
-  final Seal? seal;
-
-  @override
-  Widget build(BuildContext context) {
-    final s = seal;
-    final skin = TreadSkin.of(context);
-    return Container(
-      width: 58,
-      height: 58,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: skin.base,
-        border: Border.all(
-          color: skin.style == TreadStyle.ironPlain
-              ? skin.line
-              : skin.brassDeep,
-          width: 1.5,
-        ),
-        boxShadow: skin.style == TreadStyle.runeEmber
-            ? [
-                BoxShadow(
-                  color: skin.accent.withValues(alpha: .3),
-                  blurRadius: 6,
-                ),
-              ]
-            : null,
-      ),
-      child: s == null
-          ? const Icon(Icons.add, color: ForgeColors.line)
-          : Center(child: SealArt(seal: s, size: 56)),
-    );
   }
 }
 

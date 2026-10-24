@@ -151,6 +151,10 @@
   "marketBuyTab": "Buy",
   "marketSellTab": "Sell",
   "marketHint": "Offers and prices drift during the day.",
+  "marketRestockSoon": "Traders will restock soon.",
+  "@marketRestockSoon": {
+    "description": "Market subtitle in the last half hour before the offers change; deliberately vague, no countdown."
+  },
   "shelfCount": "Den {count}/{cap}",
   "@shelfCount": {
     "placeholders": {

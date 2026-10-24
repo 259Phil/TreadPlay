@@ -290,6 +290,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get marketHint => 'Angebote und Preise wechseln im Lauf des Tages.';
 
   @override
+  String get marketRestockSoon => 'Die Händler packen bald neu.';
+
+  @override
   String shelfCount(int count, int cap) {
     return 'Gehege $count/$cap';
   }

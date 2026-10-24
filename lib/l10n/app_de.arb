@@ -85,6 +85,7 @@
   "marketBuyTab": "Kaufen",
   "marketSellTab": "Verkaufen",
   "marketHint": "Angebote und Preise wechseln im Lauf des Tages.",
+  "marketRestockSoon": "Die Händler packen bald neu.",
   "shelfCount": "Gehege {count}/{cap}",
   "marketBuyFor": "Kaufen · {price}",
   "marketSellFor": "Verkaufen · {price}",

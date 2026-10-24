@@ -289,6 +289,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get marketHint => 'Offers and prices drift during the day.';
 
   @override
+  String get marketRestockSoon => 'Traders will restock soon.';
+
+  @override
   String shelfCount(int count, int cap) {
     return 'Den $count/$cap';
   }

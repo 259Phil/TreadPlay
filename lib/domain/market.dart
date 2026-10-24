@@ -5,20 +5,24 @@ import 'companion.dart';
 import 'world.dart';
 
 /// The local companion market. Offers and prices are rolled together and
-/// stay put until the next drift, 7–9 h later. The drift moment is kept in
-/// the save but never shown.
+/// stay put until the next drift, 2–9 h later. The drift moment is rolled
+/// once and kept in the save, so reloading does not change it; it is never
+/// shown exactly.
 class Market {
   const Market({
     required this.nextDriftAt,
     required this.drift,
     required this.offers,
+    this.generation = currentGeneration,
   });
 
   /// A fresh set of [offerCount] offers. Every offer is a new instance whose
   /// Stride, Grit and Fortune are rolled independently (see
   /// [Companion.rolled]).
   /// Offers only come from species of [worlds]; null or no match means
-  /// the whole catalog.
+  /// the whole catalog. A pool with fewer than [minSpecies] species is
+  /// topped up with the next worlds in trail order ([starterWorlds]), and
+  /// at least [minSpecies] different species are always on offer.
   ///
   /// Each offer also rolls its gait: the species' home gait at
   /// [homeTempoWeight] %, each other gait at half the rest. At least
@@ -34,7 +38,13 @@ class Market {
       for (final s in speciesCatalog)
         if (worlds == null || worlds.contains(s.world)) s,
     ];
-    final pool = inPool.isEmpty ? speciesCatalog : inPool;
+    final pool = inPool.isEmpty ? [...speciesCatalog] : inPool;
+    for (final w in starterWorlds) {
+      if (pool.length >= minSpecies) break;
+      for (final s in speciesCatalog) {
+        if (s.world == w && !pool.contains(s)) pool.add(s);
+      }
+    }
     final minutes =
         minDrift.inMinutes +
         random.nextInt(maxDrift.inMinutes - minDrift.inMinutes + 1);
@@ -47,6 +57,7 @@ class Market {
           random: random,
         ),
     ];
+    _ensureVariety(offers, pool, random);
     final drift = {
       for (final c in offers)
         c.id: 1 - priceDrift + 2 * priceDrift * random.nextDouble(),
@@ -76,6 +87,32 @@ class Market {
     );
   }
 
+  /// Version of the rolling rules. A saved market from an older version is
+  /// rolled anew once on load (see `GameData.withMarket`).
+  /// 2: per-offer gaits, at least [minSpecies] species, 2–9 h drift.
+  static const int currentGeneration = 2;
+
+  /// Different species per market at least (when the catalog has them).
+  static const int minSpecies = 3;
+
+  /// Worlds in the order the trail opens them for the Market; tops up a
+  /// pool that is too small, e.g. for fresh players.
+  static const List<World> starterWorlds = [
+    World.medieval,
+    World.jungle,
+    World.underwater,
+    World.egypt,
+    World.pirate,
+    World.steampunk,
+    World.space,
+    World.robot,
+    World.rococo,
+    World.candy,
+  ];
+
+  /// The last stretch before a drift, when the Market hints at it.
+  static const Duration soonWindow = Duration(minutes: 30);
+
   /// Chance in percent that an offer has its species' home gait.
   static const int homeTempoWeight = 50;
 
@@ -83,7 +120,7 @@ class Market {
   static const int guaranteedTempoOffers = 3;
 
   static const int offerCount = 12;
-  static const Duration minDrift = Duration(hours: 7);
+  static const Duration minDrift = Duration(hours: 2);
   static const Duration maxDrift = Duration(hours: 9);
 
   /// Price factor range per offer (±20 %).
@@ -108,6 +145,16 @@ class Market {
   };
 
   final DateTime nextDriftAt;
+
+  /// [currentGeneration] when rolled; 1 for markets saved before it.
+  final int generation;
+
+  /// True for a market rolled under older rules.
+  bool get outdated => generation < currentGeneration;
+
+  /// True in the last [soonWindow] before the drift.
+  bool restocksSoon(DateTime now) =>
+      !now.isBefore(nextDriftAt.subtract(soonWindow));
 
   /// Price factor per offer id for this drift.
   final Map<String, double> drift;
@@ -135,6 +182,7 @@ class Market {
 
   Market without(String offerId) => Market(
     nextDriftAt: nextDriftAt,
+    generation: generation,
     drift: drift,
     offers: [
       for (final c in offers)
@@ -143,6 +191,7 @@ class Market {
   );
 
   Map<String, Object?> toJson() => {
+    'generation': generation,
     'nextDriftAt': nextDriftAt.toIso8601String(),
     'drift': drift,
     'offers': [for (final c in offers) c.toJson()],
@@ -150,6 +199,7 @@ class Market {
 
   factory Market.fromJson(Map<String, Object?> json) => Market(
     nextDriftAt: DateTime.parse(json['nextDriftAt']! as String),
+    generation: (json['generation'] as num?)?.toInt() ?? 1,
     drift: {
       for (final e in (json['drift']! as Map<String, Object?>).entries)
         e.key: (e.value! as num).toDouble(),
@@ -159,6 +209,46 @@ class Market {
         Companion.fromJson(c! as Map<String, Object?>),
     ],
   );
+
+  /// Swaps offers of the most frequent species for missing ones until
+  /// [minSpecies] species (or the whole pool) are on offer. Rarity, stats
+  /// and ids stay; only the species changes.
+  static void _ensureVariety(
+    List<Companion> offers,
+    List<Species> pool,
+    Random random,
+  ) {
+    final want = min(minSpecies, pool.length);
+    while (true) {
+      final counts = <String, int>{};
+      for (final c in offers) {
+        counts[c.speciesId] = (counts[c.speciesId] ?? 0) + 1;
+      }
+      if (counts.length >= want) return;
+      final missing = [
+        for (final s in pool)
+          if (!counts.containsKey(s.id)) s,
+      ];
+      final most = counts.values.reduce(max);
+      final crowded = [
+        for (var i = 0; i < offers.length; i++)
+          if (counts[offers[i].speciesId] == most) i,
+      ];
+      final i = crowded[random.nextInt(crowded.length)];
+      final o = offers[i];
+      offers[i] = Companion(
+        id: o.id,
+        speciesId: missing[random.nextInt(missing.length)].id,
+        rarity: o.rarity,
+        level: o.level,
+        stride: o.stride,
+        grit: o.grit,
+        fortune: o.fortune,
+        spirit: o.spirit,
+        charms: o.charms,
+      );
+    }
+  }
 
   static CompanionType _rollTempo(CompanionType home, Random random) {
     final pick = random.nextInt(100);

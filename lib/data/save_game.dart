@@ -60,7 +60,11 @@ class SaveGame {
   /// 6: a gait per companion ('tempo' on owned companions and market
   /// offers). Older files still import: every companion and offer gets its
   /// species' home gait, the one it ran at before.
-  static const int version = 6;
+  ///
+  /// 7: the market carries its rolling rules ('generation' in 'market').
+  /// Older files still import; their market (one species, one gait for
+  /// fresh players) is rolled anew once on load, owned companions stay.
+  static const int version = 7;
 
   static String fileName(DateTime now) {
     final stamp = now.toIso8601String().replaceAll(':', '-').split('.').first;

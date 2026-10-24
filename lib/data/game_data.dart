@@ -700,15 +700,17 @@ class GameData {
   }
 
   /// Keeps the current market until its drift is due, then rolls a new one.
-  /// Offers only come from [marketWorlds]; at least three share the gait of
-  /// the companion taken along.
+  /// Offers only come from [marketWorlds] (topped up to three species);
+  /// at least three share the gait of the companion taken along. A market
+  /// saved under older rolling rules is rolled anew once.
   GameData withMarket(DateTime now, Random random) {
     final pool = marketWorlds;
     final along = activeCompanion.tempo;
+    final m = market;
     return copyWith(
-      market:
-          market?.drifted(now, random, worlds: pool, along: along) ??
-          Market.rolled(now, random, worlds: pool, along: along),
+      market: m == null || m.outdated
+          ? Market.rolled(now, random, worlds: pool, along: along)
+          : m.drifted(now, random, worlds: pool, along: along),
     );
   }
 

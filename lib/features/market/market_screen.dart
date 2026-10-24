@@ -23,6 +23,8 @@ class MarketScreen extends ConsumerWidget {
     final l = AppLocalizations.of(context);
     final game = ref.watch(gameProvider);
     final market = game.market;
+    // Vague on purpose: no countdown, only a hint in the last half hour.
+    final soon = market?.restocksSoon(ref.read(clockProvider)()) ?? false;
 
     return DefaultTabController(
       length: 2,
@@ -84,12 +86,14 @@ class MarketScreen extends ConsumerWidget {
                     companions: market.offers,
                     price: market.priceOf,
                     buying: true,
+                    restockSoon: soon,
                   ),
                   _Grid(
                     game: game,
                     companions: game.companions,
                     price: market.sellPriceOf,
                     buying: false,
+                    restockSoon: soon,
                   ),
                 ],
               ),
@@ -126,9 +130,11 @@ class _Grid extends StatelessWidget {
     required this.companions,
     required this.price,
     required this.buying,
+    this.restockSoon = false,
   });
 
   final GameData game;
+  final bool restockSoon;
   final List<Companion> companions;
   final double Function(Companion) price;
   final bool buying;
@@ -146,7 +152,7 @@ class _Grid extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    l.marketHint,
+                    restockSoon ? l.marketRestockSoon : l.marketHint,
                     style: const TextStyle(color: TreadColors.muted),
                   ),
                 ),

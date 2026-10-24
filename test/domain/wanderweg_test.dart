@@ -219,14 +219,19 @@ void main() {
   });
 
   group('unlocks', () {
-    test('a new game has the Forge closed and only Medieval in the market', () {
+    test('a new game has the Forge closed and only Medieval unlocked; the '
+        'market tops up with the next trail worlds', () {
       final game = GameData.initial(t0);
       expect(game.unlocks.forge, isFalse);
       expect(game.marketWorlds, {World.medieval});
       final market = game.withMarket(t0, Random(3)).market!;
       expect(
         market.offers.every(
-          (c) => speciesById[c.speciesId]!.world == World.medieval,
+          (c) => const {
+            World.medieval,
+            World.jungle,
+            World.underwater,
+          }.contains(speciesById[c.speciesId]!.world),
         ),
         isTrue,
       );
@@ -293,7 +298,7 @@ void main() {
       // Legacy grant: km only, so waymark 4's seal task is not asked.
       expect(loaded.wanderweg.reached, 5);
       expect(loaded.unlocks.forge, isTrue);
-      expect(SaveGame.version, 6);
+      expect(SaveGame.version, 7);
     });
   });
 }

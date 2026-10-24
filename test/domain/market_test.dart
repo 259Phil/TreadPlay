@@ -17,11 +17,24 @@ void main() {
     }
   });
 
-  test('the next drift is 7–9 h after the roll', () {
-    for (var seed = 0; seed < 200; seed++) {
+  test('the next drift is 2–9 h after the roll, spread over the range', () {
+    final gaps = <Duration>{};
+    for (var seed = 0; seed < 500; seed++) {
       final gap = Market.rolled(t0, Random(seed)).nextDriftAt.difference(t0);
-      expect(gap, greaterThanOrEqualTo(const Duration(hours: 7)));
+      expect(gap, greaterThanOrEqualTo(const Duration(hours: 2)));
       expect(gap, lessThanOrEqualTo(const Duration(hours: 9)));
+      gaps.add(gap);
+    }
+    expect(gaps.any((g) => g < const Duration(hours: 3)), isTrue);
+    expect(gaps.any((g) => g > const Duration(hours: 8)), isTrue);
+  });
+
+  test('the same seed gives the same drift moment', () {
+    for (var seed = 0; seed < 50; seed++) {
+      expect(
+        Market.rolled(t0, Random(seed)).nextDriftAt,
+        Market.rolled(t0, Random(seed)).nextDriftAt,
+      );
     }
   });
 

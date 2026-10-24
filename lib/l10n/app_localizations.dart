@@ -608,6 +608,12 @@ abstract class AppLocalizations {
   /// **'Offers and prices drift during the day.'**
   String get marketHint;
 
+  /// Market subtitle in the last half hour before the offers change; deliberately vague, no countdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Traders will restock soon.'**
+  String get marketRestockSoon;
+
   /// No description provided for @shelfCount.
   ///
   /// In en, this message translates to:

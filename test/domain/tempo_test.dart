@@ -287,7 +287,7 @@ void main() {
       final file =
           jsonDecode(utf8.decode(SaveGame.encode(game, t0)))
               as Map<String, Object?>;
-      expect(file['version'], 6);
+      expect(file['version'], SaveGame.version);
       final loaded = SaveGame.decode(utf8.encode(jsonEncode(file))).game;
       expect(loaded.companions.single.tempo, CompanionType.gale);
       expect(

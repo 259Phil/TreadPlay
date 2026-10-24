@@ -1,4 +1,4 @@
-package com.gc.treadplay
+package com.benderinteractive.treadplay
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -319,10 +319,10 @@ void main() {
     await pumpApp(tester);
     await tester.tap(find.byIcon(Icons.play_arrow));
     await tester.pumpAndSettle();
-    expect(find.text('Movement and health'), findsOneWidget);
+    expect(find.text('Movement and location'), findsOneWidget);
     await tester.tap(find.text('Allow'));
     await tester.pumpAndSettle();
-    expect(find.text('Movement and health'), findsNothing);
+    expect(find.text('Movement and location'), findsNothing);
 
     final container = ProviderScope.containerOf(
       tester.element(find.byType(Scaffold).first),
@@ -713,7 +713,7 @@ void main() {
       await tester.tap(find.text('Read the privacy policy'));
       await tester.pumpAndSettle();
       expect(find.byType(LegalScreen), findsOneWidget);
-      expect(find.text('3. Movement and health'), findsOneWidget);
+      expect(find.text('3. Movement, steps and GPS'), findsOneWidget);
     });
 
     testWidgets('settings open full privacy and terms in EN and DE', (

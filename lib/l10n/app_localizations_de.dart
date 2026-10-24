@@ -162,18 +162,18 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsKaching => 'Ka-ching-Sound';
 
   @override
-  String get settingsHealthTitle => 'Gesundheitsdaten';
+  String get settingsHealthTitle => 'Bewegungsdaten';
 
   @override
   String get settingsHealthBody =>
-      'Treadplay liest Schritte und Distanz aus Apple Health oder Health Connect nur während eines Laufs. Apple und Google speichern deine Gesundheitsdaten unabhängig von uns. Wir laden sie nie hoch.';
+      'Treadplay nutzt Standort (GPS) und Schrittzähler nur während eines Laufs und nur auf diesem Gerät. Gespeichert wird nur die Zusammenfassung des Laufs, keine Route. Nichts wird hochgeladen.';
 
   @override
   String get settingsPrivacyTitle => 'Datenschutz';
 
   @override
   String get settingsPrivacyBody =>
-      'Deine Routen und Läufe bleiben auf diesem Gerät. Kein Konto, keine Cloud.';
+      'Deine Läufe und dein Spielstand bleiben auf diesem Gerät. Kein Konto, keine Cloud.';
 
   @override
   String get settingsCredits => 'Credits';
@@ -345,11 +345,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsMovementOff => 'Aus: Echte Bewegung bringt keine LP.';
 
   @override
-  String get movementNoticeTitle => 'Bewegung und Gesundheit';
+  String get movementNoticeTitle => 'Bewegung und Standort';
 
   @override
   String get movementNoticeBody =>
-      'Damit ein Lauf zählt, fragt TreadPlay Zugriff auf Bewegung oder Gesundheit (Apple Health bzw. Health Connect, Standort nur, wenn GPS für die Distanz genutzt wird). Die Werte bleiben auf dem Gerät und dienen nur dazu, dein Tempo zu prüfen und LP zu vergeben. Nichts wird hochgeladen. Lehnst du ab, gibt es keine LP aus echter Bewegung.';
+      'Damit ein Lauf zählt, nutzt TreadPlay während des Laufs deinen Standort (GPS) und den Schrittzähler. Die Werte bleiben auf dem Gerät und dienen nur dazu, Strecke und Tempo zu messen und LP zu vergeben. Keine Route wird gespeichert, nichts wird hochgeladen. Lehnst du ab, gibt es keine LP aus echter Bewegung.';
 
   @override
   String get movementDeniedHint =>

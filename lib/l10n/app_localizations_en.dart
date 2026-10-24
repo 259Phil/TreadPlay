@@ -161,18 +161,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsKaching => 'Ka-ching sound';
 
   @override
-  String get settingsHealthTitle => 'Health data';
+  String get settingsHealthTitle => 'Movement data';
 
   @override
   String get settingsHealthBody =>
-      'Treadplay reads steps and distance from Apple Health or Health Connect only while a run is active. Apple and Google store your health data independently of us. We never upload it.';
+      'Treadplay uses location (GPS) and the step counter only while a run is active and only on this device. Only the run summary is saved, no route. Nothing is uploaded.';
 
   @override
   String get settingsPrivacyTitle => 'Privacy';
 
   @override
   String get settingsPrivacyBody =>
-      'Your routes and runs stay on this device. No account, no cloud.';
+      'Your runs and your save game stay on this device. No account, no cloud.';
 
   @override
   String get settingsCredits => 'Credits';
@@ -344,11 +344,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsMovementOff => 'Off: real movement earns no LP.';
 
   @override
-  String get movementNoticeTitle => 'Movement and health';
+  String get movementNoticeTitle => 'Movement and location';
 
   @override
   String get movementNoticeBody =>
-      'To count a walk, TreadPlay asks for motion or health access (Apple Health or Health Connect, location only if GPS is used for distance). Readings stay on this device and are only used to check your pace and award LP. Nothing is uploaded. If you deny, real movement earns no LP.';
+      'To count a walk, TreadPlay uses your location (GPS) and the step counter during the run. Readings stay on this device and are only used to measure distance and pace and to award LP. No route is saved and nothing is uploaded. If you deny, real movement earns no LP.';
 
   @override
   String get movementDeniedHint =>

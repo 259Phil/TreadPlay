@@ -365,13 +365,13 @@ abstract class AppLocalizations {
   /// No description provided for @settingsHealthTitle.
   ///
   /// In en, this message translates to:
-  /// **'Health data'**
+  /// **'Movement data'**
   String get settingsHealthTitle;
 
   /// No description provided for @settingsHealthBody.
   ///
   /// In en, this message translates to:
-  /// **'Treadplay reads steps and distance from Apple Health or Health Connect only while a run is active. Apple and Google store your health data independently of us. We never upload it.'**
+  /// **'Treadplay uses location (GPS) and the step counter only while a run is active and only on this device. Only the run summary is saved, no route. Nothing is uploaded.'**
   String get settingsHealthBody;
 
   /// No description provided for @settingsPrivacyTitle.
@@ -383,7 +383,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsPrivacyBody.
   ///
   /// In en, this message translates to:
-  /// **'Your routes and runs stay on this device. No account, no cloud.'**
+  /// **'Your runs and your save game stay on this device. No account, no cloud.'**
   String get settingsPrivacyBody;
 
   /// No description provided for @settingsCredits.
@@ -695,13 +695,13 @@ abstract class AppLocalizations {
   /// No description provided for @movementNoticeTitle.
   ///
   /// In en, this message translates to:
-  /// **'Movement and health'**
+  /// **'Movement and location'**
   String get movementNoticeTitle;
 
   /// No description provided for @movementNoticeBody.
   ///
   /// In en, this message translates to:
-  /// **'To count a walk, TreadPlay asks for motion or health access (Apple Health or Health Connect, location only if GPS is used for distance). Readings stay on this device and are only used to check your pace and award LP. Nothing is uploaded. If you deny, real movement earns no LP.'**
+  /// **'To count a walk, TreadPlay uses your location (GPS) and the step counter during the run. Readings stay on this device and are only used to measure distance and pace and to award LP. No route is saved and nothing is uploaded. If you deny, real movement earns no LP.'**
   String get movementNoticeBody;
 
   /// No description provided for @movementDeniedHint.

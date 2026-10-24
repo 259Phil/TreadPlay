@@ -484,8 +484,14 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
       _strikeAnim.duration = mode == _Mode.up
           ? _upStrikeTime
           : _combineStrikeTime;
+      // LP and Glut are paid right away; the seals and the result stay
+      // as they were until the reveal.
+      final paid = ref.read(gameProvider);
       setState(() {
-        _frozen = before;
+        _frozen = before.copyWith(
+          lp: paid.lp,
+          forge: before.forge.copyWith(glut: paid.forge.glut),
+        );
         _strike = _Strike(_strikeAnim, outcome);
       });
       try {

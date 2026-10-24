@@ -891,13 +891,21 @@ void main() {
       );
       await openForge(tester, start, open: false, random: _FixedRandom(0.99));
       await tapKey(tester, 'case-stride@1');
+      // At rest the hammer lies still: nothing is waiting for a frame.
+      expect(tester.binding.hasScheduledFrame, isFalse);
+      expect(storesOf(tester, 'forge-stores'), 'Splinters 0/5 · Glut 5');
       await tester.tap(find.byKey(const Key('forge-go')));
       await tester.pump(const Duration(milliseconds: 600));
-      // Mid-swing: no result yet, the case still shows the old stores and
-      // a second tap does nothing.
+      // Mid-swing: the Glut is paid, no result yet and a second tap does
+      // nothing.
       expect(find.byKey(const Key('forge-success')), findsNothing);
-      expect(storesOf(tester, 'forge-stores'), 'Splinters 0/5 · Glut 5');
+      expect(storesOf(tester, 'forge-stores'), 'Splinters 0/5 · Glut 4');
       await tester.tap(find.byKey(const Key('forge-go')), warnIfMissed: false);
+      // Still winding up for the heavy last blow at about 3.75 s.
+      await tester.pump(const Duration(milliseconds: 2900));
+      expect(find.byKey(const Key('forge-success')), findsNothing);
+      // The result follows the last blow, about 4 s after Schmieden.
+      await tester.pump(const Duration(milliseconds: 800));
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('forge-success')), findsOneWidget);
       await tester.tap(find.byKey(const Key('forge-result-ok')));

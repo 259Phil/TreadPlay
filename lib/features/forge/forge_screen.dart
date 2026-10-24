@@ -18,7 +18,7 @@ import '../../widgets/seal_art.dart';
 import '../../widgets/stock_art.dart';
 import '../../ui/skin.dart';
 
-part 'forge_variants.dart';
+part 'forge_recipe_look.dart';
 
 enum _Mode { up, combine }
 
@@ -126,9 +126,9 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
                 height: 40,
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
-                  child: _kForgeVariant != 0 && key == 'tab-up'
+                  child: key == 'tab-up'
                       ? _TabWithIcon(palette: _ember, text: text)
-                      : _kForgeVariant != 0 && key == 'tab-combine'
+                      : key == 'tab-combine'
                       ? _TabWithIcon(palette: _arcane, text: text)
                       : Text(text),
                 ),
@@ -167,7 +167,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
     );
   }
 
-  static const _minHeight = _kForgeVariant == 1 ? 560.0 : 500.0;
+  static const _minHeight = 500.0;
 
   /// The Forge up or Combine tab: recipe, Glut, cost, fail chance, the
   /// case as a sideways strip and the action bar at the bottom.
@@ -226,7 +226,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
           : '';
     }
 
-    return _variantBackdrop(
+    return _modeBackdrop(
       mode,
       Padding(
         padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
@@ -234,205 +234,73 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
           key: Key(mode == _Mode.up ? 'forge-up-tab' : 'forge-combine-tab'),
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (_kForgeVariant != 0)
-              _variantPanel(
-                context,
-                _RecipeParts(
-                  mode: mode,
-                  active: active,
-                  a: a,
-                  b: b,
-                  made: made,
-                  title: mode == _Mode.up
-                      ? l.forgeUpTitle
-                      : l.forgeCombineTitle,
-                  costs: step == null
+            _recipePanel(
+              context,
+              _RecipeParts(
+                mode: mode,
+                active: active,
+                a: a,
+                b: b,
+                made: made,
+                title: mode == _Mode.up ? l.forgeUpTitle : l.forgeCombineTitle,
+                costs: step == null
+                    ? null
+                    : _CostLine(
+                        glut: _glut,
+                        lp: formatNumber(context, step.lp * 1.0),
+                      ),
+                slider: SizedBox(
+                  height: 40,
+                  child: step == null
                       ? null
-                      : _CostLine(
+                      : _GlutSlider(
                           glut: _glut,
-                          lp: formatNumber(context, step.lp * 1.0),
+                          step: step,
+                          have: game.forge.glut,
+                          onChanged: (g) => setState(() => _glut = g),
                         ),
-                  slider: SizedBox(
-                    height: 40,
-                    child: step == null
-                        ? null
-                        : _GlutSlider(
-                            glut: _glut,
-                            step: step,
-                            have: game.forge.glut,
-                            onChanged: (g) => setState(() => _glut = g),
-                          ),
-                  ),
-                  fail: SizedBox(
-                    height: 16,
-                    child: step == null
-                        ? null
-                        : FittedBox(
-                            fit: BoxFit.scaleDown,
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              l.forgeFailNote(
-                                pctText(context, step.failChance(_glut)),
-                              ),
-                              key: const Key('forge-fail'),
-                              style: const TextStyle(
-                                color: ForgeColors.text,
-                                fontSize: 12.5,
-                              ),
-                            ),
-                          ),
-                  ),
-                  hint: SizedBox(
-                    height: 28,
-                    child: Text(
-                      hint,
-                      key: !active
-                          ? null
-                          : unlocks.forge
-                          ? const Key('forge-hint')
-                          : const Key('forge-block'),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: block == null && unlocks.forge
-                            ? ForgeColors.muted
-                            : ForgeColors.ember,
-                        fontSize: 11.5,
-                        height: 1.2,
-                      ),
-                    ),
-                  ),
                 ),
-              )
-            else
-              SkinPanel(
-                key: active ? const Key('forge-panel') : null,
-                padding: const EdgeInsets.fromLTRB(12, 9, 12, 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      mode == _Mode.up ? l.forgeUpTitle : l.forgeCombineTitle,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: ForgeColors.text,
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    SizedBox(
-                      height: 70,
-                      child: Row(
-                        children: [
-                          _Input(seal: a),
-                          const SizedBox(width: 4),
-                          _Input(seal: mode == _Mode.up ? a : b),
-                          const SizedBox(width: 6),
-                          Expanded(
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  if (step != null) ...[
-                                    Text(
-                                      l.forgeGlutCost(_glut),
-                                      style: const TextStyle(
-                                        color: ForgeColors.brass,
-                                        fontWeight: FontWeight.w800,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    Text(
-                                      l.forgeLpCost(
-                                        formatNumber(context, step.lp * 1.0),
-                                      ),
-                                      style: const TextStyle(
-                                        color: ForgeColors.muted,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                  ],
-                                ],
-                              ),
+                fail: SizedBox(
+                  height: 16,
+                  child: step == null
+                      ? null
+                      : FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            l.forgeFailNote(
+                              pctText(context, step.failChance(_glut)),
+                            ),
+                            key: const Key('forge-fail'),
+                            style: const TextStyle(
+                              color: ForgeColors.text,
+                              fontSize: 12.5,
                             ),
                           ),
-                          const Icon(
-                            Icons.arrow_forward,
-                            color: ForgeColors.text,
-                          ),
-                          const SizedBox(width: 4),
-                          SizedBox(
-                            width: 70,
-                            height: 70,
-                            child: made == null
-                                ? null
-                                : SealArt(
-                                    key: const Key('forge-result'),
-                                    seal: made,
-                                    size: 70,
-                                    showLevel: true,
-                                  ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 40,
-                      child: step == null
-                          ? null
-                          : _GlutSlider(
-                              glut: _glut,
-                              step: step,
-                              have: game.forge.glut,
-                              onChanged: (g) => setState(() => _glut = g),
-                            ),
-                    ),
-                    SizedBox(
-                      height: 16,
-                      child: step == null
-                          ? null
-                          : FittedBox(
-                              fit: BoxFit.scaleDown,
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                l.forgeFailNote(
-                                  pctText(context, step.failChance(_glut)),
-                                ),
-                                key: const Key('forge-fail'),
-                                style: const TextStyle(
-                                  color: ForgeColors.text,
-                                  fontSize: 12.5,
-                                ),
-                              ),
-                            ),
-                    ),
-                    const SizedBox(height: 2),
-                    SizedBox(
-                      height: 28,
-                      child: Text(
-                        hint,
-                        key: !active
-                            ? null
-                            : unlocks.forge
-                            ? const Key('forge-hint')
-                            : const Key('forge-block'),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: block == null && unlocks.forge
-                              ? ForgeColors.muted
-                              : ForgeColors.ember,
-                          fontSize: 11.5,
-                          height: 1.2,
                         ),
-                      ),
+                ),
+                hint: SizedBox(
+                  height: 28,
+                  child: Text(
+                    hint,
+                    key: !active
+                        ? null
+                        : unlocks.forge
+                        ? const Key('forge-hint')
+                        : const Key('forge-block'),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: block == null && unlocks.forge
+                          ? ForgeColors.muted
+                          : ForgeColors.ember,
+                      fontSize: 11.5,
+                      height: 1.2,
                     ),
-                  ],
+                  ),
                 ),
               ),
+            ),
             const SizedBox(height: 8),
             _StoresLine(
               textKey: active ? const Key('forge-stores') : null,
@@ -447,28 +315,17 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
             Row(
               children: [
                 Expanded(
-                  child: _kForgeVariant != 0
-                      ? _TintButton(
-                          key: active ? const Key('forge-go') : null,
-                          palette: _paletteOf(mode),
-                          height: 50,
-                          label: mode == _Mode.up
-                              ? l.forgeAction
-                              : l.forgeCombineAction,
-                          onPressed: a == null || block != null || made == null
-                              ? null
-                              : () => _forge(context),
-                        )
-                      : SkinButton(
-                          key: active ? const Key('forge-go') : null,
-                          height: 50,
-                          label: mode == _Mode.up
-                              ? l.forgeAction
-                              : l.forgeCombineAction,
-                          onPressed: a == null || block != null || made == null
-                              ? null
-                              : () => _forge(context),
-                        ),
+                  child: _TintButton(
+                    key: active ? const Key('forge-go') : null,
+                    palette: _paletteOf(mode),
+                    height: 50,
+                    label: mode == _Mode.up
+                        ? l.forgeAction
+                        : l.forgeCombineAction,
+                    onPressed: a == null || block != null || made == null
+                        ? null
+                        : () => _forge(context),
+                  ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -706,44 +563,6 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
     if (ok == true) {
       ref.read(gameProvider.notifier).clearSeal(companion.id, slot);
     }
-  }
-}
-
-/// One empty or filled input slot of the forge recipe.
-class _Input extends StatelessWidget {
-  const _Input({required this.seal});
-
-  final Seal? seal;
-
-  @override
-  Widget build(BuildContext context) {
-    final s = seal;
-    final skin = TreadSkin.of(context);
-    return Container(
-      width: 58,
-      height: 58,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: skin.base,
-        border: Border.all(
-          color: skin.style == TreadStyle.ironPlain
-              ? skin.line
-              : skin.brassDeep,
-          width: 1.5,
-        ),
-        boxShadow: skin.style == TreadStyle.runeEmber
-            ? [
-                BoxShadow(
-                  color: skin.accent.withValues(alpha: .3),
-                  blurRadius: 6,
-                ),
-              ]
-            : null,
-      ),
-      child: s == null
-          ? const Icon(Icons.add, color: ForgeColors.line)
-          : Center(child: SealArt(seal: s, size: 56)),
-    );
   }
 }
 

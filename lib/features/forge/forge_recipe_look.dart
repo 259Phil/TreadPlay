@@ -1,11 +1,8 @@
 part of 'forge_screen.dart';
 
-// MOCKUP (local only): three looks that set "Aufwerten" (anvil, ember,
-// copper) apart from "Kombinieren" (fusion, teal, verdigris). Picked with
-// --dart-define=FORGE_VARIANT=1|2|3; 0 keeps the current shared look.
+// "Eisen & Pergament": sets "Aufwerten" (riveted iron, ember, copper) apart
+// from "Kombinieren" (parchment recipe, teal, verdigris).
 // Presentation only: every value shown comes from _recipe.
-
-const _kForgeVariant = int.fromEnvironment('FORGE_VARIANT');
 
 class _Palette {
   const _Palette({
@@ -90,14 +87,9 @@ class _RecipeParts {
   final Widget hint;
 }
 
-Widget _variantBackdrop(_Mode mode, Widget child) {
-  if (_kForgeVariant == 0) return child;
+Widget _modeBackdrop(_Mode mode, Widget child) {
   final p = _paletteOf(mode);
-  final alpha = switch (_kForgeVariant) {
-    1 => .26,
-    2 => .16,
-    _ => .12,
-  };
+  const alpha = .12;
   return Stack(
     children: [
       Positioned.fill(
@@ -121,14 +113,13 @@ Widget _variantBackdrop(_Mode mode, Widget child) {
   );
 }
 
-Widget _variantPanel(BuildContext context, _RecipeParts r) {
+Widget _recipePanel(BuildContext context, _RecipeParts r) {
   final p = _paletteOf(r.mode);
   final up = r.mode == _Mode.up;
-  final Widget card = switch (_kForgeVariant) {
-    1 => SizedBox(height: 142, child: up ? _AnvilStage(r) : _FusionStage(r)),
-    2 => SizedBox(height: 74, child: up ? _ForgeRow(r) : _FuseRow(r)),
-    _ => SizedBox(height: 124, child: up ? _IronCard(r) : _ParchmentCard(r)),
-  };
+  final Widget card = SizedBox(
+    height: 124,
+    child: up ? _IronCard(r) : _ParchmentCard(r),
+  );
   final body = Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
@@ -144,9 +135,7 @@ Widget _variantPanel(BuildContext context, _RecipeParts r) {
   );
   const pad = EdgeInsets.fromLTRB(12, 9, 12, 8);
   final key = r.active ? const Key('forge-panel') : null;
-  return _kForgeVariant == 3
-      ? SkinPanel(key: key, padding: pad, child: body)
-      : _TintPanel(key: key, palette: p, padding: pad, child: body);
+  return SkinPanel(key: key, padding: pad, child: body);
 }
 
 /// Tab label with the mode's painted icon.
@@ -404,300 +393,7 @@ class _ResultRing extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------- V1 stage
-
-/// V1 Aufwerten: the seal lies on a painted anvil, the result glows right.
-class _AnvilStage extends StatelessWidget {
-  const _AnvilStage(this.r);
-
-  final _RecipeParts r;
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, box) {
-        final w = box.maxWidth;
-        final cx = w * .4;
-        const anvilW = 168.0;
-        const anvilH = anvilW * 449 / 640;
-        final top = box.maxHeight - anvilH;
-        return Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Positioned(
-              left: cx - 70,
-              top: top - 50,
-              width: 140,
-              height: 90,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: RadialGradient(
-                    colors: [
-                      _ember.glow.withValues(alpha: r.a == null ? .12 : .4),
-                      _ember.glow.withValues(alpha: 0),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: cx - anvilW / 2,
-              top: top,
-              width: anvilW,
-              height: anvilH,
-              child: Image.asset(
-                'assets/forge/stage_anvil.webp',
-                fit: BoxFit.contain,
-              ),
-            ),
-            Positioned(
-              left: cx - 31,
-              top: top - 46,
-              child: _Slot(seal: r.a, palette: _ember, size: 62, badge: '×2'),
-            ),
-            Positioned(
-              left: cx + 40,
-              right: 84,
-              top: top - 30,
-              height: 40,
-              child: CustomPaint(painter: _ArcArrow(_ember.accent)),
-            ),
-            Positioned(
-              right: 4,
-              top: top - 40,
-              child: _ResultRing(seal: r.made, palette: _ember, size: 78),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-/// V1 Kombinieren: two seals feed a painted fusion basin, the result floats
-/// in its vortex.
-class _FusionStage extends StatelessWidget {
-  const _FusionStage(this.r);
-
-  final _RecipeParts r;
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, box) {
-        final w = box.maxWidth;
-        final h = box.maxHeight;
-        const basinW = 196.0;
-        const basinH = basinW * 477 / 640;
-        final cx = w / 2;
-        final top = h - basinH;
-        final midY = top + basinH * .42;
-        return Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Positioned(
-              left: cx - basinW / 2,
-              top: top,
-              width: basinW,
-              height: basinH,
-              child: Image.asset(
-                'assets/forge/stage_fusion.webp',
-                fit: BoxFit.contain,
-              ),
-            ),
-            Positioned(
-              left: 0,
-              top: midY - 29,
-              child: _Slot(seal: r.a, palette: _arcane),
-            ),
-            Positioned(
-              right: 0,
-              top: midY - 29,
-              child: _Slot(seal: r.b, palette: _arcane),
-            ),
-            Positioned(
-              left: cx - 36,
-              top: top + basinH * .46 - 36,
-              child: _ResultRing(seal: r.made, palette: _arcane, size: 72),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _ArcArrow extends CustomPainter {
-  _ArcArrow(this.color);
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final p = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.4
-      ..strokeCap = StrokeCap.round;
-    final path = Path()
-      ..moveTo(0, size.height * .8)
-      ..quadraticBezierTo(
-        size.width * .5,
-        -size.height * .2,
-        size.width,
-        size.height * .45,
-      );
-    for (final m in path.computeMetrics()) {
-      var d = 0.0;
-      while (d < m.length - 8) {
-        canvas.drawPath(m.extractPath(d, math.min(d + 6, m.length - 8)), p);
-        d += 10;
-      }
-    }
-    final end = Offset(size.width, size.height * .45);
-    final head = Path()
-      ..moveTo(end.dx, end.dy)
-      ..lineTo(end.dx - 10, end.dy - 6)
-      ..lineTo(end.dx - 7, end.dy + 5)
-      ..close();
-    canvas.drawPath(head, Paint()..color = color);
-  }
-
-  @override
-  bool shouldRepaint(_ArcArrow old) => old.color != color;
-}
-
-// ------------------------------------------------------------------ V2 row
-
-/// V2 Aufwerten: one slot "×2", hammer blows (chevrons) up to the result.
-class _ForgeRow extends StatelessWidget {
-  const _ForgeRow(this.r);
-
-  final _RecipeParts r;
-
-  @override
-  Widget build(BuildContext context) => Row(
-    children: [
-      _Slot(seal: r.a, palette: _ember, size: 66, badge: '×2'),
-      Expanded(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(_ember.icon, width: 34, height: 34),
-            SizedBox(
-              height: 14,
-              width: 110,
-              child: CustomPaint(painter: _Chevrons(_ember.accent)),
-            ),
-          ],
-        ),
-      ),
-      _ResultRing(seal: r.made, palette: _ember),
-    ],
-  );
-}
-
-/// V2 Kombinieren: two slots joined by a "+", two streams merge into one.
-class _FuseRow extends StatelessWidget {
-  const _FuseRow(this.r);
-
-  final _RecipeParts r;
-
-  @override
-  Widget build(BuildContext context) => Row(
-    children: [
-      _Slot(seal: r.a, palette: _arcane, size: 54),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 2),
-        child: Icon(Icons.add, color: _arcane.accent, size: 20),
-      ),
-      _Slot(seal: r.b, palette: _arcane, size: 54),
-      Expanded(
-        child: SizedBox(
-          height: 60,
-          child: CustomPaint(painter: _Merge(_arcane.accent)),
-        ),
-      ),
-      _ResultRing(seal: r.made, palette: _arcane),
-    ],
-  );
-}
-
-class _Chevrons extends CustomPainter {
-  _Chevrons(this.color);
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final cy = size.height / 2;
-    for (var i = 0; i < 4; i++) {
-      final x = size.width * (.18 + i * .2);
-      final p = Paint()
-        ..color = color.withValues(alpha: .35 + i * .2)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 3
-        ..strokeCap = StrokeCap.round
-        ..strokeJoin = StrokeJoin.round;
-      canvas.drawPath(
-        Path()
-          ..moveTo(x - 4, cy - 6)
-          ..lineTo(x + 3, cy)
-          ..lineTo(x - 4, cy + 6),
-        p,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(_Chevrons old) => old.color != color;
-}
-
-class _Merge extends CustomPainter {
-  _Merge(this.color);
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final h = size.height;
-    final glow = Paint()
-      ..color = color.withValues(alpha: .35)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 6
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3);
-    final line = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.2
-      ..strokeCap = StrokeCap.round;
-    final join = Offset(w * .62, h / 2);
-    final path = Path()
-      ..moveTo(4, h * .12)
-      ..cubicTo(w * .35, h * .12, w * .4, h / 2, join.dx, join.dy)
-      ..moveTo(4, h * .88)
-      ..cubicTo(w * .35, h * .88, w * .4, h / 2, join.dx, join.dy)
-      ..moveTo(join.dx, join.dy)
-      ..lineTo(w - 6, h / 2);
-    canvas.drawPath(path, glow);
-    canvas.drawPath(path, line);
-    canvas.drawCircle(join, 4, Paint()..color = color);
-    canvas.drawPath(
-      Path()
-        ..moveTo(w - 2, h / 2)
-        ..lineTo(w - 11, h / 2 - 6)
-        ..lineTo(w - 11, h / 2 + 6)
-        ..close(),
-      Paint()..color = color,
-    );
-  }
-
-  @override
-  bool shouldRepaint(_Merge old) => old.color != color;
-}
-
-// ---------------------------------------------------------------- V3 cards
+// ----------------------------------------------------------------- cards
 
 /// V3 Aufwerten: a riveted iron plate with the level track 1–5.
 class _IronCard extends StatelessWidget {
@@ -1009,108 +705,7 @@ class _InkDiagram extends CustomPainter {
   bool shouldRepaint(_InkDiagram old) => old.ready != ready;
 }
 
-// ----------------------------------------------------------- panel, button
-
-/// Leather panel whose stitching and corners take the mode's metal.
-class _TintPanel extends StatelessWidget {
-  const _TintPanel({
-    super.key,
-    required this.palette,
-    required this.child,
-    required this.padding,
-  });
-
-  final _Palette palette;
-  final Widget child;
-  final EdgeInsetsGeometry padding;
-
-  @override
-  Widget build(BuildContext context) => CustomPaint(
-    painter: _TintPanelPainter(palette),
-    child: Padding(padding: padding, child: child),
-  );
-}
-
-class _TintPanelPainter extends CustomPainter {
-  _TintPanelPainter(this.p);
-
-  final _Palette p;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final r = RRect.fromRectAndRadius(
-      Offset.zero & size,
-      const Radius.circular(10),
-    );
-    canvas.drawShadow(Path()..addRRect(r), Colors.black, 5, false);
-    canvas.drawRRect(
-      r,
-      Paint()
-        ..shader = RadialGradient(
-          center: const Alignment(0, -.2),
-          radius: 1.2,
-          colors: [
-            Color.lerp(const Color(0xFF3A2A20), p.deep, .45)!,
-            const Color(0xFF3A2A20),
-            const Color(0xFF221812),
-          ],
-          stops: const [0, .55, 1],
-        ).createShader(Offset.zero & size),
-    );
-    final stitch = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.3
-      ..strokeCap = StrokeCap.round
-      ..color = p.accent.withValues(alpha: .85);
-    final path = Path()..addRRect(r.deflate(5));
-    for (final m in path.computeMetrics()) {
-      var d = 0.0;
-      while (d < m.length) {
-        canvas.drawPath(m.extractPath(d, math.min(d + 4, m.length)), stitch);
-        d += 7;
-      }
-    }
-    canvas.drawRRect(
-      r.deflate(.5),
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..color = const Color(0xFF1C140F),
-    );
-    // Corner fittings in the mode's metal.
-    for (var i = 0; i < 4; i++) {
-      canvas.save();
-      final (dx, dy, rot) = switch (i) {
-        0 => (0.0, 0.0, 0.0),
-        1 => (size.width, 0.0, math.pi / 2),
-        2 => (size.width, size.height, math.pi),
-        _ => (0.0, size.height, -math.pi / 2),
-      };
-      canvas.translate(dx, dy);
-      canvas.rotate(rot);
-      const l = 16.0;
-      final c = Path()
-        ..moveTo(0, 0)
-        ..lineTo(l, 0)
-        ..lineTo(l, 3)
-        ..quadraticBezierTo(6, 4, 4, 6)
-        ..quadraticBezierTo(3, 10, 3, l)
-        ..lineTo(0, l)
-        ..close();
-      canvas.drawShadow(c, Colors.black, 2, false);
-      canvas.drawPath(
-        c,
-        Paint()
-          ..shader = LinearGradient(
-            colors: [p.light, p.accent, p.deep],
-          ).createShader(const Rect.fromLTWH(0, 0, l, l)),
-      );
-      canvas.restore();
-    }
-  }
-
-  @override
-  bool shouldRepaint(_TintPanelPainter old) => old.p != p;
-}
+// ---------------------------------------------------------------- button
 
 /// The action plate in the mode's metal (copper or verdigris) with its icon.
 class _TintButton extends StatelessWidget {

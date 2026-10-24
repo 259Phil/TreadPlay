@@ -10,6 +10,9 @@ enum WaymarkCounter {
   copperPouchesOpened(built: true),
   turquoisePouchesOpened(built: true),
 
+  /// Pouches of any colour opened (lifetime).
+  pouchesOpened(built: true),
+
   /// Seals made in the Forge (lifetime; at least the seals owned now).
   sealsForged(built: true),
 
@@ -126,7 +129,7 @@ const List<Waymark> waymarks = [
   ]),
   Waymark(9, 28.4, WaymarkUnlock.marketEgyptPirate),
   Waymark(10, 34.7, WaymarkUnlock.turquoisePouch, [
-    WaymarkTask(WaymarkCounter.leashFilled, 1),
+    WaymarkTask(WaymarkCounter.pouchesOpened, 5),
   ]),
   Waymark(11, 41.3, WaymarkUnlock.worldSteampunk),
   Waymark(12, 48.6, WaymarkUnlock.forgeL4, [
@@ -306,6 +309,7 @@ class WaymarkUnlocks {
       : 1;
 
   /// Highest seal level combining may make; 0 = not yet.
+  /// Waymark 13 opens combining at St.1–3, waymark 18 adds St.4–5.
   int get combineLevel => has(WaymarkUnlock.combineL5)
       ? 5
       : has(WaymarkUnlock.combineL3)

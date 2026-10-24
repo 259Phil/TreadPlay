@@ -228,7 +228,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
       hint = _lockedText(context);
     } else if (mode == _Mode.combine && a == null && unlocks.combineLevel < 3) {
       hint = l.forgeCombineLocked(
-        3,
+        1,
         waymarks.firstWhere((w) => w.unlock == WaymarkUnlock.combineL3).number,
       );
     } else if (a == null) {
@@ -459,7 +459,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
       ),
       ForgeBlock.levelLocked => l.forgeCombineLocked(
         a.level,
-        wmOf(a.level >= 5 ? WaymarkUnlock.combineL5 : WaymarkUnlock.combineL3),
+        wmOf(a.level >= 4 ? WaymarkUnlock.combineL5 : WaymarkUnlock.combineL3),
       ),
       ForgeBlock.maxLevel => a.combined ? l.forgeComboFinal : l.forgeTopLevel,
       ForgeBlock.needsPair => l.forgeNeedsPair,
@@ -1243,11 +1243,8 @@ class _LadderTab extends StatelessWidget {
           for (final t in SealType.values)
             row(sealStat(l, t), [for (var lv = 1; lv <= 5; lv++) Seal(t, lv)]),
           row(l.forgeModeCombine, [
-            null,
-            null,
-            Seal.combined(SealType.stride, SealType.grit, 3),
-            null,
-            Seal.combined(SealType.stride, SealType.grit, 5),
+            for (var lv = 1; lv <= 5; lv++)
+              Seal.combined(SealType.stride, SealType.grit, lv),
           ]),
           const SizedBox(height: 4),
           Text(

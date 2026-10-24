@@ -33,6 +33,7 @@ String taskLabel(AppLocalizations l, WaymarkTask t) => switch (t.counter) {
   WaymarkCounter.messengersMet => l.wwTaskMessenger,
   WaymarkCounter.sweetSpot58Runs => l.wwTaskSweet58,
   WaymarkCounter.sweetSpot71Runs => l.wwTaskSweet71(t.target),
+  WaymarkCounter.pouchesOpened => l.wwTaskPouches(t.target),
   WaymarkCounter.leashFilled => l.wwTaskLeash,
   WaymarkCounter.companionsBought => l.wwTaskBuy,
   WaymarkCounter.companionLevel => l.wwTaskLevel(t.target),

@@ -70,14 +70,36 @@ class Forge {
   };
 
   /// Combining: two single seals of different stats at level n (the key)
-  /// make one combined seal of level n.
+  /// make one combined seal of level n. St.1 is cheap so new players can
+  /// try it; L3 and L5 keep their earlier recipes.
   static const Map<int, ForgeStep> combines = {
+    1: ForgeStep(
+      lp: 15,
+      minGlut: 1,
+      maxGlut: 3,
+      failAtMin: .10,
+      failAtMax: .04,
+    ),
+    2: ForgeStep(
+      lp: 40,
+      minGlut: 2,
+      maxGlut: 4,
+      failAtMin: .14,
+      failAtMax: .07,
+    ),
     3: ForgeStep(
       lp: 97,
       minGlut: 4,
       maxGlut: 5,
       failAtMin: .17,
       failAtMax: .11,
+    ),
+    4: ForgeStep(
+      lp: 150,
+      minGlut: 4,
+      maxGlut: 5,
+      failAtMin: .22,
+      failAtMax: .16,
     ),
     5: ForgeStep(
       lp: 233,

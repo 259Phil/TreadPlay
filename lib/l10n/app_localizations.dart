@@ -1151,7 +1151,7 @@ abstract class AppLocalizations {
   /// No description provided for @wwAllReached.
   ///
   /// In en, this message translates to:
-  /// **'All {total} waymarks reached. The trail keeps growing.'**
+  /// **'All {total} waymarks reached. New waymarks coming soon.'**
   String wwAllReached(int total);
 
   /// No description provided for @wwLastAt.
@@ -1334,6 +1334,12 @@ abstract class AppLocalizations {
   /// **'1 run with sweet spot ≥ 58 %'**
   String get wwTaskSweet58;
 
+  /// No description provided for @wwTaskPouches.
+  ///
+  /// In en, this message translates to:
+  /// **'Open {n} pouches'**
+  String wwTaskPouches(int n);
+
   /// No description provided for @wwTaskSweet71.
   ///
   /// In en, this message translates to:
@@ -1439,7 +1445,7 @@ abstract class AppLocalizations {
   /// No description provided for @wwUnlockCombineL3.
   ///
   /// In en, this message translates to:
-  /// **'Combining L3'**
+  /// **'Combining L1–L3'**
   String get wwUnlockCombineL3;
 
   /// No description provided for @wwUnlockNavyPouch.
@@ -1469,7 +1475,7 @@ abstract class AppLocalizations {
   /// No description provided for @wwUnlockCombineL5.
   ///
   /// In en, this message translates to:
-  /// **'Combining L5'**
+  /// **'Combining L4–L5'**
   String get wwUnlockCombineL5;
 
   /// No description provided for @wwUnlockWorldRococoCandy.
@@ -1823,7 +1829,7 @@ abstract class AppLocalizations {
   /// No description provided for @forgeBadCombine.
   ///
   /// In en, this message translates to:
-  /// **'Needs two single seals of different stats at L3 or L5.'**
+  /// **'Needs two single seals of different stats at the same level.'**
   String get forgeBadCombine;
 
   /// No description provided for @forgeSuccessTitle.
@@ -1871,7 +1877,7 @@ abstract class AppLocalizations {
   /// No description provided for @forgeLadderNote.
   ///
   /// In en, this message translates to:
-  /// **'At most +47 % per stat from all seals together. Combined seals free a socket but give less in total.'**
+  /// **'At most +47 % per stat from all seals together. Combined seals (any level, two different stats) free a socket and give each stat about 60 % of a single seal.'**
   String get forgeLadderNote;
 
   /// No description provided for @forgePickTitle.

@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:treadplay/data/game_data.dart';
 import 'package:treadplay/domain/companion.dart';
 import 'package:treadplay/domain/forge.dart';
+import 'package:treadplay/domain/pouch.dart';
 import 'package:treadplay/domain/run_summary.dart';
 import 'package:treadplay/domain/totals.dart';
 import 'package:treadplay/domain/wanderweg.dart';
@@ -80,7 +81,11 @@ void main() {
         throwsArgumentError,
       );
       expect(
-        () => Seal.combined(SealType.grit, SealType.stride, 4),
+        () => Seal.combined(SealType.grit, SealType.stride, 0),
+        throwsRangeError,
+      );
+      expect(
+        () => Seal.combined(SealType.grit, SealType.stride, 6),
         throwsRangeError,
       );
     });
@@ -96,7 +101,8 @@ void main() {
         'stride@6',
         'grit+stride@5',
         'stride+stride@3',
-        'stride+grit@4',
+        'stride+grit@6',
+        'stride+grit@0',
         'x@1',
         'stride@01',
         '',
@@ -153,7 +159,7 @@ void main() {
           .withSeal(0, const Seal(SealType.grit, 5))
           .withSeal(1, const Seal(SealType.fortune, 3));
       expect(c.spiritLossFactor, closeTo(1 / 1.31, 1e-9)); // about −24 %
-      expect(c.fortuneFactor, closeTo(1.15, 1e-9));
+      expect(c.fortuneFactor, closeTo(sqrt(gilt.fortune / 10) * 1.15, 1e-9));
     });
   });
 
@@ -544,6 +550,148 @@ void main() {
       expect(WaymarkCounter.leashFilled.built, isTrue);
       expect(WaymarkCounter.messengersMet.built, isTrue);
       expect(WaymarkCounter.companionLevel.built, isTrue);
+    });
+  });
+  group('combining at every level (St.1–St.5)', () {
+    test('combined seals give about 60 % of a single seal per stat', () {
+      expect(
+        [for (var l = 1; l <= 5; l++) Seal.combinedBonus[l]],
+        [0.025, 0.055, 0.09, 0.13, 0.19],
+      );
+      for (var l = 1; l <= 5; l++) {
+        final ratio = Seal.combinedBonus[l]! / Seal.singleBonus[l - 1];
+        expect(ratio, inInclusiveRange(0.55, 0.65), reason: 'L$l');
+      }
+    });
+
+    test('recipes get dearer and riskier with the level; St.1 is cheap', () {
+      final steps = [for (var l = 1; l <= 5; l++) Forge.combines[l]!];
+      expect([for (final s in steps) s.lp], [15, 40, 97, 150, 233]);
+      expect(steps.first.minGlut, 1);
+      for (var i = 1; i < steps.length; i++) {
+        expect(steps[i].lp, greaterThan(steps[i - 1].lp));
+        expect(steps[i].failAtMin, greaterThan(steps[i - 1].failAtMin));
+        expect(steps[i].minGlut, greaterThanOrEqualTo(steps[i - 1].minGlut));
+      }
+      expect(Forge.combines[1]!.failChance(1), closeTo(.10, 1e-9));
+      expect(Forge.combines[1]!.failChance(3), closeTo(.04, 1e-9));
+    });
+
+    test('two different St.1 seals combine into a St.1 combo', () {
+      const g1 = Seal(SealType.grit, 1);
+      final g = game(lp: 20, stock: {'stride@1': 1, 'grit@1': 1}, glut: 3);
+      expect(g.combineBlock(stride1, g1, 1), isNull);
+      final (next, out) = g.combining(stride1, g1, 2, _Fixed([0.5]));
+      final k1 = Seal.combined(SealType.stride, SealType.grit, 1);
+      expect(out.made, k1);
+      expect(next.lp, 5);
+      expect(next.forge.glut, 1);
+      expect(next.forge.count(k1), 1);
+      expect(k1.bonusOn(SealType.stride), 0.025);
+      expect(Seal.tryParse('stride+grit@1'), k1);
+    });
+
+    test('St.2 and St.4 combine too, levels must match', () {
+      const s2 = Seal(SealType.stride, 2);
+      const f2 = Seal(SealType.fortune, 2);
+      const s4 = Seal(SealType.stride, 4);
+      const f4 = Seal(SealType.fortune, 4);
+      final g = game(
+        stock: {'stride@2': 1, 'fortune@2': 1, 'stride@4': 1, 'fortune@4': 1},
+      );
+      expect(g.combineBlock(s2, f2, 2), isNull);
+      expect(g.combineBlock(s4, f4, 4), isNull);
+      expect(g.combineBlock(s2, f4, 4), ForgeBlock.badCombine);
+      expect(g.combineBlock(s2, s2, 2), ForgeBlock.badCombine);
+    });
+
+    test('waymark 13 opens St.1–3, waymark 18 adds St.4–5', () {
+      const s1 = Seal(SealType.stride, 1);
+      const g1 = Seal(SealType.grit, 1);
+      const s4 = Seal(SealType.stride, 4);
+      const g4 = Seal(SealType.grit, 4);
+      GameData at(int reached) => game(
+        stock: {'stride@1': 1, 'grit@1': 1, 'stride@4': 1, 'grit@4': 1},
+        wanderweg: WanderwegProgress(reachedAt: List.filled(reached, t0)),
+      );
+      expect(at(12).combineBlock(s1, g1, 2), ForgeBlock.levelLocked);
+      expect(at(13).combineBlock(s1, g1, 2), isNull);
+      expect(at(13).combineBlock(s4, g4, 4), ForgeBlock.levelLocked);
+      expect(at(18).combineBlock(s4, g4, 4), isNull);
+    });
+  });
+
+  group('Fortune base value (rolled Glück)', () {
+    Companion common(double fortune) => Companion.fresh(
+      id: 'c',
+      speciesId: 'gilt',
+      rarity: Rarity.common,
+    ).copyWith(fortune: fortune);
+
+    test('factor = sqrt(Fortune / 10), a Common at 10 is x1', () {
+      expect(common(10).fortuneFactor, closeTo(1, 1e-9));
+      expect(common(9.2).fortuneFactor, closeTo(sqrt(.92), 1e-9));
+      expect(common(10.8).fortuneFactor, closeTo(sqrt(1.08), 1e-9));
+      expect(
+        common(10.8).fortuneFactor,
+        greaterThan(common(9.2).fortuneFactor),
+      );
+    });
+
+    test('Fortune seals multiply on top; the factor is capped', () {
+      final sealed = common(10.8).withSeal(0, const Seal(SealType.fortune, 3));
+      expect(sealed.fortuneFactor, closeTo(sqrt(1.08) * 1.15, 1e-9));
+      expect(common(1000).fortuneFactor, maxFortuneFactor);
+      expect(common(0).fortuneFactor, 0);
+    });
+
+    test('a higher roll finds more pouches and messengers', () {
+      double pouch(Companion c) => Pouches.chance(
+        breathUsed: 6,
+        tankSize: 6,
+        fortuneFactor: c.fortuneFactor,
+      );
+      expect(pouch(common(10.8)), greaterThan(pouch(common(9.2))));
+      expect(pouch(common(10)), closeTo(Pouches.fullTankChance, 1e-9));
+    });
+
+    test('a higher roll leans the pouch colour to the rarer ones', () {
+      final low = Pouches.colorShares(
+        PouchColor.values,
+        common(9.2).withSeal(0, const Seal(SealType.fortune, 3)).fortuneFactor,
+      );
+      final high = Pouches.colorShares(
+        PouchColor.values,
+        common(10.8).withSeal(0, const Seal(SealType.fortune, 3)).fortuneFactor,
+      );
+      expect(high[PouchColor.navy]!, greaterThan(low[PouchColor.navy]!));
+    });
+  });
+
+  group('waymark 10: open 5 pouches', () {
+    test('waymark 10 asks for 5 opened pouches of any colour', () {
+      final w10 = waymarks[9];
+      expect(w10.tasks.single.counter, WaymarkCounter.pouchesOpened);
+      expect(w10.tasks.single.target, 5);
+    });
+
+    test('the counter sums every colour from the save', () {
+      final g = game().copyWith(
+        pouches: const PouchState(
+          opened: {PouchColor.brown: 3, PouchColor.copper: 2},
+        ),
+      );
+      expect(g.waymarkCounters[WaymarkCounter.pouchesOpened], 5);
+    });
+
+    test('players past waymark 10 keep it', () {
+      final g = game(
+        wanderweg: WanderwegProgress(reachedAt: List.filled(12, t0)),
+      ).copyWith(pouches: const PouchState());
+      expect(
+        g.advancingWanderweg(t0).wanderweg.reached,
+        greaterThanOrEqualTo(12),
+      );
     });
   });
 }

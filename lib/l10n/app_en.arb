@@ -417,7 +417,7 @@
       }
     }
   },
-  "wwAllReached": "All {total} waymarks reached. The trail keeps growing.",
+  "wwAllReached": "All {total} waymarks reached. New waymarks coming soon.",
   "@wwAllReached": {
     "placeholders": {
       "total": {
@@ -538,6 +538,14 @@
   "wwTaskSealL3": "One seal at L3",
   "wwTaskMessenger": "Meet a messenger",
   "wwTaskSweet58": "1 run with sweet spot ≥ 58 %",
+  "wwTaskPouches": "Open {n} pouches",
+  "@wwTaskPouches": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "wwTaskSweet71": "{n} runs with sweet spot ≥ 71 %",
   "@wwTaskSweet71": {
     "placeholders": {
@@ -569,12 +577,12 @@
   "wwUnlockTurquoisePouch": "Turquoise pouch",
   "wwUnlockWorldSteampunk": "World Steampunk + species",
   "wwUnlockForgeL4": "Forging L4",
-  "wwUnlockCombineL3": "Combining L3",
+  "wwUnlockCombineL3": "Combining L1–L3",
   "wwUnlockNavyPouch": "Navy pouch",
   "wwUnlockWorldSpaceRobot": "Worlds Space + Robot + species",
   "wwUnlockForgeL5": "Forging L5",
   "wwUnlockShelfPlus2": "Den +2 slots (12→14)",
-  "wwUnlockCombineL5": "Combining L5",
+  "wwUnlockCombineL5": "Combining L4–L5",
   "wwUnlockWorldRococoCandy": "Worlds Rococo + Candy + species",
   "wwLine1": "A companion doesn’t grow in a den. It grows beside you, step by step.",
   "wwLine2": "What you find along the way belongs to you both.",
@@ -773,7 +781,7 @@
   "forgeNeedsGlut": "Not enough Glut yet.",
   "forgeTopLevel": "L5 is the highest level.",
   "forgeComboFinal": "Combined seals are not forged further.",
-  "forgeBadCombine": "Needs two single seals of different stats at L3 or L5.",
+  "forgeBadCombine": "Needs two single seals of different stats at the same level.",
   "forgeSuccessTitle": "Forged",
   "forgeSuccessBody": "{seal} is now in the case.",
   "@forgeSuccessBody": {
@@ -795,7 +803,7 @@
   "forgeOk": "OK",
   "forgeLadder": "Levels",
   "forgeLadderTitle": "Seal levels",
-  "forgeLadderNote": "At most +47 % per stat from all seals together. Combined seals free a socket but give less in total.",
+  "forgeLadderNote": "At most +47 % per stat from all seals together. Combined seals (any level, two different stats) free a socket and give each stat about 60 % of a single seal.",
   "forgePickTitle": "Set a seal",
   "summaryGlut": "Glut for the Forge",
   "glutAmount": "+{n} Glut",

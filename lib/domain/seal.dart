@@ -2,7 +2,7 @@
 enum SealType { stride, grit, fortune }
 
 /// One seal: a single stat at level 1–5, or a combined seal that raises two
-/// different stats at level 3 or 5.
+/// different stats, also at level 1–5.
 ///
 /// Saved as a short code: `stride@3` or `stride+grit@5` (stats in enum
 /// order). Saves from before seal levels hold just `stride`; those read as
@@ -16,7 +16,7 @@ class Seal {
   factory Seal.combined(SealType a, SealType b, int level) {
     if (a == b) throw ArgumentError('combined seals need two stats');
     if (!combinedLevels.contains(level)) {
-      throw RangeError.value(level, 'level', 'combined seals are L3 or L5');
+      throw RangeError.value(level, 'level', 'combined seals are L1–L5');
     }
     return a.index < b.index ? Seal._(a, b, level) : Seal._(b, a, level);
   }
@@ -26,8 +26,15 @@ class Seal {
   /// Bonus of a single seal per level (index 0 = L1).
   static const List<double> singleBonus = [0.04, 0.09, 0.15, 0.22, 0.31];
 
-  /// Bonus a combined seal gives to each of its two stats.
-  static const Map<int, double> combinedBonus = {3: 0.09, 5: 0.19};
+  /// Bonus a combined seal gives to each of its two stats: about 60 % of a
+  /// single seal of the same level (L3 and L5 keep their earlier values).
+  static const Map<int, double> combinedBonus = {
+    1: 0.025,
+    2: 0.055,
+    3: 0.09,
+    4: 0.13,
+    5: 0.19,
+  };
 
   static Iterable<int> get combinedLevels => combinedBonus.keys;
 
@@ -59,10 +66,22 @@ class Seal {
   String get code =>
       combined ? '${type.name}+${partner!.name}@$level' : '${type.name}@$level';
 
-  /// Painted art, sized so higher levels look bigger.
+  /// Painted art, sized so higher levels look bigger. Combined seals have
+  /// art for L3 and L5; L1–L2 use the L3 art and L4 the L5 art, drawn
+  /// smaller by [artScale].
   String get asset => combined
-      ? 'assets/seals/seal_combo_l$level.webp'
+      ? 'assets/seals/seal_combo_l${level <= 3 ? 3 : 5}.webp'
       : 'assets/seals/seal_${type.name}_l$level.webp';
+
+  /// How large [asset] is drawn (1 = full size).
+  double get artScale => !combined
+      ? 1
+      : switch (level) {
+          1 => 0.7,
+          2 => 0.85,
+          4 => 0.88,
+          _ => 1,
+        };
 
   Seal? get nextLevel =>
       combined || level >= maxLevel ? null : Seal(type, level + 1);

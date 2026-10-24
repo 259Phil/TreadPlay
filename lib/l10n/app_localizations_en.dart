@@ -616,7 +616,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String wwAllReached(int total) {
-    return 'All $total waymarks reached. The trail keeps growing.';
+    return 'All $total waymarks reached. New waymarks coming soon.';
   }
 
   @override
@@ -733,6 +733,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wwTaskSweet58 => '1 run with sweet spot ≥ 58 %';
 
   @override
+  String wwTaskPouches(int n) {
+    return 'Open $n pouches';
+  }
+
+  @override
   String wwTaskSweet71(int n) {
     return '$n runs with sweet spot ≥ 71 %';
   }
@@ -789,7 +794,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wwUnlockForgeL4 => 'Forging L4';
 
   @override
-  String get wwUnlockCombineL3 => 'Combining L3';
+  String get wwUnlockCombineL3 => 'Combining L1–L3';
 
   @override
   String get wwUnlockNavyPouch => 'Navy pouch';
@@ -804,7 +809,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wwUnlockShelfPlus2 => 'Den +2 slots (12→14)';
 
   @override
-  String get wwUnlockCombineL5 => 'Combining L5';
+  String get wwUnlockCombineL5 => 'Combining L4–L5';
 
   @override
   String get wwUnlockWorldRococoCandy => 'Worlds Rococo + Candy + species';
@@ -1027,7 +1032,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get forgeBadCombine =>
-      'Needs two single seals of different stats at L3 or L5.';
+      'Needs two single seals of different stats at the same level.';
 
   @override
   String get forgeSuccessTitle => 'Forged';
@@ -1056,7 +1061,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get forgeLadderNote =>
-      'At most +47 % per stat from all seals together. Combined seals free a socket but give less in total.';
+      'At most +47 % per stat from all seals together. Combined seals (any level, two different stats) free a socket and give each stat about 60 % of a single seal.';
 
   @override
   String get forgePickTitle => 'Set a seal';

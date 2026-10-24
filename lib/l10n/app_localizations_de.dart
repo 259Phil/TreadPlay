@@ -619,7 +619,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String wwAllReached(int total) {
-    return 'Alle $total Wegmarken erreicht. Der Weg wächst weiter.';
+    return 'Alle $total Wegmarken erreicht. Neue Wegmarken folgen bald.';
   }
 
   @override
@@ -736,6 +736,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get wwTaskSweet58 => '1 Lauf mit Sweet Spot ≥ 58 %';
 
   @override
+  String wwTaskPouches(int n) {
+    return '$n Beutel öffnen';
+  }
+
+  @override
   String wwTaskSweet71(int n) {
     return '$n Läufe mit Sweet Spot ≥ 71 %';
   }
@@ -792,7 +797,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get wwUnlockForgeL4 => 'Schmieden St.4';
 
   @override
-  String get wwUnlockCombineL3 => 'Kombinieren St.3';
+  String get wwUnlockCombineL3 => 'Kombinieren St.1–3';
 
   @override
   String get wwUnlockNavyPouch => 'Nachtblauer Beutel';
@@ -807,7 +812,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get wwUnlockShelfPlus2 => 'Gehege +2 Plätze (12→14)';
 
   @override
-  String get wwUnlockCombineL5 => 'Kombinieren St.5';
+  String get wwUnlockCombineL5 => 'Kombinieren St.4–5';
 
   @override
   String get wwUnlockWorldRococoCandy => 'Welten Rokoko + Süßigkeiten + Arten';
@@ -1033,7 +1038,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get forgeBadCombine =>
-      'Braucht zwei Einzelsiegel verschiedener Werte auf Stufe 3 oder 5.';
+      'Braucht zwei Einzelsiegel verschiedener Werte auf derselben Stufe.';
 
   @override
   String get forgeSuccessTitle => 'Geschmiedet';
@@ -1062,7 +1067,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get forgeLadderNote =>
-      'Höchstens +47 % pro Wert aus allen Siegeln. Kombi-Siegel sparen einen Sockel, geben in Summe aber weniger.';
+      'Höchstens +47 % pro Wert aus allen Siegeln. Kombi-Siegel (jede Stufe, zwei verschiedene Werte) sparen einen Sockel und geben jedem Wert etwa 60 % eines Einzelsiegels.';
 
   @override
   String get forgePickTitle => 'Siegel einsetzen';

@@ -123,6 +123,7 @@ class GameData {
         WaymarkCounter.turquoisePouchesOpened: pouches.openedOf(
           PouchColor.turquoise,
         ),
+        WaymarkCounter.pouchesOpened: pouches.openedTotal,
         WaymarkCounter.leashFilled: pouches.leashFills,
         WaymarkCounter.messengersMet: messengers.met,
       },
@@ -245,7 +246,7 @@ class GameData {
   }
 
   /// Why [a] and [b] can't be combined with [glut] Glut, or null if they
-  /// can: two single seals of different stats at the same level 3 or 5.
+  /// can: two single seals of different stats at the same level (1–5).
   ForgeBlock? combineBlock(Seal a, Seal b, int glut) {
     if (!unlocks.forge) return ForgeBlock.locked;
     final step = Forge.combines[a.level];
@@ -978,7 +979,7 @@ enum ForgeBlock {
   /// Not enough of these seals in the case (two equal ones to forge up).
   needsPair,
 
-  /// Two single seals of different stats at the same level 3 or 5 needed.
+  /// Two single seals of different stats at the same level (1–5) needed.
   badCombine,
 
   /// Glut outside the recipe's min–max.

@@ -1136,7 +1136,7 @@ void main() {
     testWidgets('combining waits for waymark 13', (tester) async {
       await openForge(tester, GameData.initial(t0));
       await tapKey(tester, 'tab-combine');
-      expect(textOf(tester, 'forge-hint'), 'Combining L3 opens at waymark 13.');
+      expect(textOf(tester, 'forge-hint'), 'Combining L1 opens at waymark 13.');
     });
 
     testWidgets('a level not yet reached on the trail is locked', (

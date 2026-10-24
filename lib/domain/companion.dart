@@ -108,6 +108,12 @@ const double statRoll = 0.08;
 
 const int maxLevel = 25;
 
+/// Fortune at which [Companion.fortuneFactor] is ×1 (a Common's base).
+const double fortuneReference = 10;
+
+/// Highest [Companion.fortuneFactor].
+const double maxFortuneFactor = 2.0;
+
 /// XP a companion needs to go from [level] to the next: 6 per level, so
 /// Lv 1→2 takes 6 XP (1.5 km in the sweet spot), Lv 24→25 takes 144.
 int xpForLevel(int level) => 6 * level;
@@ -342,7 +348,17 @@ class Companion {
   /// Fortune: pouch and messenger chances after a run are multiplied by
   /// this (never above 100 %), and the pouch colour (which also picks the
   /// messenger) leans to the rarer ones.
-  double get fortuneFactor => 1 + sealBonus(SealType.fortune);
+  ///
+  /// factor = √(Fortune / [fortuneReference]) × (1 + Fortune seals),
+  /// at most [maxFortuneFactor]. The rolled base counts with a square root,
+  /// so a Common at 10 is ×1, its ±8 % roll gives about ±4 %
+  /// (9.2 → ×0.96, 10.8 → ×1.04), a Rare at 14 ×1.18, an Epic at 20 ×1.41;
+  /// seals multiply on top (+47 % at most).
+  double get fortuneFactor => min(
+    maxFortuneFactor,
+    sqrt(max(0.0, fortune) / fortuneReference) *
+        (1 + sealBonus(SealType.fortune)),
+  );
 
   /// Breath cap while this companion is taken along: the rarity's tank
   /// plus one point at each of [tankLevels].

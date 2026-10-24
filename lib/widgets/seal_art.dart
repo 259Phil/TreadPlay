@@ -70,6 +70,9 @@ class SealArt extends StatelessWidget {
       filterQuality: FilterQuality.medium,
       semanticLabel: sealTitle(l, seal),
     );
+    if (seal.artScale != 1) {
+      art = Transform.scale(scale: seal.artScale, child: art);
+    }
     if (dimmed) art = Opacity(opacity: 0.45, child: art);
     return SizedBox(
       width: size,

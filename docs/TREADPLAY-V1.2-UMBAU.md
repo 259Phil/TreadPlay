@@ -124,6 +124,9 @@ Kurve wie V1.1. Außerhalb Breite: 0 LP, Tracking läuft.
 - **Stride** — LP je Puste-Punkt  
 - **Grit** — Tank / Verbrauch  
 - **Fortune** — Beutel-Farbe, NPC, Drop-Gewicht  
+  Formel (Stand 2026-10): `Glück-Faktor = min(2,0; √(Fortune / 10) × (1 + Glück-Siegel))`.
+  Beutel- und Boten-Chance nach einem Lauf × Faktor (höchstens 100 %); die Farbwahl kippt mit (Faktor − 1, gedeckelt +47 %) zu selteneren Farben.
+  Common 9,2 → ×0,96 · 10 → ×1,00 · 10,8 → ×1,04; Rare 14 → ×1,18; Epic 20 → ×1,41; Legendary 28 → ×1,67 (vor Siegeln).
 - **Spirit** — 0–100 % Haltbarkeit. 0 % = keine LP. Kits wie bisher (Light / Solid / Master).
 
 Puste-Tank vor Grit: Common 6 · Rare 8 · Epic 10 · Legendary 12.

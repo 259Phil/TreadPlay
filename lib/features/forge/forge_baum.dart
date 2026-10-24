@@ -145,9 +145,9 @@ class _SchmiedeBaumState extends ConsumerState<_SchmiedeBaum>
 
   /// The look picked (preview: `?baum=a|b|c` in the address).
   _Look _look = switch (Uri.base.queryParameters['baum']) {
-    'b' => _Look.branch,
+    'a' => _Look.stars,
     'c' => _Look.net,
-    _ => _Look.stars,
+    _ => _Look.branch,
   };
 
   /// Pan and pinch of the tree.

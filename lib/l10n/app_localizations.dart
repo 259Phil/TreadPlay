@@ -2219,7 +2219,7 @@ abstract class AppLocalizations {
   /// No description provided for @msgGreetKolk.
   ///
   /// In en, this message translates to:
-  /// **'{n, select, 0{Kraa! Kolk reporting.} 1{Kraa, kraa! Nicely walked!} 2{Psst, Kolk here.} 3{Kraa! Guess who’s here.} 4{Hello, pacemaker!} 5{Kraa! I was waiting for you.} other{Kraa! Kolk reporting.}}'**
+  /// **'{n, select, 0{Kraa! Krahni reporting.} 1{Kraa, kraa! Nicely walked!} 2{Psst, Krahni here.} 3{Kraa! Guess who’s here.} 4{Hello, pacemaker!} 5{Kraa! I was waiting for you.} other{Kraa! Krahni reporting.}}'**
   String msgGreetKolk(String n);
 
   /// No description provided for @msgGiftKolk.
@@ -2237,7 +2237,7 @@ abstract class AppLocalizations {
   /// No description provided for @msgGreetFlimm.
   ///
   /// In en, this message translates to:
-  /// **'{n, select, 0{A little light flickers – Flimm is here.} 1{Sssh … I followed your light.} 2{Good evening, even if it’s day.} 3{Flimm here, very quietly.} 4{Your steps are glowing today.} 5{I came with the wind.} other{A little light flickers – Flimm is here.}}'**
+  /// **'{n, select, 0{A little light flickers – Glimmsel is here.} 1{Sssh … I followed your light.} 2{Good evening, even if it’s day.} 3{Glimmsel here, very quietly.} 4{Your steps are glowing today.} 5{I came with the wind.} other{A little light flickers – Glimmsel is here.}}'**
   String msgGreetFlimm(String n);
 
   /// No description provided for @msgGiftFlimm.
@@ -2255,7 +2255,7 @@ abstract class AppLocalizations {
   /// No description provided for @msgGreetVesper.
   ///
   /// In en, this message translates to:
-  /// **'{n, select, 0{Greetings. Vesper has descended.} 1{The stars told me where you walk.} 2{I rarely come. Today I come to you.} 3{Don’t bow – keep walking instead.} 4{The night sky sends me.} 5{A rare evening for a rare guest.} other{Greetings. Vesper has descended.}}'**
+  /// **'{n, select, 0{Greetings. Sternuh has descended.} 1{The stars told me where you walk.} 2{I rarely come. Today I come to you.} 3{Don’t bow – keep walking instead.} 4{The night sky sends me.} 5{A rare evening for a rare guest.} other{Greetings. Sternuh has descended.}}'**
   String msgGreetVesper(String n);
 
   /// No description provided for @msgGiftVesper.
@@ -2291,19 +2291,19 @@ abstract class AppLocalizations {
   /// No description provided for @msgTitleKolk.
   ///
   /// In en, this message translates to:
-  /// **'Kolk · raven of the waysides'**
+  /// **'Krahni · raven of the waysides'**
   String get msgTitleKolk;
 
   /// No description provided for @msgTitleFlimm.
   ///
   /// In en, this message translates to:
-  /// **'Flimm · lantern moth'**
+  /// **'Glimmsel · lantern moth'**
   String get msgTitleFlimm;
 
   /// No description provided for @msgTitleVesper.
   ///
   /// In en, this message translates to:
-  /// **'Vesper · star owl'**
+  /// **'Sternuh · star owl'**
   String get msgTitleVesper;
 
   /// No description provided for @msgRankBrown.

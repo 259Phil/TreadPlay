@@ -7,17 +7,21 @@ import 'pouch.dart';
 /// rarer ones (and their rarer pouches) more likely.
 ///
 /// Messengers never bring companions: those only come from the Market.
+///
+/// The value names are save ids and asset keys from before the trademark
+/// pre-check; the names players see come from l10n (Krahni, Glimmsel,
+/// Sternuh) and must not be derived from these ids.
 enum Messenger {
   /// Brown: a small owl with a satchel.
   ruhu(PouchColor.brown, giftGlut: 0, taskGlut: 2, taskSplinters: 3),
 
-  /// Copper: a raven in a leather harness.
+  /// Copper: Krahni, a raven in a leather harness.
   kolk(PouchColor.copper, giftGlut: 1, taskGlut: 3, taskSplinters: 4),
 
-  /// Turquoise: a luna moth with a lantern.
+  /// Turquoise: Glimmsel, a luna moth with a lantern.
   flimm(PouchColor.turquoise, giftGlut: 1, taskGlut: 4, taskSplinters: 6),
 
-  /// Navy: the star owl in brass and velvet.
+  /// Navy: Sternuh, the star owl in brass and velvet.
   vesper(PouchColor.navy, giftGlut: 2, taskGlut: 5, taskSplinters: 8);
 
   const Messenger(

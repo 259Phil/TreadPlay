@@ -1317,13 +1317,13 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String msgGreetKolk(String n) {
     String _temp0 = intl.Intl.selectLogic(n, {
-      '0': 'Kraa! Kolk meldet sich.',
+      '0': 'Kraa! Krahni meldet sich.',
       '1': 'Kraa, kraa! Gut gelaufen!',
-      '2': 'Psst, Kolk hier.',
+      '2': 'Psst, Krahni hier.',
       '3': 'Kraa! Rate mal, wer da ist.',
       '4': 'Hallo, Schrittmacher!',
       '5': 'Kraa! Ich hab auf dich gewartet.',
-      'other': 'Kraa! Kolk meldet sich.',
+      'other': 'Kraa! Krahni meldet sich.',
     });
     return '$_temp0';
   }
@@ -1359,13 +1359,13 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String msgGreetFlimm(String n) {
     String _temp0 = intl.Intl.selectLogic(n, {
-      '0': 'Ein Lichtlein flackert – Flimm ist da.',
+      '0': 'Ein Lichtlein flackert – Glimmsel ist da.',
       '1': 'Sssst … ich bin deinem Licht gefolgt.',
       '2': 'Guten Abend, auch wenn’s Tag ist.',
-      '3': 'Flimm hier, ganz leise.',
+      '3': 'Glimmsel hier, ganz leise.',
       '4': 'Deine Schritte leuchten heute.',
       '5': 'Ich kam mit dem Wind.',
-      'other': 'Ein Lichtlein flackert – Flimm ist da.',
+      'other': 'Ein Lichtlein flackert – Glimmsel ist da.',
     });
     return '$_temp0';
   }
@@ -1401,13 +1401,13 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String msgGreetVesper(String n) {
     String _temp0 = intl.Intl.selectLogic(n, {
-      '0': 'Sei gegrüßt. Vesper ist herabgestiegen.',
+      '0': 'Sei gegrüßt. Sternuh ist herabgestiegen.',
       '1': 'Die Sterne sagten mir, wo du läufst.',
       '2': 'Selten komme ich. Heute komme ich zu dir.',
       '3': 'Verneige dich nicht – lauf lieber weiter.',
       '4': 'Der Nachthimmel schickt mich.',
       '5': 'Ein seltener Abend für einen seltenen Gast.',
-      'other': 'Sei gegrüßt. Vesper ist herabgestiegen.',
+      'other': 'Sei gegrüßt. Sternuh ist herabgestiegen.',
     });
     return '$_temp0';
   }
@@ -1472,13 +1472,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get msgTitleRuhu => 'Ruhu · Eule der Feldwege';
 
   @override
-  String get msgTitleKolk => 'Kolk · Rabe der Wegränder';
+  String get msgTitleKolk => 'Krahni · Rabe der Wegränder';
 
   @override
-  String get msgTitleFlimm => 'Flimm · Laternenfalter';
+  String get msgTitleFlimm => 'Glimmsel · Laternenfalter';
 
   @override
-  String get msgTitleVesper => 'Vesper · Sterneule';
+  String get msgTitleVesper => 'Sternuh · Sterneule';
 
   @override
   String get msgRankBrown => 'Brauner Bote · häufig';

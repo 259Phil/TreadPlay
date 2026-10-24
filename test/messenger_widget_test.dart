@@ -11,6 +11,8 @@ import 'package:treadplay/domain/messenger.dart';
 import 'package:treadplay/domain/pouch.dart';
 import 'package:treadplay/domain/wanderweg.dart';
 import 'package:treadplay/features/home/world_scene.dart';
+import 'package:treadplay/features/messenger/messenger_popup.dart';
+import 'package:treadplay/l10n/app_localizations.dart';
 import 'package:treadplay/state/providers.dart';
 
 void main() {
@@ -132,6 +134,10 @@ void main() {
     // Outside the scene, so it never covers the companion.
     final scene = tester.getRect(find.byType(WorldScene));
     expect(tester.getRect(notice).top, greaterThanOrEqualTo(scene.bottom));
+    expect(
+      find.descendant(of: notice, matching: find.textContaining('Glimmsel')),
+      findsOneWidget,
+    );
     expect(tester.takeException(), isNull);
     // Its details open as the same no-scroll letter.
     await tester.tap(notice);
@@ -169,5 +175,33 @@ void main() {
     await tester.pumpAndSettle();
     expect(c.read(gameProvider).messengers.done, isNull);
     expect(find.byKey(const Key('messenger-letter')), findsNothing);
+  });
+
+  test('messengers show their checked names, never the old ids', () {
+    final old = RegExp(r'\b(kolk|flimm|vesper)\b', caseSensitive: false);
+    for (final code in ['de', 'en']) {
+      final l = lookupAppLocalizations(Locale(code));
+      for (final m in Messenger.values) {
+        final title = messengerTitle(l, m);
+        expect(title, startsWith('${messengerName(m)} · '), reason: code);
+        final texts = [
+          title,
+          for (var i = 0; i < 8; i++) ...[
+            messengerGreet(l, m, i),
+            messengerGiftLine(l, m, i),
+            messengerTaskLine(l, m, i),
+          ],
+        ];
+        for (final t in texts) {
+          expect(old.hasMatch(t), isFalse, reason: '$code: $t');
+        }
+      }
+    }
+    expect(Messenger.values.map(messengerName), [
+      'Ruhu',
+      'Krahni',
+      'Glimmsel',
+      'Sternuh',
+    ]);
   });
 }

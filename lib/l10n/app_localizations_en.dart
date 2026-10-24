@@ -1311,13 +1311,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String msgGreetKolk(String n) {
     String _temp0 = intl.Intl.selectLogic(n, {
-      '0': 'Kraa! Kolk reporting.',
+      '0': 'Kraa! Krahni reporting.',
       '1': 'Kraa, kraa! Nicely walked!',
-      '2': 'Psst, Kolk here.',
+      '2': 'Psst, Krahni here.',
       '3': 'Kraa! Guess who’s here.',
       '4': 'Hello, pacemaker!',
       '5': 'Kraa! I was waiting for you.',
-      'other': 'Kraa! Kolk reporting.',
+      'other': 'Kraa! Krahni reporting.',
     });
     return '$_temp0';
   }
@@ -1353,13 +1353,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String msgGreetFlimm(String n) {
     String _temp0 = intl.Intl.selectLogic(n, {
-      '0': 'A little light flickers – Flimm is here.',
+      '0': 'A little light flickers – Glimmsel is here.',
       '1': 'Sssh … I followed your light.',
       '2': 'Good evening, even if it’s day.',
-      '3': 'Flimm here, very quietly.',
+      '3': 'Glimmsel here, very quietly.',
       '4': 'Your steps are glowing today.',
       '5': 'I came with the wind.',
-      'other': 'A little light flickers – Flimm is here.',
+      'other': 'A little light flickers – Glimmsel is here.',
     });
     return '$_temp0';
   }
@@ -1395,13 +1395,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String msgGreetVesper(String n) {
     String _temp0 = intl.Intl.selectLogic(n, {
-      '0': 'Greetings. Vesper has descended.',
+      '0': 'Greetings. Sternuh has descended.',
       '1': 'The stars told me where you walk.',
       '2': 'I rarely come. Today I come to you.',
       '3': 'Don’t bow – keep walking instead.',
       '4': 'The night sky sends me.',
       '5': 'A rare evening for a rare guest.',
-      'other': 'Greetings. Vesper has descended.',
+      'other': 'Greetings. Sternuh has descended.',
     });
     return '$_temp0';
   }
@@ -1466,13 +1466,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get msgTitleRuhu => 'Ruhu · owl of the field paths';
 
   @override
-  String get msgTitleKolk => 'Kolk · raven of the waysides';
+  String get msgTitleKolk => 'Krahni · raven of the waysides';
 
   @override
-  String get msgTitleFlimm => 'Flimm · lantern moth';
+  String get msgTitleFlimm => 'Glimmsel · lantern moth';
 
   @override
-  String get msgTitleVesper => 'Vesper · star owl';
+  String get msgTitleVesper => 'Sternuh · star owl';
 
   @override
   String get msgRankBrown => 'Brown messenger · common';

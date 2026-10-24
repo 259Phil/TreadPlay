@@ -11,10 +11,10 @@ void main() {
       {
         'pebble': 'Mossik',
         'lumen': 'Astrillo',
-        'coil': 'Kurlo',
+        'coil': 'Krullo',
         'gilt': 'Frilla',
         'hookfin': 'Finzack',
-        'valve': 'Kettlo',
+        'valve': 'Kettrik',
         'dune': 'Sahri',
         'brine': 'Blubbo',
         'vine': 'Rankix',

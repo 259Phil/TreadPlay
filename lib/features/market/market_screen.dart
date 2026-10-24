@@ -186,8 +186,9 @@ class _Grid extends StatelessWidget {
                   world: c.world,
                   rarity: c.rarity,
                   type: c.type,
+                  classType: c.species.type,
                   name: c.name,
-                  // Rarity already sits left of it; gait is on the coin.
+                  // Rarity already sits left of it; gait is on the tag.
                   subtitle: l.levelShort(c.level),
                   stats: cardStats(context, c),
                   action: formatLpPrice(context, price(c)),
@@ -260,6 +261,7 @@ class _TradeSheet extends ConsumerWidget {
                       world: c.world,
                       rarity: c.rarity,
                       type: c.type,
+                      classType: c.species.type,
                       name: c.name,
                       subtitle: l.levelShort(c.level),
                     ),

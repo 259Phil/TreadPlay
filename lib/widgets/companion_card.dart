@@ -11,7 +11,7 @@ import 'companion_figure.dart';
 import 'format.dart';
 
 /// Collectible card: dark trading-card frame with brass corners, a brass
-/// name plate under the art, a tempo coin and rarity pips. The image is
+/// name plate under the art, a class coin with a tempo tag and rarity pips. The image is
 /// only the creature on transparency; everything else is drawn here.
 class CompanionCard extends StatelessWidget {
   const CompanionCard({
@@ -26,6 +26,7 @@ class CompanionCard extends StatelessWidget {
     this.stats,
     this.action,
     this.type,
+    this.classType,
   });
 
   final String artKey;
@@ -45,9 +46,13 @@ class CompanionCard extends StatelessWidget {
   /// Text on the brass pill at the bottom of the card, e.g. the price.
   final String? action;
 
-  /// Gait of the companion; shown as a brass coin with 1–3 arrows and a
-  /// tag with its name and sweet spot on the art.
+  /// Gait of the companion; shown as a tag with its name and sweet spot
+  /// next to the class coin on the art.
   final CompanionType? type;
+
+  /// Class of the species (its home gait); the brass coin shows its icon.
+  /// Falls back to [type].
+  final CompanionType? classType;
 
   static const double aspectRatio = 0.72;
 
@@ -73,7 +78,14 @@ Color rarityJewel(Rarity r) => switch (r) {
   Rarity.legendary => const Color(0xFFE6A434),
 };
 
-/// Rim and label colour of each gait.
+/// Class icon on the brass coin.
+IconData elementIcon(CompanionType t) => switch (t) {
+  CompanionType.moss => Icons.eco,
+  CompanionType.brook => Icons.water_drop,
+  CompanionType.gale => Icons.air,
+};
+
+/// Label colour of each gait.
 Color tempoColor(CompanionType t) => switch (t) {
   CompanionType.moss => const Color(0xFF7FA650),
   CompanionType.brook => const Color(0xFF3FA39A),
@@ -114,7 +126,7 @@ Widget _scene(CompanionCard c) {
 const double _plateH = 26;
 const double _plateBottom = 5;
 
-/// The art gets its own window: below the tempo coin and badge, above
+/// The art gets its own window: below the class coin and badge, above
 /// the name plate, so no creature hides behind either.
 const EdgeInsets cardArtWindow = EdgeInsets.fromLTRB(
   6,
@@ -283,7 +295,7 @@ class _FrameCard extends StatelessWidget {
                               right: c.badge == null ? 5 : 64,
                               child: Row(
                                 children: [
-                                  _TempoCoin(t),
+                                  _ClassCoin(c.classType ?? t),
                                   const SizedBox(width: 4),
                                   Flexible(
                                     child: FittedBox(
@@ -292,7 +304,7 @@ class _FrameCard extends StatelessWidget {
                                       child: _TempoTag(
                                         key: const Key('card-tempo'),
                                         // Next to a badge only the speed
-                                        // fits; the arrows still tell.
+                                        // fits; its colour still tells.
                                         label: c.badge == null
                                             ? typeLabel(l, t).toUpperCase()
                                             : null,
@@ -447,62 +459,26 @@ class _NamePlate extends StatelessWidget {
   );
 }
 
-class _TempoCoin extends StatelessWidget {
-  const _TempoCoin(this.type);
+class _ClassCoin extends StatelessWidget {
+  const _ClassCoin(this.type);
   final CompanionType type;
 
   @override
   Widget build(BuildContext context) => Container(
-    key: ValueKey('tempo-coin-${type.name}'),
+    key: ValueKey('class-coin-${type.name}'),
     width: 28,
     height: 28,
-    decoration: BoxDecoration(
+    decoration: const BoxDecoration(
       shape: BoxShape.circle,
-      gradient: const RadialGradient(
+      gradient: RadialGradient(
         center: Alignment(-.3, -.4),
         colors: [Color(0xFFF0D598), Color(0xFFC4A36A), Color(0xFF7E6038)],
       ),
-      border: Border.all(color: tempoColor(type), width: 2),
-      boxShadow: const [
-        BoxShadow(color: Color(0xFF4A3420), spreadRadius: 1),
-        BoxShadow(color: Color(0xAA000000), blurRadius: 3),
-      ],
+      border: Border.fromBorderSide(BorderSide(color: Color(0xFF4A3420))),
+      boxShadow: [BoxShadow(color: Color(0xAA000000), blurRadius: 3)],
     ),
-    child: CustomPaint(painter: _ArrowsPainter(type.arrows)),
+    child: Icon(elementIcon(type), size: 16, color: const Color(0xFF2A1A0E)),
   );
-}
-
-/// 1–3 dark chevrons, centred on the coin.
-class _ArrowsPainter extends CustomPainter {
-  _ArrowsPainter(this.count);
-  final int count;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final p = Paint()
-      ..color = const Color(0xFF2A1A0E)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-    const w = 4.0, h = 8.0, gap = 4.0;
-    final total = w + gap * (count - 1);
-    final x0 = (size.width - total) / 2;
-    final cy = size.height / 2;
-    for (var i = 0; i < count; i++) {
-      final x = x0 + gap * i;
-      canvas.drawPath(
-        Path()
-          ..moveTo(x, cy - h / 2)
-          ..lineTo(x + w, cy)
-          ..lineTo(x, cy + h / 2),
-        p,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(_ArrowsPainter old) => old.count != count;
 }
 
 /// Dark tag next to the coin: gait name in its colour, then the sweet spot.

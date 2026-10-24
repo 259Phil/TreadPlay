@@ -99,8 +99,9 @@ class _ShelfScreenState extends ConsumerState<ShelfScreen> {
                     world: c.world,
                     rarity: c.rarity,
                     type: c.type,
+                    classType: c.species.type,
                     name: c.name,
-                    // The gait is on the coin and its tag.
+                    // The gait is on the tag next to the class coin.
                     subtitle: l.levelShort(c.level),
                     badge: c.id == game.activeCompanionId ? l.takenAlong : null,
                     stats: cardStats(context, c),
@@ -221,6 +222,7 @@ class _Detail extends ConsumerWidget {
                       world: c.world,
                       rarity: c.rarity,
                       type: c.type,
+                      classType: c.species.type,
                       name: c.name,
                       subtitle: l.levelShort(c.level),
                     ),

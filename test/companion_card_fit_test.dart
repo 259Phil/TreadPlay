@@ -79,4 +79,36 @@ void main() {
       }
     });
   }
+
+  testWidgets('the coin shows the species class, the tag the gait', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: buildTheme(),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('de'),
+        home: Center(
+          child: SizedBox.fromSize(
+            size: const Size(176, 352),
+            child: const CompanionCard(
+              artKey: 'pebble',
+              world: World.medieval,
+              rarity: Rarity.common,
+              name: 'Mossik',
+              subtitle: 'Lv 1',
+              type: CompanionType.gale,
+              classType: CompanionType.moss,
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(find.byKey(const ValueKey('class-coin-moss')), findsOneWidget);
+    expect(find.byIcon(Icons.eco), findsOneWidget);
+    expect(find.byIcon(Icons.air), findsNothing);
+    expect(find.textContaining('GALOPP'), findsOneWidget);
+  });
 }

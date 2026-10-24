@@ -21,9 +21,6 @@ enum CompanionType {
   final double sweetSpotKmh;
   final double rangeKmh;
 
-  /// 1–3 arrows on the tempo coin.
-  int get arrows => index + 1;
-
   /// Reads a saved gait; null when missing or unknown.
   static CompanionType? tryParse(Object? name) {
     for (final t in values) {

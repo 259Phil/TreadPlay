@@ -776,8 +776,8 @@
   "forgeNeedsPair": "Needs 2 equal seals in the case.",
   "forgeNeedsGlut": "Not enough Glut yet.",
   "forgeTopLevel": "L5 is the highest level.",
-  "forgeComboFinal": "Combined seals are not forged further.",
-  "forgeBadCombine": "Needs two single seals of different stats at the same level.",
+  "forgeComboFinal": "Recipe seals are not forged up; with a third seal they grow to level 2 in Combine.",
+  "forgeBadCombine": "Needs two single seals of different stats, or a recipe seal and a single seal of its missing stat, at the same level.",
   "forgeSuccessTitle": "Forged",
   "forgeSuccessBody": "{seal} is now in the case.",
   "@forgeSuccessBody": {
@@ -799,7 +799,7 @@
   "forgeOk": "OK",
   "forgeLadder": "Levels",
   "forgeLadderTitle": "Seal levels",
-  "forgeLadderNote": "At most +47 % per stat from all seals together. Combined seals (any level, two different stats) free a socket and give each stat about 60 % of a single seal.",
+  "forgeLadderNote": "At most +47 % per stat from all seals together. Recipe seals give their first stat about 60 % and the second about 40 %, plus the recipe effect while they sit in the companion you take along.",
   "forgePickTitle": "Set a seal",
   "summaryGlut": "Glut for the Forge",
   "glutAmount": "+{n} Glut",
@@ -1412,6 +1412,188 @@
   "@marketSalveBought": {
     "placeholders": {
       "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recipeNameAusdauer": "Stamina",
+  "recipeNameFaehrte": "Trail",
+  "recipeNameSchutz": "Ward Amulet",
+  "recipeNameWanderstern": "Wander Star",
+  "recipeNameSpurenleser": "Tracker",
+  "recipeNameGlutherz": "Ember Heart",
+  "recipeHintAusdauer": "Breath and iron …",
+  "recipeHintFaehrte": "The stride follows luck …",
+  "recipeHintSchutz": "What breaks, remains …",
+  "recipeHintWanderstern": "Who walks steadily is found …",
+  "recipeHintSpurenleser": "Old tracks grow warm …",
+  "recipeHintGlutherz": "A heart that never cools …",
+  "recipeForAusdauer": "Changing pace, treadmill starters",
+  "recipeForFaehrte": "Long distances, pouch collectors",
+  "recipeForSchutz": "Smiths who dare L4/L5",
+  "recipeForWanderstern": "Messenger hunters, daily tasks",
+  "recipeForSpurenleser": "A full leash, little LP to open",
+  "recipeForGlutherz": "Frequent smiths (Glut is scarce)",
+  "recipeFxSweetSpot": "Sweet spot ±{kmh} km/h wider",
+  "@recipeFxSweetSpot": {
+    "placeholders": {
+      "kmh": {
+        "type": "String"
+      }
+    }
+  },
+  "recipeFxPouch": "Pouch chance +{pts} pts (runs from 3 km)",
+  "@recipeFxPouch": {
+    "placeholders": {
+      "pts": {
+        "type": "String"
+      }
+    }
+  },
+  "recipeFxFail": "Fail chance −{pts} pts · +1 splinter on a fail",
+  "@recipeFxFail": {
+    "placeholders": {
+      "pts": {
+        "type": "String"
+      }
+    }
+  },
+  "recipeFxMessenger": "Messenger chance +{pts} pts",
+  "@recipeFxMessenger": {
+    "placeholders": {
+      "pts": {
+        "type": "String"
+      }
+    }
+  },
+  "recipeFxWarm": "Pouches warm {pct} % faster",
+  "@recipeFxWarm": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "recipeFxGlut": "{pct} %: +1 Glut per run from 1 km (once a day)",
+  "@recipeFxGlut": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "baumTitle": "FORGE TREE",
+  "baumCount": "Recipes {known} / {total}",
+  "@baumCount": {
+    "placeholders": {
+      "known": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "baumTagline": "Two single seals make a recipe · recipe + third seal = level 2",
+  "baumUndiscovered": "??? · UNDISCOVERED",
+  "baumHint": "Hint: {hint}",
+  "@baumHint": {
+    "placeholders": {
+      "hint": {
+        "type": "String"
+      }
+    }
+  },
+  "baumNext": "next",
+  "baumReady": "Ready to forge now",
+  "baumLocked": "Forge {name} first",
+  "@baumLocked": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "baumSingle": "Single seal {stat} · best L{level}",
+  "@baumSingle": {
+    "placeholders": {
+      "stat": {
+        "type": "String"
+      },
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "baumSingleNone": "Single seal {stat} · none yet",
+  "@baumSingleNone": {
+    "placeholders": {
+      "stat": {
+        "type": "String"
+      }
+    }
+  },
+  "baumForged": "Forged up to L{level}",
+  "@baumForged": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "baumFor": "For: {who}",
+  "@baumFor": {
+    "placeholders": {
+      "who": {
+        "type": "String"
+      }
+    }
+  },
+  "baumWhere": "Forge in Combine. Works while the seal sits in the companion you take along.",
+  "forgeRecipeLocked": "Forge {name} first, then its level 2 opens.",
+  "@forgeRecipeLocked": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "forgeRecipeNew": "New recipe: {name}!",
+  "@forgeRecipeNew": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "forgeRecipeMade": "Recipe {name}",
+  "@forgeRecipeMade": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recipeEffectsTitle": "Recipe effects",
+  "recipeEffectsNone": "No recipe seals set.",
+  "recipeEffectsIdle": "They work once {name} is taken along.",
+  "@recipeEffectsIdle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recipeEffectLine": "{name} L{level}: {effect}",
+  "@recipeEffectLine": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "level": {
+        "type": "int"
+      },
+      "effect": {
         "type": "String"
       }
     }

@@ -31,7 +31,7 @@ class GameData {
   });
 
   factory GameData.initial(DateTime now) {
-    final pebble = Companion.pebble();
+    final pebble = Companion.starter();
     return GameData(
       lp: 0,
       companions: [pebble],
@@ -245,7 +245,7 @@ class GameData {
       glut: forge.glut - glut,
       attempts: forge.attempts + 1,
     );
-    if (Forge.rollsFail(step.failChance(glut), random)) {
+    if (Forge.rollsFail(failChanceFor(step, glut), random)) {
       return (
         copyWith(lp: lp - step.lp, forge: _broken(paid, seal)),
         ForgeOutcome.failed(seal),
@@ -262,18 +262,42 @@ class GameData {
     );
   }
 
+  /// Fail chance of [step] at [glut] Glut for the companion taken along:
+  /// [Recipe.schutz] in its sockets takes some points off.
+  double failChanceFor(ForgeStep step, int glut) => max(
+    0,
+    step.failChance(glut) - activeCompanion.recipeEffect(Recipe.schutz),
+  );
+
+  /// What [a] and [b] would make in Kombinieren, null when they don't fit:
+  /// two single seals of different stats make a recipe seal ([a] leads);
+  /// a level-1 recipe seal and a single seal of its missing stat make the
+  /// level-2 recipe seal. Both at the same level.
+  static Seal? combineResult(Seal a, Seal b) {
+    if (a.level != b.level || a.isTriple || b.isTriple) return null;
+    if (!a.combined && !b.combined) {
+      return a.type == b.type ? null : Seal.combined(a.type, b.type, a.level);
+    }
+    if (a.combined && b.combined) return null;
+    final pair = a.combined ? a : b;
+    final single = a.combined ? b : a;
+    if (pair.stats.contains(single.type)) return null;
+    return Seal.triple(pair.type, pair.partner!, single.type, a.level);
+  }
+
+  /// Cost, Glut range and fail chance for combining into [made].
+  static ForgeStep? combineStep(Seal made) =>
+      made.isTriple ? Forge.tripleStep(made.level) : Forge.combines[made.level];
+
   /// Why [a] and [b] can't be combined with [glut] Glut, or null if they
-  /// can: two single seals of different stats at the same level (1–5).
+  /// can (see [combineResult]). A level-2 recipe opens once its level-1
+  /// recipe was forged.
   ForgeBlock? combineBlock(Seal a, Seal b, int glut) {
     if (!unlocks.forge) return ForgeBlock.locked;
-    final step = Forge.combines[a.level];
-    if (a.combined ||
-        b.combined ||
-        a.type == b.type ||
-        a.level != b.level ||
-        step == null) {
-      return ForgeBlock.badCombine;
-    }
+    final made = combineResult(a, b);
+    final step = made == null ? null : combineStep(made);
+    if (made == null || step == null) return ForgeBlock.badCombine;
+    if (!forge.canForge(made.recipe!)) return ForgeBlock.recipeLocked;
     if (forge.count(a) < 1 || forge.count(b) < 1) return ForgeBlock.needsPair;
     if (!step.allows(glut)) return ForgeBlock.glutRange;
     if (forge.glut < glut) return ForgeBlock.notEnoughGlut;
@@ -281,23 +305,25 @@ class GameData {
     return null;
   }
 
-  /// Combines [a] and [b] into one seal that raises both stats. On a fail
-  /// one of the two (picked by [random]) falls to splinters, the other
-  /// stays. Check [combineBlock] first.
+  /// Combines [a] and [b] into a recipe seal (see [combineResult]); both
+  /// inputs are used up, so a level-2 recipe consumes its recipe seal. The
+  /// recipe is noted as discovered at that level. On a fail one of the two
+  /// (picked by [random]) falls to splinters, the other stays. Check
+  /// [combineBlock] first.
   (GameData, ForgeOutcome) combining(Seal a, Seal b, int glut, Random random) {
-    final step = Forge.combines[a.level]!;
+    final made = combineResult(a, b)!;
+    final step = combineStep(made)!;
     final paid = forge.copyWith(
       glut: forge.glut - glut,
       attempts: forge.attempts + 1,
     );
-    if (Forge.rollsFail(step.failChance(glut), random)) {
+    if (Forge.rollsFail(failChanceFor(step, glut), random)) {
       final broken = random.nextBool() ? a : b;
       return (
         copyWith(lp: lp - step.lp, forge: _broken(paid, broken)),
         ForgeOutcome.failed(broken),
       );
     }
-    final made = Seal.combined(a.type, b.type, a.level);
     return (
       copyWith(
         lp: lp - step.lp,
@@ -305,6 +331,7 @@ class GameData {
             .removing(a)
             .removing(b)
             .adding(made)
+            .discovering(made.recipe!, made.level)
             .copyWith(combines: paid.combines + 1),
         totals: totals.addingForgeUse(),
       ),
@@ -312,10 +339,17 @@ class GameData {
     );
   }
 
-  static ForgeState _broken(ForgeState f, Seal seal) => f
+  /// [seal] falls to splinters; [Recipe.schutz] on the companion taken
+  /// along adds [Recipe.schutzSplinters].
+  ForgeState _broken(ForgeState f, Seal seal) => f
       .removing(seal)
       .copyWith(
-        splinters: f.splinters + Forge.splintersOnFail,
+        splinters:
+            f.splinters +
+            Forge.splintersOnFail +
+            (activeCompanion.recipeLevel(Recipe.schutz) > 0
+                ? Recipe.schutzSplinters
+                : 0),
         fails: f.fails + 1,
       );
 
@@ -422,11 +456,13 @@ class GameData {
       ? Forge.glutPerRun
       : 0;
 
+  /// The companion that went on [run] (the one taken along if it is gone).
+  Companion companionFor(RunSummary run) =>
+      companions.where((c) => c.id == run.companionId).firstOrNull ??
+      activeCompanion;
+
   /// Fortune factor of the companion that went on [run].
-  double fortuneFactorFor(RunSummary run) =>
-      (companions.where((c) => c.id == run.companionId).firstOrNull ??
-              activeCompanion)
-          .fortuneFactor;
+  double fortuneFactorFor(RunSummary run) => companionFor(run).fortuneFactor;
 
   /// Pouch find chance of [run] (see [Pouches.chance]); 0 before waymark 1
   /// or for an invalid run. The very first pouch is sure, so the first
@@ -438,7 +474,12 @@ class GameData {
       tankSize: run.tankSize ?? activeCompanion.tankSize,
       fortuneFactor: fortuneFactorFor(run),
     );
-    return chance > 0 && pouches.foundTotal == 0 ? 1 : chance;
+    if (chance > 0 && pouches.foundTotal == 0) return 1;
+    // Fährte: a few points more on longer runs that used Breath.
+    final faehrte = run.distanceM >= Recipe.pouchMinDistanceM && chance > 0
+        ? companionFor(run).recipeEffect(Recipe.faehrte)
+        : 0.0;
+    return min(1, chance + faehrte);
   }
 
   /// Stores [run] (newest first, capped) and counts it in [totals]. Then
@@ -454,9 +495,12 @@ class GameData {
     // Warming: every pouch on the leash walks along.
     var warmed = 0;
     if (run.valid && run.distanceM > 0 && next.pouches.leash.isNotEmpty) {
+      // Spurenleser: the run counts that much more for warming.
+      final warmth =
+          1 + next.companionFor(run).recipeEffect(Recipe.spurenleser);
       final leash = [
         for (final p in next.pouches.leash)
-          p.ready ? p : p.warmed(run.distanceM, end),
+          p.ready ? p : p.warmed(run.distanceM * warmth, end),
       ];
       warmed = [
         for (var i = 0; i < leash.length; i++)
@@ -493,6 +537,16 @@ class GameData {
         // A delivered pouch takes the place of the run Glut, as with a
         // pouch the run found itself.
         if (visit.kind == VisitKind.gift) glut = 0;
+      }
+    }
+    // Glutherz: a chance of one Glut more, at most once a day.
+    if (random != null) {
+      final heart = next.glutherzChanceFor(run);
+      if (heart > 0 && random.nextDouble() < heart) {
+        glut += 1;
+        next = next.copyWith(
+          forge: next.forge.copyWith(glutherzDay: Messengers.dayKey(end)),
+        );
       }
     }
     var stored = run.withRewards(
@@ -545,7 +599,21 @@ class GameData {
       fortuneFactor: fortuneFactorFor(run),
     );
     if (chance <= 0) return 0;
-    return _firstMessengerSure ? 1 : chance;
+    if (_firstMessengerSure) return 1;
+    // Wanderstern: a few points more.
+    return min(1, chance + companionFor(run).recipeEffect(Recipe.wanderstern));
+  }
+
+  /// Chance of one extra Glut from [Recipe.glutherz] after [run]: a valid
+  /// run of at least [Forge.glutRunMinM] with the Forge open, at most once
+  /// a day.
+  double glutherzChanceFor(RunSummary run) {
+    if (!run.valid || run.distanceM < Forge.glutRunMinM || !unlocks.forge) {
+      return 0;
+    }
+    final day = Messengers.dayKey(run.startedAt.add(run.duration));
+    if (forge.glutherzDay == day) return 0;
+    return companionFor(run).recipeEffect(Recipe.glutherz);
   }
 
   bool get _firstMessengerSure =>
@@ -894,6 +962,7 @@ class GameData {
     'lp': lp,
     'companions': [for (final c in companions) c.toJson()],
     'activeCompanionId': activeCompanionId,
+    starterKey: true,
     'breath': breath.toJson(),
     'runs': [for (final r in runs) r.toJson()],
     if (market case final m?) 'market': m.toJson(),
@@ -917,7 +986,10 @@ class GameData {
       for (final r in json['runs']! as List<Object?>)
         RunSummary.fromJson(r! as Map<String, Object?>),
     ];
-    final owned = [for (final c in companions) Companion.fromJson(c)];
+    final owned = [
+      for (final c in companions)
+        _retuningStarter(Companion.fromJson(c), json[starterKey] == null),
+    ];
     // Saves from before the counters start from their stored runs, once.
     final totals = switch (json['totals']) {
       final Map<String, Object?> t => Totals.fromJson(
@@ -953,10 +1025,12 @@ class GameData {
         _ => WanderwegProgress.legacy(totals.distanceM, now ?? DateTime.now()),
       },
       // Saves from before the seal case: every forge use set one seal.
+      // Recipe seals already set count as discovered recipes (the case
+      // itself is read in ForgeState.fromJson).
       forge: switch (json['forge']) {
         final Map<String, Object?> f => ForgeState.fromJson(f),
         _ => ForgeState(placed: totals.forgeUses),
-      },
+      }.discoveringAll([for (final c in owned) ...c.seals]),
       // Saves from before pouches start with an empty leash.
       pouches: switch (json['pouches']) {
         final Map<String, Object?> p => PouchState.fromJson(p),
@@ -970,6 +1044,20 @@ class GameData {
       // Saves from before salves: an empty Vorrat.
       salves: SalveStock.fromJson(json['salves']),
     );
+  }
+
+  /// Marks a game whose starter already has [Companion.starterStats].
+  static const String starterKey = 'starterStats';
+
+  /// Games stored before [starterKey] give the original starter
+  /// ([Companion.pebble]'s id, still owned) the uneven starter stats once;
+  /// level, XP, Mut, seals and gait stay.
+  static Companion _retuningStarter(Companion c, bool old) {
+    if (!old || c.id != Companion.pebble().id || c.speciesId != 'pebble') {
+      return c;
+    }
+    final s = Companion.starterStats;
+    return c.copyWith(stride: s.stride, grit: s.grit, fortune: s.fortune);
   }
 
   /// Older saves kept a tank per companion; the one taken along becomes the
@@ -995,8 +1083,12 @@ enum ForgeBlock {
   /// Not enough of these seals in the case (two equal ones to forge up).
   needsPair,
 
-  /// Two single seals of different stats at the same level (1–5) needed.
+  /// Two single seals of different stats at the same level (1–5) needed,
+  /// or a recipe seal and a single seal of its missing stat.
   badCombine,
+
+  /// A level-2 recipe opens once its level-1 recipe was forged.
+  recipeLocked,
 
   /// Glut outside the recipe's min–max.
   glutRange,

@@ -156,7 +156,11 @@ class _RunScreenState extends ConsumerState<RunScreen>
                   const SizedBox(height: 24),
                   BreathBar(breath: e.breathLeft, tank: e.companion.tankSize),
                   const SizedBox(height: 24),
-                  SweetSpotGauge(type: e.companion.type, speedKmh: e.speedKmh),
+                  SweetSpotGauge(
+                    type: e.companion.type,
+                    speedKmh: e.speedKmh,
+                    widenKmh: e.companion.sweetSpotWidenKmh,
+                  ),
                   const SizedBox(height: 4),
                   if (hint != null) _GpsHint(device: device, hint: hint, l: l),
                   if (kIsWeb && device != null && e.earnsLp)

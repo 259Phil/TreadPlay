@@ -16,7 +16,9 @@ void main() {
 
   /// A game with [n] waymarks reached (and seen) that found a pouch
   /// before (so the sure first pouch is used up).
+  /// The starter has flat 10/10/10 stats here, so Fortune scales nothing.
   GameData at(int n, {DateTime? now}) => GameData.initial(now ?? t0).copyWith(
+    companions: [Companion.pebble()],
     wanderweg: WanderwegProgress(reachedAt: List.filled(n, now ?? t0), seen: n),
     pouches: const PouchState(found: {PouchColor.brown: 1}),
   );

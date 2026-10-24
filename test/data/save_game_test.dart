@@ -156,9 +156,12 @@ void main() {
     }
 
     test('export and import keep the whole forge state', () {
+      // The recipe seal in the case counts as a discovered recipe.
       final game = forged();
       final loaded = SaveGame.decode(SaveGame.encode(game, t0)).game;
-      expect(jsonEncode(loaded.toJson()), jsonEncode(game.toJson()));
+      expect(loaded.forge.recipes, {Recipe.faehrte: 5});
+      final again = SaveGame.decode(SaveGame.encode(loaded, t0)).game;
+      expect(jsonEncode(again.toJson()), jsonEncode(loaded.toJson()));
       expect(loaded.forge.glut, 7);
       expect(loaded.forge.splinters, 4);
       expect(loaded.forge.count(const Seal(SealType.grit, 3)), 2);

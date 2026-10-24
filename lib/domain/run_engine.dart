@@ -49,7 +49,13 @@ class RunEngine {
   bool get canEarn => earnsLp && companion.spirit > 0 && breathLeft >= 1;
 
   /// True while the current pace is inside the companion's sweet spot.
-  bool get inBand => sweetSpotFactor(companion.type, speedKmh) > 0;
+  bool get inBand =>
+      sweetSpotFactor(
+        companion.type,
+        speedKmh,
+        widenKmh: companion.sweetSpotWidenKmh,
+      ) >
+      0;
 
   /// Average pace of the run, null before the first 10 m.
   Duration? get pace => paceOf(elapsed, distanceM);
@@ -87,7 +93,13 @@ class RunEngine {
     if (speedKmh > maxPlausibleKmh) _fastTime += dt;
     if (inBand) _inBandTime += dt;
 
-    factor = canEarn ? sweetSpotFactor(companion.type, speedKmh) : 0;
+    factor = canEarn
+        ? sweetSpotFactor(
+            companion.type,
+            speedKmh,
+            widenKmh: companion.sweetSpotWidenKmh,
+          )
+        : 0;
     if (factor == 0) return 0;
 
     _progressM += sample.distanceM * factor;

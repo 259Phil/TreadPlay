@@ -69,7 +69,15 @@ class SaveGame {
   /// salve prices in 'market', Mut and XP on runs). Older files still
   /// import: every companion keeps its level and Mut and starts at 0 XP,
   /// the Vorrat holds no salves.
-  static const int version = 8;
+  ///
+  /// 9: the Schmiede-Baum ('recipes' and 'glutherzDay' in 'forge'; recipe
+  /// seals with a lead stat, `grit+stride@2`, and level-2 recipe seals,
+  /// `stride+grit+fortune@2`). Older files still import: their combined
+  /// seals become recipe seals led by the first stat, and every recipe seal
+  /// they own (case or sockets) counts as discovered at its level, and the
+  /// original starter gets the uneven starter stats once
+  /// (see [GameData.starterKey]).
+  static const int version = 9;
 
   static String fileName(DateTime now) {
     final stamp = now.toIso8601String().replaceAll(':', '-').split('.').first;
@@ -105,8 +113,8 @@ class SaveGame {
     if (v > version) {
       throw const SaveGameException(SaveGameError.newerVersion);
     }
-    final json = _withoutLevelling(
-      _withHomeTempo(_migrate(raw['game'], v), v),
+    final json = _withoutRecipes(
+      _withoutLevelling(_withHomeTempo(_migrate(raw['game'], v), v), v),
       v,
     );
     if (json is! Map<String, Object?>) {
@@ -197,6 +205,21 @@ class SaveGame {
         for (final c in owned)
           c is Map<String, Object?> ? ({...c}..remove('xp')) : c,
       ];
+    }
+    return next;
+  }
+
+  /// Before version 9 there were no recipes: stray 'recipes' and
+  /// 'glutherzDay' keys are dropped, so the recipes come from the owned
+  /// recipe seals alone; a stray starter mark is dropped too, so the
+  /// starter is retuned once.
+  static Object? _withoutRecipes(Object? game, int fromVersion) {
+    if (fromVersion >= 9 || game is! Map<String, Object?>) return game;
+    final next = {...game}..remove(GameData.starterKey);
+    if (game['forge'] case final Map<String, Object?> f) {
+      next['forge'] = {...f}
+        ..remove('recipes')
+        ..remove('glutherzDay');
     }
     return next;
   }

@@ -4,6 +4,7 @@ import '../domain/companion.dart';
 import '../l10n/app_localizations.dart';
 import '../theme.dart';
 import 'format.dart';
+import 'recipe_text.dart';
 
 IconData sealIcon(SealType type) => switch (type) {
   SealType.stride => Icons.directions_walk,
@@ -17,10 +18,13 @@ String sealStat(AppLocalizations l, SealType type) => switch (type) {
   SealType.fortune => l.statFortune,
 };
 
-/// "Stride" or "Grit + Stride".
-String sealStats(AppLocalizations l, Seal s) => s.combined
-    ? l.sealComboName(sealStat(l, s.type), sealStat(l, s.partner!))
-    : sealStat(l, s.type);
+/// "Stride", or a recipe seal's name ("Ausdauer").
+String sealStats(AppLocalizations l, Seal s) =>
+    s.recipe == null ? sealStat(l, s.type) : recipeName(l, s.recipe!);
+
+/// The stats a seal raises, lead first: "Schwung + Zähigkeit (+ Glück)".
+String sealStatList(AppLocalizations l, Seal s) =>
+    s.stats.map((t) => sealStat(l, t)).join(' + ');
 
 /// "Stride seal L3" style name used in dialogs.
 String sealTitle(AppLocalizations l, Seal s) =>
@@ -30,11 +34,12 @@ String sealTitle(AppLocalizations l, Seal s) =>
 String pctText(BuildContext context, double fraction) =>
     formatNumber(context, fraction * 100);
 
-/// "+15 %" or "+9 % / +9 %".
+/// "+15 %", or per stat for a recipe seal ("+11 % / +7 %").
 String sealBonusText(BuildContext context, Seal s) {
   final l = AppLocalizations.of(context);
-  final pct = pctText(context, s.bonus);
-  return s.combined ? l.sealComboBonus(pct) : l.statBonus(pct);
+  return s.combined
+      ? sealSplitText(context, s)
+      : l.statBonus(pctText(context, s.bonus));
 }
 
 /// The painted seal for [seal] at [size]. The art itself grows with the
@@ -72,6 +77,13 @@ class SealArt extends StatelessWidget {
     );
     if (seal.artScale != 1) {
       art = Transform.scale(scale: seal.artScale, child: art);
+    }
+    // Level-2 recipe seals wear their recipe's colour.
+    if (seal.recipe case final r? when recipeTint(r) != null) {
+      art = ColorFiltered(
+        colorFilter: ColorFilter.mode(recipeTint(r)!, BlendMode.modulate),
+        child: art,
+      );
     }
     if (dimmed) art = Opacity(opacity: 0.45, child: art);
     return SizedBox(

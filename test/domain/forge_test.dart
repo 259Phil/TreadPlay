@@ -69,39 +69,59 @@ void main() {
       );
     });
 
-    test('combined seals give +9/+9 % at L3 and +19/+19 % at L5', () {
-      final k3 = Seal.combined(SealType.grit, SealType.stride, 3);
-      final k5 = Seal.combined(SealType.fortune, SealType.stride, 5);
-      expect(k3.bonusOn(SealType.stride), 0.09);
-      expect(k3.bonusOn(SealType.grit), 0.09);
-      expect(k3.bonusOn(SealType.fortune), 0);
-      expect(k5.bonusOn(SealType.stride), 0.19);
-      expect(k5.bonusOn(SealType.fortune), 0.19);
-      expect(
-        () => Seal.combined(SealType.grit, SealType.grit, 3),
-        throwsArgumentError,
-      );
-      expect(
-        () => Seal.combined(SealType.grit, SealType.stride, 0),
-        throwsRangeError,
-      );
-      expect(
-        () => Seal.combined(SealType.grit, SealType.stride, 6),
-        throwsRangeError,
-      );
-    });
+    test(
+      'recipe seals give the lead 60 %: +11/+7 % at L3, +23/+15 % at L5',
+      () {
+        final k3 = Seal.combined(SealType.grit, SealType.stride, 3);
+        final k5 = Seal.combined(SealType.fortune, SealType.stride, 5);
+        expect(k3.bonusOn(SealType.grit), 0.11);
+        expect(k3.bonusOn(SealType.stride), 0.07);
+        expect(k3.bonusOn(SealType.fortune), 0);
+        expect(k5.bonusOn(SealType.fortune), 0.23);
+        expect(k5.bonusOn(SealType.stride), 0.15);
+        expect(k3.recipe, Recipe.ausdauer);
+        expect(k5.recipe, Recipe.faehrte);
+        expect(
+          () => Seal.combined(SealType.grit, SealType.grit, 3),
+          throwsArgumentError,
+        );
+        expect(
+          () => Seal.combined(SealType.grit, SealType.stride, 0),
+          throwsRangeError,
+        );
+        expect(
+          () => Seal.combined(SealType.grit, SealType.stride, 6),
+          throwsRangeError,
+        );
+      },
+    );
 
-    test('codes round-trip; order of a combined seal does not matter', () {
+    test('codes round-trip; the lead stat of a recipe seal comes first', () {
       final k = Seal.combined(SealType.stride, SealType.grit, 5);
       expect(k.code, 'stride+grit@5');
       expect(Seal.tryParse(k.code), k);
-      expect(Seal.combined(SealType.grit, SealType.stride, 5), k);
+      final g = Seal.combined(SealType.grit, SealType.stride, 5);
+      expect(g, isNot(k));
+      expect(g.code, 'grit+stride@5');
+      expect(Seal.tryParse('grit+stride@5'), g);
+      expect(g.recipe, k.recipe);
+      final t = Seal.triple(
+        SealType.stride,
+        SealType.grit,
+        SealType.fortune,
+        2,
+      );
+      expect(t.code, 'stride+grit+fortune@2');
+      expect(Seal.tryParse(t.code), t);
+      expect(t.recipe, Recipe.wanderstern);
       expect(Seal.tryParse('fortune@4'), const Seal(SealType.fortune, 4));
       for (final bad in [
         'stride@0',
         'stride@6',
-        'grit+stride@5',
         'stride+stride@3',
+        'stride+grit+stride@2',
+        'stride+grit+fortune@6',
+        'stride+grit+fortune+grit@1',
         'stride+grit@6',
         'stride+grit@0',
         'x@1',
@@ -150,9 +170,9 @@ void main() {
       final mixed = gilt
           .withSeal(0, const Seal(SealType.grit, 5))
           .withSeal(1, Seal.combined(SealType.grit, SealType.fortune, 3));
-      expect(mixed.sealBonus(SealType.grit), closeTo(0.40, 1e-9));
+      expect(mixed.sealBonus(SealType.grit), closeTo(0.42, 1e-9));
       expect(mixed.sealCapped(SealType.grit), isFalse);
-      expect(mixed.sealBonus(SealType.fortune), closeTo(0.09, 1e-9));
+      expect(mixed.sealBonus(SealType.fortune), closeTo(0.07, 1e-9));
     });
 
     test('Grit divides Spirit loss, Fortune multiplies chances', () {
@@ -554,14 +574,17 @@ void main() {
     });
   });
   group('combining at every level (St.1–St.5)', () {
-    test('combined seals give about 60 % of a single seal per stat', () {
-      expect(
-        [for (var l = 1; l <= 5; l++) Seal.combinedBonus[l]],
-        [0.025, 0.055, 0.09, 0.13, 0.19],
-      );
+    test('recipe seals split about 60/40 and sum to the old combo', () {
+      const oldCombo = [0.025, 0.055, 0.09, 0.13, 0.19];
       for (var l = 1; l <= 5; l++) {
-        final ratio = Seal.combinedBonus[l]! / Seal.singleBonus[l - 1];
-        expect(ratio, inInclusiveRange(0.55, 0.65), reason: 'L$l');
+        final lead = Seal.pairLead[l - 1];
+        final second = Seal.pairSecond[l - 1];
+        expect(
+          lead + second,
+          closeTo(2 * oldCombo[l - 1], 1e-9),
+          reason: 'L$l',
+        );
+        expect(lead / (lead + second), inInclusiveRange(0.58, 0.67));
       }
     });
 
@@ -588,7 +611,9 @@ void main() {
       expect(next.lp, 5);
       expect(next.forge.glut, 1);
       expect(next.forge.count(k1), 1);
-      expect(k1.bonusOn(SealType.stride), 0.025);
+      expect(k1.bonusOn(SealType.stride), 0.03);
+      expect(k1.bonusOn(SealType.grit), 0.02);
+      expect(next.forge.recipes, {Recipe.ausdauer: 1});
       expect(Seal.tryParse('stride+grit@1'), k1);
     });
 

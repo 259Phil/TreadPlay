@@ -138,17 +138,18 @@ void main() {
 
   group('game', () {
     test('a valid run brings XP and costs Mut, stored on the run', () {
+      // The starter's Grit 9.4 costs a little more Mut than a flat 10.
       final g = GameData.initial(t0).recordingRun(run('pebble-1', 6));
       final c = g.activeCompanion;
-      expect(c.spirit, 94);
+      expect(c.spirit, closeTo(93.6, 1e-9));
       expect(c.xp, 6);
       final r = g.lastRun!;
-      expect(r.spiritLost, 6);
-      expect(r.spiritAfter, 94);
+      expect(r.spiritLost, 6.4);
+      expect(r.spiritAfter, closeTo(93.6, 1e-9));
       expect(r.xpGained, 6);
       expect(r.levelReady, isTrue);
       final back = RunSummary.fromJson(r.toJson());
-      expect(back.spiritAfter, 94);
+      expect(back.spiritAfter, closeTo(93.6, 1e-9));
       expect(back.xpGained, 6);
       expect(back.levelReady, isTrue);
     });
@@ -329,7 +330,7 @@ void main() {
           .replaceCompanion(g0.activeCompanion.copyWith(level: 3, xp: 11))
           .copyWith(salves: const SalveStock({Salve.small: 2}));
       final bytes = SaveGame.encode(g, t0);
-      expect(jsonDecode(utf8.decode(bytes))['version'], 8);
+      expect(jsonDecode(utf8.decode(bytes))['version'], 9);
       final back = SaveGame.decode(bytes).game;
       expect(back.activeCompanion.level, 3);
       expect(back.activeCompanion.xp, 11);

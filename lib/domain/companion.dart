@@ -6,7 +6,7 @@ import '../data/species.dart';
 import 'seal.dart';
 import 'world.dart';
 
-export 'seal.dart' show Seal, SealType;
+export 'seal.dart' show Recipe, RecipeEffect, Seal, SealType;
 
 /// A companion's gait: the pace it earns LP at. Shown as Schritt / Trab /
 /// Galopp (EN Stroll / Trot / Gallop). The enum names are save ids from
@@ -164,11 +164,24 @@ class Companion {
     CompanionType? tempo,
   }) : _tempo = tempo;
 
-  /// The starter every player is given.
+  /// The starter species with the flat Common base stats (10/10/10).
   factory Companion.pebble() => Companion.fresh(
     id: 'pebble-1',
     speciesId: 'pebble',
     rarity: Rarity.common,
+  );
+
+  /// Stride, Grit and Fortune of the starter on a new save: uneven and
+  /// from the bottom of the Common roll (9.2–10.8), so most Commons in the
+  /// market roll better and collecting pays off right away.
+  static const starterStats = (stride: 9.2, grit: 9.4, fortune: 9.3);
+
+  /// The starter every new player is given (see [starterStats]). Saves
+  /// that already exist keep their companions as stored.
+  factory Companion.starter() => Companion.pebble().copyWith(
+    stride: starterStats.stride,
+    grit: starterStats.grit,
+    fortune: starterStats.fortune,
   );
 
   /// A level 1 companion with the unrolled base stats of its rarity.
@@ -272,6 +285,25 @@ class Companion {
 
   /// True when the seals on [type] reach (or would pass) the cap.
   bool sealCapped(SealType type) => rawSealBonus(type) >= sealCap - 1e-9;
+
+  /// Level of [recipe] in the sockets (the highest seal counts, the same
+  /// recipe twice does not stack); 0 when it is not set.
+  int recipeLevel(Recipe recipe) => seals
+      .where((s) => s.recipe == recipe)
+      .fold(0, (best, s) => max(best, s.level));
+
+  /// Effect of [recipe] from the sockets, 0 when it is not set. Only the
+  /// companion taken along counts; callers check that.
+  double recipeEffect(Recipe recipe) => recipe.at(recipeLevel(recipe));
+
+  /// The recipes set into this companion with their level.
+  Map<Recipe, int> get recipes => {
+    for (final r in Recipe.values)
+      if (recipeLevel(r) case final lv when lv > 0) r: lv,
+  };
+
+  /// Sweet spot wider on each side by this (km/h), from [Recipe.ausdauer].
+  double get sweetSpotWidenKmh => recipeEffect(Recipe.ausdauer);
 
   /// First empty charm socket, or null when all are filled.
   int? get freeSocket {

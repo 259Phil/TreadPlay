@@ -110,6 +110,21 @@ class Forge {
     ),
   };
 
+  /// Level-2 recipe (recipe seal St.n + single seal of the third stat St.n):
+  /// the combine step of that level with 1.5× LP, one Glut more at both
+  /// ends and a fail chance 5 points higher.
+  static ForgeStep? tripleStep(int level) {
+    final c = combines[level];
+    if (c == null) return null;
+    return ForgeStep(
+      lp: (c.lp * 1.5).round(),
+      minGlut: c.minGlut + 1,
+      maxGlut: c.maxGlut + 1,
+      failAtMin: c.failAtMin + .05,
+      failAtMax: c.failAtMax + .05,
+    );
+  }
+
   /// A failed forge turns one input seal into this many splinters.
   static const int splintersOnFail = 3;
 
@@ -163,6 +178,8 @@ class ForgeState {
     this.bestLevel = 0,
     this.attempts = 0,
     this.fails = 0,
+    this.recipes = const {},
+    this.glutherzDay,
   });
 
   /// Seal code → count of loose seals (not set into a companion).
@@ -182,6 +199,34 @@ class ForgeState {
   /// Forge-up and combine attempts, and how many of them failed (lifetime).
   final int attempts;
   final int fails;
+
+  /// Discovered recipes → highest level forged (or owned since the update
+  /// that brought recipes). A level-2 recipe opens once its level-1 recipe
+  /// is here.
+  final Map<Recipe, int> recipes;
+
+  /// Day key (see `dayKey`) of the last extra Glut from [Recipe.glutherz].
+  final String? glutherzDay;
+
+  bool knows(Recipe r) => (recipes[r] ?? 0) > 0;
+
+  /// True when [r] may be forged: level-1 recipes always, level-2 once
+  /// their level-1 recipe was forged.
+  bool canForge(Recipe r) => r.tier == 1 || knows(r.base);
+
+  /// [r] noted as forged at [level] (keeps the highest).
+  ForgeState discovering(Recipe r, int level) => (recipes[r] ?? 0) >= level
+      ? this
+      : copyWith(recipes: {...recipes, r: level});
+
+  /// Recipes of [seals] noted as discovered (migration of older saves).
+  ForgeState discoveringAll(Iterable<Seal> seals) {
+    var f = this;
+    for (final s in seals) {
+      if (s.recipe case final r?) f = f.discovering(r, s.level);
+    }
+    return f;
+  }
 
   int count(Seal s) => stock[s.code] ?? 0;
 
@@ -228,6 +273,8 @@ class ForgeState {
     int? bestLevel,
     int? attempts,
     int? fails,
+    Map<Recipe, int>? recipes,
+    String? glutherzDay,
   }) => ForgeState(
     stock: stock ?? this.stock,
     glut: glut ?? this.glut,
@@ -237,6 +284,8 @@ class ForgeState {
     bestLevel: bestLevel ?? this.bestLevel,
     attempts: attempts ?? this.attempts,
     fails: fails ?? this.fails,
+    recipes: recipes ?? this.recipes,
+    glutherzDay: glutherzDay ?? this.glutherzDay,
   );
 
   Map<String, Object?> toJson() => {
@@ -248,6 +297,8 @@ class ForgeState {
     'bestLevel': bestLevel,
     'attempts': attempts,
     'fails': fails,
+    'recipes': {for (final e in recipes.entries) e.key.name: e.value},
+    'glutherzDay': ?glutherzDay,
   };
 
   /// Unknown seal codes are dropped (an import checks them first, see
@@ -265,7 +316,18 @@ class ForgeState {
       }
     }
     int read(String k) => max(0, json[k] as int? ?? 0);
-    return ForgeState(
+    final names = Recipe.values.asNameMap();
+    final recipes = <Recipe, int>{};
+    if (json['recipes'] case final Map<Object?, Object?> raw) {
+      for (final e in raw.entries) {
+        final r = names[e.key];
+        final lv = e.value;
+        if (r != null && lv is int && lv > 0) {
+          recipes[r] = lv.clamp(1, Seal.maxLevel);
+        }
+      }
+    }
+    final state = ForgeState(
       stock: stock,
       glut: read('glut'),
       splinters: read('splinters'),
@@ -274,7 +336,12 @@ class ForgeState {
       bestLevel: read('bestLevel').clamp(0, Seal.maxLevel),
       attempts: read('attempts'),
       fails: read('fails'),
+      recipes: recipes,
+      glutherzDay: json['glutherzDay'] as String?,
     );
+    // Recipe seals in the case count as discovered (older saves had
+    // combined seals before recipes were noted).
+    return state.discoveringAll([for (final (s, _) in state.sealsInStock) s]);
   }
 
   /// Stock entries of [json] that are not valid seals; empty when fine.

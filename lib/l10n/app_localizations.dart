@@ -1817,13 +1817,13 @@ abstract class AppLocalizations {
   /// No description provided for @forgeComboFinal.
   ///
   /// In en, this message translates to:
-  /// **'Combined seals are not forged further.'**
+  /// **'Recipe seals are not forged up; with a third seal they grow to level 2 in Combine.'**
   String get forgeComboFinal;
 
   /// No description provided for @forgeBadCombine.
   ///
   /// In en, this message translates to:
-  /// **'Needs two single seals of different stats at the same level.'**
+  /// **'Needs two single seals of different stats, or a recipe seal and a single seal of its missing stat, at the same level.'**
   String get forgeBadCombine;
 
   /// No description provided for @forgeSuccessTitle.
@@ -1871,7 +1871,7 @@ abstract class AppLocalizations {
   /// No description provided for @forgeLadderNote.
   ///
   /// In en, this message translates to:
-  /// **'At most +47 % per stat from all seals together. Combined seals (any level, two different stats) free a socket and give each stat about 60 % of a single seal.'**
+  /// **'At most +47 % per stat from all seals together. Recipe seals give their first stat about 60 % and the second about 40 %, plus the recipe effect while they sit in the companion you take along.'**
   String get forgeLadderNote;
 
   /// No description provided for @forgePickTitle.
@@ -2701,6 +2701,270 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{name} is in the Forge case now.'**
   String marketSalveBought(String name);
+
+  /// No description provided for @recipeNameAusdauer.
+  ///
+  /// In en, this message translates to:
+  /// **'Stamina'**
+  String get recipeNameAusdauer;
+
+  /// No description provided for @recipeNameFaehrte.
+  ///
+  /// In en, this message translates to:
+  /// **'Trail'**
+  String get recipeNameFaehrte;
+
+  /// No description provided for @recipeNameSchutz.
+  ///
+  /// In en, this message translates to:
+  /// **'Ward Amulet'**
+  String get recipeNameSchutz;
+
+  /// No description provided for @recipeNameWanderstern.
+  ///
+  /// In en, this message translates to:
+  /// **'Wander Star'**
+  String get recipeNameWanderstern;
+
+  /// No description provided for @recipeNameSpurenleser.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracker'**
+  String get recipeNameSpurenleser;
+
+  /// No description provided for @recipeNameGlutherz.
+  ///
+  /// In en, this message translates to:
+  /// **'Ember Heart'**
+  String get recipeNameGlutherz;
+
+  /// No description provided for @recipeHintAusdauer.
+  ///
+  /// In en, this message translates to:
+  /// **'Breath and iron …'**
+  String get recipeHintAusdauer;
+
+  /// No description provided for @recipeHintFaehrte.
+  ///
+  /// In en, this message translates to:
+  /// **'The stride follows luck …'**
+  String get recipeHintFaehrte;
+
+  /// No description provided for @recipeHintSchutz.
+  ///
+  /// In en, this message translates to:
+  /// **'What breaks, remains …'**
+  String get recipeHintSchutz;
+
+  /// No description provided for @recipeHintWanderstern.
+  ///
+  /// In en, this message translates to:
+  /// **'Who walks steadily is found …'**
+  String get recipeHintWanderstern;
+
+  /// No description provided for @recipeHintSpurenleser.
+  ///
+  /// In en, this message translates to:
+  /// **'Old tracks grow warm …'**
+  String get recipeHintSpurenleser;
+
+  /// No description provided for @recipeHintGlutherz.
+  ///
+  /// In en, this message translates to:
+  /// **'A heart that never cools …'**
+  String get recipeHintGlutherz;
+
+  /// No description provided for @recipeForAusdauer.
+  ///
+  /// In en, this message translates to:
+  /// **'Changing pace, treadmill starters'**
+  String get recipeForAusdauer;
+
+  /// No description provided for @recipeForFaehrte.
+  ///
+  /// In en, this message translates to:
+  /// **'Long distances, pouch collectors'**
+  String get recipeForFaehrte;
+
+  /// No description provided for @recipeForSchutz.
+  ///
+  /// In en, this message translates to:
+  /// **'Smiths who dare L4/L5'**
+  String get recipeForSchutz;
+
+  /// No description provided for @recipeForWanderstern.
+  ///
+  /// In en, this message translates to:
+  /// **'Messenger hunters, daily tasks'**
+  String get recipeForWanderstern;
+
+  /// No description provided for @recipeForSpurenleser.
+  ///
+  /// In en, this message translates to:
+  /// **'A full leash, little LP to open'**
+  String get recipeForSpurenleser;
+
+  /// No description provided for @recipeForGlutherz.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequent smiths (Glut is scarce)'**
+  String get recipeForGlutherz;
+
+  /// No description provided for @recipeFxSweetSpot.
+  ///
+  /// In en, this message translates to:
+  /// **'Sweet spot ±{kmh} km/h wider'**
+  String recipeFxSweetSpot(String kmh);
+
+  /// No description provided for @recipeFxPouch.
+  ///
+  /// In en, this message translates to:
+  /// **'Pouch chance +{pts} pts (runs from 3 km)'**
+  String recipeFxPouch(String pts);
+
+  /// No description provided for @recipeFxFail.
+  ///
+  /// In en, this message translates to:
+  /// **'Fail chance −{pts} pts · +1 splinter on a fail'**
+  String recipeFxFail(String pts);
+
+  /// No description provided for @recipeFxMessenger.
+  ///
+  /// In en, this message translates to:
+  /// **'Messenger chance +{pts} pts'**
+  String recipeFxMessenger(String pts);
+
+  /// No description provided for @recipeFxWarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Pouches warm {pct} % faster'**
+  String recipeFxWarm(String pct);
+
+  /// No description provided for @recipeFxGlut.
+  ///
+  /// In en, this message translates to:
+  /// **'{pct} %: +1 Glut per run from 1 km (once a day)'**
+  String recipeFxGlut(String pct);
+
+  /// No description provided for @baumTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'FORGE TREE'**
+  String get baumTitle;
+
+  /// No description provided for @baumCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipes {known} / {total}'**
+  String baumCount(int known, int total);
+
+  /// No description provided for @baumTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Two single seals make a recipe · recipe + third seal = level 2'**
+  String get baumTagline;
+
+  /// No description provided for @baumUndiscovered.
+  ///
+  /// In en, this message translates to:
+  /// **'??? · UNDISCOVERED'**
+  String get baumUndiscovered;
+
+  /// No description provided for @baumHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Hint: {hint}'**
+  String baumHint(String hint);
+
+  /// No description provided for @baumNext.
+  ///
+  /// In en, this message translates to:
+  /// **'next'**
+  String get baumNext;
+
+  /// No description provided for @baumReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to forge now'**
+  String get baumReady;
+
+  /// No description provided for @baumLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Forge {name} first'**
+  String baumLocked(String name);
+
+  /// No description provided for @baumSingle.
+  ///
+  /// In en, this message translates to:
+  /// **'Single seal {stat} · best L{level}'**
+  String baumSingle(String stat, int level);
+
+  /// No description provided for @baumSingleNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Single seal {stat} · none yet'**
+  String baumSingleNone(String stat);
+
+  /// No description provided for @baumForged.
+  ///
+  /// In en, this message translates to:
+  /// **'Forged up to L{level}'**
+  String baumForged(int level);
+
+  /// No description provided for @baumFor.
+  ///
+  /// In en, this message translates to:
+  /// **'For: {who}'**
+  String baumFor(String who);
+
+  /// No description provided for @baumWhere.
+  ///
+  /// In en, this message translates to:
+  /// **'Forge in Combine. Works while the seal sits in the companion you take along.'**
+  String get baumWhere;
+
+  /// No description provided for @forgeRecipeLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Forge {name} first, then its level 2 opens.'**
+  String forgeRecipeLocked(String name);
+
+  /// No description provided for @forgeRecipeNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New recipe: {name}!'**
+  String forgeRecipeNew(String name);
+
+  /// No description provided for @forgeRecipeMade.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipe {name}'**
+  String forgeRecipeMade(String name);
+
+  /// No description provided for @recipeEffectsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipe effects'**
+  String get recipeEffectsTitle;
+
+  /// No description provided for @recipeEffectsNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No recipe seals set.'**
+  String get recipeEffectsNone;
+
+  /// No description provided for @recipeEffectsIdle.
+  ///
+  /// In en, this message translates to:
+  /// **'They work once {name} is taken along.'**
+  String recipeEffectsIdle(String name);
+
+  /// No description provided for @recipeEffectLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} L{level}: {effect}'**
+  String recipeEffectLine(String name, int level, String effect);
 }
 
 class _AppLocalizationsDelegate

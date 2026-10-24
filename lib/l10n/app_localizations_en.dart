@@ -1025,11 +1025,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get forgeTopLevel => 'L5 is the highest level.';
 
   @override
-  String get forgeComboFinal => 'Combined seals are not forged further.';
+  String get forgeComboFinal =>
+      'Recipe seals are not forged up; with a third seal they grow to level 2 in Combine.';
 
   @override
   String get forgeBadCombine =>
-      'Needs two single seals of different stats at the same level.';
+      'Needs two single seals of different stats, or a recipe seal and a single seal of its missing stat, at the same level.';
 
   @override
   String get forgeSuccessTitle => 'Forged';
@@ -1058,7 +1059,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get forgeLadderNote =>
-      'At most +47 % per stat from all seals together. Combined seals (any level, two different stats) free a socket and give each stat about 60 % of a single seal.';
+      'At most +47 % per stat from all seals together. Recipe seals give their first stat about 60 % and the second about 40 %, plus the recipe effect while they sit in the companion you take along.';
 
   @override
   String get forgePickTitle => 'Set a seal';
@@ -1749,5 +1750,175 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String marketSalveBought(String name) {
     return '$name is in the Forge case now.';
+  }
+
+  @override
+  String get recipeNameAusdauer => 'Stamina';
+
+  @override
+  String get recipeNameFaehrte => 'Trail';
+
+  @override
+  String get recipeNameSchutz => 'Ward Amulet';
+
+  @override
+  String get recipeNameWanderstern => 'Wander Star';
+
+  @override
+  String get recipeNameSpurenleser => 'Tracker';
+
+  @override
+  String get recipeNameGlutherz => 'Ember Heart';
+
+  @override
+  String get recipeHintAusdauer => 'Breath and iron …';
+
+  @override
+  String get recipeHintFaehrte => 'The stride follows luck …';
+
+  @override
+  String get recipeHintSchutz => 'What breaks, remains …';
+
+  @override
+  String get recipeHintWanderstern => 'Who walks steadily is found …';
+
+  @override
+  String get recipeHintSpurenleser => 'Old tracks grow warm …';
+
+  @override
+  String get recipeHintGlutherz => 'A heart that never cools …';
+
+  @override
+  String get recipeForAusdauer => 'Changing pace, treadmill starters';
+
+  @override
+  String get recipeForFaehrte => 'Long distances, pouch collectors';
+
+  @override
+  String get recipeForSchutz => 'Smiths who dare L4/L5';
+
+  @override
+  String get recipeForWanderstern => 'Messenger hunters, daily tasks';
+
+  @override
+  String get recipeForSpurenleser => 'A full leash, little LP to open';
+
+  @override
+  String get recipeForGlutherz => 'Frequent smiths (Glut is scarce)';
+
+  @override
+  String recipeFxSweetSpot(String kmh) {
+    return 'Sweet spot ±$kmh km/h wider';
+  }
+
+  @override
+  String recipeFxPouch(String pts) {
+    return 'Pouch chance +$pts pts (runs from 3 km)';
+  }
+
+  @override
+  String recipeFxFail(String pts) {
+    return 'Fail chance −$pts pts · +1 splinter on a fail';
+  }
+
+  @override
+  String recipeFxMessenger(String pts) {
+    return 'Messenger chance +$pts pts';
+  }
+
+  @override
+  String recipeFxWarm(String pct) {
+    return 'Pouches warm $pct % faster';
+  }
+
+  @override
+  String recipeFxGlut(String pct) {
+    return '$pct %: +1 Glut per run from 1 km (once a day)';
+  }
+
+  @override
+  String get baumTitle => 'FORGE TREE';
+
+  @override
+  String baumCount(int known, int total) {
+    return 'Recipes $known / $total';
+  }
+
+  @override
+  String get baumTagline =>
+      'Two single seals make a recipe · recipe + third seal = level 2';
+
+  @override
+  String get baumUndiscovered => '??? · UNDISCOVERED';
+
+  @override
+  String baumHint(String hint) {
+    return 'Hint: $hint';
+  }
+
+  @override
+  String get baumNext => 'next';
+
+  @override
+  String get baumReady => 'Ready to forge now';
+
+  @override
+  String baumLocked(String name) {
+    return 'Forge $name first';
+  }
+
+  @override
+  String baumSingle(String stat, int level) {
+    return 'Single seal $stat · best L$level';
+  }
+
+  @override
+  String baumSingleNone(String stat) {
+    return 'Single seal $stat · none yet';
+  }
+
+  @override
+  String baumForged(int level) {
+    return 'Forged up to L$level';
+  }
+
+  @override
+  String baumFor(String who) {
+    return 'For: $who';
+  }
+
+  @override
+  String get baumWhere =>
+      'Forge in Combine. Works while the seal sits in the companion you take along.';
+
+  @override
+  String forgeRecipeLocked(String name) {
+    return 'Forge $name first, then its level 2 opens.';
+  }
+
+  @override
+  String forgeRecipeNew(String name) {
+    return 'New recipe: $name!';
+  }
+
+  @override
+  String forgeRecipeMade(String name) {
+    return 'Recipe $name';
+  }
+
+  @override
+  String get recipeEffectsTitle => 'Recipe effects';
+
+  @override
+  String get recipeEffectsNone => 'No recipe seals set.';
+
+  @override
+  String recipeEffectsIdle(String name) {
+    return 'They work once $name is taken along.';
+  }
+
+  @override
+  String recipeEffectLine(String name, int level, String effect) {
+    return '$name L$level: $effect';
   }
 }

@@ -14,6 +14,7 @@ import '../../widgets/charm_sockets.dart';
 import '../../widgets/companion_figure.dart';
 import '../../widgets/format.dart';
 import '../../widgets/lp_pill.dart';
+import '../../widgets/recipe_text.dart';
 import '../../widgets/seal_art.dart';
 import '../../widgets/stock_art.dart';
 import '../../ui/skin.dart';
@@ -22,6 +23,7 @@ import 'salve_strip.dart';
 part 'forge_recipe_look.dart';
 part 'forge_grimoire.dart';
 part 'forge_strike.dart';
+part 'forge_baum.dart';
 
 enum _Mode { up, combine }
 
@@ -58,8 +60,20 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
 
   ForgeStep? get _step => switch (_mode) {
     _Mode.up => Forge.upgrades[_first?.level],
-    _Mode.combine => Forge.combines[_first?.level],
+    _Mode.combine => _combineStep(_first, _second),
   };
+
+  /// Combine step for [a] and [b]: the level-2 step once a recipe seal is
+  /// involved, else the plain one of [a]'s level.
+  static ForgeStep? _combineStep(Seal? a, Seal? b) {
+    if (a == null) return null;
+    if (b != null) {
+      final made = GameData.combineResult(a, b);
+      if (made != null) return GameData.combineStep(made);
+    }
+    if (a.isTriple) return null;
+    return a.combined ? Forge.tripleStep(a.level) : Forge.combines[a.level];
+  }
 
   @override
   void dispose() {
@@ -94,9 +108,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
     if (_mode == _Mode.combine &&
         _first != null &&
         s != _first &&
-        !s.combined &&
-        !_first!.combined &&
-        s.level == _first!.level) {
+        GameData.combineResult(_first!, s) != null) {
       _second = s;
     } else {
       _first = s;
@@ -159,7 +171,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
               _recipe(context, game, _Mode.up),
               _recipe(context, game, _Mode.combine),
               _caseTab(context, game),
-              const _LadderTab(),
+              const _SchmiedeBaum(),
             ],
           ),
         ),
@@ -207,14 +219,12 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
       (_Mode.up, final a?, _) => game.upgradeBlock(a, _glut),
       (_Mode.combine, final a?, final b?) => game.combineBlock(a, b, _glut),
       (_Mode.combine, final a?, null) =>
-        a.combined || Forge.combines[a.level] == null
-            ? ForgeBlock.badCombine
-            : null,
+        _combineStep(a, null) == null ? ForgeBlock.badCombine : null,
     };
     final made = switch ((mode, a, b)) {
       (_Mode.up, final a?, _) => a.nextLevel,
       (_Mode.combine, final a?, final b?) when block != ForgeBlock.badCombine =>
-        Seal.combined(a.type, b.type, a.level),
+        GameData.combineResult(a, b),
       _ => null,
     };
     final setBlock = a == null
@@ -284,7 +294,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
                           alignment: Alignment.centerLeft,
                           child: Text(
                             l.forgeFailNote(
-                              pctText(context, step.failChance(_glut)),
+                              pctText(context, game.failChanceFor(step, _glut)),
                             ),
                             key: const Key('forge-fail'),
                             style: const TextStyle(
@@ -453,6 +463,15 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
       ForgeBlock.maxLevel => a.combined ? l.forgeComboFinal : l.forgeTopLevel,
       ForgeBlock.needsPair => l.forgeNeedsPair,
       ForgeBlock.badCombine => l.forgeBadCombine,
+      ForgeBlock.recipeLocked => l.forgeRecipeLocked(
+        recipeName(
+          l,
+          (_second == null ? null : GameData.combineResult(a, _second!))
+                  ?.recipe
+                  ?.base ??
+              Recipe.ausdauer,
+        ),
+      ),
       ForgeBlock.notEnoughGlut || ForgeBlock.glutRange => l.forgeNeedsGlut,
       ForgeBlock.notEnoughLp => l.forgeNotEnoughLp,
       ForgeBlock.locked => _lockedText(context),
@@ -470,6 +489,9 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
         ? notifier.upgradeSeal(a, _glut)
         : notifier.combineSeals(a, _second!, _glut);
     if (outcome == null || !context.mounted) return;
+    // A recipe forged for the first time is revealed as new.
+    final recipe = outcome.made?.recipe;
+    final fresh = recipe != null && !before.forge.knows(recipe);
     // The outcome is decided; reveal it after the hammer (or the triangle)
     // unless the system asks for reduced motion.
     if (!MediaQuery.disableAnimationsOf(context)) {
@@ -496,7 +518,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
       // the case catches up once it is closed.
       await showDialog<void>(
         context: context,
-        builder: (context) => _ResultDialog(outcome: outcome),
+        builder: (context) => _ResultDialog(outcome: outcome, fresh: fresh),
       );
       if (!mounted) return;
       setState(() {
@@ -520,7 +542,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
     }
     await showDialog<void>(
       context: context,
-      builder: (context) => _ResultDialog(outcome: outcome),
+      builder: (context) => _ResultDialog(outcome: outcome, fresh: fresh),
     );
   }
 
@@ -1026,9 +1048,7 @@ class _CaseTile extends StatelessWidget {
                 ),
               ),
               Text(
-                seal.combined
-                    ? '${sealStat(l, seal.type).substring(0, 1)}+${sealStat(l, seal.partner!).substring(0, 1)}'
-                    : sealStat(l, seal.type),
+                seal.combined ? sealStats(l, seal) : sealStat(l, seal.type),
                 maxLines: 1,
                 overflow: TextOverflow.fade,
                 softWrap: false,
@@ -1158,9 +1178,12 @@ class _BuyRow extends StatelessWidget {
 }
 
 class _ResultDialog extends StatelessWidget {
-  const _ResultDialog({required this.outcome});
+  const _ResultDialog({required this.outcome, this.fresh = false});
 
   final ForgeOutcome outcome;
+
+  /// The made seal's recipe was not known before.
+  final bool fresh;
 
   @override
   Widget build(BuildContext context) {
@@ -1174,11 +1197,43 @@ class _ResultDialog extends StatelessWidget {
           ? SealArt(seal: made, size: 140, showLevel: true)
           : const SplitterIcon(size: 96),
       title: Text(outcome.success ? l.forgeSuccessTitle : l.forgeFailTitle),
-      content: Text(
-        made != null
-            ? '${l.forgeSuccessBody(sealTitle(l, made))}\n${sealBonusText(context, made)}'
-            : l.forgeFailBody(sealTitle(l, broken!)),
-        textAlign: TextAlign.center,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (made?.recipe case final r?) ...[
+            Text(
+              fresh
+                  ? l.forgeRecipeNew(recipeName(l, r))
+                  : l.forgeRecipeMade(recipeName(l, r)),
+              key: const Key('forge-recipe-name'),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: fresh ? const Color(0xFF8FF0E2) : ForgeColors.brass,
+                fontWeight: FontWeight.w800,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              recipeEffectText(context, r, made!.level),
+              key: const Key('forge-recipe-effect'),
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Color(0xFF8FF0E2),
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+          Text(
+            made != null
+                ? '${l.forgeSuccessBody(sealTitle(l, made))}\n'
+                      '${made.combined ? '${sealStatList(l, made)}: ' : ''}'
+                      '${sealBonusText(context, made)}'
+                : l.forgeFailBody(sealTitle(l, broken!)),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
       actions: [
         FilledButton(
@@ -1187,111 +1242,6 @@ class _ResultDialog extends StatelessWidget {
           child: Text(l.forgeOk),
         ),
       ],
-    );
-  }
-}
-
-/// All seal levels side by side, so the climb from stone to crest is clear.
-/// Each row takes an equal share of the tab, so nothing scrolls.
-class _LadderTab extends StatelessWidget {
-  const _LadderTab();
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    const label = TextStyle(
-      color: ForgeColors.text,
-      fontWeight: FontWeight.w700,
-      fontSize: 12.5,
-      height: 1.2,
-    );
-    Widget row(String title, List<Seal?> seals) => Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(title, style: label),
-          Expanded(
-            child: Row(
-              children: [
-                for (final s in seals)
-                  Expanded(
-                    child: s == null ? const SizedBox() : _LadderCell(seal: s),
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-    return Padding(
-      key: const Key('forge-ladder-tab'),
-      padding: const EdgeInsets.fromLTRB(12, 6, 12, 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          for (final t in SealType.values)
-            row(sealStat(l, t), [for (var lv = 1; lv <= 5; lv++) Seal(t, lv)]),
-          row(l.forgeModeCombine, [
-            for (var lv = 1; lv <= 5; lv++)
-              Seal.combined(SealType.stride, SealType.grit, lv),
-          ]),
-          const SizedBox(height: 4),
-          Text(
-            '${l.forgeLadderNote} ${l.forgeGlutSource} ${l.forgeSellNote} '
-            '${l.forgeClearHint}',
-            maxLines: 6,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              color: ForgeColors.muted,
-              fontSize: 10.5,
-              height: 1.25,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// One level: art scaled to the space it gets, level and bonus below.
-class _LadderCell extends StatelessWidget {
-  const _LadderCell({required this.seal});
-
-  final Seal seal;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    return LayoutBuilder(
-      builder: (context, box) {
-        final art = (box.maxHeight - 28).clamp(14.0, box.maxWidth);
-        return FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SealArt(seal: seal, size: art),
-              Text(
-                l.sealLevel(seal.level),
-                style: TextStyle(
-                  color: sealLevelMetal(seal.level),
-                  fontSize: 10.5,
-                  height: 1.2,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              Text(
-                sealBonusText(context, seal),
-                style: const TextStyle(
-                  color: ForgeColors.text,
-                  fontSize: 10.5,
-                  height: 1.2,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 }

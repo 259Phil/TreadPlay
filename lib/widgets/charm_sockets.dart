@@ -4,6 +4,7 @@ import '../domain/companion.dart';
 import '../l10n/app_localizations.dart';
 import '../theme.dart';
 import '../ui/skin.dart';
+import 'recipe_text.dart';
 import 'seal_art.dart';
 
 export 'seal_art.dart' show sealIcon, sealStat;
@@ -146,7 +147,7 @@ class _Socket extends StatelessWidget {
   static String _label(BuildContext context, AppLocalizations l, Seal s) {
     final pct = pctText(context, s.bonus);
     return s.combined
-        ? '${sealStats(l, s)}\n${l.sealComboBonus(pct)}'
+        ? '${sealStats(l, s)}\n${sealSplitText(context, s)}'
         : l.sealStatBonus(sealStat(l, s.type), pct);
   }
 }

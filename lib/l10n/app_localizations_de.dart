@@ -1031,11 +1031,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get forgeTopLevel => 'Stufe 5 ist die höchste Stufe.';
 
   @override
-  String get forgeComboFinal => 'Kombi-Siegel werden nicht weiter geschmiedet.';
+  String get forgeComboFinal =>
+      'Rezept-Siegel werden nicht aufgewertet; mit einem dritten Siegel wachsen sie in Kombinieren zur 2. Ebene.';
 
   @override
   String get forgeBadCombine =>
-      'Braucht zwei Einzelsiegel verschiedener Werte auf derselben Stufe.';
+      'Braucht zwei Einzelsiegel verschiedener Werte oder ein Rezept-Siegel und ein Einzelsiegel des fehlenden Werts, auf derselben Stufe.';
 
   @override
   String get forgeSuccessTitle => 'Geschmiedet';
@@ -1064,7 +1065,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get forgeLadderNote =>
-      'Höchstens +47 % pro Wert aus allen Siegeln. Kombi-Siegel (jede Stufe, zwei verschiedene Werte) sparen einen Sockel und geben jedem Wert etwa 60 % eines Einzelsiegels.';
+      'Höchstens +47 % pro Wert aus allen Siegeln. Rezept-Siegel geben dem ersten Wert etwa 60 %, dem zweiten etwa 40 %, dazu die Rezept-Wirkung, solange sie im mitgenommenen Gefährten sitzen.';
 
   @override
   String get forgePickTitle => 'Siegel einsetzen';
@@ -1756,5 +1757,175 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String marketSalveBought(String name) {
     return '$name liegt jetzt im Vorrat.';
+  }
+
+  @override
+  String get recipeNameAusdauer => 'Ausdauer';
+
+  @override
+  String get recipeNameFaehrte => 'Fährte';
+
+  @override
+  String get recipeNameSchutz => 'Schutzamulett';
+
+  @override
+  String get recipeNameWanderstern => 'Wanderstern';
+
+  @override
+  String get recipeNameSpurenleser => 'Spurenleser';
+
+  @override
+  String get recipeNameGlutherz => 'Glutherz';
+
+  @override
+  String get recipeHintAusdauer => 'Atem und Eisen …';
+
+  @override
+  String get recipeHintFaehrte => 'Der Schritt folgt dem Glück …';
+
+  @override
+  String get recipeHintSchutz => 'Was bricht, bleibt …';
+
+  @override
+  String get recipeHintWanderstern => 'Wer gleichmäßig geht, wird gefunden …';
+
+  @override
+  String get recipeHintSpurenleser => 'Alte Spuren werden warm …';
+
+  @override
+  String get recipeHintGlutherz => 'Ein Herz, das nicht erkaltet …';
+
+  @override
+  String get recipeForAusdauer => 'Wechseltempo, Laufband-Einsteiger';
+
+  @override
+  String get recipeForFaehrte => 'Langstrecke, Beutel-Sammler';
+
+  @override
+  String get recipeForSchutz => 'Schmiede, die St.4/St.5 wagen';
+
+  @override
+  String get recipeForWanderstern => 'Boten-Jäger, tägliche Aufgaben';
+
+  @override
+  String get recipeForSpurenleser => 'Voller Beutelgürtel, wenig LP zum Öffnen';
+
+  @override
+  String get recipeForGlutherz => 'Viel-Schmiede (Glut ist knapp)';
+
+  @override
+  String recipeFxSweetSpot(String kmh) {
+    return 'Sweet-Spot ±$kmh km/h breiter';
+  }
+
+  @override
+  String recipeFxPouch(String pts) {
+    return 'Beutel-Chance +$pts P. (Läufe ab 3 km)';
+  }
+
+  @override
+  String recipeFxFail(String pts) {
+    return 'Fehlschlag −$pts P. · +1 Splitter bei Fehlschlag';
+  }
+
+  @override
+  String recipeFxMessenger(String pts) {
+    return 'Boten-Chance +$pts P.';
+  }
+
+  @override
+  String recipeFxWarm(String pct) {
+    return 'Beutel wärmen $pct % schneller';
+  }
+
+  @override
+  String recipeFxGlut(String pct) {
+    return '$pct %: +1 Glut je Lauf ab 1 km (1× am Tag)';
+  }
+
+  @override
+  String get baumTitle => 'SCHMIEDE-BAUM';
+
+  @override
+  String baumCount(int known, int total) {
+    return 'Rezepte $known / $total';
+  }
+
+  @override
+  String get baumTagline =>
+      'Zwei Einzelsiegel = Rezept · Rezept + drittes Siegel = 2. Ebene';
+
+  @override
+  String get baumUndiscovered => '??? · UNENTDECKT';
+
+  @override
+  String baumHint(String hint) {
+    return 'Hinweis: $hint';
+  }
+
+  @override
+  String get baumNext => 'nächste';
+
+  @override
+  String get baumReady => 'Jetzt schmiedbar';
+
+  @override
+  String baumLocked(String name) {
+    return 'Erst $name schmieden';
+  }
+
+  @override
+  String baumSingle(String stat, int level) {
+    return 'Einzelsiegel $stat · bestes St.$level';
+  }
+
+  @override
+  String baumSingleNone(String stat) {
+    return 'Einzelsiegel $stat · noch keins';
+  }
+
+  @override
+  String baumForged(int level) {
+    return 'Bis St.$level geschmiedet';
+  }
+
+  @override
+  String baumFor(String who) {
+    return 'Für: $who';
+  }
+
+  @override
+  String get baumWhere =>
+      'Schmieden in Kombinieren. Wirkt, solange das Siegel im mitgenommenen Gefährten sitzt.';
+
+  @override
+  String forgeRecipeLocked(String name) {
+    return 'Erst $name schmieden, dann öffnet sich seine zweite Ebene.';
+  }
+
+  @override
+  String forgeRecipeNew(String name) {
+    return 'Neues Rezept entdeckt: $name!';
+  }
+
+  @override
+  String forgeRecipeMade(String name) {
+    return 'Rezept $name';
+  }
+
+  @override
+  String get recipeEffectsTitle => 'Rezept-Effekte';
+
+  @override
+  String get recipeEffectsNone => 'Keine Rezept-Siegel gesetzt.';
+
+  @override
+  String recipeEffectsIdle(String name) {
+    return 'Wirken erst, wenn $name mitgenommen wird.';
+  }
+
+  @override
+  String recipeEffectLine(String name, int level, String effect) {
+    return '$name St.$level: $effect';
   }
 }

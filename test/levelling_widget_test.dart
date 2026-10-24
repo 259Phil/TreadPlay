@@ -73,10 +73,31 @@ void main() {
     );
     await openDetail(tester);
     expect(find.text('Level up · 5 LP'), findsOneWidget);
+    await tester.ensureVisible(find.byKey(const ValueKey('level-up')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('level-up')));
     await tester.pumpAndSettle();
     expect(find.text('Mossik is level 2 now!'), findsOneWidget);
     expect(find.text('XP 1 / 12'), findsOneWidget);
+  });
+
+  testWidgets('the detail lists the recipe effects of the set seals', (
+    tester,
+  ) async {
+    final g0 = GameData.initial(t0);
+    await pumpApp(
+      tester,
+      g0.replaceCompanion(g0.activeCompanion.withCharm(0, 'grit+fortune@3')),
+    );
+    await openDetail(tester);
+    expect(find.byKey(const ValueKey('recipe-effects')), findsOneWidget);
+    expect(find.byKey(const ValueKey('recipe-effect-schutz')), findsOneWidget);
+    expect(find.textContaining('Ward Amulet'), findsWidgets);
+    await tester.pumpWidget(const SizedBox());
+
+    await pumpApp(tester, g0);
+    await openDetail(tester);
+    expect(find.byKey(const ValueKey('recipe-effects')), findsNothing);
   });
 
   testWidgets('a salve from the Vorrat brings the Mut back', (tester) async {
@@ -88,6 +109,8 @@ void main() {
       g0.replaceCompanion(g0.activeCompanion.copyWith(spirit: 60)),
     );
     await openDetail(tester);
+    await tester.ensureVisible(find.byKey(const ValueKey('salve-open')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('salve-open')));
     await tester.pumpAndSettle();
     expect(find.text('Spirit salve for Mossik'), findsOneWidget);

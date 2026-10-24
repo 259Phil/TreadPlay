@@ -6,28 +6,37 @@ import '../../theme.dart';
 
 /// Horizontal speed scale with the companion's range, its core and a marker.
 class SweetSpotGauge extends StatelessWidget {
-  const SweetSpotGauge({super.key, required this.type, required this.speedKmh});
+  const SweetSpotGauge({
+    super.key,
+    required this.type,
+    required this.speedKmh,
+    this.widenKmh = 0,
+  });
 
   static const double maxKmh = 20;
 
   final CompanionType type;
   final double speedKmh;
 
+  /// Extra width on each side from the recipe Ausdauer.
+  final double widenKmh;
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 36,
       width: double.infinity,
-      child: CustomPaint(painter: _GaugePainter(type, speedKmh)),
+      child: CustomPaint(painter: _GaugePainter(type, speedKmh, widenKmh)),
     );
   }
 }
 
 class _GaugePainter extends CustomPainter {
-  _GaugePainter(this.type, this.speed);
+  _GaugePainter(this.type, this.speed, this.widen);
 
   final CompanionType type;
   final double speed;
+  final double widen;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -45,8 +54,8 @@ class _GaugePainter extends CustomPainter {
     );
 
     final c = type.sweetSpotKmh;
-    final r = type.rangeKmh;
-    final core = r * sweetSpotCoreShare;
+    final r = type.rangeKmh + widen;
+    final core = type.rangeKmh * sweetSpotCoreShare + widen;
     canvas
       ..drawRRect(
         band(0, SweetSpotGauge.maxKmh),
@@ -71,5 +80,5 @@ class _GaugePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_GaugePainter old) =>
-      old.speed != speed || old.type != type;
+      old.speed != speed || old.type != type || old.widen != widen;
 }

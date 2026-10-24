@@ -376,7 +376,8 @@ void main() {
     await tester.tap(find.text('Stop'));
     await tester.pumpAndSettle();
     expect(find.text('Run complete'), findsOneWidget);
-    expect(find.text('2.5 LP'), findsOneWidget);
+    // The starter's Stride 9.2: 2.5 × 0.92 LP per Breath point.
+    expect(find.text('2.3 LP'), findsOneWidget);
     expect(find.text('Pace'), findsOneWidget);
     expect(find.textContaining(' /km'), findsOneWidget);
     expect(find.text('Breath left'), findsOneWidget);
@@ -385,7 +386,7 @@ void main() {
     await tester.tap(find.text('Done'));
     await tester.pumpAndSettle();
     expect(find.textContaining('Last run: '), findsOneWidget);
-    expect(container.read(gameProvider).lp, 2.5);
+    expect(container.read(gameProvider).lp, closeTo(2.3, 1e-9));
   });
 
   testWidgets('den cards are drawn by Flutter and take along works', (
@@ -1133,6 +1134,39 @@ void main() {
       expect(find.text('403.0 LP'), findsOneWidget);
     });
 
+    testWidgets('a recipe seal and a third seal grow level 2, shown by name', (
+      tester,
+    ) async {
+      final start = openAll(
+        GameData.initial(t0).copyWith(
+          lp: 500,
+          forge: const ForgeState(
+            stock: {'stride+grit@1': 1, 'fortune@1': 1},
+            glut: 5,
+          ),
+        ),
+      );
+      await openForge(tester, start, open: false, random: _FixedRandom(0.99));
+      await tapKey(tester, 'tab-combine');
+      await tapKey(tester, 'case-fortune@1');
+      await tapKey(tester, 'case-stride+grit@1');
+      // Level-2 step: 1.5× LP, one Glut more, fail +5 points.
+      expect(textOf(tester, 'forge-fail'), startsWith('Fail chance 15 %'));
+      await tapKey(tester, 'forge-go');
+      expect(find.byKey(const Key('forge-success')), findsOneWidget);
+      expect(textOf(tester, 'forge-recipe-name'), 'New recipe: Wander Star!');
+      expect(textOf(tester, 'forge-recipe-effect'), 'Messenger chance +3 pts');
+      await tester.tap(find.byKey(const Key('forge-result-ok')));
+      await tester.pumpAndSettle();
+      // The recipe seal is used up.
+      expect(find.byKey(const Key('case-stride+grit@1')), findsNothing);
+      expect(
+        find.byKey(const Key('case-stride+grit+fortune@1')),
+        findsOneWidget,
+      );
+      expect(find.text('477.0 LP'), findsOneWidget);
+    });
+
     testWidgets('combining is open together with the Forge', (tester) async {
       await openForge(tester, GameData.initial(t0));
       await tapKey(tester, 'tab-combine');
@@ -1211,22 +1245,56 @@ void main() {
       expect(find.byKey(const Key('case-grit@4')), findsOneWidget);
     });
 
-    testWidgets('the Levels tab shows every level', (tester) async {
+    testWidgets('the Levels tab is the forge tree, dark on a fresh save', (
+      tester,
+    ) async {
       await openForge(tester, GameData.initial(t0));
       await tapKey(tester, 'tab-ladder');
       final tab = find.byKey(const Key('forge-ladder-tab'));
       expect(tab, findsOneWidget);
-      for (final pct in ['+4 %', '+9 %', '+15 %', '+22 %', '+31 %']) {
-        expect(
-          find.descendant(of: tab, matching: find.text(pct)),
-          findsNWidgets(3),
-          reason: pct,
-        );
+      expect(textOf(tester, 'baum-count'), 'Recipes 0 / 6');
+      for (final r in Recipe.values) {
+        expect(find.byKey(Key('baum-${r.name}')), findsOneWidget);
+        expect(find.byKey(Key('baum-ready-${r.name}')), findsNothing);
       }
       expect(
-        find.descendant(of: tab, matching: find.text('+19 % / +19 %')),
+        find.descendant(of: tab, matching: find.text('???')),
+        findsAtLeastNWidgets(6),
+      );
+      expect(find.text('Breath and iron …'), findsOneWidget);
+      expect(textOf(tester, 'baum-detail-title'), '??? · UNDISCOVERED');
+      await tapKey(tester, 'baum-wanderstern');
+      expect(
+        find.text('Forge Stamina first, then its level 2 opens.'),
         findsOneWidget,
       );
+    });
+
+    testWidgets('the tree lights discovered recipes and rings what is ready', (
+      tester,
+    ) async {
+      await openForge(
+        tester,
+        GameData.initial(t0).copyWith(
+          lp: 500,
+          forge: const ForgeState(
+            stock: {'stride+grit@2': 1, 'fortune@2': 1, 'grit@1': 1},
+            glut: 9,
+            recipes: {Recipe.ausdauer: 2},
+          ),
+        ),
+      );
+      await tapKey(tester, 'tab-ladder');
+      expect(textOf(tester, 'baum-count'), 'Recipes 1 / 6');
+      expect(find.text('Stamina'), findsOneWidget);
+      expect(find.byKey(const Key('baum-ready-wanderstern')), findsOneWidget);
+      expect(find.byKey(const Key('baum-ready-spurenleser')), findsNothing);
+      await tapKey(tester, 'baum-ausdauer');
+      expect(textOf(tester, 'baum-detail-title'), 'STAMINA');
+      expect(find.textContaining('Sweet spot ±0.3 km/h wider'), findsOneWidget);
+      // The next level shows as a preview, the rest stays hidden.
+      expect(find.textContaining('Sweet spot ±0.4 km/h wider'), findsOneWidget);
+      expect(find.text('next'), findsOneWidget);
     });
 
     testWidgets('a new game finds the forge closed until waymark 2', (

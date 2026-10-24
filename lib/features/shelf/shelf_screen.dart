@@ -12,6 +12,7 @@ import '../../widgets/charm_sockets.dart';
 import '../../widgets/companion_card.dart';
 import '../../widgets/companion_stats.dart';
 import '../../widgets/format.dart';
+import '../../widgets/recipe_text.dart';
 import '../../widgets/lp_pill.dart';
 import 'level_panel.dart';
 
@@ -287,6 +288,8 @@ class _Detail extends ConsumerWidget {
             Text(l.charms, style: theme.textTheme.titleSmall),
             const SizedBox(height: 6),
             CharmSockets(companion: c),
+            const SizedBox(height: 12),
+            RecipeEffects(companion: c, along: along),
             const SizedBox(height: 16),
             SizedBox(
               height: 52,

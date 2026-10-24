@@ -1133,10 +1133,10 @@ void main() {
       expect(find.text('403.0 LP'), findsOneWidget);
     });
 
-    testWidgets('combining waits for waymark 13', (tester) async {
+    testWidgets('combining is open together with the Forge', (tester) async {
       await openForge(tester, GameData.initial(t0));
       await tapKey(tester, 'tab-combine');
-      expect(textOf(tester, 'forge-hint'), 'Combining L1 opens at waymark 13.');
+      expect(textOf(tester, 'forge-hint'), isNot(contains('waymark')));
     });
 
     testWidgets('a level not yet reached on the trail is locked', (

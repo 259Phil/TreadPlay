@@ -566,7 +566,7 @@
   },
   "wwTaskCombine": "Combine once",
   "wwUnlockBrownPouch": "Brown pouch",
-  "wwUnlockForge": "Forge (seals L1)",
+  "wwUnlockForge": "Forge (seals L1, combining)",
   "wwUnlockMarketMedievalJungle": "Market +2 species (Medieval, Jungle)",
   "wwUnlockCopperPouch": "Copper pouch",
   "wwUnlockForgeL2": "Forging L2",
@@ -577,12 +577,19 @@
   "wwUnlockTurquoisePouch": "Turquoise pouch",
   "wwUnlockWorldSteampunk": "World Steampunk + species",
   "wwUnlockForgeL4": "Forging L4",
-  "wwUnlockCombineL3": "Combining L1–L3",
+  "wwUnlockGlutGift": "Gift: {n} Glut",
+  "@wwUnlockGlutGift": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "wwUnlockNavyPouch": "Navy pouch",
   "wwUnlockWorldSpaceRobot": "Worlds Space + Robot + species",
   "wwUnlockForgeL5": "Forging L5",
   "wwUnlockShelfPlus2": "Den +2 slots (12→14)",
-  "wwUnlockCombineL5": "Combining L4–L5",
+  "wwUnlockSalveGift": "Gift: a rune pot salve (Spirit to 100 %)",
   "wwUnlockWorldRococoCandy": "Worlds Rococo + Candy + species",
   "wwLine1": "A companion doesn’t grow in a den. It grows beside you, step by step.",
   "wwLine2": "What you find along the way belongs to you both.",
@@ -757,17 +764,6 @@
   },
   "forgeLevelLocked": "Forging L{n} opens at waymark {wm}.",
   "@forgeLevelLocked": {
-    "placeholders": {
-      "n": {
-        "type": "int"
-      },
-      "wm": {
-        "type": "int"
-      }
-    }
-  },
-  "forgeCombineLocked": "Combining L{n} opens at waymark {wm}.",
-  "@forgeCombineLocked": {
     "placeholders": {
       "n": {
         "type": "int"

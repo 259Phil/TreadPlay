@@ -265,7 +265,7 @@ void main() {
       expect(game.shelfSlots, 14);
       expect(GameData.initial(t0).shelfSlots, 12);
       expect(game.unlocks.forgeLevel, 5);
-      expect(game.unlocks.combineLevel, 3);
+      expect(game.unlocks.combineLevel, 5);
       expect(game.unlocks.leashClips, 4);
     });
   });

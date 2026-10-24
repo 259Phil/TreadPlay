@@ -763,7 +763,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get wwUnlockBrownPouch => 'Brauner Beutel';
 
   @override
-  String get wwUnlockForge => 'Schmiede (Siegel St.1)';
+  String get wwUnlockForge => 'Schmiede (Siegel St.1, Kombinieren)';
 
   @override
   String get wwUnlockMarketMedievalJungle =>
@@ -797,7 +797,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get wwUnlockForgeL4 => 'Schmieden St.4';
 
   @override
-  String get wwUnlockCombineL3 => 'Kombinieren St.1–3';
+  String wwUnlockGlutGift(int n) {
+    return 'Geschenk: $n Glut';
+  }
 
   @override
   String get wwUnlockNavyPouch => 'Nachtblauer Beutel';
@@ -812,7 +814,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get wwUnlockShelfPlus2 => 'Gehege +2 Plätze (12→14)';
 
   @override
-  String get wwUnlockCombineL5 => 'Kombinieren St.4–5';
+  String get wwUnlockSalveGift => 'Geschenk: Runentopf-Salbe (Mut auf 100 %)';
 
   @override
   String get wwUnlockWorldRococoCandy => 'Welten Rokoko + Süßigkeiten + Arten';
@@ -1017,11 +1019,6 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String forgeLevelLocked(int n, int wm) {
     return 'Schmieden St.$n öffnet an Wegmarke $wm.';
-  }
-
-  @override
-  String forgeCombineLocked(int n, int wm) {
-    return 'Kombinieren St.$n öffnet an Wegmarke $wm.';
   }
 
   @override

@@ -760,7 +760,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wwUnlockBrownPouch => 'Brown pouch';
 
   @override
-  String get wwUnlockForge => 'Forge (seals L1)';
+  String get wwUnlockForge => 'Forge (seals L1, combining)';
 
   @override
   String get wwUnlockMarketMedievalJungle =>
@@ -794,7 +794,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wwUnlockForgeL4 => 'Forging L4';
 
   @override
-  String get wwUnlockCombineL3 => 'Combining L1–L3';
+  String wwUnlockGlutGift(int n) {
+    return 'Gift: $n Glut';
+  }
 
   @override
   String get wwUnlockNavyPouch => 'Navy pouch';
@@ -809,7 +811,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wwUnlockShelfPlus2 => 'Den +2 slots (12→14)';
 
   @override
-  String get wwUnlockCombineL5 => 'Combining L4–L5';
+  String get wwUnlockSalveGift => 'Gift: a rune pot salve (Spirit to 100 %)';
 
   @override
   String get wwUnlockWorldRococoCandy => 'Worlds Rococo + Candy + species';
@@ -1011,11 +1013,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String forgeLevelLocked(int n, int wm) {
     return 'Forging L$n opens at waymark $wm.';
-  }
-
-  @override
-  String forgeCombineLocked(int n, int wm) {
-    return 'Combining L$n opens at waymark $wm.';
   }
 
   @override

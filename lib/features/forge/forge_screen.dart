@@ -209,8 +209,6 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
       (_Mode.combine, final a?, null) =>
         a.combined || Forge.combines[a.level] == null
             ? ForgeBlock.badCombine
-            : a.level > unlocks.combineLevel
-            ? ForgeBlock.levelLocked
             : null,
     };
     final made = switch ((mode, a, b)) {
@@ -226,11 +224,6 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
     String hint;
     if (!unlocks.forge) {
       hint = _lockedText(context);
-    } else if (mode == _Mode.combine && a == null && unlocks.combineLevel < 3) {
-      hint = l.forgeCombineLocked(
-        1,
-        waymarks.firstWhere((w) => w.unlock == WaymarkUnlock.combineL3).number,
-      );
     } else if (a == null) {
       hint = game.forge.sealsInStock.isEmpty
           ? l.forgeCaseEmpty
@@ -456,10 +449,6 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
           4 => WaymarkUnlock.forgeL4,
           _ => WaymarkUnlock.forgeL5,
         }),
-      ),
-      ForgeBlock.levelLocked => l.forgeCombineLocked(
-        a.level,
-        wmOf(a.level >= 4 ? WaymarkUnlock.combineL5 : WaymarkUnlock.combineL3),
       ),
       ForgeBlock.maxLevel => a.combined ? l.forgeComboFinal : l.forgeTopLevel,
       ForgeBlock.needsPair => l.forgeNeedsPair,

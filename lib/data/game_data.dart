@@ -141,9 +141,26 @@ class GameData {
   );
 
   /// Reaches every waymark the counters allow. Never takes one back.
+  /// Gift waymarks (13: Glut, 18: a Runentopf salve) pay out once, when
+  /// they are newly reached here.
   GameData advancingWanderweg(DateTime now) {
     final next = wanderweg.advanced(waymarkCounters, now);
-    return identical(next, wanderweg) ? this : copyWith(wanderweg: next);
+    if (identical(next, wanderweg)) return this;
+    var game = copyWith(wanderweg: next);
+    for (final w in waymarks.sublist(wanderweg.reached, next.reached)) {
+      game = switch (w.unlock) {
+        WaymarkUnlock.glutGift => game.copyWith(
+          forge: game.forge.copyWith(
+            glut: game.forge.glut + WaymarkUnlock.glutGiftAmount,
+          ),
+        ),
+        WaymarkUnlock.salveGift => game.copyWith(
+          salves: game.salves.adding(Salve.large),
+        ),
+        _ => game,
+      };
+    }
+    return game;
   }
 
   /// Shelf size: [inventoryCap], plus 2 from waymark 17.
@@ -257,7 +274,6 @@ class GameData {
         step == null) {
       return ForgeBlock.badCombine;
     }
-    if (a.level > unlocks.combineLevel) return ForgeBlock.levelLocked;
     if (forge.count(a) < 1 || forge.count(b) < 1) return ForgeBlock.needsPair;
     if (!step.allows(glut)) return ForgeBlock.glutRange;
     if (forge.glut < glut) return ForgeBlock.notEnoughGlut;

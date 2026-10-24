@@ -14,12 +14,12 @@ String unlockLabel(AppLocalizations l, WaymarkUnlock u) => switch (u) {
   WaymarkUnlock.turquoisePouch => l.wwUnlockTurquoisePouch,
   WaymarkUnlock.worldSteampunk => l.wwUnlockWorldSteampunk,
   WaymarkUnlock.forgeL4 => l.wwUnlockForgeL4,
-  WaymarkUnlock.combineL3 => l.wwUnlockCombineL3,
+  WaymarkUnlock.glutGift => l.wwUnlockGlutGift(WaymarkUnlock.glutGiftAmount),
   WaymarkUnlock.navyPouch => l.wwUnlockNavyPouch,
   WaymarkUnlock.worldSpaceRobot => l.wwUnlockWorldSpaceRobot,
   WaymarkUnlock.forgeL5 => l.wwUnlockForgeL5,
   WaymarkUnlock.shelfPlus2 => l.wwUnlockShelfPlus2,
-  WaymarkUnlock.combineL5 => l.wwUnlockCombineL5,
+  WaymarkUnlock.salveGift => l.wwUnlockSalveGift,
   WaymarkUnlock.worldRococoCandy => l.wwUnlockWorldRococoCandy,
 };
 

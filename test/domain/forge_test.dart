@@ -6,6 +6,7 @@ import 'package:treadplay/domain/companion.dart';
 import 'package:treadplay/domain/forge.dart';
 import 'package:treadplay/domain/pouch.dart';
 import 'package:treadplay/domain/run_summary.dart';
+import 'package:treadplay/domain/salve.dart';
 import 'package:treadplay/domain/totals.dart';
 import 'package:treadplay/domain/wanderweg.dart';
 
@@ -337,7 +338,7 @@ void main() {
         int combineAt(int reached) => WaymarkUnlocks(
           WanderwegProgress(reachedAt: List.filled(reached, t0)),
         ).combineLevel;
-        expect([combineAt(12), combineAt(13), combineAt(18)], [0, 3, 5]);
+        expect([combineAt(1), combineAt(2), combineAt(13)], [0, 5, 5]);
       },
     );
   });
@@ -382,7 +383,7 @@ void main() {
       );
     });
 
-    test('bad pairs and locked levels are refused', () {
+    test('bad pairs are refused; no waymark lock after the Forge', () {
       final g = game(stock: {'grit@3': 2, 'stride@2': 1, 'stride@3': 1});
       expect(g.combineBlock(grit3, grit3, 4), ForgeBlock.badCombine);
       expect(
@@ -392,7 +393,7 @@ void main() {
       final early = g.copyWith(
         wanderweg: WanderwegProgress(reachedAt: List.filled(12, t0)),
       );
-      expect(early.combineBlock(grit3, stride3, 4), ForgeBlock.levelLocked);
+      expect(early.combineBlock(grit3, stride3, 4), isNull);
     });
   });
 
@@ -539,8 +540,8 @@ void main() {
         WaymarkUnlock.forgeL3,
         WaymarkUnlock.forgeL4,
         WaymarkUnlock.forgeL5,
-        WaymarkUnlock.combineL3,
-        WaymarkUnlock.combineL5,
+        WaymarkUnlock.glutGift,
+        WaymarkUnlock.salveGift,
       ]) {
         expect(u.wired, isTrue, reason: u.name);
       }
@@ -605,7 +606,7 @@ void main() {
       expect(g.combineBlock(s2, s2, 2), ForgeBlock.badCombine);
     });
 
-    test('waymark 13 opens St.1–3, waymark 18 adds St.4–5', () {
+    test('combining opens with the Forge at waymark 2 for every level', () {
       const s1 = Seal(SealType.stride, 1);
       const g1 = Seal(SealType.grit, 1);
       const s4 = Seal(SealType.stride, 4);
@@ -614,10 +615,15 @@ void main() {
         stock: {'stride@1': 1, 'grit@1': 1, 'stride@4': 1, 'grit@4': 1},
         wanderweg: WanderwegProgress(reachedAt: List.filled(reached, t0)),
       );
-      expect(at(12).combineBlock(s1, g1, 2), ForgeBlock.levelLocked);
-      expect(at(13).combineBlock(s1, g1, 2), isNull);
-      expect(at(13).combineBlock(s4, g4, 4), ForgeBlock.levelLocked);
-      expect(at(18).combineBlock(s4, g4, 4), isNull);
+      expect(at(2).combineBlock(s1, g1, 2), isNull);
+      expect(at(2).combineBlock(s4, g4, 4), isNull);
+      expect(at(2).unlocks.combineLevel, 5);
+      expect(
+        WaymarkUnlocks(
+          WanderwegProgress(reachedAt: List.filled(1, t0)),
+        ).combineLevel,
+        0,
+      );
     });
   });
 
@@ -692,6 +698,31 @@ void main() {
         g.advancingWanderweg(t0).wanderweg.reached,
         greaterThanOrEqualTo(12),
       );
+    });
+  });
+  group('gift waymarks 13 and 18', () {
+    test('waymark 13 gives 5 Glut, waymark 18 a rune pot salve', () {
+      expect(waymarks[12].unlock, WaymarkUnlock.glutGift);
+      expect(waymarks[17].unlock, WaymarkUnlock.salveGift);
+      final before = game(
+        glut: 0,
+        wanderweg: WanderwegProgress(reachedAt: List.filled(12, t0)),
+      ).copyWith(totals: const Totals(distanceM: 57300));
+      final at13 = before.advancingWanderweg(t0);
+      expect(at13.wanderweg.reached, 13);
+      expect(at13.forge.glut, WaymarkUnlock.glutGiftAmount);
+      // Paid once: advancing again gives nothing more.
+      expect(at13.advancingWanderweg(t0).forge.glut, 5);
+    });
+
+    test('the salve comes once when waymark 18 is reached', () {
+      final before = game(
+        wanderweg: WanderwegProgress(reachedAt: List.filled(17, t0)),
+      ).copyWith(totals: const Totals(distanceM: 115000, sweetSpot71Runs: 3));
+      final at18 = before.advancingWanderweg(t0);
+      expect(at18.wanderweg.reached, 18);
+      expect(at18.salves.count(Salve.large), 1);
+      expect(at18.advancingWanderweg(t0).salves.count(Salve.large), 1);
     });
   });
 }

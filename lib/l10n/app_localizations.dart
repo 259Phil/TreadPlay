@@ -1379,7 +1379,7 @@ abstract class AppLocalizations {
   /// No description provided for @wwUnlockForge.
   ///
   /// In en, this message translates to:
-  /// **'Forge (seals L1)'**
+  /// **'Forge (seals L1, combining)'**
   String get wwUnlockForge;
 
   /// No description provided for @wwUnlockMarketMedievalJungle.
@@ -1442,11 +1442,11 @@ abstract class AppLocalizations {
   /// **'Forging L4'**
   String get wwUnlockForgeL4;
 
-  /// No description provided for @wwUnlockCombineL3.
+  /// No description provided for @wwUnlockGlutGift.
   ///
   /// In en, this message translates to:
-  /// **'Combining L1–L3'**
-  String get wwUnlockCombineL3;
+  /// **'Gift: {n} Glut'**
+  String wwUnlockGlutGift(int n);
 
   /// No description provided for @wwUnlockNavyPouch.
   ///
@@ -1472,11 +1472,11 @@ abstract class AppLocalizations {
   /// **'Den +2 slots (12→14)'**
   String get wwUnlockShelfPlus2;
 
-  /// No description provided for @wwUnlockCombineL5.
+  /// No description provided for @wwUnlockSalveGift.
   ///
   /// In en, this message translates to:
-  /// **'Combining L4–L5'**
-  String get wwUnlockCombineL5;
+  /// **'Gift: a rune pot salve (Spirit to 100 %)'**
+  String get wwUnlockSalveGift;
 
   /// No description provided for @wwUnlockWorldRococoCandy.
   ///
@@ -1795,12 +1795,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Forging L{n} opens at waymark {wm}.'**
   String forgeLevelLocked(int n, int wm);
-
-  /// No description provided for @forgeCombineLocked.
-  ///
-  /// In en, this message translates to:
-  /// **'Combining L{n} opens at waymark {wm}.'**
-  String forgeCombineLocked(int n, int wm);
 
   /// No description provided for @forgeNeedsPair.
   ///

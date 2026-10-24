@@ -1,4 +1,5 @@
 import 'pouch.dart';
+import 'seal.dart';
 import 'world.dart';
 
 /// What a waymark task counts. Counters of features that are not in the game
@@ -70,13 +71,16 @@ enum WaymarkUnlock {
   turquoisePouch,
   worldSteampunk,
   forgeL4,
-  combineL3,
+  glutGift,
   navyPouch,
   worldSpaceRobot,
   forgeL5,
   shelfPlus2,
-  combineL5,
+  salveGift,
   worldRococoCandy;
+
+  /// Glut given once when waymark 13 ([glutGift]) is reached.
+  static const int glutGiftAmount = 5;
 
   /// True when this version has a feature that the unlock actually opens.
   /// Since the pouches and the leash every unlock is wired.
@@ -136,7 +140,7 @@ const List<Waymark> waymarks = [
     WaymarkTask(WaymarkCounter.sealsForged, 5),
     WaymarkTask(WaymarkCounter.bestSealLevel, 3),
   ]),
-  Waymark(13, 57.2, WaymarkUnlock.combineL3),
+  Waymark(13, 57.2, WaymarkUnlock.glutGift),
   Waymark(14, 66.9, WaymarkUnlock.navyPouch, [
     WaymarkTask(WaymarkCounter.companionsBought, 1),
     WaymarkTask(WaymarkCounter.turquoisePouchesOpened, 1),
@@ -147,7 +151,7 @@ const List<Waymark> waymarks = [
     WaymarkTask(WaymarkCounter.combines, 1),
   ]),
   Waymark(17, 101.3, WaymarkUnlock.shelfPlus2),
-  Waymark(18, 114.7, WaymarkUnlock.combineL5, [
+  Waymark(18, 114.7, WaymarkUnlock.salveGift, [
     WaymarkTask(WaymarkCounter.sweetSpot71Runs, 3),
   ]),
   Waymark(19, 128.2, WaymarkUnlock.worldRococoCandy),
@@ -308,13 +312,9 @@ class WaymarkUnlocks {
       ? 2
       : 1;
 
-  /// Highest seal level combining may make; 0 = not yet.
-  /// Waymark 13 opens combining at St.1–3, waymark 18 adds St.4–5.
-  int get combineLevel => has(WaymarkUnlock.combineL5)
-      ? 5
-      : has(WaymarkUnlock.combineL3)
-      ? 3
-      : 0;
+  /// Highest seal level combining may make; 0 = not yet. Combining opens
+  /// with the Forge for every level (only owned seals can be combined).
+  int get combineLevel => forge ? Seal.maxLevel : 0;
 
   int get leashClips => has(WaymarkUnlock.leashClip4) ? 4 : 3;
 }

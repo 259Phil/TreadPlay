@@ -8,6 +8,9 @@ part of 'forge_screen.dart';
 /// The combine reveal takes a little longer than the hammer's build-up.
 const _combineStrikeTime = Duration(milliseconds: 1700);
 
+/// From here on the combine result shows.
+const _combineReveal = 0.80;
+
 /// Lets tests turn the drifting background off so they can settle.
 @visibleForTesting
 bool forgeAmbientMotion = true;
@@ -176,11 +179,12 @@ class _Mood {
   final bool ready;
 
   /// 0..1 how far the build-up before the reveal has come.
-  double get build => t == null ? 0 : (t! / _reveal).clamp(0.0, 1.0);
+  double get build => t == null ? 0 : (t! / _combineReveal).clamp(0.0, 1.0);
 
   /// 0..1 after the reveal, or null before it.
-  double? get after =>
-      t == null || t! < _reveal ? null : (t! - _reveal) / (1 - _reveal);
+  double? get after => t == null || t! < _combineReveal
+      ? null
+      : (t! - _combineReveal) / (1 - _combineReveal);
 
   /// 0 (nothing placed) to 1 (both seals placed).
   double get wake => ready ? 1 : (a ? .5 : 0) + (b ? .5 : 0);

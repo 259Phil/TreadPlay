@@ -1,10 +1,12 @@
 part of 'forge_screen.dart';
 
 // The suspense moment of a forge: the outcome is already decided by the
-// game logic, the screen only reveals it after the hammer falls.
-// Aufwerten: the hammer lifts off the small anvil and strikes three times,
-// the last blow heavier. Success: a golden burst and the target level lights
-// up. Failure: a dull blow, a grey puff and the seal cracks into splinters.
+// game logic (cost paid), the screen only reveals it after the hammer falls.
+// Aufwerten: the hammer lies still until Schmieden is pressed. Then four
+// blows, each a little higher and brighter, a slow wind-up with a held
+// breath at the top, and the heavy last blow at about 3.75 s. Success: a
+// golden burst and the target level lights up. Failure: a dull blow, a grey
+// puff and the seal cracks into splinters. The dialog follows at 4.2 s.
 
 /// A running reveal: [anim] runs 0..1, [outcome] is what it will show.
 class _Strike {
@@ -14,33 +16,69 @@ class _Strike {
   final ForgeOutcome outcome;
 }
 
-const _upStrikeTime = Duration(milliseconds: 1400);
+const _upSeconds = 4.2;
+const _upStrikeTime = Duration(milliseconds: 4200);
 
-/// The three blows, as points of the 0..1 timeline.
-const _hits = [0.20, 0.44, 0.80];
+/// The blows, as points of the 0..1 timeline (seconds / [_upSeconds]).
+const _hits = [
+  .60 / _upSeconds,
+  1.25 / _upSeconds,
+  1.85 / _upSeconds,
+  2.40 / _upSeconds,
+  3.75 / _upSeconds,
+];
+
+/// The last wind-up: the hammer climbs slowly until here, then holds.
+const _windTop = 3.30 / _upSeconds;
+
+/// End of the held breath; from here the hammer falls.
+const _fallFrom = 3.58 / _upSeconds;
 
 /// From the last blow on, the result shows.
-const _reveal = 0.80;
+final _reveal = _hits.last;
+
+/// How high each light blow is lifted (radians); rising tension.
+const _peaks = [.55, .62, .70, .78];
+
+/// The heavy last blow.
+const _lastPeak = 1.3;
 
 double _easeOut(double x) => 1 - (1 - x) * (1 - x);
 double _easeIn(double x) => x * x * x;
+double _smooth(double x) => x * x * (3 - 2 * x);
 
 /// How far the hammer is lifted (radians) at [t]; 0 rests on the anvil.
+/// Exactly 0 before the first frame of a strike, so the resting hammer
+/// never moves.
 double _hammerLift(double t, bool success) {
-  double swing(double s, double e, double peak, double upShare) {
+  if (t <= 0) return 0;
+  double swing(double s, double e, double peak) {
     final u = ((t - s) / (e - s)).clamp(0.0, 1.0);
+    const upShare = .6;
     if (u < upShare) return peak * _easeOut(u / upShare);
     // A short hold at the top, then a fast fall.
     final d = ((u - upShare) / (1 - upShare)).clamp(0.0, 1.0);
     return peak * (1 - _easeIn(d));
   }
 
-  if (t < _hits[0]) return swing(0, _hits[0], .75, .6);
-  if (t < _hits[1]) return swing(_hits[0], _hits[1], .75, .6);
-  if (t < _hits[2]) return swing(_hits[1], _hits[2], 1.15, .72);
+  for (var i = 0; i < _peaks.length; i++) {
+    if (t < _hits[i]) {
+      return swing(i == 0 ? 0 : _hits[i - 1], _hits[i], _peaks[i]);
+    }
+  }
+  final last = _hits.last;
+  if (t < _windTop) {
+    final u = (t - _hits[3]) / (_windTop - _hits[3]);
+    return _lastPeak * _smooth(u.clamp(0.0, 1.0));
+  }
+  if (t < _fallFrom) return _lastPeak;
+  if (t < last) {
+    final d = (t - _fallFrom) / (last - _fallFrom);
+    return _lastPeak * (1 - _easeIn(d.clamp(0.0, 1.0)));
+  }
   // A light bounce after a good blow; a dull one just lies there.
   if (!success) return 0;
-  final u = (t - _hits[2]) / .12;
+  final u = (t - last) / .06;
   return u >= 1 ? 0 : .14 * math.sin(u * math.pi);
 }
 
@@ -50,10 +88,10 @@ const _restRaise = 3.0;
 
 /// 1 while the hammer rests, 0 during the blows.
 double _restShare(double t) {
-  double smooth(double x) => x * x * (3 - 2 * x);
-  if (t < _hits[0]) return 1 - smooth((t / _hits[0]).clamp(0.0, 1.0));
-  if (t <= _hits[2]) return 0;
-  return smooth(((t - _hits[2]) / (1 - _hits[2])).clamp(0.0, 1.0));
+  if (t <= 0) return 1;
+  if (t < _hits[0]) return 1 - _smooth((t / _hits[0]).clamp(0.0, 1.0));
+  if (t <= _hits.last) return 0;
+  return _smooth(((t - _hits.last) / (1 - _hits.last)).clamp(0.0, 1.0));
 }
 
 /// The small anvil with its hammer, sparks, flash and smoke.
@@ -134,7 +172,8 @@ class _SparkPainter extends CustomPainter {
     const p = _AnvilStrike.impact;
     for (var i = 0; i < _hits.length; i++) {
       final last = i == _hits.length - 1;
-      final life = last ? (success ? .2 : .1) : .11;
+      // In seconds the sparks of a light blow live ~0.4 s.
+      final life = last ? (success ? .09 : .05) : .095;
       final age = (t - _hits[i]) / life;
       if (age < 0 || age > 1) continue;
       if (last && success) {
@@ -152,8 +191,9 @@ class _SparkPainter extends CustomPainter {
         );
       }
       final rnd = math.Random(7 + i * 31);
-      final n = last ? (success ? 22 : 4) : 7;
-      final reach = last ? (success ? 40.0 : 10.0) : 18.0;
+      // Each light blow throws a few more sparks, a little further.
+      final n = last ? (success ? 24 : 4) : 5 + 2 * i;
+      final reach = last ? (success ? 42.0 : 10.0) : 14.0 + 3 * i;
       final hot = last && success
           ? const Color(0xFFFFD86B)
           : last

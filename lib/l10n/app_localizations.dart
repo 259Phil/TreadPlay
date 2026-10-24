@@ -2858,6 +2858,36 @@ abstract class AppLocalizations {
   /// **'Recipes {known} / {total}'**
   String baumCount(int known, int total);
 
+  /// No description provided for @baumSeen.
+  ///
+  /// In en, this message translates to:
+  /// **'Seals {seen} / {total}'**
+  String baumSeen(int seen, int total);
+
+  /// No description provided for @baumSingleSeen.
+  ///
+  /// In en, this message translates to:
+  /// **'Single seal {stat} L{level} · owned before'**
+  String baumSingleSeen(String stat, int level);
+
+  /// No description provided for @baumSingleNever.
+  ///
+  /// In en, this message translates to:
+  /// **'Single seal {stat} L{level} · never owned'**
+  String baumSingleNever(String stat, int level);
+
+  /// No description provided for @baumSingleFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy L1 in the forge, find it in pouches or melt it from splinters.'**
+  String get baumSingleFirst;
+
+  /// No description provided for @baumSingleUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Made by forging up: two equal seals L{below} become one.'**
+  String baumSingleUp(int below);
+
   /// No description provided for @baumTagline.
   ///
   /// In en, this message translates to:
@@ -2893,18 +2923,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Forge {name} first'**
   String baumLocked(String name);
-
-  /// No description provided for @baumSingle.
-  ///
-  /// In en, this message translates to:
-  /// **'Single seal {stat} · best L{level}'**
-  String baumSingle(String stat, int level);
-
-  /// No description provided for @baumSingleNone.
-  ///
-  /// In en, this message translates to:
-  /// **'Single seal {stat} · none yet'**
-  String baumSingleNone(String stat);
 
   /// No description provided for @baumForged.
   ///

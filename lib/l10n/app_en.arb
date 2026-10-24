@@ -1494,6 +1494,48 @@
       }
     }
   },
+  "baumSeen": "Seals {seen} / {total}",
+  "@baumSeen": {
+    "placeholders": {
+      "seen": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "baumSingleSeen": "Single seal {stat} L{level} · owned before",
+  "@baumSingleSeen": {
+    "placeholders": {
+      "stat": {
+        "type": "String"
+      },
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "baumSingleNever": "Single seal {stat} L{level} · never owned",
+  "@baumSingleNever": {
+    "placeholders": {
+      "stat": {
+        "type": "String"
+      },
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "baumSingleFirst": "Buy L1 in the forge, find it in pouches or melt it from splinters.",
+  "baumSingleUp": "Made by forging up: two equal seals L{below} become one.",
+  "@baumSingleUp": {
+    "placeholders": {
+      "below": {
+        "type": "int"
+      }
+    }
+  },
   "baumTagline": "Two single seals make a recipe · recipe + third seal = level 2",
   "baumUndiscovered": "??? · UNDISCOVERED",
   "baumHint": "Hint: {hint}",
@@ -1510,25 +1552,6 @@
   "@baumLocked": {
     "placeholders": {
       "name": {
-        "type": "String"
-      }
-    }
-  },
-  "baumSingle": "Single seal {stat} · best L{level}",
-  "@baumSingle": {
-    "placeholders": {
-      "stat": {
-        "type": "String"
-      },
-      "level": {
-        "type": "int"
-      }
-    }
-  },
-  "baumSingleNone": "Single seal {stat} · none yet",
-  "@baumSingleNone": {
-    "placeholders": {
-      "stat": {
         "type": "String"
       }
     }

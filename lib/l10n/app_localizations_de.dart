@@ -1852,6 +1852,30 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String baumSeen(int seen, int total) {
+    return 'Siegel $seen / $total';
+  }
+
+  @override
+  String baumSingleSeen(String stat, int level) {
+    return 'Einzelsiegel $stat St.$level · schon besessen';
+  }
+
+  @override
+  String baumSingleNever(String stat, int level) {
+    return 'Einzelsiegel $stat St.$level · noch nie besessen';
+  }
+
+  @override
+  String get baumSingleFirst =>
+      'St.1 kaufst du in der Schmiede, findest es in Beuteln oder schmilzt es aus Splittern.';
+
+  @override
+  String baumSingleUp(int below) {
+    return 'Entsteht durch Hochschmieden: zwei gleiche Siegel St.$below werden zu einem.';
+  }
+
+  @override
   String get baumTagline =>
       'Zwei Einzelsiegel = Rezept · Rezept + drittes Siegel = 2. Ebene';
 
@@ -1872,16 +1896,6 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String baumLocked(String name) {
     return 'Erst $name schmieden';
-  }
-
-  @override
-  String baumSingle(String stat, int level) {
-    return 'Einzelsiegel $stat · bestes St.$level';
-  }
-
-  @override
-  String baumSingleNone(String stat) {
-    return 'Einzelsiegel $stat · noch keins';
   }
 
   @override

@@ -77,7 +77,11 @@ class SaveGame {
   /// they own (case or sockets) counts as discovered at its level, and the
   /// original starter gets the uneven starter stats once
   /// (see [GameData.starterKey]).
-  static const int version = 9;
+  ///
+  /// 10: seals ever owned ('seen' in 'forge', for the Schmiede-Baum).
+  /// Older files still import: every seal in the case or a socket and every
+  /// discovered recipe at its best level counts as owned.
+  static const int version = 10;
 
   static String fileName(DateTime now) {
     final stamp = now.toIso8601String().replaceAll(':', '-').split('.').first;
@@ -113,8 +117,11 @@ class SaveGame {
     if (v > version) {
       throw const SaveGameException(SaveGameError.newerVersion);
     }
-    final json = _withoutRecipes(
-      _withoutLevelling(_withHomeTempo(_migrate(raw['game'], v), v), v),
+    final json = _withoutSeen(
+      _withoutRecipes(
+        _withoutLevelling(_withHomeTempo(_migrate(raw['game'], v), v), v),
+        v,
+      ),
       v,
     );
     if (json is! Map<String, Object?>) {
@@ -222,6 +229,19 @@ class SaveGame {
         ..remove('glutherzDay');
     }
     return next;
+  }
+
+  /// Before version 10 nothing noted seals ever owned: a stray 'seen' is
+  /// dropped, so it comes from the case, the sockets and the recipes.
+  static Object? _withoutSeen(Object? game, int fromVersion) {
+    if (fromVersion >= 10 || game is! Map<String, Object?>) return game;
+    if (game['forge'] case final Map<String, Object?> f) {
+      return {
+        ...game,
+        'forge': {...f}..remove('seen'),
+      };
+    }
+    return game;
   }
 
   /// Only species and seals this app version knows.

@@ -1845,6 +1845,30 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String baumSeen(int seen, int total) {
+    return 'Seals $seen / $total';
+  }
+
+  @override
+  String baumSingleSeen(String stat, int level) {
+    return 'Single seal $stat L$level · owned before';
+  }
+
+  @override
+  String baumSingleNever(String stat, int level) {
+    return 'Single seal $stat L$level · never owned';
+  }
+
+  @override
+  String get baumSingleFirst =>
+      'Buy L1 in the forge, find it in pouches or melt it from splinters.';
+
+  @override
+  String baumSingleUp(int below) {
+    return 'Made by forging up: two equal seals L$below become one.';
+  }
+
+  @override
   String get baumTagline =>
       'Two single seals make a recipe · recipe + third seal = level 2';
 
@@ -1865,16 +1889,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String baumLocked(String name) {
     return 'Forge $name first';
-  }
-
-  @override
-  String baumSingle(String stat, int level) {
-    return 'Single seal $stat · best L$level';
-  }
-
-  @override
-  String baumSingleNone(String stat) {
-    return 'Single seal $stat · none yet';
   }
 
   @override

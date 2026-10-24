@@ -52,7 +52,11 @@ void main() {
 
     final loaded = SaveGame.decode(file);
     expect(loaded.exportedAt, t0);
-    expect(jsonEncode(loaded.game.toJson()), jsonEncode(game.toJson()));
+    // The socketed seal now counts as ever owned; the rest is unchanged.
+    final seen = game.copyWith(
+      forge: game.forge.seeing([const Seal(SealType.grit, 2)]),
+    );
+    expect(jsonEncode(loaded.game.toJson()), jsonEncode(seen.toJson()));
     expect(loaded.game.totals.forgeUses, 2);
     expect(loaded.game.videos.watched, 2);
     // A bare seal from before seal levels is read as an L2 seal.
@@ -154,6 +158,31 @@ void main() {
         ),
       );
     }
+
+    test('ever-owned seals survive a save; older files drop a stray list', () {
+      final game = forged();
+      final loaded = SaveGame.decode(SaveGame.encode(game, t0)).game;
+      // Migration: the case and the sockets count as owned, and so does
+      // the best level of each known recipe.
+      expect(
+        loaded.forge.seen,
+        containsAll(['grit@3', 'faehrte@5', 'stride@5']),
+      );
+      expect(loaded.forge.sawSingle(SealType.grit, 2), isFalse);
+      final json = loaded.toJson();
+      final forge = Map<String, Object?>.from(json['forge']! as Map);
+      forge['seen'] = ['fortune@4', 'nonsense@9'];
+      final kept = SaveGame.decode(
+        bytesOf(wrap({...json, 'forge': forge}, SaveGame.version)),
+      ).game;
+      expect(kept.forge.sawSingle(SealType.fortune, 4), isTrue);
+      expect(kept.forge.seen, isNot(contains('nonsense@9')));
+      final old = SaveGame.decode(
+        bytesOf(wrap({...json, 'forge': forge}, 9)),
+      ).game;
+      expect(old.forge.sawSingle(SealType.fortune, 4), isFalse);
+      expect(old.forge.sawSingle(SealType.grit, 3), isTrue);
+    });
 
     test('export and import keep the whole forge state', () {
       // The recipe seal in the case counts as a discovered recipe.

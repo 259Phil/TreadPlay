@@ -298,7 +298,7 @@ void main() {
       // Legacy grant: km only, so waymark 4's seal task is not asked.
       expect(loaded.wanderweg.reached, 5);
       expect(loaded.unlocks.forge, isTrue);
-      expect(SaveGame.version, 9);
+      expect(SaveGame.version, 10);
     });
   });
 }

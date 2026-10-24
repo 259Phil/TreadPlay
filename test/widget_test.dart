@@ -856,6 +856,11 @@ void main() {
 
     // The Forge page does not scroll; only the seal strips scroll sideways.
     Future<void> tapKey(WidgetTester tester, String key) async {
+      if (key.startsWith('baum-')) {
+        // The forge tree is taller than the screen: scroll the node in.
+        await tester.ensureVisible(find.byKey(Key(key)));
+        await tester.pumpAndSettle();
+      }
       await tester.tap(find.byKey(Key(key)));
       await tester.pumpAndSettle();
     }
@@ -1297,6 +1302,38 @@ void main() {
       expect(find.text('next'), findsOneWidget);
     });
 
+    testWidgets('one tree holds every single seal, lit once owned', (
+      tester,
+    ) async {
+      await openForge(
+        tester,
+        GameData.initial(t0).copyWith(
+          forge: const ForgeState(
+            stock: {'grit@3': 1},
+            seen: {'stride@1', 'stride@2'},
+          ),
+        ),
+      );
+      await tapKey(tester, 'tab-ladder');
+      for (final t in SealType.values) {
+        for (var lv = 1; lv <= 5; lv++) {
+          expect(find.byKey(Key('baum-single-${t.name}-$lv')), findsOneWidget);
+        }
+      }
+      for (final id in ['stride-1', 'stride-2', 'grit-3']) {
+        expect(find.byKey(Key('baum-lit-single-$id')), findsOneWidget);
+      }
+      expect(find.byKey(const Key('baum-lit-single-stride-3')), findsNothing);
+      expect(textOf(tester, 'baum-seen'), 'Seals 3 / 15');
+      // Never owned: name and level stay readable, just greyed.
+      expect(find.text('Fortune L4'), findsOneWidget);
+      await tapKey(tester, 'baum-single-fortune-4');
+      expect(textOf(tester, 'baum-detail-title'), 'FORTUNE L4');
+      expect(find.text('Single seal Fortune L4 · never owned'), findsOneWidget);
+      await tapKey(tester, 'baum-single-stride-2');
+      expect(find.text('Single seal Stride L2 · owned before'), findsOneWidget);
+    });
+
     testWidgets('a new game finds the forge closed until waymark 2', (
       tester,
     ) async {
@@ -1350,13 +1387,23 @@ void main() {
       /// Forge, and the action buttons sit inside the Forge's own area.
       void expectNoPageScroll(WidgetTester tester, String what) {
         final forge = tester.getRect(find.byType(ForgeScreen));
+        // The forge tree is one tall canvas that scrolls on its own; the
+        // page around it must not.
+        final tree = find
+            .descendant(
+              of: find.byKey(const Key('baum-scroll')),
+              matching: find.byType(Scrollable),
+            )
+            .evaluate()
+            .toSet();
         for (final e
             in find
                 .descendant(
                   of: find.byType(ForgeScreen),
                   matching: find.byType(Scrollable),
                 )
-                .evaluate()) {
+                .evaluate()
+                .where((e) => !tree.contains(e))) {
           final state = (e as StatefulElement).state as ScrollableState;
           if (state.position.axis == Axis.vertical) {
             expect(

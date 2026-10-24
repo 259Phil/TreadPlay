@@ -11,40 +11,55 @@ const _brass = Color(0xFFD9B26A);
 const _glowEmber = Color(0xFFFF9A3C);
 const _cyan = Color(0xFF8FF0E2);
 
-/// Where each node sits (share of the tree's width and height).
-const _singleAt = {
-  SealType.stride: Offset(.17, .9),
-  SealType.grit: Offset(.5, .9),
-  SealType.fortune: Offset(.83, .9),
-};
-const _recipeAt = {
-  Recipe.ausdauer: Offset(.2, .6),
-  Recipe.faehrte: Offset(.5, .6),
-  Recipe.schutz: Offset(.8, .6),
-  Recipe.wanderstern: Offset(.2, .17),
-  Recipe.spurenleser: Offset(.5, .17),
-  Recipe.glutherz: Offset(.8, .17),
+/// Height of the tree canvas; it scrolls when the screen is shorter.
+const double _baumH = 880;
+
+/// Column of each stat's single seals (share of the width).
+const _singleX = {
+  SealType.stride: .17,
+  SealType.grit: .5,
+  SealType.fortune: .83,
 };
 
-/// One node of the tree as the game stands.
+/// Centre of St.[level] of a single seal (St.1 at the bottom).
+double _singleY(int level) => _baumH - 44 - (level - 1) * 74;
+
+/// Where each recipe sits (share of the width, y on the canvas).
+const _recipeAt = {
+  Recipe.ausdauer: Offset(.2, 400),
+  Recipe.faehrte: Offset(.5, 290),
+  Recipe.schutz: Offset(.8, 400),
+  Recipe.wanderstern: Offset(.2, 92),
+  Recipe.spurenleser: Offset(.5, 92),
+  Recipe.glutherz: Offset(.8, 92),
+};
+
+/// One node of the tree as the game stands: a single seal at one level,
+/// or a recipe with its levels.
 class _BN {
   const _BN({
     required this.id,
-    required this.at,
-    required this.tiers,
+    required this.lit,
     this.seal,
+    this.level = 0,
     this.recipe,
+    this.levels = const {},
     this.ready = false,
     this.locked = false,
   });
 
   final String id;
-  final Offset at;
   final SealType? seal;
+
+  /// Level of a single-seal node.
+  final int level;
   final Recipe? recipe;
 
-  /// Highest level forged (recipes) or owned (single seals); 0 = none.
-  final int tiers;
+  /// Recipe levels ever owned or forged.
+  final Set<int> levels;
+
+  /// Ever owned (single seal) or discovered (recipe).
+  final bool lit;
 
   /// Can be forged with the case, Glut and LP right now.
   final bool ready;
@@ -52,23 +67,17 @@ class _BN {
   /// A level-2 recipe whose level-1 recipe was not forged yet.
   final bool locked;
 
-  bool get lit => tiers > 0;
   bool get single => seal != null;
+
+  /// Highest recipe level ever forged; 0 = none.
+  int get tiers => levels.isEmpty ? 0 : levels.reduce(math.max);
+
+  Offset at(double w) => single
+      ? Offset(w * _singleX[seal]!, _singleY(level))
+      : Offset(w * _recipeAt[recipe]!.dx, _recipeAt[recipe]!.dy);
 }
 
-/// Highest level of a single [type] seal in the case or any socket.
-int _bestSingle(GameData game, SealType type) {
-  var best = 0;
-  for (final (s, _) in game.forge.sealsInStock) {
-    if (!s.combined && s.type == type) best = math.max(best, s.level);
-  }
-  for (final c in game.companions) {
-    for (final s in c.seals) {
-      if (!s.combined && s.type == type) best = math.max(best, s.level);
-    }
-  }
-  return best;
-}
+String _singleId(SealType t, int level) => 'single-${t.name}-$level';
 
 /// True when the case holds two seals that make [r] and the forge allows
 /// it now (Glut and LP for the lowest Glut of the step).
@@ -88,29 +97,40 @@ bool _forgeableNow(GameData game, Recipe r) {
   return false;
 }
 
-List<_BN> _baumNodes(GameData game) => [
-  for (final t in SealType.values)
-    _BN(
-      id: 'single-${t.name}',
-      at: _singleAt[t]!,
-      seal: t,
-      tiers: _bestSingle(game, t),
-    ),
-  for (final r in Recipe.values)
-    _BN(
-      id: r.name,
-      at: _recipeAt[r]!,
-      recipe: r,
-      tiers: game.forge.recipes[r] ?? 0,
-      ready: _forgeableNow(game, r),
-      locked: !game.forge.canForge(r),
-    ),
-];
+List<_BN> _baumNodes(GameData game) {
+  final f = game.forge;
+  return [
+    for (final t in SealType.values)
+      for (var lv = 1; lv <= Seal.maxLevel; lv++)
+        _BN(id: _singleId(t, lv), seal: t, level: lv, lit: f.sawSingle(t, lv)),
+    for (final r in Recipe.values)
+      () {
+        final levels = {
+          for (var lv = 1; lv <= Seal.maxLevel; lv++)
+            if (f.sawRecipe(r, lv)) lv,
+          if ((f.recipes[r] ?? 0) case final best when best > 0) best,
+        };
+        return _BN(
+          id: r.name,
+          recipe: r,
+          levels: levels,
+          lit: levels.isNotEmpty || f.knows(r),
+          ready: _forgeableNow(game, r),
+          locked: !f.canForge(r),
+        );
+      }(),
+  ];
+}
 
+/// Links of the one tree: each stat's chain St.1 → St.5, the stats' tops
+/// into their level-1 recipes, those into their level-2 recipes.
 List<(String, String)> get _baumLinks => [
+  for (final t in SealType.values)
+    for (var lv = 1; lv < Seal.maxLevel; lv++)
+      (_singleId(t, lv), _singleId(t, lv + 1)),
   for (final r in Recipe.firstTier) ...[
-    ('single-${r.a.name}', r.name),
-    ('single-${r.b.name}', r.name),
+    (_singleId(r.a, Seal.maxLevel), r.name),
+    (_singleId(r.b, Seal.maxLevel), r.name),
     (r.name, r.next!.name),
   ],
 ];
@@ -133,6 +153,8 @@ class _SchmiedeBaumState extends ConsumerState<_SchmiedeBaum> {
     _BN node(String id) => nodes.firstWhere((n) => n.id == id);
     final recipes = nodes.where((n) => !n.single).toList();
     final known = recipes.where((n) => n.lit).length;
+    final singles = nodes.where((n) => n.single).toList();
+    final seenSingles = singles.where((n) => n.lit).length;
     final sel =
         _sel ??
         (recipes.where((n) => n.ready).firstOrNull ??
@@ -141,16 +163,26 @@ class _SchmiedeBaumState extends ConsumerState<_SchmiedeBaum> {
             .id;
     final header = Row(
       children: [
-        Text(
-          l.baumTitle,
-          style: TextStyle(
-            color: _brass.withValues(alpha: .9),
-            fontSize: 10.5,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 2,
+        Flexible(
+          child: Text(
+            l.baumTitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: _brass.withValues(alpha: .9),
+              fontSize: 10.5,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 2,
+            ),
           ),
         ),
-        const Spacer(),
+        const SizedBox(width: 8),
+        Text(
+          l.baumSeen(seenSingles, singles.length),
+          key: const Key('baum-seen'),
+          style: const TextStyle(color: ForgeColors.muted, fontSize: 10.5),
+        ),
+        const SizedBox(width: 10),
         Text(
           l.baumCount(known, recipes.length),
           key: const Key('baum-count'),
@@ -165,7 +197,10 @@ class _SchmiedeBaumState extends ConsumerState<_SchmiedeBaum> {
         builder: (context, box) {
           final wide = box.maxWidth > 700;
           final tree = _tree(nodes, node, sel);
-          final detail = _Detail(node: node(sel), compact: box.maxHeight < 560);
+          final detail = _Detail(
+            node: node(sel),
+            compact: !wide || box.maxHeight < 560,
+          );
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -207,47 +242,59 @@ class _SchmiedeBaumState extends ConsumerState<_SchmiedeBaum> {
     );
   }
 
-  Widget _tree(List<_BN> nodes, _BN Function(String) node, String sel) =>
-      LayoutBuilder(
-        builder: (context, box) {
-          final w = box.maxWidth;
-          final h = box.maxHeight;
-          Offset at(_BN n) => Offset(w * n.at.dx, 8 + (h - 46) * n.at.dy);
-          final links = <(Path, bool, bool)>[];
-          for (final (a, b) in _baumLinks) {
-            final na = node(a);
-            final nb = node(b);
-            final p = at(na);
-            final q = at(nb);
-            final path = Path()..moveTo(p.dx, p.dy);
-            if (na.single && (q.dx - p.dx).abs() > w * .5) {
-              // Outer brass rods around the middle.
-              final left = p.dx < q.dx;
-              final edge = left ? w * .03 : w * .97;
-              path
-                ..lineTo(edge, p.dy)
-                ..lineTo(edge, q.dy)
-                ..lineTo(q.dx + (left ? -26 : 26), q.dy);
-            } else {
-              final midY = (p.dy + q.dy) / 2;
-              path.cubicTo(p.dx, midY, q.dx, midY + 4, q.dx, q.dy);
-            }
-            links.add((path, na.lit && nb.lit, nb.ready));
-          }
-          return Stack(
+  Widget _tree(
+    List<_BN> nodes,
+    _BN Function(String) node,
+    String sel,
+  ) => LayoutBuilder(
+    builder: (context, box) {
+      final w = box.maxWidth;
+      final links = <(Path, bool, bool)>[];
+      for (final (a, b) in _baumLinks) {
+        final na = node(a);
+        final nb = node(b);
+        final p = na.at(w);
+        final q = nb.at(w);
+        final path = Path()..moveTo(p.dx, p.dy);
+        if (na.single && nb.recipe == Recipe.faehrte) {
+          // The outer stats reach the middle recipe by brass rods
+          // along the edge, above the other level-1 recipes.
+          final left = p.dx < q.dx;
+          final edge = left ? w * .035 : w * .965;
+          path
+            ..lineTo(edge, p.dy - 30)
+            ..lineTo(edge, q.dy)
+            ..lineTo(q.dx + (left ? -26 : 26), q.dy);
+        } else if (na.single && nb.single) {
+          path.lineTo(q.dx, q.dy);
+        } else {
+          final midY = (p.dy + q.dy) / 2;
+          path.cubicTo(p.dx, midY, q.dx, midY + 4, q.dx, q.dy);
+        }
+        links.add((path, na.lit && nb.lit, nb.ready));
+      }
+      return SingleChildScrollView(
+        key: const Key('baum-scroll'),
+        // Starts at the root (the single seals); scroll up to the
+        // recipes.
+        reverse: true,
+        child: SizedBox(
+          width: w,
+          height: _baumH,
+          child: Stack(
             clipBehavior: Clip.none,
             children: [
               Positioned.fill(
-                child: CustomPaint(
-                  painter: _TreePainter(links, at(node('single-stride')).dy),
-                ),
+                child: CustomPaint(painter: _TreePainter(links, _singleY(1))),
               ),
               for (final n in nodes)
-                _placed(context, n, at(n), n.single ? 38 : 50, n.id == sel),
+                _placed(context, n, n.at(w), n.single ? 36 : 48, n.id == sel),
             ],
-          );
-        },
+          ),
+        ),
       );
+    },
+  );
 
   Widget _placed(
     BuildContext context,
@@ -259,26 +306,37 @@ class _SchmiedeBaumState extends ConsumerState<_SchmiedeBaum> {
     final l = AppLocalizations.of(context);
     final r = n.recipe;
     final label = n.single
-        ? (n.lit
-              ? '${sealStat(l, n.seal!)} · ${l.sealLevelShort(n.tiers)}'
-              : sealStat(l, n.seal!))
+        ? '${sealStat(l, n.seal!)} ${l.sealLevelShort(n.level)}'
         : n.lit
         ? recipeName(l, r!)
         : '???';
     final sub = n.single
         ? null
         : n.lit
-        ? l.sealLevelShort(n.tiers)
+        ? null
         : n.locked
         ? l.baumLocked(recipeName(l, r!.base))
         : n.ready
         ? l.baumReady
         : recipeHint(l, r!);
     final img = n.single
-        ? SealArt(seal: Seal(n.seal!, math.max(1, n.tiers)), size: size)
+        ? SealArt(seal: Seal(n.seal!, n.level), size: size)
         : RecipeArt(recipe: r!, size: size);
     final art = n.lit
         ? img
+        : n.single
+        ? Opacity(
+            opacity: .55,
+            child: ColorFiltered(
+              colorFilter: const ColorFilter.matrix([
+                .3, .5, .1, 0, 0, //
+                .3, .5, .1, 0, 0,
+                .3, .5, .1, 0, 0,
+                0, 0, 0, 1, 0,
+              ]),
+              child: img,
+            ),
+          )
         : Opacity(
             opacity: .8,
             child: ColorFiltered(
@@ -375,12 +433,15 @@ class _SchmiedeBaumState extends ConsumerState<_SchmiedeBaum> {
                 ],
               ),
             ),
-            if (!n.single) _Pips(tiers: n.tiers),
+            if (!n.single) _Pips(levels: n.levels),
             Text(
               label,
+              key: n.lit ? Key('baum-lit-${n.id}') : null,
               maxLines: 1,
               style: TextStyle(
-                color: n.lit ? ForgeColors.text : ForgeColors.muted,
+                color: n.lit
+                    ? ForgeColors.text
+                    : ForgeColors.muted.withValues(alpha: n.single ? .6 : 1),
                 fontSize: n.single ? 9.5 : 11,
                 height: 1.2,
                 fontWeight: FontWeight.w700,
@@ -411,10 +472,11 @@ class _SchmiedeBaumState extends ConsumerState<_SchmiedeBaum> {
   }
 }
 
+/// St.1–5 of a recipe: numbered pips, bright for each level ever owned.
 class _Pips extends StatelessWidget {
-  const _Pips({required this.tiers});
+  const _Pips({required this.levels});
 
-  final int tiers;
+  final Set<int> levels;
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -422,17 +484,32 @@ class _Pips extends StatelessWidget {
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        for (var i = 1; i <= 5; i++)
+        for (var i = 1; i <= Seal.maxLevel; i++)
           Container(
-            width: 6,
-            height: 6,
-            margin: const EdgeInsets.symmetric(horizontal: 1.5),
+            key: levels.contains(i) ? Key('pip-lit-$i') : null,
+            width: 13,
+            height: 13,
+            margin: const EdgeInsets.symmetric(horizontal: 1),
+            alignment: Alignment.center,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: i <= tiers ? _brass : const Color(0xFF2E251E),
+              color: levels.contains(i) ? _brass : const Color(0xFF2E251E),
               border: Border.all(
-                color: i <= tiers ? _glowEmber : const Color(0xFF5A4A3C),
+                color: levels.contains(i)
+                    ? _glowEmber
+                    : const Color(0xFF5A4A3C),
                 width: .8,
+              ),
+            ),
+            child: Text(
+              '$i',
+              style: TextStyle(
+                color: levels.contains(i)
+                    ? const Color(0xFF2A1A0E)
+                    : ForgeColors.muted.withValues(alpha: .7),
+                fontSize: 8,
+                height: 1,
+                fontWeight: FontWeight.w800,
               ),
             ),
           ),
@@ -459,11 +536,19 @@ class _Detail extends StatelessWidget {
     String title;
     if (n.single) {
       final stat = sealStat(l, n.seal!);
-      title = stat.toUpperCase();
+      title = '$stat ${l.sealLevelShort(n.level)}'.toUpperCase();
       lines.add(
         Text(
-          n.lit ? l.baumSingle(stat, n.tiers) : l.baumSingleNone(stat),
+          n.lit
+              ? l.baumSingleSeen(stat, n.level)
+              : l.baumSingleNever(stat, n.level),
           style: small,
+        ),
+      );
+      lines.add(
+        Text(
+          n.level == 1 ? l.baumSingleFirst : l.baumSingleUp(n.level - 1),
+          style: const TextStyle(color: ForgeColors.muted, fontSize: 10),
         ),
       );
     } else {
@@ -501,7 +586,7 @@ class _Detail extends StatelessWidget {
       final first = compact ? math.max(1, n.tiers) : 1;
       final last = compact ? math.min(5, n.tiers + 1) : 5;
       for (var i = first; i <= last; i++) {
-        final done = i <= n.tiers;
+        final done = n.levels.contains(i);
         final next = i == n.tiers + 1 && (n.lit || n.ready);
         lines.add(
           Padding(
@@ -575,20 +660,22 @@ class _Detail extends StatelessWidget {
         );
       }
     }
-    lines.add(
-      Padding(
-        padding: const EdgeInsets.only(top: 4),
-        child: Text(
-          l.baumWhere,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: ForgeColors.muted.withValues(alpha: .85),
-            fontSize: 9.5,
+    if (!compact) {
+      lines.add(
+        Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Text(
+            l.baumWhere,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: ForgeColors.muted.withValues(alpha: .85),
+              fontSize: 9.5,
+            ),
           ),
         ),
-      ),
-    );
+      );
+    }
     return Container(
       key: const Key('baum-detail'),
       width: double.infinity,
@@ -633,7 +720,7 @@ class _TreePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final beam = Rect.fromLTWH(
       size.width * .06,
-      baseY + 34,
+      baseY + 30,
       size.width * .88,
       5,
     );

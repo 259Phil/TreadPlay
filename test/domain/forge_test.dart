@@ -476,6 +476,7 @@ void main() {
           splinters: 3,
           combines: 2,
           bestLevel: 4,
+          seen: {'grit@3', 'grit@2', 'ausdauer@1'},
         ),
       );
       final back = GameData.fromJson(g.toJson());
@@ -748,6 +749,52 @@ void main() {
       expect(at18.wanderweg.reached, 18);
       expect(at18.salves.count(Salve.large), 1);
       expect(at18.advancingWanderweg(t0).salves.count(Salve.large), 1);
+    });
+  });
+
+  group('ever owned (the forge tree)', () {
+    test('every way into the case marks the seal type and level', () {
+      var g = game(stock: {}, lp: 1000);
+      expect(g.forge.seen, isEmpty);
+      g = g.buyingSeal(SealType.fortune);
+      expect(g.forge.sawSingle(SealType.fortune, 1), isTrue);
+      expect(g.forge.sawSingle(SealType.fortune, 2), isFalse);
+      final f = g.forge
+          .adding(const Seal(SealType.grit, 4))
+          .adding(Seal.combined(SealType.stride, SealType.grit, 3));
+      expect(f.sawSingle(SealType.grit, 4), isTrue);
+      expect(f.sawRecipe(Recipe.ausdauer, 3), isTrue);
+      expect(f.sawRecipe(Recipe.ausdauer, 2), isFalse);
+    });
+
+    test('taking a seal out again keeps it lit', () {
+      final f = const ForgeState()
+          .adding(const Seal(SealType.stride, 2))
+          .adding(const Seal(SealType.stride, 2), -1);
+      expect(f.count(const Seal(SealType.stride, 2)), 0);
+      expect(f.sawSingle(SealType.stride, 2), isTrue);
+    });
+
+    test('old saves count the case, the sockets and known recipes', () {
+      final pebble = Companion.pebble().withSeal(
+        0,
+        const Seal(SealType.fortune, 5),
+      );
+      final g = GameData.initial(t0).copyWith(
+        companions: [pebble],
+        forge: const ForgeState(
+          stock: {'grit@2': 1},
+          recipes: {Recipe.schutz: 3},
+        ),
+      );
+      final json = g.toJson();
+      (json['forge']! as Map).remove('seen');
+      final back = GameData.fromJson(json);
+      expect(back.forge.sawSingle(SealType.grit, 2), isTrue);
+      expect(back.forge.sawSingle(SealType.fortune, 5), isTrue);
+      expect(back.forge.sawRecipe(Recipe.schutz, 3), isTrue);
+      expect(back.forge.sawSingle(SealType.stride, 1), isFalse);
+      expect(GameData.fromJson(back.toJson()).forge.seen, back.forge.seen);
     });
   });
 }

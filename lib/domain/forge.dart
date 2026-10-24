@@ -180,6 +180,7 @@ class ForgeState {
     this.fails = 0,
     this.recipes = const {},
     this.glutherzDay,
+    this.seen = const {},
   });
 
   /// Seal code → count of loose seals (not set into a companion).
@@ -208,6 +209,28 @@ class ForgeState {
   /// Day key (see `dayKey`) of the last extra Glut from [Recipe.glutherz].
   final String? glutherzDay;
 
+  /// Every seal kind ever owned or forged, as [seenKey]: single seals by
+  /// stat and level (`stride@3`), recipe seals by recipe and level
+  /// (`ausdauer@2`). The Schmiede-Baum lights these.
+  final Set<String> seen;
+
+  /// What [seen] notes for [s]: its stat (single) or recipe, and level.
+  static String seenKey(Seal s) =>
+      '${s.recipe?.name ?? s.type.name}@${s.level}';
+
+  /// A single [type] seal at [level] was owned at some point.
+  bool sawSingle(SealType type, int level) =>
+      seen.contains('${type.name}@$level');
+
+  /// A recipe seal of [r] at [level] was owned or forged at some point.
+  bool sawRecipe(Recipe r, int level) => seen.contains('${r.name}@$level');
+
+  /// [seals] noted in [seen].
+  ForgeState seeing(Iterable<Seal> seals) {
+    final add = {for (final s in seals) seenKey(s)};
+    return seen.containsAll(add) ? this : copyWith(seen: {...seen, ...add});
+  }
+
   bool knows(Recipe r) => (recipes[r] ?? 0) > 0;
 
   /// True when [r] may be forged: level-1 recipes always, level-2 once
@@ -215,13 +238,19 @@ class ForgeState {
   bool canForge(Recipe r) => r.tier == 1 || knows(r.base);
 
   /// [r] noted as forged at [level] (keeps the highest).
-  ForgeState discovering(Recipe r, int level) => (recipes[r] ?? 0) >= level
-      ? this
-      : copyWith(recipes: {...recipes, r: level});
+  ForgeState discovering(Recipe r, int level) {
+    final f = seen.contains('${r.name}@$level')
+        ? this
+        : copyWith(seen: {...seen, '${r.name}@$level'});
+    return (f.recipes[r] ?? 0) >= level
+        ? f
+        : f.copyWith(recipes: {...f.recipes, r: level});
+  }
 
-  /// Recipes of [seals] noted as discovered (migration of older saves).
+  /// Recipes of [seals] noted as discovered and all of [seals] as seen
+  /// (migration of older saves: case and sockets count as owned).
   ForgeState discoveringAll(Iterable<Seal> seals) {
-    var f = this;
+    var f = seeing(seals);
     for (final s in seals) {
       if (s.recipe case final r?) f = f.discovering(r, s.level);
     }
@@ -256,9 +285,11 @@ class ForgeState {
     } else {
       next[s.code] = v;
     }
+    final key = seenKey(s);
     return copyWith(
       stock: next,
       bestLevel: n > 0 && s.level > bestLevel ? s.level : bestLevel,
+      seen: n > 0 && !seen.contains(key) ? {...seen, key} : null,
     );
   }
 
@@ -275,6 +306,7 @@ class ForgeState {
     int? fails,
     Map<Recipe, int>? recipes,
     String? glutherzDay,
+    Set<String>? seen,
   }) => ForgeState(
     stock: stock ?? this.stock,
     glut: glut ?? this.glut,
@@ -286,6 +318,7 @@ class ForgeState {
     fails: fails ?? this.fails,
     recipes: recipes ?? this.recipes,
     glutherzDay: glutherzDay ?? this.glutherzDay,
+    seen: seen ?? this.seen,
   );
 
   Map<String, Object?> toJson() => {
@@ -299,6 +332,7 @@ class ForgeState {
     'fails': fails,
     'recipes': {for (final e in recipes.entries) e.key.name: e.value},
     'glutherzDay': ?glutherzDay,
+    'seen': [...seen]..sort(),
   };
 
   /// Unknown seal codes are dropped (an import checks them first, see
@@ -338,11 +372,27 @@ class ForgeState {
       fails: read('fails'),
       recipes: recipes,
       glutherzDay: json['glutherzDay'] as String?,
+      seen: {
+        if (json['seen'] case final List<Object?> raw)
+          for (final k in raw)
+            if (k is String && _seenKeys.contains(k)) k,
+        // Each discovered recipe was owned at least at its best level.
+        for (final e in recipes.entries) '${e.key.name}@${e.value}',
+      },
     );
-    // Recipe seals in the case count as discovered (older saves had
-    // combined seals before recipes were noted).
+    // Seals in the case count as owned, recipe seals as discovered (older
+    // saves had combined seals before recipes were noted).
     return state.discoveringAll([for (final (s, _) in state.sealsInStock) s]);
   }
+
+  /// Every valid [seenKey].
+  static final Set<String> _seenKeys = {
+    for (final n in [
+      for (final t in SealType.values) t.name,
+      for (final r in Recipe.values) r.name,
+    ])
+      for (var lv = 1; lv <= Seal.maxLevel; lv++) '$n@$lv',
+  };
 
   /// Stock entries of [json] that are not valid seals; empty when fine.
   static List<Object?> unknownCodes(Map<String, Object?> json) {

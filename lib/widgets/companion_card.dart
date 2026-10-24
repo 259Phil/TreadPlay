@@ -291,7 +291,11 @@ class _FrameCard extends StatelessWidget {
                                       alignment: Alignment.centerLeft,
                                       child: _TempoTag(
                                         key: const Key('card-tempo'),
-                                        label: typeLabel(l, t).toUpperCase(),
+                                        // Next to a badge only the speed
+                                        // fits; the arrows still tell.
+                                        label: c.badge == null
+                                            ? typeLabel(l, t).toUpperCase()
+                                            : null,
                                         speed: l.kmhValue(
                                           formatNumber(context, t.sweetSpotKmh),
                                         ),
@@ -510,7 +514,8 @@ class _TempoTag extends StatelessWidget {
     required this.color,
   });
 
-  final String label;
+  /// Gait name; null shows the speed alone, in the gait colour.
+  final String? label;
   final String speed;
   final Color color;
 
@@ -526,11 +531,17 @@ class _TempoTag extends StatelessWidget {
       child: Text.rich(
         TextSpan(
           children: [
-            TextSpan(
-              text: label,
-              style: TextStyle(color: color, fontWeight: FontWeight.w800),
-            ),
-            TextSpan(text: ' $speed'),
+            if (label case final name?) ...[
+              TextSpan(
+                text: name,
+                style: TextStyle(color: color, fontWeight: FontWeight.w800),
+              ),
+              TextSpan(text: ' $speed'),
+            ] else
+              TextSpan(
+                text: speed,
+                style: TextStyle(color: color, fontWeight: FontWeight.w800),
+              ),
           ],
         ),
         maxLines: 1,

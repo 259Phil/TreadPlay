@@ -406,6 +406,8 @@ void main() {
     expect(find.text('Mossik'), findsOneWidget);
     expect(find.text('Sahri'), findsOneWidget);
     expect(find.text('GALLOP 11 km/h'), findsOneWidget);
+    // Next to the Along badge the tag shows only the speed.
+    expect(find.text('4.5 km/h'), findsOneWidget);
     expect(find.text('Along'), findsOneWidget);
     expect(find.text('Not found yet'), findsNothing);
     expect(find.text('COMMON'), findsOneWidget);

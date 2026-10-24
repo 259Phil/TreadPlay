@@ -219,14 +219,6 @@ class _NamePlate extends StatelessWidget {
                           text: rarityLabel(l, c.rarity),
                           style: TextStyle(color: rarityMetal(c.rarity)),
                         ),
-                        const TextSpan(text: ' · '),
-                        TextSpan(
-                          text: typeLabel(l, c.type),
-                          style: TextStyle(
-                            color: tempoColor(c.type),
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
                         TextSpan(text: ' · ${l.levelShort(c.level)}'),
                       ],
                     ),
@@ -251,8 +243,23 @@ class _NamePlate extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 6),
-        Text(
-          l.sweetSpotAt(formatNumber(context, c.type.sweetSpotKmh)),
+        // The gait in its coin colour, then its sweet spot.
+        Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(
+                text: typeLabel(l, c.type),
+                style: TextStyle(
+                  color: tempoColor(c.type),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              TextSpan(
+                text:
+                    ' · ${l.sweetSpotAt(formatNumber(context, c.type.sweetSpotKmh))}',
+              ),
+            ],
+          ),
           style: small,
         ),
       ],

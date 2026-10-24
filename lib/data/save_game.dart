@@ -56,7 +56,11 @@ class SaveGame {
   ///
   /// 5: messengers ('messengers': visits met, the open task, today's
   /// count). Older files still import with none met yet.
-  static const int version = 5;
+  ///
+  /// 6: a gait per companion ('tempo' on owned companions and market
+  /// offers). Older files still import: every companion and offer gets its
+  /// species' home gait, the one it ran at before.
+  static const int version = 6;
 
   static String fileName(DateTime now) {
     final stamp = now.toIso8601String().replaceAll(':', '-').split('.').first;
@@ -92,7 +96,7 @@ class SaveGame {
     if (v > version) {
       throw const SaveGameException(SaveGameError.newerVersion);
     }
-    final json = _migrate(raw['game'], v);
+    final json = _withHomeTempo(_migrate(raw['game'], v), v);
     if (json is! Map<String, Object?>) {
       throw const SaveGameException(SaveGameError.damaged);
     }
@@ -143,6 +147,31 @@ class SaveGame {
       ..remove('pouches')
       ..remove('messengers');
     if (fromVersion < 2) next.remove('wanderweg');
+    return next;
+  }
+
+  /// Before version 6 a companion's gait was its species'; stray 'tempo'
+  /// keys are replaced so old files keep their sweet spots.
+  static Object? _withHomeTempo(Object? game, int fromVersion) {
+    if (fromVersion >= 6 || game is! Map<String, Object?>) return game;
+    Object? fix(Object? c) {
+      if (c is! Map<String, Object?>) return c;
+      final home = speciesById[c['speciesId']]?.type;
+      return home == null ? c : {...c, 'tempo': home.name};
+    }
+
+    final next = {...game};
+    if (game['companions'] case final List<Object?> owned) {
+      next['companions'] = [for (final c in owned) fix(c)];
+    }
+    if (game['market'] case final Map<String, Object?> m) {
+      if (m['offers'] case final List<Object?> offers) {
+        next['market'] = {
+          ...m,
+          'offers': [for (final c in offers) fix(c)],
+        };
+      }
+    }
     return next;
   }
 

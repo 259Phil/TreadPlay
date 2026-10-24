@@ -189,13 +189,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get tabShelf => 'Gehege';
 
   @override
-  String get typeMoss => 'Moos';
+  String get typeMoss => 'Schritt';
 
   @override
-  String get typeBrook => 'Bach';
+  String get typeBrook => 'Trab';
 
   @override
-  String get typeGale => 'Bö';
+  String get typeGale => 'Galopp';
 
   @override
   String get statStride => 'Stride';
@@ -239,7 +239,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get filterWorld => 'Welt';
 
   @override
-  String get filterType => 'Typ';
+  String get filterType => 'Tempo';
 
   @override
   String get filterRarity => 'Seltenheit';

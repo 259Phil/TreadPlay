@@ -398,16 +398,25 @@ class _Portrait extends StatelessWidget {
           child: CompanionArt(c.artKey),
         ),
         const SizedBox(width: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(c.name, style: Theme.of(context).textTheme.titleMedium),
-            Text(
-              '${typeLabel(l, c.type)} · ${l.statSpirit} '
-              '${l.percentValue(formatNumber(context, c.spirit))}',
-              style: const TextStyle(color: TreadColors.muted, fontSize: 12),
-            ),
-          ],
+        Flexible(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                c.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              Text(
+                '${typeLabel(l, c.type)} · ${l.statSpirit} '
+                '${l.percentValue(formatNumber(context, c.spirit))}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: TreadColors.muted, fontSize: 12),
+              ),
+            ],
+          ),
         ),
       ],
     );

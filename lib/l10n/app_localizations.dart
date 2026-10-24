@@ -413,19 +413,19 @@ abstract class AppLocalizations {
   /// No description provided for @typeMoss.
   ///
   /// In en, this message translates to:
-  /// **'Moss'**
+  /// **'Stroll'**
   String get typeMoss;
 
   /// No description provided for @typeBrook.
   ///
   /// In en, this message translates to:
-  /// **'Brook'**
+  /// **'Trot'**
   String get typeBrook;
 
   /// No description provided for @typeGale.
   ///
   /// In en, this message translates to:
-  /// **'Gale'**
+  /// **'Gallop'**
   String get typeGale;
 
   /// No description provided for @statStride.
@@ -509,7 +509,7 @@ abstract class AppLocalizations {
   /// No description provided for @filterType.
   ///
   /// In en, this message translates to:
-  /// **'Type'**
+  /// **'Pace'**
   String get filterType;
 
   /// No description provided for @filterRarity.

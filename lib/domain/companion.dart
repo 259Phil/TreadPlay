@@ -8,6 +8,9 @@ import 'world.dart';
 
 export 'seal.dart' show Seal, SealType;
 
+/// A companion's gait: the pace it earns LP at. Shown as Schritt / Trab /
+/// Galopp (EN Stroll / Trot / Gallop). The enum names are save ids from
+/// when the gaits were elements and never change.
 enum CompanionType {
   moss(sweetSpotKmh: 4.5, rangeKmh: 2.5),
   brook(sweetSpotKmh: 7.5, rangeKmh: 2.5),
@@ -17,6 +20,17 @@ enum CompanionType {
 
   final double sweetSpotKmh;
   final double rangeKmh;
+
+  /// 1–3 arrows on the tempo coin.
+  int get arrows => index + 1;
+
+  /// Reads a saved gait; null when missing or unknown.
+  static CompanionType? tryParse(Object? name) {
+    for (final t in values) {
+      if (t.name == name) return t;
+    }
+    return null;
+  }
 }
 
 enum Rarity {
@@ -85,7 +99,8 @@ class Companion {
     required this.fortune,
     required this.spirit,
     required this.charms,
-  });
+    CompanionType? tempo,
+  }) : _tempo = tempo;
 
   /// The starter every player is given.
   factory Companion.pebble() => Companion.fresh(
@@ -99,10 +114,12 @@ class Companion {
     required String id,
     required String speciesId,
     required Rarity rarity,
+    CompanionType? tempo,
   }) => Companion(
     id: id,
     speciesId: speciesId,
     rarity: rarity,
+    tempo: tempo,
     level: 1,
     stride: rarity.baseStat,
     grit: rarity.baseStat,
@@ -118,6 +135,7 @@ class Companion {
     required String speciesId,
     required Rarity rarity,
     required Random random,
+    CompanionType? tempo,
   }) {
     double roll() => _roundStat(
       rarity.baseStat * (1 - statRoll + 2 * statRoll * random.nextDouble()),
@@ -126,6 +144,7 @@ class Companion {
       id: id,
       speciesId: speciesId,
       rarity: rarity,
+      tempo: tempo,
     ).copyWith(stride: roll(), grit: roll(), fortune: roll());
   }
 
@@ -133,6 +152,8 @@ class Companion {
   final String speciesId;
   final Rarity rarity;
   final int level;
+
+  final CompanionType? _tempo;
   final double stride;
   final double grit;
   final double fortune;
@@ -157,7 +178,12 @@ class Companion {
 
   String get name => species.name;
 
-  CompanionType get type => species.type;
+  /// This instance's gait. Market offers roll their own (see
+  /// `Market.rolled`); every other companion keeps its species' home gait.
+  CompanionType get tempo => _tempo ?? species.type;
+
+  /// The gait that sets the sweet spot; same as [tempo].
+  CompanionType get type => tempo;
 
   World get world => species.world;
 
@@ -217,10 +243,12 @@ class Companion {
     double? fortune,
     double? spirit,
     List<String?>? charms,
+    CompanionType? tempo,
   }) => Companion(
     id: id,
     speciesId: speciesId,
     rarity: rarity,
+    tempo: tempo ?? _tempo,
     level: level,
     stride: stride ?? this.stride,
     grit: grit ?? this.grit,
@@ -242,6 +270,7 @@ class Companion {
     'id': id,
     'speciesId': speciesId,
     'rarity': rarity.name,
+    if (_tempo ?? speciesById[speciesId]?.type case final t?) 'tempo': t.name,
     'level': level,
     'stride': stride,
     'grit': grit,
@@ -257,6 +286,8 @@ class Companion {
       id: json['id']! as String,
       speciesId: json['speciesId']! as String,
       rarity: rarity,
+      // Missing (saves before version 6) or unknown: the species' home gait.
+      tempo: CompanionType.tryParse(json['tempo']),
       level: json['level']! as int,
       stride: _savedStat(json['stride'], rarity),
       grit: _savedStat(json['grit'], rarity),

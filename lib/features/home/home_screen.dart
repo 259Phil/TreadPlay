@@ -13,6 +13,7 @@ import '../messenger/messenger_popup.dart';
 import '../../router.dart';
 import '../../state/providers.dart';
 import '../../theme.dart';
+import '../../widgets/companion_card.dart';
 import '../../widgets/format.dart';
 import '../../widgets/lp_pill.dart';
 import '../wanderweg/trail_entry.dart';
@@ -218,10 +219,15 @@ class _NamePlate extends StatelessWidget {
                           text: rarityLabel(l, c.rarity),
                           style: TextStyle(color: rarityMetal(c.rarity)),
                         ),
+                        const TextSpan(text: ' · '),
                         TextSpan(
-                          text:
-                              ' · ${typeLabel(l, c.type)} · ${l.levelShort(c.level)}',
+                          text: typeLabel(l, c.type),
+                          style: TextStyle(
+                            color: tempoColor(c.type),
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
+                        TextSpan(text: ' · ${l.levelShort(c.level)}'),
                       ],
                     ),
                     style: small,

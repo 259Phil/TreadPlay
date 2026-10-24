@@ -11,7 +11,7 @@ import 'companion_figure.dart';
 import 'format.dart';
 
 /// Collectible card: dark trading-card frame with brass corners, a brass
-/// name plate under the art, an element coin and rarity pips. The image is
+/// name plate under the art, a tempo coin and rarity pips. The image is
 /// only the creature on transparency; everything else is drawn here.
 class CompanionCard extends StatelessWidget {
   const CompanionCard({
@@ -45,7 +45,8 @@ class CompanionCard extends StatelessWidget {
   /// Text on the brass pill at the bottom of the card, e.g. the price.
   final String? action;
 
-  /// Element of the companion; shown as a brass coin on the art.
+  /// Gait of the companion; shown as a brass coin with 1–3 arrows and a
+  /// tag with its name and sweet spot on the art.
   final CompanionType? type;
 
   static const double aspectRatio = 0.72;
@@ -72,10 +73,11 @@ Color rarityJewel(Rarity r) => switch (r) {
   Rarity.legendary => const Color(0xFFE6A434),
 };
 
-IconData elementIcon(CompanionType t) => switch (t) {
-  CompanionType.moss => Icons.eco,
-  CompanionType.brook => Icons.water_drop,
-  CompanionType.gale => Icons.air,
+/// Rim and label colour of each gait.
+Color tempoColor(CompanionType t) => switch (t) {
+  CompanionType.moss => const Color(0xFF7FA650),
+  CompanionType.brook => const Color(0xFF3FA39A),
+  CompanionType.gale => const Color(0xFFD0703A),
 };
 
 Widget _scene(CompanionCard c) {
@@ -112,7 +114,7 @@ Widget _scene(CompanionCard c) {
 const double _plateH = 26;
 const double _plateBottom = 5;
 
-/// The art gets its own window: below the element coin and badge, above
+/// The art gets its own window: below the tempo coin and badge, above
 /// the name plate, so no creature hides behind either.
 const EdgeInsets cardArtWindow = EdgeInsets.fromLTRB(
   6,
@@ -274,7 +276,32 @@ class _FrameCard extends StatelessWidget {
                             ),
                           ),
                           if (c.type case final t?)
-                            Positioned(left: 5, top: 5, child: _ElementCoin(t)),
+                            Positioned(
+                              left: 5,
+                              top: 5,
+                              // Leaves room for the badge on the right.
+                              right: c.badge == null ? 5 : 64,
+                              child: Row(
+                                children: [
+                                  _TempoCoin(t),
+                                  const SizedBox(width: 4),
+                                  Flexible(
+                                    child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      alignment: Alignment.centerLeft,
+                                      child: _TempoTag(
+                                        key: const Key('card-tempo'),
+                                        label: typeLabel(l, t).toUpperCase(),
+                                        speed: l.kmhValue(
+                                          formatNumber(context, t.sweetSpotKmh),
+                                        ),
+                                        color: tempoColor(t),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           if (c.badge case final b?)
                             Positioned(
                               right: 5,
@@ -416,24 +443,105 @@ class _NamePlate extends StatelessWidget {
   );
 }
 
-class _ElementCoin extends StatelessWidget {
-  const _ElementCoin(this.type);
+class _TempoCoin extends StatelessWidget {
+  const _TempoCoin(this.type);
   final CompanionType type;
 
   @override
   Widget build(BuildContext context) => Container(
+    key: ValueKey('tempo-coin-${type.name}'),
     width: 28,
     height: 28,
-    decoration: const BoxDecoration(
+    decoration: BoxDecoration(
       shape: BoxShape.circle,
-      gradient: RadialGradient(
+      gradient: const RadialGradient(
         center: Alignment(-.3, -.4),
         colors: [Color(0xFFF0D598), Color(0xFFC4A36A), Color(0xFF7E6038)],
       ),
-      border: Border.fromBorderSide(BorderSide(color: Color(0xFF4A3420))),
-      boxShadow: [BoxShadow(color: Color(0xAA000000), blurRadius: 3)],
+      border: Border.all(color: tempoColor(type), width: 2),
+      boxShadow: const [
+        BoxShadow(color: Color(0xFF4A3420), spreadRadius: 1),
+        BoxShadow(color: Color(0xAA000000), blurRadius: 3),
+      ],
     ),
-    child: Icon(elementIcon(type), size: 16, color: const Color(0xFF2A1A0E)),
+    child: CustomPaint(painter: _ArrowsPainter(type.arrows)),
+  );
+}
+
+/// 1–3 dark chevrons, centred on the coin.
+class _ArrowsPainter extends CustomPainter {
+  _ArrowsPainter(this.count);
+  final int count;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final p = Paint()
+      ..color = const Color(0xFF2A1A0E)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+    const w = 4.0, h = 8.0, gap = 4.0;
+    final total = w + gap * (count - 1);
+    final x0 = (size.width - total) / 2;
+    final cy = size.height / 2;
+    for (var i = 0; i < count; i++) {
+      final x = x0 + gap * i;
+      canvas.drawPath(
+        Path()
+          ..moveTo(x, cy - h / 2)
+          ..lineTo(x + w, cy)
+          ..lineTo(x, cy + h / 2),
+        p,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_ArrowsPainter old) => old.count != count;
+}
+
+/// Dark tag next to the coin: gait name in its colour, then the sweet spot.
+class _TempoTag extends StatelessWidget {
+  const _TempoTag({
+    super.key,
+    required this.label,
+    required this.speed,
+    required this.color,
+  });
+
+  final String label;
+  final String speed;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: BoxDecoration(
+      color: const Color(0xCC1A110B),
+      borderRadius: BorderRadius.circular(10),
+      border: Border.all(color: color),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+      child: Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+              text: label,
+              style: TextStyle(color: color, fontWeight: FontWeight.w800),
+            ),
+            TextSpan(text: ' $speed'),
+          ],
+        ),
+        maxLines: 1,
+        style: const TextStyle(
+          color: Color(0xFFF2DCA8),
+          fontSize: 10.5,
+          fontWeight: FontWeight.w600,
+          letterSpacing: .3,
+        ),
+      ),
+    ),
   );
 }
 

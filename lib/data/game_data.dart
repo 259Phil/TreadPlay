@@ -700,13 +700,15 @@ class GameData {
   }
 
   /// Keeps the current market until its drift is due, then rolls a new one.
-  /// Offers only come from [marketWorlds].
+  /// Offers only come from [marketWorlds]; at least three share the gait of
+  /// the companion taken along.
   GameData withMarket(DateTime now, Random random) {
     final pool = marketWorlds;
+    final along = activeCompanion.tempo;
     return copyWith(
       market:
-          market?.drifted(now, random, worlds: pool) ??
-          Market.rolled(now, random, worlds: pool),
+          market?.drifted(now, random, worlds: pool, along: along) ??
+          Market.rolled(now, random, worlds: pool, along: along),
     );
   }
 

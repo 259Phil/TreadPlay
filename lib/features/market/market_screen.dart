@@ -187,10 +187,10 @@ class _Grid extends StatelessWidget {
                   rarity: c.rarity,
                   type: c.type,
                   name: c.name,
-                  subtitle: rarityLabel(l, c.rarity),
+                  // Rarity already sits left of it; gait is on the coin.
+                  subtitle: l.levelShort(c.level),
                   stats: cardStats(context, c),
-                  action:
-                      '${typeLabel(l, c.type)} · ${formatLpPrice(context, price(c))}',
+                  action: formatLpPrice(context, price(c)),
                   badge: !buying && c.id == game.activeCompanionId
                       ? l.takenAlong
                       : null,

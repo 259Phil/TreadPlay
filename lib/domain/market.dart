@@ -19,7 +19,17 @@ class Market {
   /// [Companion.rolled]).
   /// Offers only come from species of [worlds]; null or no match means
   /// the whole catalog.
-  factory Market.rolled(DateTime now, Random random, {Set<World>? worlds}) {
+  ///
+  /// Each offer also rolls its gait: the species' home gait at
+  /// [homeTempoWeight] %, each other gait at half the rest. At least
+  /// [guaranteedTempoOffers] offers share [along] (the gait of the companion
+  /// taken along) when given. Prices still depend on rarity only.
+  factory Market.rolled(
+    DateTime now,
+    Random random, {
+    Set<World>? worlds,
+    CompanionType? along,
+  }) {
     final inPool = [
       for (final s in speciesCatalog)
         if (worlds == null || worlds.contains(s.world)) s,
@@ -37,15 +47,40 @@ class Market {
           random: random,
         ),
     ];
+    final drift = {
+      for (final c in offers)
+        c.id: 1 - priceDrift + 2 * priceDrift * random.nextDouble(),
+    };
+    // Gaits are rolled after rarity, stats and drift so those keep their
+    // draws from before gaits were per offer.
+    final gaits = [for (final c in offers) _rollTempo(c.species.type, random)];
+    if (along != null) {
+      var short = guaranteedTempoOffers - gaits.where((t) => t == along).length;
+      while (short > 0) {
+        final others = [
+          for (var i = 0; i < gaits.length; i++)
+            if (gaits[i] != along) i,
+        ];
+        if (others.isEmpty) break;
+        gaits[others[random.nextInt(others.length)]] = along;
+        short--;
+      }
+    }
     return Market(
       nextDriftAt: now.add(Duration(minutes: minutes)),
-      drift: {
-        for (final c in offers)
-          c.id: 1 - priceDrift + 2 * priceDrift * random.nextDouble(),
-      },
-      offers: offers,
+      drift: drift,
+      offers: [
+        for (var i = 0; i < offers.length; i++)
+          offers[i].copyWith(tempo: gaits[i]),
+      ],
     );
   }
+
+  /// Chance in percent that an offer has its species' home gait.
+  static const int homeTempoWeight = 50;
+
+  /// Offers per market that match the gait of the companion taken along.
+  static const int guaranteedTempoOffers = 3;
 
   static const int offerCount = 12;
   static const Duration minDrift = Duration(hours: 7);
@@ -79,10 +114,14 @@ class Market {
   final List<Companion> offers;
 
   /// Same market until [nextDriftAt]; afterwards a newly rolled one.
-  Market drifted(DateTime now, Random random, {Set<World>? worlds}) =>
-      now.isBefore(nextDriftAt)
+  Market drifted(
+    DateTime now,
+    Random random, {
+    Set<World>? worlds,
+    CompanionType? along,
+  }) => now.isBefore(nextDriftAt)
       ? this
-      : Market.rolled(now, random, worlds: worlds);
+      : Market.rolled(now, random, worlds: worlds, along: along);
 
   Companion? offer(String id) => offers.where((c) => c.id == id).firstOrNull;
 
@@ -120,6 +159,17 @@ class Market {
         Companion.fromJson(c! as Map<String, Object?>),
     ],
   );
+
+  static CompanionType _rollTempo(CompanionType home, Random random) {
+    final pick = random.nextInt(100);
+    if (pick < homeTempoWeight) return home;
+    final others = [
+      for (final t in CompanionType.values)
+        if (t != home) t,
+    ];
+    final share = (100 - homeTempoWeight) / others.length;
+    return others[min(others.length - 1, (pick - homeTempoWeight) ~/ share)];
+  }
 
   static Rarity _rollRarity(Random random) {
     var pick = random.nextInt(100);

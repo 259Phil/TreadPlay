@@ -100,8 +100,8 @@ class _ShelfScreenState extends ConsumerState<ShelfScreen> {
                     rarity: c.rarity,
                     type: c.type,
                     name: c.name,
-                    subtitle:
-                        '${typeLabel(l, c.type)} · ${l.levelShort(c.level)}',
+                    // The gait is on the coin and its tag.
+                    subtitle: l.levelShort(c.level),
                     badge: c.id == game.activeCompanionId ? l.takenAlong : null,
                     stats: cardStats(context, c),
                     onTap: () => _showDetail(context, c.id),

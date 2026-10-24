@@ -405,7 +405,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Mossik'), findsOneWidget);
     expect(find.text('Sahri'), findsOneWidget);
-    expect(find.text('Gale · Lv 1'), findsOneWidget);
+    expect(find.text('GALLOP 11 km/h'), findsOneWidget);
     expect(find.text('Along'), findsOneWidget);
     expect(find.text('Not found yet'), findsNothing);
     expect(find.text('COMMON'), findsOneWidget);
@@ -584,10 +584,7 @@ void main() {
         collect();
       }
       expect(seen, hasLength(Market.offerCount));
-      expect(
-        find.textContaining(RegExp(r'^(Moss|Brook|Gale) · [\d,]+ LP$')),
-        findsWidgets,
-      );
+      expect(find.textContaining(RegExp(r'^[\d,]+ LP$')), findsWidgets);
       expectNoCountdown();
 
       await tester.tap(find.text('Sell'));

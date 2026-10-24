@@ -857,9 +857,11 @@ void main() {
     // The Forge page does not scroll; only the seal strips scroll sideways.
     Future<void> tapKey(WidgetTester tester, String key) async {
       if (key.startsWith('baum-')) {
-        // The forge tree is taller than the screen: scroll the node in.
-        await tester.ensureVisible(find.byKey(Key(key)));
+        // The forge tree pans and zooms freely, so a node may sit outside
+        // the view: tap it as the finger would once it is panned in.
+        tester.widget<GestureDetector>(find.byKey(Key(key))).onTap!();
         await tester.pumpAndSettle();
+        return;
       }
       await tester.tap(find.byKey(Key(key)));
       await tester.pumpAndSettle();
@@ -1343,6 +1345,14 @@ void main() {
       expect(textOf(tester, 'baum-detail-title'), 'FORTUNE L4');
       expect(find.text('Single seal Fortune L4 · never owned'), findsOneWidget);
       await tapKey(tester, 'baum-single-stride-2');
+      expect(find.text('Single seal Stride L2 · owned before'), findsOneWidget);
+      // Every look holds the same nodes; picking one keeps the selection.
+      for (final look in ['b', 'c', 'a']) {
+        await tapKey(tester, 'baum-look-$look');
+        expect(find.byKey(const Key('baum-single-fortune-5')), findsOneWidget);
+        expect(find.byKey(const Key('baum-wanderstern-5')), findsOneWidget);
+        expect(find.byKey(const Key('baum-lit-single-grit-3')), findsOneWidget);
+      }
       expect(find.text('Single seal Stride L2 · owned before'), findsOneWidget);
     });
 

@@ -14,36 +14,6 @@ const _brass = Color(0xFFD9B26A);
 const _glowEmber = Color(0xFFFF9A3C);
 const _cyan = Color(0xFF8FF0E2);
 
-/// Gap between two levels of one column, and between two blocks.
-const double _rowGap = 70;
-const double _blockGap = 124;
-
-/// Height of the tree canvas (three blocks of five rows); it scrolls.
-const double _baumH = 64 + 3 * 4 * _rowGap + 2 * _blockGap + 56;
-
-/// Column of each stat's single seals and of each recipe (share of the
-/// width): every block uses the same three columns.
-const _singleX = {
-  SealType.stride: .17,
-  SealType.grit: .5,
-  SealType.fortune: .83,
-};
-const _recipeX = {
-  Recipe.ausdauer: .17,
-  Recipe.faehrte: .5,
-  Recipe.schutz: .83,
-  Recipe.wanderstern: .17,
-  Recipe.spurenleser: .5,
-  Recipe.glutherz: .83,
-};
-
-/// Centre of St.[level] in block [block] (0 = level-2 recipes on top,
-/// 1 = level-1 recipes, 2 = single seals at the bottom). St.1 is lowest.
-double _rowY(int block, int level) =>
-    64 + block * (4 * _rowGap + _blockGap) + (Seal.maxLevel - level) * _rowGap;
-
-double _singleY(int level) => _rowY(2, level);
-
 /// One node of the tree as the game stands: a single seal or one level of
 /// a recipe.
 class _BN {
@@ -82,13 +52,6 @@ class _BN {
 
   /// Highest recipe level ever forged; 0 = none.
   int get tiers => levels.isEmpty ? 0 : levels.reduce(math.max);
-
-  double get xShare => single ? _singleX[seal]! : _recipeX[recipe]!;
-
-  Offset at(double w) => Offset(
-    w * xShare,
-    single ? _singleY(level) : _rowY(recipe!.tier == 2 ? 0 : 1, level),
-  );
 }
 
 String _singleId(SealType t, int level) => 'single-${t.name}-$level';
@@ -143,18 +106,6 @@ List<_BN> _baumNodes(GameData game) {
   ];
 }
 
-/// The chains: each stat's St.1 → St.5 always, and two neighbouring lit
-/// levels of one recipe.
-List<(String, String)> _chainLinks(_BN Function(String) node) => [
-  for (final t in SealType.values)
-    for (var lv = 1; lv < Seal.maxLevel; lv++)
-      (_singleId(t, lv), _singleId(t, lv + 1)),
-  for (final r in Recipe.values)
-    for (var lv = 1; lv < Seal.maxLevel; lv++)
-      if (node(_recipeId(r, lv)).lit && node(_recipeId(r, lv + 1)).lit)
-        (_recipeId(r, lv), _recipeId(r, lv + 1)),
-];
-
 /// Node id of a [ForgeState.seenKey] (`stride@2`, `ausdauer@1`).
 String? _nodeOfKey(String key) {
   final [name, lv] = key.split('@');
@@ -164,66 +115,6 @@ String? _nodeOfKey(String key) {
   }
   if (Recipe.values.asNameMap()[name] case final r?) return _recipeId(r, level);
   return null;
-}
-
-/// A line drawn into a recipe level: [grow] is its [ForgeState.forged]
-/// key.
-typedef _Link = ({Path path, bool lit, bool ready, String? grow});
-
-/// Lines of [forged] into the recipe levels. A source leaves its column
-/// sideways into a gutter between the columns, climbs it and turns into
-/// the recipe level; a run across the middle column goes between two rows
-/// and enters from below. Lines sharing a gutter get their own lane.
-List<_Link> _forgedLinks(
-  Map<String, List<String>> forged,
-  _BN Function(String) node,
-  double w,
-) {
-  final out = <_Link>[];
-  final lanes = <double, int>{};
-  final keys = [...forged.keys]..sort();
-  for (final key in keys) {
-    final targetId = _nodeOfKey(key);
-    if (targetId == null) continue;
-    final target = node(targetId);
-    final q = target.at(w);
-    for (final src in forged[key]!) {
-      final id = _nodeOfKey(src);
-      if (id == null) continue;
-      final from = node(id);
-      final p = from.at(w);
-      final sx = from.xShare;
-      final tx = target.xShare;
-      final gutter = sx < .4
-          ? .335
-          : sx > .6
-          ? .665
-          : (tx > .6 ? .665 : .335);
-      final n = lanes[gutter] = (lanes[gutter] ?? 0) + 1;
-      final lane = (n.isEven ? 1 : -1) * (n ~/ 2) * 2.6;
-      final gx = w * gutter + lane;
-      final dir = gx > p.dx ? 1.0 : -1.0;
-      final side = gx < q.dx ? -1.0 : 1.0;
-      final path = Path()
-        ..moveTo(p.dx + dir * 17, p.dy)
-        ..lineTo(gx, p.dy);
-      if ((gutter - tx).abs() < .2) {
-        final y = q.dy + lane * .6;
-        path
-          ..lineTo(gx, y)
-          ..lineTo(q.dx + side * 22, y);
-      } else {
-        final y = q.dy + 42 + lane * .6;
-        final ex = q.dx + side * 18;
-        path
-          ..lineTo(gx, y)
-          ..lineTo(ex, y)
-          ..lineTo(ex, q.dy + 16);
-      }
-      out.add((path: path, lit: true, ready: false, grow: key));
-    }
-  }
-  return out;
 }
 
 class _SchmiedeBaum extends ConsumerStatefulWidget {
@@ -249,8 +140,21 @@ class _SchmiedeBaumState extends ConsumerState<_SchmiedeBaum>
     duration: const Duration(milliseconds: 2200),
   );
 
-  /// [ForgeState.forged] keys growing right now.
-  Set<String>? _growing;
+  /// Keys whose lines grow in right now, in unlock order.
+  List<String>? _growing;
+
+  /// The look picked (preview: `?baum=a|b|c` in the address).
+  _Look _look = switch (Uri.base.queryParameters['baum']) {
+    'b' => _Look.branch,
+    'c' => _Look.net,
+    _ => _Look.stars,
+  };
+
+  /// Pan and pinch of the tree.
+  final TransformationController _view = TransformationController();
+
+  /// Look and size the view was last fitted for.
+  String? _viewKey;
 
   bool get _motion =>
       forgeAmbientMotion &&
@@ -273,22 +177,27 @@ class _SchmiedeBaumState extends ConsumerState<_SchmiedeBaum>
   void dispose() {
     _float.dispose();
     _grow.dispose();
+    _view.dispose();
     super.dispose();
   }
 
-  /// Lines of recipes forged since the last look grow in now (or, without
-  /// motion, are just noted as drawn).
+  /// Lines of seals owned or forged since the last look grow in now, one
+  /// after another in unlock order (without motion they are just noted).
   void _growNew(ForgeState f) {
     if (_growing != null) return;
-    final fresh = {
-      for (final k in f.forged.keys)
+    final fresh = [
+      for (final k in f.order)
         if (!f.grown.contains(k)) k,
-    };
+    ];
     if (fresh.isEmpty) return;
     final motion = _motion;
-    // Without motion the lines simply stand; otherwise they start empty.
-    _growing = motion ? fresh : const {};
-    if (motion) _grow.value = 0;
+    _growing = motion ? fresh : const [];
+    if (motion) {
+      _grow.duration = Duration(
+        milliseconds: math.min(6000, 900 + 420 * fresh.length),
+      );
+      _grow.value = 0;
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       if (motion) {
@@ -353,6 +262,49 @@ class _SchmiedeBaumState extends ConsumerState<_SchmiedeBaum>
           key: const Key('baum-count'),
           style: const TextStyle(color: ForgeColors.muted, fontSize: 10.5),
         ),
+        Wrap(
+          spacing: 4,
+          runSpacing: 2,
+          children: [
+            for (final (look, tag, name) in [
+              (_Look.stars, 'a', l.baumLookStars),
+              (_Look.branch, 'b', l.baumLookBranch),
+              (_Look.net, 'c', l.baumLookNet),
+            ])
+              Padding(
+                padding: EdgeInsets.zero,
+                child: GestureDetector(
+                  key: Key('baum-look-$tag'),
+                  onTap: () => setState(() => _look = look),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 7,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: look == _look
+                          ? _brass.withValues(alpha: .22)
+                          : Colors.transparent,
+                      border: Border.all(
+                        color: _brass.withValues(
+                          alpha: look == _look ? .8 : .3,
+                        ),
+                      ),
+                    ),
+                    child: Text(
+                      '${tag.toUpperCase()} $name',
+                      style: TextStyle(
+                        color: look == _look ? _brass : ForgeColors.muted,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
       ],
     );
     return Padding(
@@ -361,7 +313,7 @@ class _SchmiedeBaumState extends ConsumerState<_SchmiedeBaum>
       child: LayoutBuilder(
         builder: (context, box) {
           final wide = box.maxWidth > 700;
-          final tree = _tree(nodes, node, sel, game.forge.forged);
+          final tree = _tree(game.forge, nodes, node, sel);
           final detail = _Detail(
             node: node(sel),
             compact: !wide || box.maxHeight < 560,
@@ -408,90 +360,162 @@ class _SchmiedeBaumState extends ConsumerState<_SchmiedeBaum>
   }
 
   Widget _tree(
+    ForgeState f,
     List<_BN> nodes,
     _BN Function(String) node,
     String sel,
-    Map<String, List<String>> forged,
-  ) => LayoutBuilder(
-    builder: (context, box) {
-      final w = box.maxWidth;
-      final links = <_Link>[
-        for (final (a, b) in _chainLinks(node))
-          () {
-            final na = node(a);
-            final nb = node(b);
-            final p = na.at(w);
-            final q = nb.at(w);
-            return (
-              path: Path()
-                ..moveTo(p.dx, p.dy)
-                ..lineTo(q.dx, q.dy),
-              lit: na.lit && nb.lit,
-              ready: false,
-              grow: null,
-            );
-          }(),
-        ..._forgedLinks(forged, node, w),
-      ];
-      // Every recipe level not forged yet drifts on its own.
-      final floating = [
-        for (final (i, n) in nodes.where((n) => !n.single).indexed)
-          if (!n.lit) (n.id, (i * 7 % 30) / 30),
-      ];
-      return SingleChildScrollView(
-        key: const Key('baum-scroll'),
-        // Starts at the root (the single seals); scroll up to the
-        // recipes.
-        reverse: true,
-        child: SizedBox(
-          width: w,
-          height: _baumH,
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Positioned.fill(
-                child: CustomPaint(
-                  painter: _TreePainter(
-                    links,
-                    _singleY(1),
-                    _grow,
-                    () => _growing ?? const {},
+  ) {
+    final g = _Grown.of(f);
+    final drifting = [
+      for (final n in nodes)
+        if (!n.single && !n.lit) n.id,
+    ];
+    final lay = _layout(_look, g, drifting);
+    final edges = _edgesOf(g);
+    final shift = -lay.bounds.topLeft;
+    final size = lay.bounds.size;
+    List<String> growing() => _growing ?? const [];
+    return LayoutBuilder(
+      builder: (context, box) {
+        final key =
+            '${_look.name} ${g.nodes.length} ${f.seen.length} '
+            '${box.maxWidth.round()}x${box.maxHeight.round()}';
+        if (key != _viewKey) {
+          _viewKey = key;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) _fit(box.biggest, size, lay.at[g.root]! + shift);
+          });
+        }
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: InteractiveViewer(
+            key: const Key('baum-scroll'),
+            transformationController: _view,
+            constrained: false,
+            minScale: .3,
+            maxScale: 2.5,
+            boundaryMargin: const EdgeInsets.all(220),
+            child: SizedBox(
+              width: size.width,
+              height: size.height,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Positioned.fill(
+                    child: CustomPaint(
+                      painter: _GrownPainter(
+                        look: _look,
+                        layout: lay,
+                        edges: edges,
+                        shift: shift,
+                        grow: _grow,
+                        growing: growing,
+                        maxWeight: g.nodes[g.root]!.weight,
+                        root: g.root,
+                      ),
+                    ),
                   ),
-                ),
+                  if (g.nodes.containsKey(_Grown.hub))
+                    Positioned(
+                      left: lay.at[_Grown.hub]!.dx + shift.dx - 26,
+                      top: lay.at[_Grown.hub]!.dy + shift.dy - 26,
+                      child: Image.asset(
+                        'assets/forge/anvil_plain.webp',
+                        width: 52,
+                        height: 52,
+                      ),
+                    ),
+                  for (final gn in g.nodes.values)
+                    if (gn.id != _Grown.hub)
+                      AnimatedBuilder(
+                        animation: _grow,
+                        builder: (context, _) {
+                          final t = gn.owned
+                              ? _GrownPainter.share(
+                                  growing(),
+                                  gn.key,
+                                  _grow.value,
+                                )
+                              : 1.0;
+                          final n = node(gn.id);
+                          return _placed(
+                            context,
+                            n,
+                            lay.at[gn.id]! + shift,
+                            38,
+                            n.id == sel,
+                            fade: gn.id == g.root ? 1 : t,
+                          );
+                        },
+                      ),
+                  // Undiscovered recipe levels drift; nothing is tied to
+                  // them yet.
+                  for (final (i, id) in drifting.indexed)
+                    AnimatedBuilder(
+                      animation: _float,
+                      builder: (context, _) {
+                        final t =
+                            (_float.value + (i * 7 % 30) / 30) * 2 * math.pi;
+                        final n = node(id);
+                        return _placed(
+                          context,
+                          n,
+                          lay.drift[id]! +
+                              shift +
+                              Offset(math.cos(t) * 2.5, math.sin(t) * 4),
+                          38,
+                          n.id == sel,
+                        );
+                      },
+                    ),
+                ],
               ),
-              for (final n in nodes)
-                if (n.single || n.lit)
-                  _placed(context, n, n.at(w), n.single ? 36 : 40, n.id == sel),
-              // Undiscovered recipes drift; nothing is tied to them yet.
-              for (final (id, phase) in floating)
-                AnimatedBuilder(
-                  animation: _float,
-                  builder: (context, _) {
-                    final t = (_float.value + phase) * 2 * math.pi;
-                    final n = node(id);
-                    return _placed(
-                      context,
-                      n,
-                      n.at(w) + Offset(math.cos(t) * 2.5, math.sin(t) * 4),
-                      40,
-                      n.id == sel,
-                    );
-                  },
-                ),
-            ],
+            ),
           ),
-        ),
+        );
+      },
+    );
+  }
+
+  /// Fits the tree into [view]: whole when it fits at a readable size,
+  /// otherwise around the root (the branch look keeps its root low).
+  void _fit(Size view, Size content, Offset root) {
+    final whole = math.min(
+      view.width / content.width,
+      view.height / content.height,
+    );
+    final s = whole.clamp(.8, 1.0);
+    final fits =
+        content.width * s <= view.width + 1 &&
+        content.height * s <= view.height + 1;
+    final target = _look == _Look.branch
+        ? Offset(view.width / 2, view.height * .8)
+        : view.center(Offset.zero);
+    var t = fits
+        ? Offset(
+            (view.width - content.width * s) / 2,
+            (view.height - content.height * s) / 2,
+          )
+        : target - root * s;
+    if (!fits) {
+      // Keep the canvas covering the view where it can.
+      t = Offset(
+        t.dx.clamp(math.min(0, view.width - content.width * s), 0),
+        t.dy.clamp(math.min(0, view.height - content.height * s), 0),
       );
-    },
-  );
+    }
+    _view.value = Matrix4.diagonal3Values(s, s, 1)
+      ..setTranslationRaw(t.dx, t.dy, 0);
+  }
 
   Widget _placed(
     BuildContext context,
     _BN n,
     Offset p,
     double size,
-    bool selected,
-  ) {
+    bool selected, {
+    double fade = 1,
+  }) {
     final l = AppLocalizations.of(context);
     final r = n.recipe;
     final label = n.single
@@ -547,99 +571,107 @@ class _SchmiedeBaumState extends ConsumerState<_SchmiedeBaum>
       left: p.dx - 50,
       top: p.dy - size / 2,
       width: 100,
-      child: GestureDetector(
-        key: Key('baum-${n.id}'),
-        onTap: () => setState(() => _sel = n.id),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: size + 8,
-              height: size + 8,
-              child: Stack(
-                alignment: Alignment.center,
-                clipBehavior: Clip.none,
-                children: [
-                  if (n.lit || n.ready)
-                    Container(
-                      width: size * .9,
-                      height: size * .9,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: glow.withValues(alpha: .4),
-                            blurRadius: 14,
-                            spreadRadius: 1,
-                          ),
-                        ],
-                      ),
-                    ),
-                  if (n.ready || selected)
-                    Container(
-                      key: n.ready ? Key('baum-ready-${n.id}') : null,
-                      width: size + 6,
-                      height: size + 6,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: n.ready
-                              ? _arcane.accent.withValues(alpha: .9)
-                              : _brass,
-                          width: n.ready ? 2 : 1.6,
-                        ),
-                      ),
-                    ),
-                  art,
-                  if (n.locked && n.level == 1)
-                    const Positioned(
-                      right: 2,
-                      top: 0,
-                      child: Icon(
-                        Icons.lock,
-                        size: 15,
-                        color: ForgeColors.muted,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            Text(
-              label,
-              key: n.lit ? Key('baum-lit-${n.id}') : null,
-              maxLines: 1,
-              style: TextStyle(
-                color: n.lit
-                    ? ForgeColors.text
-                    : ForgeColors.muted.withValues(alpha: n.single ? .6 : 1),
-                fontSize: 9.5,
-                height: 1.2,
-                fontWeight: FontWeight.w700,
-                shadows: const [Shadow(color: Colors.black, blurRadius: 3)],
-              ),
-            ),
-            if (sub != null)
-              Text(
-                sub,
-                maxLines: 2,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: n.lit || n.ready
-                      ? _cyan
-                      : ForgeColors.muted.withValues(alpha: .8),
-                  fontSize: 9,
-                  height: 1.15,
-                  fontStyle: n.lit || n.ready
-                      ? FontStyle.normal
-                      : FontStyle.italic,
-                ),
-              ),
-          ],
-        ),
+      child: Opacity(
+        opacity: fade,
+        child: _node(n, art, glow, size, selected, label, sub, r),
       ),
     );
   }
+
+  Widget _node(
+    _BN n,
+    Widget art,
+    Color glow,
+    double size,
+    bool selected,
+    String label,
+    String? sub,
+    Recipe? r,
+  ) => GestureDetector(
+    key: Key('baum-${n.id}'),
+    onTap: () => setState(() => _sel = n.id),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          width: size + 8,
+          height: size + 8,
+          child: Stack(
+            alignment: Alignment.center,
+            clipBehavior: Clip.none,
+            children: [
+              if (n.lit || n.ready)
+                Container(
+                  width: size * .9,
+                  height: size * .9,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: glow.withValues(alpha: .4),
+                        blurRadius: 14,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                ),
+              if (n.ready || selected)
+                Container(
+                  key: n.ready ? Key('baum-ready-${n.id}') : null,
+                  width: size + 6,
+                  height: size + 6,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: n.ready
+                          ? _arcane.accent.withValues(alpha: .9)
+                          : _brass,
+                      width: n.ready ? 2 : 1.6,
+                    ),
+                  ),
+                ),
+              art,
+              if (n.locked && n.level == 1)
+                const Positioned(
+                  right: 2,
+                  top: 0,
+                  child: Icon(Icons.lock, size: 15, color: ForgeColors.muted),
+                ),
+            ],
+          ),
+        ),
+        Text(
+          label,
+          key: n.lit ? Key('baum-lit-${n.id}') : null,
+          maxLines: 1,
+          style: TextStyle(
+            color: n.lit
+                ? ForgeColors.text
+                : ForgeColors.muted.withValues(alpha: n.single ? .6 : 1),
+            fontSize: 9.5,
+            height: 1.2,
+            fontWeight: FontWeight.w700,
+            shadows: const [Shadow(color: Colors.black, blurRadius: 3)],
+          ),
+        ),
+        if (sub != null)
+          Text(
+            sub,
+            maxLines: 2,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: n.lit || n.ready
+                  ? _cyan
+                  : ForgeColors.muted.withValues(alpha: .8),
+              fontSize: 9,
+              height: 1.15,
+              fontStyle: n.lit || n.ready ? FontStyle.normal : FontStyle.italic,
+            ),
+          ),
+      ],
+    ),
+  );
 }
 
 /// The selected node: a single seal, or one level of a recipe with the
@@ -835,132 +867,4 @@ class _Detail extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Iron chains between nodes; brass rods with an ember glow once both ends
-/// are forged; a faint verdigris chain where the next recipe can be forged.
-class _TreePainter extends CustomPainter {
-  _TreePainter(this.links, this.baseY, this.grow, this.growing)
-    : super(repaint: grow);
-
-  final List<_Link> links;
-  final double baseY;
-
-  /// Progress of the lines in [growing] (0 → 1).
-  final Animation<double> grow;
-  final Set<String> Function() growing;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final beam = Rect.fromLTWH(
-      size.width * .06,
-      baseY + 30,
-      size.width * .88,
-      5,
-    );
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(beam, const Radius.circular(2)),
-      Paint()
-        ..shader = const LinearGradient(
-          colors: [Color(0xFF5A4630), Color(0xFFB08A50), Color(0xFF5A4630)],
-        ).createShader(beam),
-    );
-    final now = growing();
-    final t = Curves.easeInOut.transform(
-      const Interval(.15, 1).transform(grow.value),
-    );
-    final sorted = [...links]
-      ..sort((x, y) => (x.lit ? 1 : 0) - (y.lit ? 1 : 0));
-    for (final (:path, :lit, :ready, :grow) in sorted.map(
-      (k) => (
-        path: k.grow != null && now.contains(k.grow)
-            ? _part(k.path, t)
-            : k.path,
-        lit: k.lit,
-        ready: k.ready,
-        grow: k.grow,
-      ),
-    )) {
-      if (grow != null && now.contains(grow) && t < 1) {
-        _spark(canvas, path);
-      }
-      if (lit) {
-        // Forged lines run in bundles, so they are finer than the chains.
-        final fine = grow != null;
-        canvas.drawPath(
-          path,
-          Paint()
-            ..color = _glowEmber.withValues(alpha: fine ? .28 : .35)
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = fine ? 4 : 7
-            ..maskFilter = MaskFilter.blur(BlurStyle.normal, fine ? 2.5 : 4),
-        );
-        canvas.drawPath(
-          path,
-          Paint()
-            ..color = _brass
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = fine ? 1.4 : 2.6,
-        );
-        canvas.drawPath(
-          path,
-          Paint()
-            ..color = const Color(0xFFFFE6B0).withValues(alpha: .7)
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = fine ? .5 : .8,
-        );
-        continue;
-      }
-      for (final metric in path.computeMetrics()) {
-        for (var d = 0.0; d < metric.length; d += 7) {
-          final tan = metric.getTangentForOffset(d)!;
-          canvas.save();
-          canvas.translate(tan.position.dx, tan.position.dy);
-          canvas.rotate(tan.angle);
-          canvas.drawOval(
-            Rect.fromCenter(
-              center: Offset.zero,
-              width: 7,
-              height: (d ~/ 7).isEven ? 4 : 1.6,
-            ),
-            Paint()
-              ..color = ready
-                  ? _arcane.accent.withValues(alpha: .6)
-                  : const Color(0xFF5A4E44)
-              ..style = PaintingStyle.stroke
-              ..strokeWidth = 1.1,
-          );
-          canvas.restore();
-        }
-      }
-    }
-  }
-
-  /// The first [t] of [path].
-  static Path _part(Path path, double t) {
-    final out = Path();
-    for (final m in path.computeMetrics()) {
-      out.addPath(m.extractPath(0, m.length * t), Offset.zero);
-    }
-    return out;
-  }
-
-  /// A spark at the growing tip.
-  static void _spark(Canvas canvas, Path path) {
-    for (final m in path.computeMetrics()) {
-      if (m.length == 0) continue;
-      final tip = m.getTangentForOffset(m.length)!.position;
-      canvas.drawCircle(
-        tip,
-        6,
-        Paint()
-          ..color = _glowEmber.withValues(alpha: .7)
-          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5),
-      );
-      canvas.drawCircle(tip, 2.2, Paint()..color = const Color(0xFFFFF1C8));
-    }
-  }
-
-  @override
-  bool shouldRepaint(_TreePainter old) => true;
 }

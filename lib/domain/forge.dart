@@ -213,8 +213,12 @@ class ForgeState {
 
   /// Every seal kind ever owned or forged, as [seenKey]: single seals by
   /// stat and level (`stride@3`), recipe seals by recipe and level
-  /// (`ausdauer@2`). The Schmiede-Baum lights these.
+  /// (`ausdauer@2`). The Schmiede-Baum lights these. Kept in the order
+  /// they were first owned ([order]); the tree grows from the first.
   final Set<String> seen;
+
+  /// [seen] in the order the seals were first owned.
+  List<String> get order => [...seen];
 
   /// Recipe levels forged in Kombinieren → the two seals they were made
   /// from, all as [seenKey]: `ausdauer@2` ← `stride@2`, `grit@2`;
@@ -222,7 +226,8 @@ class ForgeState {
   /// these as its only links into recipes.
   final Map<String, List<String>> forged;
 
-  /// Keys of [forged] whose links the tree already drew growing once.
+  /// Keys of [seen] (and [forged]) whose links the tree already drew
+  /// growing once.
   final Set<String> grown;
 
   /// [made] noted as forged from [a] and [b] (the first combine counts).
@@ -261,7 +266,7 @@ class ForgeState {
   ForgeState growing(Iterable<String> keys) {
     final add = {
       for (final k in keys)
-        if (forged.containsKey(k)) k,
+        if (forged.containsKey(k) || seen.contains(k)) k,
     };
     return grown.containsAll(add) ? this : copyWith(grown: {...grown, ...add});
   }
@@ -389,6 +394,7 @@ class ForgeState {
     'recipes': {for (final e in recipes.entries) e.key.name: e.value},
     'glutherzDay': ?glutherzDay,
     'seen': [...seen]..sort(),
+    'order': order,
     'forged': {
       for (final k in [...forged.keys]..sort()) k: forged[k],
     },
@@ -432,6 +438,21 @@ class ForgeState {
             ] when _seenKeys.contains(a) && _seenKeys.contains(b))
               k: [a, b],
     };
+    // The unlock order; saves from before it was kept get a likely one:
+    // lower levels first, single seals before recipes.
+    final listed = [
+      if (json['order'] case final List<Object?> raw)
+        for (final k in raw)
+          if (k is String && _seenKeys.contains(k)) k,
+    ];
+    final rest = [
+      if (json['seen'] case final List<Object?> raw)
+        for (final k in raw)
+          if (k is String && _seenKeys.contains(k) && !listed.contains(k)) k,
+      // Each discovered recipe was owned at least at its best level.
+      for (final e in recipes.entries) '${e.key.name}@${e.value}',
+    ]..sort((a, b) => _guessRank(a).compareTo(_guessRank(b)));
+    final seen = {...listed, ...rest};
     final state = ForgeState(
       stock: stock,
       glut: read('glut'),
@@ -443,18 +464,12 @@ class ForgeState {
       fails: read('fails'),
       recipes: recipes,
       glutherzDay: json['glutherzDay'] as String?,
-      seen: {
-        if (json['seen'] case final List<Object?> raw)
-          for (final k in raw)
-            if (k is String && _seenKeys.contains(k)) k,
-        // Each discovered recipe was owned at least at its best level.
-        for (final e in recipes.entries) '${e.key.name}@${e.value}',
-      },
+      seen: seen,
       forged: forged,
       grown: {
         if (json['grown'] case final List<Object?> raw)
           for (final k in raw)
-            if (k is String && forged.containsKey(k)) k,
+            if (k is String && (forged.containsKey(k) || seen.contains(k))) k,
       },
     );
     // Seals in the case count as owned, recipe seals as discovered (older
@@ -470,6 +485,18 @@ class ForgeState {
     ])
       for (var lv = 1; lv <= Seal.maxLevel; lv++) '$n@$lv',
   };
+
+  /// Likely unlock rank of a [seenKey] when no order was kept: by level,
+  /// then single seals, level-1 and level-2 recipes, then stat or recipe.
+  static int _guessRank(String key) {
+    final [name, lv] = key.split('@');
+    final level = int.tryParse(lv) ?? 1;
+    final t = SealType.values.asNameMap()[name];
+    final r = Recipe.values.asNameMap()[name];
+    final kind = t != null ? 0 : (r!.tier == 1 ? 1 : 2);
+    final index = t?.index ?? r!.index;
+    return level * 100 + kind * 10 + index;
+  }
 
   static final Set<String> _singleKeys = {
     for (final t in SealType.values)

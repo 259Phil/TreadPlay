@@ -208,6 +208,36 @@ void main() {
       expect(old.grown, isEmpty);
     });
 
+    test('the unlock order the tree grows from survives a save', () {
+      final game = GameData.initial(t0).copyWith(
+        forge: const ForgeState(
+          seen: {'fortune@1', 'stride@1', 'grit@1', 'faehrte@1', 'stride@2'},
+        ),
+      );
+      final loaded = SaveGame.decode(SaveGame.encode(game, t0)).game.forge;
+      expect(loaded.order, [
+        'fortune@1',
+        'stride@1',
+        'grit@1',
+        'faehrte@1',
+        'stride@2',
+      ]);
+      // Files from before the order are guessed: lower levels first,
+      // singles before recipes.
+      final json = game.toJson();
+      final forge = (json['forge'] as Map).cast<String, Object?>()
+        ..remove('order');
+      json['forge'] = forge;
+      final old = SaveGame.decode(bytesOf(wrap(json, 10))).game.forge;
+      expect(old.order, [
+        'stride@1',
+        'grit@1',
+        'fortune@1',
+        'faehrte@1',
+        'stride@2',
+      ]);
+    });
+
     test('export and import keep the whole forge state', () {
       // The recipe seal in the case counts as a discovered recipe.
       final game = forged();

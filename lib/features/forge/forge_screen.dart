@@ -24,6 +24,7 @@ part 'forge_recipe_look.dart';
 part 'forge_grimoire.dart';
 part 'forge_strike.dart';
 part 'forge_baum.dart';
+part 'forge_baum_organic.dart';
 
 enum _Mode { up, combine }
 

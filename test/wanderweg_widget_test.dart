@@ -137,4 +137,38 @@ void main() {
     expect(container.read(gameProvider).wanderweg.reached, 1);
     expect(find.text('Waymark 1 reached · Brown pouch'), findsOneWidget);
   });
+
+  for (final look in MapLook.values) {
+    testWidgets('map look ${look.name} keeps all 19 waymarks', (tester) async {
+      final before = mapLook;
+      mapLook = look;
+      addTearDown(() => mapLook = before);
+      await pumpApp(tester, at(45.1, reached: 11, forged: 4));
+      await tester.tap(find.byKey(const Key('trail-chip')));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      final art = tester.widget<Image>(
+        find.byKey(const Key('trail-art-0'), skipOffstage: false),
+      );
+      expect((art.image as AssetImage).assetName, sectionArt(look, 0));
+      for (var n = 1; n <= 19; n++) {
+        final f = find.byKey(Key('waymark-$n'), skipOffstage: false);
+        expect(f, findsOneWidget);
+        expect(
+          find.descendant(
+            of: f,
+            matching: find.text('$n'),
+            skipOffstage: false,
+          ),
+          findsOneWidget,
+        );
+      }
+      await tester.tap(
+        find.byKey(const Key('waymark-12')),
+        warnIfMissed: false,
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Waymark 12 · 48.6 km'), findsOneWidget);
+    });
+  }
 }

@@ -25,6 +25,34 @@ class TrailColors {
   static const emberCore = Color(0xFFFFC27A);
 }
 
+/// Map look mockups for style C, picked with `--dart-define=TREADPLAY_MAP`
+/// (not final): 1 sepia, 2 parchment, 3 dark leather; anything else keeps
+/// the painted classic map.
+enum MapLook { classic, sepia, parchment, leather }
+
+const _mapDefine = String.fromEnvironment('TREADPLAY_MAP');
+
+/// The look in use; tests may switch it.
+MapLook mapLook = switch (_mapDefine) {
+  '1' => MapLook.sepia,
+  '2' => MapLook.parchment,
+  '3' => MapLook.leather,
+  _ => MapLook.classic,
+};
+
+/// Painted art of section [i] in [look].
+String sectionArt(MapLook look, int i) => look == MapLook.classic
+    ? trailSections[i].asset
+    : 'assets/wanderweg/map${look.index}_${i + 1}.webp';
+
+/// Warm sepia for cairns on the sepia map.
+const _sepia = ColorFilter.matrix([
+  0.42, 0.62, 0.15, 0, 8, //
+  0.33, 0.52, 0.12, 0, 4, //
+  0.24, 0.38, 0.09, 0, 0, //
+  0, 0, 0, 1, 0,
+]);
+
 String kmText(BuildContext context, double km) =>
     formatNumber(context, km, pattern: '0.0');
 
@@ -139,6 +167,7 @@ class _TrailContent extends StatelessWidget {
         : geo.waymarkS(waymarks[reached].number);
     final cairnH = w * 0.16;
     final at = geo.at(companionS);
+    final look = mapLook;
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -149,7 +178,8 @@ class _TrailContent extends StatelessWidget {
             width: w,
             height: sh + 1,
             child: Image.asset(
-              trailSections[i].asset,
+              sectionArt(look, i),
+              key: Key('trail-art-$i'),
               fit: BoxFit.cover,
               gaplessPlayback: true,
             ),
@@ -161,7 +191,7 @@ class _TrailContent extends StatelessWidget {
             left: 0,
             right: 0,
             height: 72,
-            child: const _Seam(),
+            child: _Seam(look: look),
           ),
         Positioned(
           top: geo.sectionTop(trailSections.length - 1),
@@ -180,7 +210,19 @@ class _TrailContent extends StatelessWidget {
         Positioned.fill(
           child: IgnorePointer(
             child: CustomPaint(
-              painter: _EmberTrail(geo: geo, walkedS: companionS, nextS: nextS),
+              painter: switch (look) {
+                MapLook.parchment => _InkTrail(
+                  geo: geo,
+                  walkedS: companionS,
+                  nextS: nextS,
+                ),
+                MapLook.leather => _StitchTrail(
+                  geo: geo,
+                  walkedS: companionS,
+                  nextS: nextS,
+                ),
+                _ => _EmberTrail(geo: geo, walkedS: companionS, nextS: nextS),
+              },
             ),
           ),
         ),
@@ -240,7 +282,11 @@ class _TrailContent extends StatelessWidget {
         child: GestureDetector(
           key: Key('waymark-${wm.number}'),
           onTap: () => showWaymarkSheet(context, game, wm),
-          child: _Cairn(number: wm.number, state: state),
+          child: switch (mapLook) {
+            MapLook.parchment => _Pin(number: wm.number, state: state),
+            MapLook.leather => _Medallion(number: wm.number, state: state),
+            _ => _Cairn(number: wm.number, state: state),
+          },
         ),
       ),
       Positioned(
@@ -260,24 +306,32 @@ class _TrailContent extends StatelessWidget {
 }
 
 class _Seam extends StatelessWidget {
-  const _Seam();
+  const _Seam({required this.look});
+
+  final MapLook look;
 
   @override
-  Widget build(BuildContext context) => const IgnorePointer(
-    child: DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            (kLeatherBuild ? Color(0x001E140F) : Color(0x000F0E0D)),
-            (kLeatherBuild ? Color(0x991E140F) : Color(0x990F0E0D)),
-            (kLeatherBuild ? Color(0x001E140F) : Color(0x000F0E0D)),
-          ],
+  Widget build(BuildContext context) {
+    // Paper gets a light tea-stain seam, the rest a dark one.
+    final c = look == MapLook.parchment
+        ? const Color(0xFFB89A6A)
+        : (kLeatherBuild ? const Color(0xFF1E140F) : const Color(0xFF0F0E0D));
+    return IgnorePointer(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              c.withValues(alpha: 0),
+              c.withValues(alpha: look == MapLook.parchment ? .55 : .6),
+              c.withValues(alpha: 0),
+            ],
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class _Fade extends StatelessWidget {
@@ -334,6 +388,349 @@ class _EmberTrail extends CustomPainter {
       old.walkedS != walkedS || old.nextS != nextS || old.geo != geo;
 }
 
+/// Arc-length samples of the trail between [from] and [to].
+Iterable<Offset> _along(
+  TrailGeometry geo,
+  double from,
+  double to,
+  double d,
+) sync* {
+  for (var s = from; s < to; s += d) {
+    yield geo.at(s);
+  }
+  yield geo.at(to);
+}
+
+Path _pathAlong(TrailGeometry geo, double from, double to) {
+  final path = Path();
+  var first = true;
+  for (final p in _along(geo, from, to, 6)) {
+    first ? path.moveTo(p.dx, p.dy) : path.lineTo(p.dx, p.dy);
+    first = false;
+  }
+  return path;
+}
+
+void _dashes(
+  Canvas canvas,
+  TrailGeometry geo,
+  double from,
+  double to,
+  double dash,
+  double gap,
+  Paint paint,
+) {
+  for (var s = from; s < to; s += dash + gap) {
+    final a = geo.at(s);
+    final b = geo.at(math.min(s + dash, to));
+    canvas.drawLine(a, b, paint);
+  }
+}
+
+/// Parchment map: the whole route inked in dashes, the walked part as a
+/// solid red ink line, small ink dots up to the next waymark.
+class _InkTrail extends CustomPainter {
+  _InkTrail({required this.geo, required this.walkedS, required this.nextS});
+
+  final TrailGeometry geo;
+  final double walkedS;
+  final double nextS;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final end = geo.endS;
+    final ink = Paint()
+      ..color = const Color(0xCC3E2614)
+      ..strokeWidth = 2.4
+      ..strokeCap = StrokeCap.round;
+    _dashes(canvas, geo, walkedS, end, 9, 7, ink);
+    final red = Paint()
+      ..style = PaintingStyle.stroke
+      ..color = const Color(0xE08A2A18)
+      ..strokeWidth = 3.6
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+    if (walkedS > geo.startS) {
+      canvas.drawPath(_pathAlong(geo, geo.startS, walkedS), red);
+    }
+    final dot = Paint()..color = const Color(0xFF8A2A18);
+    final step = geo.width * 0.04;
+    for (var s = walkedS + step; s < nextS; s += step) {
+      canvas.drawCircle(geo.at(s), 2.2, dot);
+    }
+    // Start mark: a small inked cross.
+    final p = geo.at(geo.startS);
+    final x = Paint()
+      ..color = const Color(0xFF8A2A18)
+      ..strokeWidth = 3
+      ..strokeCap = StrokeCap.round;
+    canvas.drawLine(p + const Offset(-7, -7), p + const Offset(7, 7), x);
+    canvas.drawLine(p + const Offset(-7, 7), p + const Offset(7, -7), x);
+  }
+
+  @override
+  bool shouldRepaint(_InkTrail old) =>
+      old.walkedS != walkedS || old.nextS != nextS || old.geo != geo;
+}
+
+/// Dark leather map: a tooled groove with a stitch line; the walked part
+/// is sewn in glowing brass thread.
+class _StitchTrail extends CustomPainter {
+  _StitchTrail({required this.geo, required this.walkedS, required this.nextS});
+
+  final TrailGeometry geo;
+  final double walkedS;
+  final double nextS;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final all = _pathAlong(geo, geo.startS, geo.endS);
+    canvas.drawPath(
+      all,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..color = const Color(0x66000000)
+        ..strokeWidth = 13
+        ..strokeCap = StrokeCap.round
+        ..strokeJoin = StrokeJoin.round,
+    );
+    canvas.drawPath(
+      all,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..color = const Color(0x22F0D9A8)
+        ..strokeWidth = 1
+        ..strokeJoin = StrokeJoin.round,
+    );
+    final thread = Paint()
+      ..color = const Color(0xB39C8462)
+      ..strokeWidth = 2.2
+      ..strokeCap = StrokeCap.round;
+    _dashes(canvas, geo, walkedS, geo.endS, 8, 6, thread);
+    if (walkedS > geo.startS) {
+      final glow = Paint()
+        ..color = TrailColors.ember.withValues(alpha: .55)
+        ..strokeWidth = 6
+        ..strokeCap = StrokeCap.round
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
+      _dashes(canvas, geo, geo.startS, walkedS, 8, 6, glow);
+      final gold = Paint()
+        ..color = const Color(0xFFF1C877)
+        ..strokeWidth = 2.6
+        ..strokeCap = StrokeCap.round;
+      _dashes(canvas, geo, geo.startS, walkedS, 8, 6, gold);
+    }
+    final ahead = Paint()..color = TrailColors.brass.withValues(alpha: .7);
+    final step = geo.width * 0.045;
+    for (var s = walkedS + step; s < nextS; s += step) {
+      canvas.drawCircle(geo.at(s), 1.6, ahead);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_StitchTrail old) =>
+      old.walkedS != walkedS || old.nextS != nextS || old.geo != geo;
+}
+
+/// Parchment map waymark: a brass map pin stuck in at the foot, its
+/// number on the leather head.
+class _Pin extends StatelessWidget {
+  const _Pin({required this.number, required this.state});
+
+  final int number;
+  final _CairnState state;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, box) {
+      final h = box.maxHeight * 0.96;
+      final w = h * 134 / 256;
+      final head = w * 0.64;
+      Widget pin = Image.asset(
+        'assets/wanderweg/map_pin.webp',
+        fit: BoxFit.fill,
+      );
+      if (state == _CairnState.open) {
+        pin = ColorFiltered(
+          colorFilter: const ColorFilter.matrix([
+            0.34, 0.34, 0.12, 0, 6, //
+            0.30, 0.32, 0.11, 0, 4, //
+            0.26, 0.28, 0.10, 0, 2, //
+            0, 0, 0, 0.9, 0,
+          ]),
+          child: pin,
+        );
+      }
+      return Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.bottomCenter,
+        children: [
+          if (state == _CairnState.next)
+            Positioned(
+              bottom: -box.maxHeight * 0.06,
+              width: box.maxWidth * 1.2,
+              height: box.maxHeight * 0.16,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.all(
+                    Radius.elliptical(100, 40),
+                  ),
+                  border: Border.all(color: const Color(0xFF8A2A18), width: 2),
+                ),
+              ),
+            ),
+          // Shadow where the needle goes in.
+          Positioned(
+            bottom: -2,
+            width: w * 0.7,
+            height: 6,
+            child: const DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.elliptical(20, 6)),
+                color: Color(0x553E2614),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            width: w,
+            height: h,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                if (state == _CairnState.reached)
+                  Positioned(
+                    left: w / 2 - head,
+                    top: h * 0.27 - head,
+                    width: head * 2,
+                    height: head * 2,
+                    child: const DecoratedBox(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
+                          colors: [Color(0x99E08A3C), Color(0x00E08A3C)],
+                        ),
+                      ),
+                    ),
+                  ),
+                Positioned.fill(child: pin),
+                Positioned(
+                  left: w / 2 - head / 2,
+                  top: h * 0.27 - head / 2,
+                  width: head,
+                  height: head,
+                  child: Padding(
+                    padding: EdgeInsets.all(head * 0.16),
+                    child: FittedBox(
+                      child: Text(
+                        '$number',
+                        style: serifTitle.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: switch (state) {
+                            _CairnState.reached => const Color(0xFFFFD596),
+                            _CairnState.next => TrailColors.brass,
+                            _CairnState.open => const Color(0xFFB8A88E),
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+/// Dark leather map waymark: a riveted brass medallion on the stitch line,
+/// glowing once reached.
+class _Medallion extends StatelessWidget {
+  const _Medallion({required this.number, required this.state});
+
+  final int number;
+  final _CairnState state;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, box) {
+      final d = math.min(box.maxWidth * 1.05, box.maxHeight * 0.66);
+      final reached = state == _CairnState.reached;
+      final open = state == _CairnState.open;
+      return Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.bottomCenter,
+        children: [
+          Positioned(
+            bottom: -d * 0.12,
+            width: d,
+            height: d,
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: reached
+                      ? const [Color(0xFFF6D08A), Color(0xFFB0813E)]
+                      : open
+                      ? const [Color(0xFF3A2A1E), Color(0xFF241812)]
+                      : const [Color(0xFF4A3322), Color(0xFF2A1C12)],
+                ),
+                border: Border.all(
+                  color: open ? const Color(0xFF6A5038) : TrailColors.brass,
+                  width: open ? 2 : 3,
+                ),
+                boxShadow: [
+                  const BoxShadow(color: Color(0xAA000000), blurRadius: 6),
+                  if (reached)
+                    BoxShadow(
+                      color: TrailColors.ember.withValues(alpha: .75),
+                      blurRadius: 18,
+                      spreadRadius: 2,
+                    ),
+                  if (state == _CairnState.next)
+                    BoxShadow(
+                      color: TrailColors.brass.withValues(alpha: .6),
+                      blurRadius: 12,
+                      spreadRadius: 1,
+                    ),
+                ],
+              ),
+              child: Container(
+                margin: EdgeInsets.all(d * 0.08),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: reached
+                        ? const Color(0x995A3A12)
+                        : const Color(0x55D2B074),
+                    width: 1,
+                  ),
+                ),
+                padding: EdgeInsets.all(d * 0.14),
+                child: FittedBox(
+                  child: Text(
+                    '$number',
+                    style: serifTitle.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: reached
+                          ? const Color(0xFF2A1C0C)
+                          : open
+                          ? TreadColors.muted
+                          : TrailColors.brass,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 enum _CairnState { reached, next, open }
 
 class _Cairn extends StatelessWidget {
@@ -388,7 +785,9 @@ class _Cairn extends StatelessWidget {
                 ),
               ),
             Positioned.fill(
-              child: state == _CairnState.open
+              child: mapLook == MapLook.sepia && state != _CairnState.open
+                  ? ColorFiltered(colorFilter: _sepia, child: sprite)
+                  : state == _CairnState.open
                   ? ColorFiltered(
                       colorFilter: const ColorFilter.matrix([
                         0.30, 0.30, 0.10, 0, 0, //

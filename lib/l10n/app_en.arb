@@ -215,7 +215,7 @@
   "settingsMovementOn": "Real movement earns LP. Readings stay on this device.",
   "settingsMovementOff": "Off: real movement earns no LP.",
   "movementNoticeTitle": "Movement and location",
-  "movementNoticeBody": "To count a walk, TreadPlay uses your location (GPS) and the step counter during the run. Readings stay on this device and are only used to measure distance and pace and to award LP. No route is saved and nothing is uploaded. If you deny, real movement earns no LP.",
+  "movementNoticeBody": "To count a walk, Treadplay uses your location (GPS) and the step counter during the run. Readings stay on this device and are only used to measure distance and pace and to award LP. No route is saved and nothing is uploaded. If you deny, real movement earns no LP.",
   "movementDeniedHint": "Movement access is off. Runs earn no LP until you allow it.",
   "movementNoticePrivacyLink": "Read the privacy policy",
   "movementAllow": "Allow",
@@ -537,8 +537,8 @@
   },
   "wwTaskSealL3": "One seal at L3",
   "wwTaskMessenger": "Meet a messenger",
-  "wwTaskSweet58": "1 run with Sweet Spot ≥ 58 %",
-  "wwTaskSweet71": "{n} runs with Sweet Spot ≥ 71 %",
+  "wwTaskSweet58": "1 run with sweet spot ≥ 58 %",
+  "wwTaskSweet71": "{n} runs with sweet spot ≥ 71 %",
   "@wwTaskSweet71": {
     "placeholders": {
       "n": {
@@ -580,7 +580,7 @@
   "wwLine2": "What you find along the way belongs to you both.",
   "wwLine3": "New tracks in the Market. But no companion gets far if it is only carried.",
   "wwLine4": "A seal only holds what the trail has put into it.",
-  "wwLine5": "Two equal seals, one fire. Patience is the third part.",
+  "wwLine5": "Two equal seals, one fire. Patience is the third.",
   "wwLine6": "At the right pace you hear each other breathe.",
   "wwLine7": "One more clip means more that comes home with you.",
   "wwLine8": "The first ember in the brass. It only burns because you walked.",
@@ -1122,7 +1122,7 @@
       }
     }
   },
-  "msgLineDone": "{n, select, 0{Done! Here’s your reward.} 1{Task complete – well walked!} 2{As promised: your reward.} 3{You did that nicely.} 4{Done! The reward is in your case.} 5{Bravo – I knew you could.} other{Done! Here’s your reward.}}",
+  "msgLineDone": "{n, select, 0{Done! Here’s your reward.} 1{Task complete – well walked!} 2{As promised: your reward.} 3{You did that nicely.} 4{Done! The reward is in the Forge case.} 5{Bravo – I knew you could.} other{Done! Here’s your reward.}}",
   "@msgLineDone": {
     "placeholders": {
       "n": {
@@ -1147,7 +1147,7 @@
   "msgTaskNote": "Instead of the pouch: reward once done. No deadline.",
   "msgLeashFullNote": "Your leash is full, no clip for the pouch. Nothing is lost: your run brings its Glut as always.",
   "msgDoneTitle": "Task done",
-  "msgDoneNote": "The reward is already in your seal case.",
+  "msgDoneNote": "The reward is already in the Forge case.",
   "msgBoard": "Notice",
   "msgClose": "Close",
   "msgFootnote": "Only comes by luck after a run · more Fortune, rarer messengers",
@@ -1159,7 +1159,7 @@
       }
     }
   },
-  "msgTaskSweet": "{n, plural, =1{1 run with ≥ 58 % Sweet Spot} other{{n} runs with ≥ 58 % Sweet Spot}}",
+  "msgTaskSweet": "{n, plural, =1{1 run with ≥ 58 % sweet spot} other{{n} runs with ≥ 58 % sweet spot}}",
   "@msgTaskSweet": {
     "placeholders": {
       "n": {
@@ -1234,7 +1234,7 @@
       }
     }
   },
-  "salveOwned": "{n} in stock",
+  "salveOwned": "{n} in the case",
   "@salveOwned": {
     "placeholders": {
       "n": {
@@ -1243,7 +1243,7 @@
     }
   },
   "salveUse": "Apply",
-  "salveNoneHint": "No salves in stock. The trader in the Market sells them.",
+  "salveNoneHint": "No salves in the case. The Market trader sells them.",
   "salveFull": "Spirit is full.",
   "salveApplied": "{name} is back at {mut} % Spirit.",
   "@salveApplied": {
@@ -1257,14 +1257,7 @@
     }
   },
   "salveVorratTitle": "Spirit salves",
-  "salveVorratHint": "Tap a salve to apply it to {name}.",
-  "@salveVorratHint": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "salveVorratHint": "Tap one to apply it.",
   "salveVorratEmpty": "No salves yet. The Market trader has them.",
   "levelXp": "XP {xp} / {need}",
   "@levelXp": {
@@ -1392,7 +1385,7 @@
       }
     }
   },
-  "summaryLevelReady": "{name} can level up – on the shelf.",
+  "summaryLevelReady": "{name} can level up – in the den.",
   "@summaryLevelReady": {
     "placeholders": {
       "name": {
@@ -1411,7 +1404,7 @@
       }
     }
   },
-  "marketSalveBought": "{name} is in your stock now.",
+  "marketSalveBought": "{name} is in the Forge case now.",
   "@marketSalveBought": {
     "placeholders": {
       "name": {

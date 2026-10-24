@@ -48,7 +48,7 @@ class SalveStrip extends ConsumerWidget {
                   Text(
                     game.salves.isEmpty
                         ? l.salveVorratEmpty
-                        : l.salveVorratHint(c.name),
+                        : l.salveVorratHint,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(

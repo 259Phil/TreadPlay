@@ -198,13 +198,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get typeGale => 'Galopp';
 
   @override
-  String get statStride => 'Stride';
+  String get statStride => 'Schwung';
 
   @override
-  String get statGrit => 'Grit';
+  String get statGrit => 'Zähigkeit';
 
   @override
-  String get statFortune => 'Fortune';
+  String get statFortune => 'Glück';
 
   @override
   String get statSpirit => 'Mut';
@@ -352,7 +352,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get movementNoticeBody =>
-      'Damit ein Lauf zählt, nutzt TreadPlay während des Laufs deinen Standort (GPS) und den Schrittzähler. Die Werte bleiben auf dem Gerät und dienen nur dazu, Strecke und Tempo zu messen und LP zu vergeben. Keine Route wird gespeichert, nichts wird hochgeladen. Lehnst du ab, gibt es keine LP aus echter Bewegung.';
+      'Damit ein Lauf zählt, nutzt Treadplay während des Laufs deinen Standort (GPS) und den Schrittzähler. Die Werte bleiben auf dem Gerät und dienen nur dazu, Strecke und Tempo zu messen und LP zu vergeben. Keine Route wird gespeichert, nichts wird hochgeladen. Lehnst du ab, gibt es keine LP aus echter Bewegung.';
 
   @override
   String get movementDeniedHint =>
@@ -374,7 +374,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String sealName(String stat) {
-    return '$stat-Siegel';
+    return 'Siegel · $stat';
   }
 
   @override
@@ -397,11 +397,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get forgeSellNote =>
-      'Verkaufst du einen Gefährten, kommen seine Siegel zurück in den Vorrat.';
+      'Verkaufte Gefährten geben ihre Siegel in den Vorrat zurück.';
 
   @override
   String get forgeClearHint =>
-      'Tippe auf ein Siegel, um es herauszunehmen, oder auf einen leeren Sockel zum Einsetzen.';
+      'Siegel antippen zum Herausnehmen, leeren Sockel zum Einsetzen.';
 
   @override
   String forgeClearTitle(String seal) {
@@ -543,7 +543,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get saveDelete => 'Spielstand löschen';
 
   @override
-  String get saveShareSubject => 'Treadplay Spielstand';
+  String get saveShareSubject => 'Treadplay-Spielstand';
 
   @override
   String get saveExported => 'Spielstand exportiert.';
@@ -713,10 +713,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get wwTaskBrownPouch => '1 braunen Beutel öffnen';
 
   @override
-  String get wwTaskCopperPouch => '1 Kupfer-Beutel öffnen';
+  String get wwTaskCopperPouch => '1 Kupferbeutel öffnen';
 
   @override
-  String get wwTaskTurquoisePouch => '1 Türkis-Beutel öffnen';
+  String get wwTaskTurquoisePouch => '1 Türkisbeutel öffnen';
 
   @override
   String get wwTaskSealPlaced => '1 Siegel schmieden und einsetzen';
@@ -727,7 +727,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get wwTaskSealL3 => '1 Siegel auf L3';
+  String get wwTaskSealL3 => '1 Siegel auf St.3';
 
   @override
   String get wwTaskMessenger => '1 Boten treffen';
@@ -758,17 +758,17 @@ class AppLocalizationsDe extends AppLocalizations {
   String get wwUnlockBrownPouch => 'Brauner Beutel';
 
   @override
-  String get wwUnlockForge => 'Schmiede (Siegel L1)';
+  String get wwUnlockForge => 'Schmiede (Siegel St.1)';
 
   @override
   String get wwUnlockMarketMedievalJungle =>
       'Markt +2 Arten (Mittelalter, Dschungel)';
 
   @override
-  String get wwUnlockCopperPouch => 'Kupfer-Beutel';
+  String get wwUnlockCopperPouch => 'Kupferbeutel';
 
   @override
-  String get wwUnlockForgeL2 => 'Schmieden L2';
+  String get wwUnlockForgeL2 => 'Schmieden St.2';
 
   @override
   String get wwUnlockWorldUnderwater => 'Welt Unterwasser + Arten';
@@ -777,58 +777,58 @@ class AppLocalizationsDe extends AppLocalizations {
   String get wwUnlockLeashClip4 => '4. Leinen-Clip';
 
   @override
-  String get wwUnlockForgeL3 => 'Schmieden L3';
+  String get wwUnlockForgeL3 => 'Schmieden St.3';
 
   @override
   String get wwUnlockMarketEgyptPirate => 'Markt +2 Arten (Ägypten, Piraten)';
 
   @override
-  String get wwUnlockTurquoisePouch => 'Türkis-Beutel';
+  String get wwUnlockTurquoisePouch => 'Türkisbeutel';
 
   @override
   String get wwUnlockWorldSteampunk => 'Welt Steampunk + Arten';
 
   @override
-  String get wwUnlockForgeL4 => 'Schmieden L4';
+  String get wwUnlockForgeL4 => 'Schmieden St.4';
 
   @override
-  String get wwUnlockCombineL3 => 'Kombinieren L3';
+  String get wwUnlockCombineL3 => 'Kombinieren St.3';
 
   @override
-  String get wwUnlockNavyPouch => 'Navy-Beutel';
+  String get wwUnlockNavyPouch => 'Nachtblauer Beutel';
 
   @override
-  String get wwUnlockWorldSpaceRobot => 'Welt Weltraum + Roboter + Arten';
+  String get wwUnlockWorldSpaceRobot => 'Welten Weltraum + Roboter + Arten';
 
   @override
-  String get wwUnlockForgeL5 => 'Schmieden L5';
+  String get wwUnlockForgeL5 => 'Schmieden St.5';
 
   @override
   String get wwUnlockShelfPlus2 => 'Gehege +2 Plätze (12→14)';
 
   @override
-  String get wwUnlockCombineL5 => 'Kombinieren L5';
+  String get wwUnlockCombineL5 => 'Kombinieren St.5';
 
   @override
-  String get wwUnlockWorldRococoCandy => 'Welt Rokoko + Süßigkeiten + Arten';
+  String get wwUnlockWorldRococoCandy => 'Welten Rokoko + Süßigkeiten + Arten';
 
   @override
   String get wwLine1 =>
-      'Ein Begleiter wächst nicht im Gehege. Er wächst neben dir, Schritt für Schritt.';
+      'Ein Gefährte wächst nicht im Gehege. Er wächst neben dir, Schritt für Schritt.';
 
   @override
   String get wwLine2 => 'Was ihr unterwegs findet, gehört euch beiden.';
 
   @override
   String get wwLine3 =>
-      'Neue Spuren im Markt. Doch kein Begleiter kommt weit, wenn er nur getragen wird.';
+      'Neue Spuren im Markt. Doch kein Gefährte kommt weit, wenn er nur getragen wird.';
 
   @override
   String get wwLine4 => 'Ein Siegel hält nur, was der Weg hineingelegt hat.';
 
   @override
   String get wwLine5 =>
-      'Zwei gleiche Siegel, ein Feuer. Geduld ist das dritte Teil.';
+      'Zwei gleiche Siegel, ein Feuer. Geduld ist das Dritte im Bunde.';
 
   @override
   String get wwLine6 => 'Im richtigen Tempo hört ihr einander atmen.';
@@ -984,19 +984,19 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get forgeCaseEmpty =>
-      'Noch keine losen Siegel. Kaufe ein Siegel L1 im Tab Vorrat.';
+      'Noch keine losen Siegel. Kaufe ein Siegel St.1 im Tab Vorrat.';
 
   @override
   String get forgeGlutSource =>
-      'Glut kommt aus Beuteln. Ein Lauf ab 1 km ohne Beutel bringt trotzdem 1 Glut.';
+      'Glut kommt aus Beuteln; ein Lauf ab 1 km ohne Beutel bringt 1 Glut.';
 
   @override
   String forgeBuyTitle(String lp) {
-    return 'Neues Siegel L1 · $lp LP';
+    return 'Neues Siegel St.1 · $lp LP';
   }
 
   @override
-  String get forgeMeltTitle => '5 Splitter zu einem Siegel L1 schmelzen';
+  String get forgeMeltTitle => '5 Splitter zu einem Siegel St.1 schmelzen';
 
   @override
   String get forgeAction => 'Schmieden';
@@ -1062,7 +1062,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get forgeLadderNote =>
-      'Höchstens +47 % pro Wert aus allen Siegeln zusammen. Kombi-Siegel machen einen Sockel frei, geben in Summe aber weniger.';
+      'Höchstens +47 % pro Wert aus allen Siegeln. Kombi-Siegel sparen einen Sockel, geben in Summe aber weniger.';
 
   @override
   String get forgePickTitle => 'Siegel einsetzen';
@@ -1082,29 +1082,29 @@ class AppLocalizationsDe extends AppLocalizations {
   String get pouchBrown => 'Brauner Beutel';
 
   @override
-  String get pouchCopper => 'Kupfer-Beutel';
+  String get pouchCopper => 'Kupferbeutel';
 
   @override
-  String get pouchTurquoise => 'Türkis-Beutel';
+  String get pouchTurquoise => 'Türkisbeutel';
 
   @override
-  String get pouchNavy => 'Navy-Beutel';
+  String get pouchNavy => 'Nachtblauer Beutel';
 
   @override
   String get pouchContentsBrown =>
-      'Glut 1–2, dazu ein Siegel L1 oder 2 Splitter, selten eine kleine Mutsalbe';
+      'Glut 1–2, dazu ein Siegel St.1 oder 2 Splitter, selten eine kleine Mutsalbe';
 
   @override
   String get pouchContentsCopper =>
-      'Glut 2, dazu 1–2 Fächer: Siegel L1–L2, 2 Glut oder 2 Splitter, selten eine kleine Mutsalbe';
+      'Glut 2, dazu 1–2 Fächer: Siegel St.1–St.2, 2 Glut oder 2 Splitter, selten eine kleine Mutsalbe';
 
   @override
   String get pouchContentsTurquoise =>
-      'Glut 2–3, dazu 2 Fächer: Siegel L1–L2, 2 Glut oder 3 Splitter';
+      'Glut 2–3, dazu 2 Fächer: Siegel St.1–St.2, 2 Glut oder 3 Splitter';
 
   @override
   String get pouchContentsNavy =>
-      'Glut 3, dazu 2 Fächer: Siegel L1–L3, 3 Glut oder 3 Splitter';
+      'Glut 3, dazu 2 Fächer: Siegel St.1–St.3, 3 Glut oder 3 Splitter';
 
   @override
   String pouchLeash(int n, int clips) {
@@ -1113,7 +1113,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pouchEmpty =>
-      'Kein Beutel an der Leine. Läufe finden Beutel; ein voller Atem-Tank gibt die beste Chance.';
+      'Kein Beutel an der Leine. Läufe finden Beutel; ein voller Puste-Tank gibt die beste Chance.';
 
   @override
   String pouchLocked(String km) {
@@ -1168,17 +1168,17 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String pouchChance(String pct) {
-    return 'Fundchance nach vollem Atem-Tank: $pct';
+    return 'Fundchance nach vollem Puste-Tank: $pct';
   }
 
   @override
   String pouchFortune(String f) {
-    return 'Fortune ×$f, auch für seltenere Farben';
+    return 'Glück ×$f, auch für seltenere Farben';
   }
 
   @override
   String get pouchRule =>
-      'Pro Lauf zählt ein voller Atem-Tank. Volle Leine: kein neuer Fund. Nicht warm gelaufene Beutel verblassen nach einem Tag.';
+      'Pro Lauf zählt ein voller Puste-Tank. Volle Leine: kein neuer Fund. Nicht warm gelaufene Beutel verblassen nach einem Tag.';
 
   @override
   String pouchCounts(int f, int o) {
@@ -1247,7 +1247,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get pouchShortTurquoise => 'Türkis';
 
   @override
-  String get pouchShortNavy => 'Navy';
+  String get pouchShortNavy => 'Nachtblau';
 
   @override
   String pouchColorShare(String name, String pct) {
@@ -1473,7 +1473,7 @@ class AppLocalizationsDe extends AppLocalizations {
       '1': 'Auftrag erfüllt – gut gelaufen!',
       '2': 'Wie versprochen: dein Lohn.',
       '3': 'Das hast du fein gemacht.',
-      '4': 'Erledigt! Der Lohn liegt in deinem Kasten.',
+      '4': 'Erledigt! Der Lohn liegt im Vorrat.',
       '5': 'Bravo – ich wusste, du schaffst das.',
       'other': 'Geschafft! Hier ist dein Lohn.',
     });
@@ -1502,7 +1502,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get msgRankTurquoise => 'Türkisbote · sehr selten';
 
   @override
-  String get msgRankNavy => 'Nachtblau · äußerst selten';
+  String get msgRankNavy => 'Nachtblauer Bote · äußerst selten';
 
   @override
   String get msgBrings => 'Bringt dir';
@@ -1534,7 +1534,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get msgDoneTitle => 'Auftrag erledigt';
 
   @override
-  String get msgDoneNote => 'Der Lohn liegt schon in deinem Siegelkasten.';
+  String get msgDoneNote => 'Der Lohn liegt schon im Vorrat der Schmiede.';
 
   @override
   String get msgBoard => 'Aushang';
@@ -1544,7 +1544,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get msgFootnote =>
-      'Kommt nur mit Glück nach einem Lauf · mehr Fortune, seltenere Boten';
+      'Kommt nur manchmal nach einem Lauf · mehr Glück, seltenere Boten';
 
   @override
   String msgTaskWalk(String km) {
@@ -1648,9 +1648,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get salveVorratTitle => 'Mutsalben';
 
   @override
-  String salveVorratHint(String name) {
-    return 'Antippen, um sie $name aufzutragen.';
-  }
+  String get salveVorratHint => 'Zum Auftragen antippen.';
 
   @override
   String get salveVorratEmpty =>
@@ -1709,7 +1707,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String spiritGritSaves(int pct) {
-    return 'Grit spart $pct %';
+    return 'Zähigkeit spart $pct %';
   }
 
   @override

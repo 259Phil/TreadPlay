@@ -1253,7 +1253,7 @@ class _LadderTab extends StatelessWidget {
           Text(
             '${l.forgeLadderNote} ${l.forgeGlutSource} ${l.forgeSellNote} '
             '${l.forgeClearHint}',
-            maxLines: 5,
+            maxLines: 6,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               color: ForgeColors.muted,

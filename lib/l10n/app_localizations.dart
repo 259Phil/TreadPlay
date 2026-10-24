@@ -707,7 +707,7 @@ abstract class AppLocalizations {
   /// No description provided for @movementNoticeBody.
   ///
   /// In en, this message translates to:
-  /// **'To count a walk, TreadPlay uses your location (GPS) and the step counter during the run. Readings stay on this device and are only used to measure distance and pace and to award LP. No route is saved and nothing is uploaded. If you deny, real movement earns no LP.'**
+  /// **'To count a walk, Treadplay uses your location (GPS) and the step counter during the run. Readings stay on this device and are only used to measure distance and pace and to award LP. No route is saved and nothing is uploaded. If you deny, real movement earns no LP.'**
   String get movementNoticeBody;
 
   /// No description provided for @movementDeniedHint.
@@ -1331,13 +1331,13 @@ abstract class AppLocalizations {
   /// No description provided for @wwTaskSweet58.
   ///
   /// In en, this message translates to:
-  /// **'1 run with Sweet Spot ≥ 58 %'**
+  /// **'1 run with sweet spot ≥ 58 %'**
   String get wwTaskSweet58;
 
   /// No description provided for @wwTaskSweet71.
   ///
   /// In en, this message translates to:
-  /// **'{n} runs with Sweet Spot ≥ 71 %'**
+  /// **'{n} runs with sweet spot ≥ 71 %'**
   String wwTaskSweet71(int n);
 
   /// No description provided for @wwTaskLeash.
@@ -1505,7 +1505,7 @@ abstract class AppLocalizations {
   /// No description provided for @wwLine5.
   ///
   /// In en, this message translates to:
-  /// **'Two equal seals, one fire. Patience is the third part.'**
+  /// **'Two equal seals, one fire. Patience is the third.'**
   String get wwLine5;
 
   /// No description provided for @wwLine6.
@@ -2303,7 +2303,7 @@ abstract class AppLocalizations {
   /// No description provided for @msgLineDone.
   ///
   /// In en, this message translates to:
-  /// **'{n, select, 0{Done! Here’s your reward.} 1{Task complete – well walked!} 2{As promised: your reward.} 3{You did that nicely.} 4{Done! The reward is in your case.} 5{Bravo – I knew you could.} other{Done! Here’s your reward.}}'**
+  /// **'{n, select, 0{Done! Here’s your reward.} 1{Task complete – well walked!} 2{As promised: your reward.} 3{You did that nicely.} 4{Done! The reward is in the Forge case.} 5{Bravo – I knew you could.} other{Done! Here’s your reward.}}'**
   String msgLineDone(String n);
 
   /// No description provided for @msgTitleRuhu.
@@ -2411,7 +2411,7 @@ abstract class AppLocalizations {
   /// No description provided for @msgDoneNote.
   ///
   /// In en, this message translates to:
-  /// **'The reward is already in your seal case.'**
+  /// **'The reward is already in the Forge case.'**
   String get msgDoneNote;
 
   /// No description provided for @msgBoard.
@@ -2441,7 +2441,7 @@ abstract class AppLocalizations {
   /// No description provided for @msgTaskSweet.
   ///
   /// In en, this message translates to:
-  /// **'{n, plural, =1{1 run with ≥ 58 % Sweet Spot} other{{n} runs with ≥ 58 % Sweet Spot}}'**
+  /// **'{n, plural, =1{1 run with ≥ 58 % sweet spot} other{{n} runs with ≥ 58 % sweet spot}}'**
   String msgTaskSweet(int n);
 
   /// No description provided for @msgTaskRuns.
@@ -2519,7 +2519,7 @@ abstract class AppLocalizations {
   /// No description provided for @salveOwned.
   ///
   /// In en, this message translates to:
-  /// **'{n} in stock'**
+  /// **'{n} in the case'**
   String salveOwned(int n);
 
   /// No description provided for @salveUse.
@@ -2531,7 +2531,7 @@ abstract class AppLocalizations {
   /// No description provided for @salveNoneHint.
   ///
   /// In en, this message translates to:
-  /// **'No salves in stock. The trader in the Market sells them.'**
+  /// **'No salves in the case. The Market trader sells them.'**
   String get salveNoneHint;
 
   /// No description provided for @salveFull.
@@ -2555,8 +2555,8 @@ abstract class AppLocalizations {
   /// No description provided for @salveVorratHint.
   ///
   /// In en, this message translates to:
-  /// **'Tap a salve to apply it to {name}.'**
-  String salveVorratHint(String name);
+  /// **'Tap one to apply it.'**
+  String get salveVorratHint;
 
   /// No description provided for @salveVorratEmpty.
   ///
@@ -2669,7 +2669,7 @@ abstract class AppLocalizations {
   /// No description provided for @summaryLevelReady.
   ///
   /// In en, this message translates to:
-  /// **'{name} can level up – on the shelf.'**
+  /// **'{name} can level up – in the den.'**
   String summaryLevelReady(String name);
 
   /// No description provided for @marketSalvesTab.
@@ -2699,7 +2699,7 @@ abstract class AppLocalizations {
   /// No description provided for @marketSalveBought.
   ///
   /// In en, this message translates to:
-  /// **'{name} is in your stock now.'**
+  /// **'{name} is in the Forge case now.'**
   String marketSalveBought(String name);
 }
 

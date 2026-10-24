@@ -351,7 +351,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get movementNoticeBody =>
-      'To count a walk, TreadPlay uses your location (GPS) and the step counter during the run. Readings stay on this device and are only used to measure distance and pace and to award LP. No route is saved and nothing is uploaded. If you deny, real movement earns no LP.';
+      'To count a walk, Treadplay uses your location (GPS) and the step counter during the run. Readings stay on this device and are only used to measure distance and pace and to award LP. No route is saved and nothing is uploaded. If you deny, real movement earns no LP.';
 
   @override
   String get movementDeniedHint =>
@@ -730,11 +730,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wwTaskMessenger => 'Meet a messenger';
 
   @override
-  String get wwTaskSweet58 => '1 run with Sweet Spot ≥ 58 %';
+  String get wwTaskSweet58 => '1 run with sweet spot ≥ 58 %';
 
   @override
   String wwTaskSweet71(int n) {
-    return '$n runs with Sweet Spot ≥ 71 %';
+    return '$n runs with sweet spot ≥ 71 %';
   }
 
   @override
@@ -824,8 +824,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wwLine4 => 'A seal only holds what the trail has put into it.';
 
   @override
-  String get wwLine5 =>
-      'Two equal seals, one fire. Patience is the third part.';
+  String get wwLine5 => 'Two equal seals, one fire. Patience is the third.';
 
   @override
   String get wwLine6 => 'At the right pace you hear each other breathe.';
@@ -1468,7 +1467,7 @@ class AppLocalizationsEn extends AppLocalizations {
       '1': 'Task complete – well walked!',
       '2': 'As promised: your reward.',
       '3': 'You did that nicely.',
-      '4': 'Done! The reward is in your case.',
+      '4': 'Done! The reward is in the Forge case.',
       '5': 'Bravo – I knew you could.',
       'other': 'Done! Here’s your reward.',
     });
@@ -1529,7 +1528,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get msgDoneTitle => 'Task done';
 
   @override
-  String get msgDoneNote => 'The reward is already in your seal case.';
+  String get msgDoneNote => 'The reward is already in the Forge case.';
 
   @override
   String get msgBoard => 'Notice';
@@ -1551,8 +1550,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       n,
       locale: localeName,
-      other: '$n runs with ≥ 58 % Sweet Spot',
-      one: '1 run with ≥ 58 % Sweet Spot',
+      other: '$n runs with ≥ 58 % sweet spot',
+      one: '1 run with ≥ 58 % sweet spot',
     );
     return '$_temp0';
   }
@@ -1621,7 +1620,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String salveOwned(int n) {
-    return '$n in stock';
+    return '$n in the case';
   }
 
   @override
@@ -1629,7 +1628,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get salveNoneHint =>
-      'No salves in stock. The trader in the Market sells them.';
+      'No salves in the case. The Market trader sells them.';
 
   @override
   String get salveFull => 'Spirit is full.';
@@ -1643,9 +1642,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get salveVorratTitle => 'Spirit salves';
 
   @override
-  String salveVorratHint(String name) {
-    return 'Tap a salve to apply it to $name.';
-  }
+  String get salveVorratHint => 'Tap one to apply it.';
 
   @override
   String get salveVorratEmpty => 'No salves yet. The Market trader has them.';
@@ -1729,7 +1726,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String summaryLevelReady(String name) {
-    return '$name can level up – on the shelf.';
+    return '$name can level up – in the den.';
   }
 
   @override
@@ -1749,6 +1746,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String marketSalveBought(String name) {
-    return '$name is in your stock now.';
+    return '$name is in the Forge case now.';
   }
 }

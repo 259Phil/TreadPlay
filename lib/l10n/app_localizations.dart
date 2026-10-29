@@ -2858,24 +2858,6 @@ abstract class AppLocalizations {
   /// **'Recipes {known} / {total}'**
   String baumCount(int known, int total);
 
-  /// Forge tree look A: seals as a star map round the first seal.
-  ///
-  /// In en, this message translates to:
-  /// **'Constellation'**
-  String get baumLookStars;
-
-  /// Forge tree look B: a tree growing upwards from the first seal.
-  ///
-  /// In en, this message translates to:
-  /// **'Branches'**
-  String get baumLookBranch;
-
-  /// Forge tree look C: a glowing path over hex cells.
-  ///
-  /// In en, this message translates to:
-  /// **'Ember net'**
-  String get baumLookNet;
-
   /// Recipe levels forged of all recipe levels in the forge tree.
   ///
   /// In en, this message translates to:

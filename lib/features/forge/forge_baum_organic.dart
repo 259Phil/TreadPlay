@@ -1,14 +1,18 @@
 part of 'forge_screen.dart';
 
-// The Schmiede-Baum as a living tree in three looks to choose from. It is
-// grown from the player's own history: the first seal ever owned is the
-// root, every other single seal St.1 docks onto it, each higher level onto
-// the level below of its stat, and every forged recipe level onto the
-// exact seals it was forged from. Seals never owned hang on as dark
-// ghosts; recipe levels not forged yet drift free as ??? with no line.
-
-/// The three looks Philip chooses from.
-enum _Look { stars, branch, net }
+// The Schmiede-Baum as a star map grown from the player's own history.
+// The first seal ever owned sits in the middle; every other single seal
+// St.1 docks onto it, each higher level onto the level below of its stat,
+// and every forged recipe level onto the exact seals it was forged from.
+//
+// To stay calm with many seals every kind keeps its own slice of the sky:
+// six sectors round the middle, a stat, the recipe of it and the next
+// stat, and so on (Schwung, Ausdauer, Zähigkeit, Schutz, Glück, Fährte),
+// so a level-1 recipe always sits between its two seals. Each level is one
+// ring further out. Level-2 recipes sit just outside their level-1 recipe;
+// the thread to their third seal runs round the outside of the ring, never
+// across the middle. Seals never owned hang on as dark ghosts; recipe
+// levels not forged yet drift in their place with no line.
 
 /// A node of the grown tree.
 class _GN {
@@ -25,114 +29,116 @@ class _GN {
   /// Node it docks onto; null for the root.
   final String? parent;
 
-  /// Further sources drawn into it (the second seal of a recipe).
+  /// Further sources drawn into it (the other seal of a recipe).
   final List<String> extra = [];
-  final List<String> children = [];
-  int depth = 0;
-  int weight = 1;
 }
 
-/// The grown tree of [game]: nodes in unlock order (ghosts last).
+/// The grown tree of a [ForgeState].
 class _Grown {
-  _Grown(this.nodes, this.root, this.rank);
+  _Grown(this.nodes, this.root);
 
   final Map<String, _GN> nodes;
   final String root;
 
-  /// Unlock rank of each owned key (0 = first).
-  final Map<String, int> rank;
-
+  /// Root while nothing is owned yet: the forge itself.
   static const hub = 'hub';
 
   factory _Grown.of(ForgeState f) {
-    final nodes = <String, _GN>{};
-    final rank = <String, int>{};
     final owned = [
       for (final k in f.order)
         if (_nodeOfKey(k) != null) k,
     ];
-    for (final (i, k) in owned.indexed) {
-      rank[k] = i;
-    }
-    String? idOf(String k) => _nodeOfKey(k);
-    // With nothing owned yet the forge itself is the root.
-    final root = owned.isEmpty ? hub : idOf(owned.first)!;
-    if (owned.isEmpty) nodes[hub] = _GN(hub, hub, owned: true);
-    bool placed(String k) => nodes.containsKey(idOf(k));
-    for (final (i, k) in owned.indexed) {
-      final id = idOf(k)!;
-      if (i == 0) {
-        nodes[id] = _GN(id, k, owned: true);
-        continue;
-      }
-      final [name, lv] = k.split('@');
-      final level = int.parse(lv);
-      String parent = root;
-      final extra = <String>[];
-      if (SealType.values.asNameMap()[name] case final t?) {
-        // The level below of the same stat, else the root.
-        for (var below = level - 1; below >= 1; below--) {
-          if (placed('${t.name}@$below')) {
-            parent = _singleId(t, below);
-            break;
-          }
-        }
-      } else {
-        final srcs = [
-          for (final s in f.forged[k] ?? const <String>[])
-            if (placed(s)) s,
-        ]..sort((a, b) => (rank[b] ?? 0).compareTo(rank[a] ?? 0));
-        if (srcs.isNotEmpty) {
-          parent = idOf(srcs.first)!;
-          extra.addAll(srcs.skip(1).map((s) => idOf(s)!));
-        } else if (i > 0) {
-          parent = idOf(owned[i - 1])!;
-        }
-      }
-      nodes[id] = _GN(id, k, owned: true, parent: parent)..extra.addAll(extra);
-    }
-    // Seals never owned hang on as ghosts: St.1 at the root, the rest
-    // under the level below.
-    for (var lv = 1; lv <= Seal.maxLevel; lv++) {
-      for (final t in SealType.values) {
+    final rank = {for (final (i, k) in owned.indexed) k: i};
+    final root = owned.isEmpty ? hub : _nodeOfKey(owned.first)!;
+    final nodes = <String, _GN>{
+      root: _GN(root, owned.isEmpty ? hub : owned.first, owned: true),
+    };
+    // Single seals: owned ones dock onto the highest owned level below
+    // (else the root), ghosts onto the level below.
+    for (final t in SealType.values) {
+      for (var lv = 1; lv <= Seal.maxLevel; lv++) {
         final id = _singleId(t, lv);
-        if (nodes.containsKey(id)) continue;
-        final parent = lv == 1 ? root : _singleId(t, lv - 1);
-        nodes[id] = _GN(id, '${t.name}@$lv', owned: false, parent: parent);
+        if (id == root) continue;
+        final key = '${t.name}@$lv';
+        final own = rank.containsKey(key);
+        var parent = root;
+        if (own) {
+          for (var below = lv - 1; below >= 1; below--) {
+            if (rank.containsKey('${t.name}@$below')) {
+              parent = _singleId(t, below);
+              break;
+            }
+          }
+        } else if (lv > 1) {
+          parent = _singleId(t, lv - 1);
+        }
+        nodes[id] = _GN(id, key, owned: own, parent: parent);
       }
     }
-    for (final n in nodes.values) {
-      if (n.parent case final p?) nodes[p]!.children.add(n.id);
+    // Recipe levels, in unlock order, dock onto the seals they came from:
+    // a level-2 recipe onto its level-1 recipe (right next to it), a
+    // level-1 recipe onto the newer of its two seals.
+    for (final k in owned) {
+      final [name, lv] = k.split('@');
+      final r = Recipe.values.asNameMap()[name];
+      final id = _nodeOfKey(k)!;
+      if (r == null || id == root) continue;
+      final srcs = [
+        for (final s in f.forged[k] ?? _sourcesOf(r, int.parse(lv)))
+          if (nodes.containsKey(_nodeOfKey(s))) s,
+      ];
+      int score(String s) =>
+          (s.startsWith('${r.base.name}@') && r.tier == 2 ? 1000 : 0) +
+          (rank[s] ?? -1);
+      srcs.sort((a, b) => score(b).compareTo(score(a)));
+      nodes[id] = _GN(
+        id,
+        k,
+        owned: true,
+        parent: srcs.isEmpty ? root : _nodeOfKey(srcs.first),
+      )..extra.addAll(srcs.skip(1).map((s) => _nodeOfKey(s)!));
     }
-    void walk(_GN n, int depth) {
-      n.depth = depth;
-      n.weight = 0;
-      for (final c in n.children) {
-        walk(nodes[c]!, depth + 1);
-        n.weight += nodes[c]!.weight;
-      }
-      n.weight = math.max(1, n.weight);
-    }
-
-    walk(nodes[root]!, 0);
-    return _Grown(nodes, root, rank);
+    return _Grown(nodes, root);
   }
+
+  /// What [r] at [level] is forged from when the save does not say.
+  static List<String> _sourcesOf(Recipe r, int level) => r.tier == 1
+      ? ['${r.a.name}@$level', '${r.b.name}@$level']
+      : ['${r.base.name}@$level', '${r.extra!.name}@$level'];
 }
 
-/// Where every node sits in one look, plus the drifting ??? levels.
+/// Where every node sits, plus the drifting ??? levels.
 class _Layout {
-  _Layout(this.at, this.drift, this.bounds, this.hexes, this.hex);
+  _Layout(this.at, this.drift, this.bounds);
 
+  /// Node positions round the root at (0, 0).
   final Map<String, Offset> at;
   final Map<String, Offset> drift;
   final Rect bounds;
-
-  /// [_Look.net]: centres of the cells taken.
-  final List<Offset> hexes;
-  final double hex;
 }
 
-/// A small deterministic wobble per id, so the tree looks grown.
+/// Radius of the ring of [level].
+double _ringOf(int level) => 150 + (level - 1) * 125.0;
+
+/// How far out of its ring a level-2 recipe sits.
+const double _tier2Out = 58;
+
+/// How far out of its ring a recipe sits, so it hangs between its seals.
+const double _recipeOut = 42;
+
+/// Sector (0–5) of each kind: stat, recipe of it and the next stat, …
+int _sectorOf(String name) => switch (name) {
+  'stride' => 0,
+  'ausdauer' => 1,
+  'wanderstern' => 1,
+  'grit' => 2,
+  'schutz' => 3,
+  'glutherz' => 3,
+  'fortune' => 4,
+  _ => 5, // faehrte, spurenleser
+};
+
+/// A small deterministic wobble per id, so the map looks grown.
 double _jit(String id, int salt) {
   var h = 17 + salt;
   for (final c in id.codeUnits) {
@@ -141,156 +147,50 @@ double _jit(String id, int salt) {
   return (h % 1000) / 1000 - .5;
 }
 
-_Layout _layout(_Look look, _Grown g, List<String> drifting) {
-  final at = <String, Offset>{};
-  final hexes = <Offset>[];
-  const hexR = 46.0;
-  switch (look) {
-    case _Look.stars:
-      // Radial: each branch owns a slice of the circle by its size.
-      const ring = 92.0;
-      void place(_GN n, double a0, double a1) {
-        final a = (a0 + a1) / 2 + _jit(n.id, 1) * .12;
-        final r = n.depth * ring + _jit(n.id, 2) * 18;
-        at[n.id] = Offset(math.cos(a) * r, math.sin(a) * r);
-        var start = a0;
-        final kids = n.children.map((c) => g.nodes[c]!).toList();
-        final total = kids.fold(0, (s, k) => s + k.weight);
-        for (final k in kids) {
-          final span = (a1 - a0) * k.weight / total;
-          place(k, start, start + span);
-          start += span;
-        }
-      }
-
-      place(g.nodes[g.root]!, -math.pi / 2, 3 * math.pi / 2);
-    case _Look.branch:
-      // Upwards: leaves side by side, each fork above its twigs' middle.
-      var slot = 0.0;
-      double place(_GN n) {
-        final kids = n.children.map((c) => g.nodes[c]!).toList();
-        double x;
-        if (kids.isEmpty) {
-          x = slot;
-          slot += 1;
-        } else {
-          final xs = [for (final k in kids) place(k)];
-          x = (xs.first + xs.last) / 2;
-        }
-        at[n.id] = Offset(
-          x * 74 + _jit(n.id, 3) * 14,
-          -n.depth * 98 + _jit(n.id, 4) * 22,
-        );
-        return x;
-      }
-
-      place(g.nodes[g.root]!);
-      final rootX = at[g.root]!.dx;
-      at.updateAll((_, p) => p - Offset(rootX, 0));
-    case _Look.net:
-      // A path over hex cells: each node takes the free cell next to its
-      // parent that leads furthest out.
-      final taken = <(int, int)>{};
-      Offset centre((int, int) c) =>
-          Offset(hexR * math.sqrt(3) * (c.$1 + c.$2 / 2), hexR * 1.5 * c.$2);
-      const dirs = [(1, 0), (1, -1), (0, -1), (-1, 0), (-1, 1), (0, 1)];
-      final cellOf = <String, (int, int)>{};
-      void put(String id, (int, int) c) {
-        taken.add(c);
-        cellOf[id] = c;
-        at[id] = centre(c);
-      }
-
-      put(g.root, (0, 0));
-      final queue = [g.root];
-      while (queue.isNotEmpty) {
-        final n = g.nodes[queue.removeAt(0)]!;
-        final pc = cellOf[n.id]!;
-        final from = centre(pc);
-        for (final (i, c) in n.children.indexed) {
-          final kid = g.nodes[c]!;
-          (int, int)? best;
-          var score = -1e9;
-          for (var ring = 1; ring <= 3 && best == null; ring++) {
-            for (final d in dirs) {
-              for (var s = 0; s < ring; s++) {
-                final side = dirs[(dirs.indexOf(d) + 2) % 6];
-                final cell = (
-                  pc.$1 + d.$1 * ring + side.$1 * s,
-                  pc.$2 + d.$2 * ring + side.$2 * s,
-                );
-                if (taken.contains(cell)) continue;
-                final p = centre(cell);
-                // Outwards from the root, the root's children spread round.
-                final out = n.id == g.root
-                    ? -(p - Offset.fromDirection(i * math.pi / 3 + .3, hexR))
-                          .distance
-                    : p.distance - from.distance * .9;
-                final v = out + _jit(kid.id, 5) * 8;
-                if (v > score) {
-                  score = v;
-                  best = cell;
-                }
-              }
-            }
-          }
-          put(c, best!);
-          queue.add(c);
-        }
-      }
-      hexes.addAll(taken.map(centre));
+_Layout _layout(_Grown g, List<String> drifting) {
+  // The root's own sector points up.
+  final rootName = g.nodes[g.root]!.key.split('@').first;
+  final turn = g.root == _Grown.hub ? 0 : _sectorOf(rootName);
+  Offset slot(String key) {
+    final [name, lv] = key.split('@');
+    final level = int.parse(lv);
+    final tier2 = Recipe.values.asNameMap()[name]?.tier == 2;
+    final id = _nodeOfKey(key)!;
+    // Level-2 recipes lean a little to the side of their third seal's
+    // thread, level-1 recipes a little the other way.
+    final lean = Recipe.values.asNameMap().containsKey(name)
+        ? (tier2 ? .1 : -.05)
+        : 0.0;
+    final a =
+        -math.pi / 2 +
+        (_sectorOf(name) - turn) * math.pi / 3 +
+        lean +
+        _jit(id, 1) * .05;
+    final r =
+        _ringOf(level) +
+        (tier2 ? _tier2Out : 0) +
+        (Recipe.values.asNameMap().containsKey(name) ? _recipeOut : 0) +
+        _jit(id, 2) * 10;
+    return Offset.fromDirection(a, r);
   }
-  // The ??? levels drift in six groups round (stars, net) or above
-  // (branch) the tree, each recipe's St.1–5 close together.
-  var box = _boundsOf(at.values);
-  final drift = <String, Offset>{};
-  final groups = <String, List<String>>{};
-  for (final id in drifting) {
-    groups.putIfAbsent(id.split('-').first, () => []).add(id);
-  }
-  for (final (gi, r) in Recipe.values.indexed) {
-    final ids = groups[r.name] ?? const [];
-    late Offset c;
-    late double spread;
-    if (look == _Look.branch) {
-      final w = math.max(box.width, 520.0);
-      c = Offset(
-        box.center.dx - w / 2 + w * (gi + .5) / 6,
-        box.top - 120 - (r.tier == 2 ? 150 : 0),
-      );
-      spread = 0;
-    } else {
-      final rad = math.max(box.width, box.height) / 2 + 150;
-      final a = -math.pi / 2 + gi * math.pi / 3 + math.pi / 6;
-      c = box.center + Offset(math.cos(a) * rad, math.sin(a) * rad);
-      spread = a;
-    }
-    for (final id in ids) {
-      final lv = int.parse(id.split('-').last);
-      final t = (lv - 3).toDouble();
-      // Branch: a little flower; round looks: a short arc along the rim.
-      drift[id] = look == _Look.branch
-          ? c + _petal(lv, 46)
-          : c +
-                Offset.fromDirection(spread + math.pi / 2, t * 52) +
-                Offset.fromDirection(spread, t.abs() * -12);
-    }
-  }
-  box = _boundsOf([...at.values, ...drift.values]).inflate(90);
-  return _Layout(at, drift, box, hexes, hexR);
-}
 
-/// St.1–5 of one recipe as a little flower above the branch.
-Offset _petal(int lv, double r) {
-  if (lv == 1) return Offset.zero;
-  final a = -math.pi / 2 + (lv - 2) * math.pi / 2 + math.pi / 4;
-  return Offset(math.cos(a) * r * 1.15, math.sin(a) * r);
+  final at = <String, Offset>{
+    for (final n in g.nodes.values)
+      n.id: n.id == g.root ? Offset.zero : slot(n.key),
+  };
+  final drift = <String, Offset>{
+    for (final id in drifting)
+      id: slot(
+        '${id.substring(0, id.lastIndexOf('-'))}@'
+        '${id.substring(id.lastIndexOf('-') + 1)}',
+      ),
+  };
+  final box = _boundsOf([...at.values, ...drift.values]).inflate(110);
+  return _Layout(at, drift, box);
 }
 
 Rect _boundsOf(Iterable<Offset> ps) {
-  if (ps.isEmpty) return Rect.zero;
-  var l = double.infinity, t = double.infinity;
-  var r = -double.infinity, b = -double.infinity;
+  var l = 0.0, t = 0.0, r = 0.0, b = 0.0;
   for (final p in ps) {
     l = math.min(l, p.dx);
     t = math.min(t, p.dy);
@@ -301,15 +201,9 @@ Rect _boundsOf(Iterable<Offset> ps) {
 }
 
 /// One connection: [from] → [to], lit when both ends are owned; [grow] is
-/// the key whose first look grows it in.
-typedef _Edge = ({
-  String from,
-  String to,
-  bool lit,
-  String? grow,
-  int weight,
-  bool extra,
-});
+/// the key whose first look grows it in. [extra] lines are the faint
+/// thread to a recipe's other seal.
+typedef _Edge = ({String from, String to, bool lit, String? grow, bool extra});
 
 List<_Edge> _edgesOf(_Grown g) => [
   for (final n in g.nodes.values)
@@ -319,32 +213,63 @@ List<_Edge> _edgesOf(_Grown g) => [
         to: n.id,
         lit: n.owned && g.nodes[p]!.owned,
         grow: n.owned ? n.key : null,
-        weight: n.weight,
         extra: false,
       ),
       for (final x in n.extra)
-        (from: x, to: n.id, lit: true, grow: n.key, weight: 1, extra: true),
+        (from: x, to: n.id, lit: g.nodes[x]!.owned, grow: n.key, extra: true),
     ],
 ];
 
-/// Paints the background of a look and its connections, growing new ones
-/// in one after another.
+/// Line from [a] to [b] round the root at [c]: straight along a ray,
+/// bowed along the ring between neighbours, and round the outside of the
+/// ring when the two ends lie far apart ([lane] keeps such threads apart).
+Path _starPath(Offset c, Offset a, Offset b, int lane) {
+  final pa = a - c;
+  final pb = b - c;
+  final path = Path()..moveTo(a.dx, a.dy);
+  if (pa.distance < 1 || pb.distance < 1) {
+    return path..lineTo(b.dx, b.dy);
+  }
+  var turn = pb.direction - pa.direction;
+  while (turn > math.pi) {
+    turn -= 2 * math.pi;
+  }
+  while (turn <= -math.pi) {
+    turn += 2 * math.pi;
+  }
+  if (turn.abs() < .05) return path..lineTo(b.dx, b.dy);
+  if (turn.abs() <= math.pi * .45) {
+    // Neighbours: bow outwards, along the ring.
+    final m = (pa + pb) / 2;
+    final r = math.max(pa.distance, pb.distance) * 1.02;
+    final k = c + Offset.fromDirection(m.direction, r);
+    return path..quadraticBezierTo(k.dx, k.dy, b.dx, b.dy);
+  }
+  // Far apart: out to an orbit in the free band past the nearer end (the
+  // seal's ring), round it, out to the other end. A turn of half the
+  // circle always goes the same way round.
+  if ((turn.abs() - math.pi).abs() < .2) turn = turn.abs();
+  final r = math.min(pa.distance, pb.distance) + 70 + lane * 8;
+  final from = c + Offset.fromDirection(pa.direction, r);
+  final to = c + Offset.fromDirection(pb.direction, r);
+  path.lineTo(from.dx, from.dy);
+  path.arcTo(Rect.fromCircle(center: c, radius: r), pa.direction, turn, false);
+  path.lineTo(to.dx, to.dy);
+  return path..lineTo(b.dx, b.dy);
+}
+
+/// Paints the sky and the connections, growing new ones in one after
+/// another.
 class _GrownPainter extends CustomPainter {
   _GrownPainter({
-    required this.look,
     required this.layout,
     required this.edges,
     required this.shift,
     required this.grow,
     required this.growing,
-    required this.maxWeight,
     required this.root,
   }) : super(repaint: grow);
 
-  /// Id of the root node.
-  final String root;
-
-  final _Look look;
   final _Layout layout;
   final List<_Edge> edges;
   final Offset shift;
@@ -352,7 +277,11 @@ class _GrownPainter extends CustomPainter {
 
   /// Keys growing now, in unlock order.
   final List<String> Function() growing;
-  final int maxWeight;
+
+  /// Id of the root node.
+  final String root;
+
+  static const _tint = Color(0xFF9FE6FF);
 
   /// Share 0–1 of the line into [key] drawn at grow value [v].
   static double share(List<String> order, String? key, double v) {
@@ -367,302 +296,141 @@ class _GrownPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    _background(canvas, size);
+    final c = (layout.at[root] ?? Offset.zero) + shift;
+    _sky(canvas, size, c);
     final order = growing();
+    // Ghosts first, then threads, then the lit branches on top.
+    int rankOf(_Edge e) => !e.lit ? 0 : (e.extra ? 1 : 2);
     for (final e in [
       ...edges,
-    ]..sort((a, b) => (a.lit ? 1 : 0) - (b.lit ? 1 : 0))) {
+    ]..sort((a, b) => rankOf(a).compareTo(rankOf(b)))) {
       final p = layout.at[e.from];
       final q = layout.at[e.to];
       if (p == null || q == null) continue;
-      final a = p + shift;
-      final b = q + shift;
-      var path = _curve(a, b, e.to);
+      final lane = switch (Recipe.values.asNameMap()[e.to.split('-').first]) {
+        final r? when r.tier == 2 => r.index - 3,
+        _ => 0,
+      };
+      var path = _starPath(c, p + shift, q + shift, lane);
       final t = share(order, e.grow, grow.value);
       if (t <= 0) continue;
       if (t < 1) path = _TreeLines.part(path, t);
       if (!e.lit) {
-        _TreeLines.dotted(canvas, path, const Color(0x55A89A88));
-        continue;
-      }
-      if (e.extra) {
-        // The second seal of a recipe: a faint thread, the branch itself
-        // comes from the newer one.
-        canvas.drawPath(
-          path,
-          Paint()
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 1
-            ..color = _tint.withValues(alpha: .35),
-        );
+        _TreeLines.dotted(canvas, path, const Color(0x55A8B4C8));
+      } else if (e.extra) {
+        // The other seal of a recipe: a faint thread, the branch itself
+        // comes from the first.
+        _TreeLines.dashed(canvas, path, _tint.withValues(alpha: .32));
       } else {
-        _stroke(canvas, path, e.weight);
-      }
-      if (t < 1) _TreeLines.spark(canvas, path, _tint);
-    }
-  }
-
-  Color get _tint => switch (look) {
-    _Look.stars => const Color(0xFF9FE6FF),
-    _Look.branch => _glowEmber,
-    _Look.net => const Color(0xFFFFB347),
-  };
-
-  Path _curve(Offset a, Offset b, String id) {
-    final path = Path()..moveTo(a.dx, a.dy);
-    switch (look) {
-      case _Look.stars:
-        final m = (a + b) / 2;
-        final d = b - a;
-        final n = Offset(-d.dy, d.dx) * (.18 * (_jit(id, 7) > 0 ? 1 : -1));
-        final c = m + n;
-        path.quadraticBezierTo(c.dx, c.dy, b.dx, b.dy);
-      case _Look.branch:
-        final dy = (b.dy - a.dy) * .55;
-        path.cubicTo(a.dx, a.dy + dy, b.dx, b.dy - dy, b.dx, b.dy);
-      case _Look.net:
-        path.lineTo(b.dx, b.dy);
-    }
-    return path;
-  }
-
-  void _stroke(Canvas canvas, Path path, int weight) {
-    switch (look) {
-      case _Look.stars:
         canvas.drawPath(
           path,
           Paint()
             ..style = PaintingStyle.stroke
             ..strokeWidth = 5
-            ..color = const Color(0xFF6FC8FF).withValues(alpha: .28)
+            ..color = const Color(0xFF6FC8FF).withValues(alpha: .26)
             ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
         );
         canvas.drawPath(
           path,
           Paint()
             ..style = PaintingStyle.stroke
-            ..strokeWidth = 1.4
+            ..strokeWidth = 1.5
             ..color = const Color(0xFFE6F6FF),
         );
-      case _Look.branch:
-        final w = 2.2 + 6 * math.sqrt(weight / math.max(1, maxWeight));
-        canvas.drawPath(
-          path,
-          Paint()
-            ..style = PaintingStyle.stroke
-            ..strokeCap = StrokeCap.round
-            ..strokeWidth = w + 6
-            ..color = _glowEmber.withValues(alpha: .25)
-            ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5),
-        );
-        canvas.drawPath(
-          path,
-          Paint()
-            ..style = PaintingStyle.stroke
-            ..strokeCap = StrokeCap.round
-            ..strokeWidth = w
-            ..color = const Color(0xFF7A5230),
-        );
-        canvas.drawPath(
-          path,
-          Paint()
-            ..style = PaintingStyle.stroke
-            ..strokeCap = StrokeCap.round
-            ..strokeWidth = math.max(1, w * .35)
-            ..color = const Color(0xFFFFC874).withValues(alpha: .85),
-        );
-      case _Look.net:
-        canvas.drawPath(
-          path,
-          Paint()
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 7
-            ..color = const Color(0xFFFF8A2A).withValues(alpha: .3)
-            ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
-        );
-        canvas.drawPath(
-          path,
-          Paint()
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 3
-            ..color = const Color(0xFFE0A050),
-        );
-        canvas.drawPath(
-          path,
-          Paint()
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 1
-            ..color = const Color(0xFFFFF0C8),
-        );
+      }
+      if (t < 1 && e.lit) _TreeLines.spark(canvas, path, _tint);
     }
   }
 
-  void _background(Canvas canvas, Size box) {
+  /// Night sky round the root, with one faint ring per level.
+  void _sky(Canvas canvas, Size box, Offset c) {
     // Painted well past the canvas, so zooming out never shows its edge.
     final rect = (Offset.zero & box).inflate(1400);
-    final size = rect.size;
-    canvas.save();
-    canvas.translate(rect.left, rect.top);
-    _backdrop(canvas, size, -rect.topLeft);
-    canvas.restore();
-  }
-
-  void _backdrop(Canvas canvas, Size size, Offset at) {
-    final rect = Offset.zero & size;
-    final root = (layout.at[this.root] ?? Offset.zero) + shift + at;
-    switch (look) {
-      case _Look.stars:
-        canvas.drawRect(
-          rect,
-          Paint()
-            ..shader = RadialGradient(
-              center: Alignment(
-                root.dx / size.width * 2 - 1,
-                root.dy / size.height * 2 - 1,
-              ),
-              radius: .35,
-              colors: const [
-                Color(0xFF1A2440),
-                Color(0xFF0C1020),
-                Color(0xFF07080F),
-              ],
-            ).createShader(rect),
-        );
-        final rnd = math.Random(7);
-        final dot = Paint();
-        for (
-          var i = 0;
-          i < math.min(2600, size.width * size.height / 2600);
-          i++
-        ) {
-          final p = Offset(
-            rnd.nextDouble() * size.width,
-            rnd.nextDouble() * size.height,
-          );
-          dot.color = Colors.white.withValues(
-            alpha: .1 + rnd.nextDouble() * .35,
-          );
-          canvas.drawCircle(p, rnd.nextDouble() * 1.2 + .3, dot);
-        }
-        for (var r = 92.0; r < 92 * 12; r += 92) {
-          canvas.drawCircle(
-            root,
-            r,
-            Paint()
-              ..style = PaintingStyle.stroke
-              ..strokeWidth = .6
-              ..color = const Color(0xFF9FC8FF).withValues(alpha: .07),
-          );
-        }
-      case _Look.branch:
-        canvas.drawRect(
-          rect,
-          Paint()
-            ..shader = const LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Color(0xFF120D0A), Color(0xFF241810), Color(0xFF2E1C10)],
-            ).createShader(rect),
-        );
-        // Roots under the first seal.
-        final roots = Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeCap = StrokeCap.round
-          ..color = const Color(0xFF5A3C22);
-        for (final (dx, w) in [
-          (-70.0, 5.0),
-          (-25.0, 6.0),
-          (30.0, 6.0),
-          (80.0, 4.0),
-        ]) {
-          canvas.drawPath(
-            Path()
-              ..moveTo(root.dx, root.dy + 14)
-              ..cubicTo(
-                root.dx,
-                root.dy + 50,
-                root.dx + dx * .6,
-                root.dy + 40,
-                root.dx + dx,
-                root.dy + 80,
-              ),
-            roots..strokeWidth = w,
-          );
-        }
-      case _Look.net:
-        canvas.drawRect(rect, Paint()..color = const Color(0xFF111316));
-        final h = layout.hex;
-        final rows = (size.height / (h * 1.5)).ceil() + 2;
-        final cols = (size.width / (h * math.sqrt(3))).ceil() + 2;
-        final faint = Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = .7
-          ..color = const Color(0xFFB08A50).withValues(alpha: .07);
-        final o = root;
-        final r0 = (-o.dy / (h * 1.5)).floor() - 1;
-        for (var r = r0; r < r0 + rows; r++) {
-          final c0 = (-(o.dx) / (h * math.sqrt(3)) - r / 2).floor() - 1;
-          for (var c = c0; c < c0 + cols; c++) {
-            final p = o + Offset(h * math.sqrt(3) * (c + r / 2), h * 1.5 * r);
-            canvas.drawPath(_hexPath(p, h * .96), faint);
-          }
-        }
-        for (final p in layout.hexes) {
-          final hp = _hexPath(p + shift + at, h * .96);
-          canvas.drawPath(
-            hp,
-            Paint()..color = const Color(0xFFFF9A3C).withValues(alpha: .06),
-          );
-          canvas.drawPath(
-            hp,
-            Paint()
-              ..style = PaintingStyle.stroke
-              ..strokeWidth = 1
-              ..color = const Color(0xFFD9A060).withValues(alpha: .28),
-          );
-        }
+    canvas.drawRect(
+      rect,
+      Paint()
+        ..shader = RadialGradient(
+          center: Alignment(
+            (c.dx - rect.left) / rect.width * 2 - 1,
+            (c.dy - rect.top) / rect.height * 2 - 1,
+          ),
+          radius: .35,
+          colors: const [
+            Color(0xFF1A2440),
+            Color(0xFF0C1020),
+            Color(0xFF07080F),
+          ],
+        ).createShader(rect),
+    );
+    final rnd = math.Random(7);
+    final dot = Paint();
+    for (var i = 0; i < 2600; i++) {
+      final p =
+          rect.topLeft +
+          Offset(rnd.nextDouble() * rect.width, rnd.nextDouble() * rect.height);
+      dot.color = Colors.white.withValues(alpha: .08 + rnd.nextDouble() * .3);
+      canvas.drawCircle(p, rnd.nextDouble() * 1.1 + .3, dot);
     }
-  }
-
-  static Path _hexPath(Offset c, double r) {
-    final p = Path();
-    for (var i = 0; i < 6; i++) {
-      final a = math.pi / 6 + i * math.pi / 3;
-      final v = c + Offset(math.cos(a) * r, math.sin(a) * r);
-      i == 0 ? p.moveTo(v.dx, v.dy) : p.lineTo(v.dx, v.dy);
+    final ring = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = .7
+      ..color = const Color(0xFF9FC8FF).withValues(alpha: .08);
+    for (var lv = 1; lv <= Seal.maxLevel; lv++) {
+      canvas.drawCircle(c, _ringOf(lv), ring);
+      // Which ring is which level, between two sectors.
+      final tp = TextPainter(
+        text: TextSpan(
+          text: 'St.$lv',
+          style: TextStyle(
+            color: const Color(0xFF9FC8FF).withValues(alpha: .35),
+            fontSize: 10,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      final p = c + Offset.fromDirection(-math.pi / 3, _ringOf(lv) - 18);
+      tp.paint(canvas, p - Offset(tp.width / 2, tp.height / 2));
     }
-    return p..close();
   }
 
   @override
   bool shouldRepaint(_GrownPainter old) => true;
 }
 
-/// Path helpers shared by the looks.
+/// Path helpers.
 abstract final class _TreeLines {
   /// The first [t] of [path].
   static Path part(Path path, double t) {
     final out = Path();
-    for (final m in path.computeMetrics()) {
-      out.addPath(m.extractPath(0, m.length * t), Offset.zero);
+    var total = 0.0;
+    final metrics = path.computeMetrics().toList();
+    for (final m in metrics) {
+      total += m.length;
+    }
+    var left = total * t;
+    for (final m in metrics) {
+      if (left <= 0) break;
+      out.addPath(m.extractPath(0, math.min(m.length, left)), Offset.zero);
+      left -= m.length;
     }
     return out;
   }
 
   /// A spark at the growing tip.
   static void spark(Canvas canvas, Path path, Color tint) {
-    for (final m in path.computeMetrics()) {
-      if (m.length == 0) continue;
-      final tip = m.getTangentForOffset(m.length)!.position;
-      canvas.drawCircle(
-        tip,
-        7,
-        Paint()
-          ..color = tint.withValues(alpha: .75)
-          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5),
-      );
-      canvas.drawCircle(tip, 2.4, Paint()..color = const Color(0xFFFFF6DC));
-    }
+    final metrics = path.computeMetrics().toList();
+    if (metrics.isEmpty || metrics.last.length == 0) return;
+    final m = metrics.last;
+    final tip = m.getTangentForOffset(m.length)!.position;
+    canvas.drawCircle(
+      tip,
+      7,
+      Paint()
+        ..color = tint.withValues(alpha: .75)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5),
+    );
+    canvas.drawCircle(tip, 2.4, Paint()..color = const Color(0xFFFFF6DC));
   }
 
   /// A faint dotted line (to a seal never owned).
@@ -671,6 +439,20 @@ abstract final class _TreeLines {
     for (final m in path.computeMetrics()) {
       for (var d = 0.0; d < m.length; d += 7) {
         canvas.drawCircle(m.getTangentForOffset(d)!.position, 1.1, dot);
+      }
+    }
+  }
+
+  /// A thin dashed line.
+  static void dashed(Canvas canvas, Path path, Color color) {
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1
+      ..strokeCap = StrokeCap.round
+      ..color = color;
+    for (final m in path.computeMetrics()) {
+      for (var d = 0.0; d < m.length; d += 9) {
+        canvas.drawPath(m.extractPath(d, math.min(m.length, d + 5)), paint);
       }
     }
   }

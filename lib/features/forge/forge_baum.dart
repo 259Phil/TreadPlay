@@ -143,17 +143,10 @@ class _SchmiedeBaumState extends ConsumerState<_SchmiedeBaum>
   /// Keys whose lines grow in right now, in unlock order.
   List<String>? _growing;
 
-  /// The look picked (preview: `?baum=a|b|c` in the address).
-  _Look _look = switch (Uri.base.queryParameters['baum']) {
-    'a' => _Look.stars,
-    'c' => _Look.net,
-    _ => _Look.branch,
-  };
-
   /// Pan and pinch of the tree.
   final TransformationController _view = TransformationController();
 
-  /// Look and size the view was last fitted for.
+  /// Root and size the view was last fitted for.
   String? _viewKey;
 
   bool get _motion =>
@@ -262,49 +255,6 @@ class _SchmiedeBaumState extends ConsumerState<_SchmiedeBaum>
           key: const Key('baum-count'),
           style: const TextStyle(color: ForgeColors.muted, fontSize: 10.5),
         ),
-        Wrap(
-          spacing: 4,
-          runSpacing: 2,
-          children: [
-            for (final (look, tag, name) in [
-              (_Look.stars, 'a', l.baumLookStars),
-              (_Look.branch, 'b', l.baumLookBranch),
-              (_Look.net, 'c', l.baumLookNet),
-            ])
-              Padding(
-                padding: EdgeInsets.zero,
-                child: GestureDetector(
-                  key: Key('baum-look-$tag'),
-                  onTap: () => setState(() => _look = look),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 7,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: look == _look
-                          ? _brass.withValues(alpha: .22)
-                          : Colors.transparent,
-                      border: Border.all(
-                        color: _brass.withValues(
-                          alpha: look == _look ? .8 : .3,
-                        ),
-                      ),
-                    ),
-                    child: Text(
-                      '${tag.toUpperCase()} $name',
-                      style: TextStyle(
-                        color: look == _look ? _brass : ForgeColors.muted,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
       ],
     );
     return Padding(
@@ -370,7 +320,7 @@ class _SchmiedeBaumState extends ConsumerState<_SchmiedeBaum>
       for (final n in nodes)
         if (!n.single && !n.lit) n.id,
     ];
-    final lay = _layout(_look, g, drifting);
+    final lay = _layout(g, drifting);
     final edges = _edgesOf(g);
     final shift = -lay.bounds.topLeft;
     final size = lay.bounds.size;
@@ -378,12 +328,12 @@ class _SchmiedeBaumState extends ConsumerState<_SchmiedeBaum>
     return LayoutBuilder(
       builder: (context, box) {
         final key =
-            '${_look.name} ${g.nodes.length} ${f.seen.length} '
+            '${g.root} ${f.seen.length} '
             '${box.maxWidth.round()}x${box.maxHeight.round()}';
         if (key != _viewKey) {
           _viewKey = key;
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) _fit(box.biggest, size, lay.at[g.root]! + shift);
+            if (mounted) _fit(box.biggest, lay.at[g.root]! + shift);
           });
         }
         return ClipRRect(
@@ -404,13 +354,11 @@ class _SchmiedeBaumState extends ConsumerState<_SchmiedeBaum>
                   Positioned.fill(
                     child: CustomPaint(
                       painter: _GrownPainter(
-                        look: _look,
                         layout: lay,
                         edges: edges,
                         shift: shift,
                         grow: _grow,
                         growing: growing,
-                        maxWeight: g.nodes[g.root]!.weight,
                         root: g.root,
                       ),
                     ),
@@ -477,33 +425,12 @@ class _SchmiedeBaumState extends ConsumerState<_SchmiedeBaum>
     );
   }
 
-  /// Fits the tree into [view]: whole when it fits at a readable size,
-  /// otherwise around the root (the branch look keeps its root low).
-  void _fit(Size view, Size content, Offset root) {
-    final whole = math.min(
-      view.width / content.width,
-      view.height / content.height,
-    );
-    final s = whole.clamp(.8, 1.0);
-    final fits =
-        content.width * s <= view.width + 1 &&
-        content.height * s <= view.height + 1;
-    final target = _look == _Look.branch
-        ? Offset(view.width / 2, view.height * .8)
-        : view.center(Offset.zero);
-    var t = fits
-        ? Offset(
-            (view.width - content.width * s) / 2,
-            (view.height - content.height * s) / 2,
-          )
-        : target - root * s;
-    if (!fits) {
-      // Keep the canvas covering the view where it can.
-      t = Offset(
-        t.dx.clamp(math.min(0, view.width - content.width * s), 0),
-        t.dy.clamp(math.min(0, view.height - content.height * s), 0),
-      );
-    }
+  /// Centres the root in [view], zoomed so the first ring and its labels
+  /// read well (a phone shows the root and its St.1 neighbours).
+  void _fit(Size view, Offset root) {
+    final half = math.min(view.width, view.height) / 2;
+    final s = (half / (_ringOf(1) + 48)).clamp(.72, 1.0);
+    final t = view.center(Offset.zero) - root * s;
     _view.value = Matrix4.diagonal3Values(s, s, 1)
       ..setTranslationRaw(t.dx, t.dy, 0);
   }
@@ -568,9 +495,9 @@ class _SchmiedeBaumState extends ConsumerState<_SchmiedeBaum>
           );
     final glow = n.ready ? _arcane.glow : _glowEmber;
     return Positioned(
-      left: p.dx - 50,
+      left: p.dx - 58,
       top: p.dy - size / 2,
-      width: 100,
+      width: 116,
       child: Opacity(
         opacity: fade,
         child: _node(n, art, glow, size, selected, label, sub, r),
@@ -640,18 +567,30 @@ class _SchmiedeBaumState extends ConsumerState<_SchmiedeBaum>
             ],
           ),
         ),
-        Text(
-          label,
-          key: n.lit ? Key('baum-lit-${n.id}') : null,
-          maxLines: 1,
-          style: TextStyle(
-            color: n.lit
-                ? ForgeColors.text
-                : ForgeColors.muted.withValues(alpha: n.single ? .6 : 1),
-            fontSize: 9.5,
-            height: 1.2,
-            fontWeight: FontWeight.w700,
-            shadows: const [Shadow(color: Colors.black, blurRadius: 3)],
+        // Owned seals read on a dark pill over the lines; ghosts stay
+        // small and quiet.
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+          decoration: n.lit
+              ? BoxDecoration(
+                  color: const Color(0xCC070A14),
+                  borderRadius: BorderRadius.circular(6),
+                )
+              : null,
+          child: Text(
+            label,
+            key: n.lit ? Key('baum-lit-${n.id}') : null,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: n.lit
+                  ? ForgeColors.text
+                  : ForgeColors.muted.withValues(alpha: n.single ? .55 : .9),
+              fontSize: n.lit ? 10.5 : 9,
+              height: 1.2,
+              fontWeight: n.lit ? FontWeight.w800 : FontWeight.w600,
+              shadows: const [Shadow(color: Colors.black, blurRadius: 3)],
+            ),
           ),
         ),
         if (sub != null)

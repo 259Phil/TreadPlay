@@ -1494,18 +1494,6 @@
       }
     }
   },
-  "baumLookStars": "Constellation",
-  "@baumLookStars": {
-    "description": "Forge tree look A: seals as a star map round the first seal."
-  },
-  "baumLookBranch": "Branches",
-  "@baumLookBranch": {
-    "description": "Forge tree look B: a tree growing upwards from the first seal."
-  },
-  "baumLookNet": "Ember net",
-  "@baumLookNet": {
-    "description": "Forge tree look C: a glowing path over hex cells."
-  },
   "baumLevels": "Levels {known} / {total}",
   "@baumLevels": {
     "description": "Recipe levels forged of all recipe levels in the forge tree.",

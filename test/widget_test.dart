@@ -1346,14 +1346,6 @@ void main() {
       expect(find.text('Single seal Fortune L4 · never owned'), findsOneWidget);
       await tapKey(tester, 'baum-single-stride-2');
       expect(find.text('Single seal Stride L2 · owned before'), findsOneWidget);
-      // Every look holds the same nodes; picking one keeps the selection.
-      for (final look in ['b', 'c', 'a']) {
-        await tapKey(tester, 'baum-look-$look');
-        expect(find.byKey(const Key('baum-single-fortune-5')), findsOneWidget);
-        expect(find.byKey(const Key('baum-wanderstern-5')), findsOneWidget);
-        expect(find.byKey(const Key('baum-lit-single-grit-3')), findsOneWidget);
-      }
-      expect(find.text('Single seal Stride L2 · owned before'), findsOneWidget);
     });
 
     testWidgets('a new game finds the forge closed until waymark 2', (

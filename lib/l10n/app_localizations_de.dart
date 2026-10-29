@@ -1852,15 +1852,6 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get baumLookStars => 'Sternbild';
-
-  @override
-  String get baumLookBranch => 'Astbaum';
-
-  @override
-  String get baumLookNet => 'Glutnetz';
-
-  @override
   String baumLevels(int known, int total) {
     return 'Stufen $known / $total';
   }

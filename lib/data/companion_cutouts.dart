@@ -123,7 +123,7 @@ const Map<String, ({Size size, Rect body})> companionCutouts = {
   'kraterix': (size: Size(900, 1200), body: Rect.fromLTWH(77, 72, 745, 1080)),
   'lakrillo-epic': (
     size: Size(900, 1200),
-    body: Rect.fromLTWH(63, 399, 774, 753),
+    body: Rect.fromLTWH(63, 401, 774, 751),
   ),
   'lakrillo-legendary': (
     size: Size(900, 1200),

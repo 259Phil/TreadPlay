@@ -2,6 +2,7 @@ import 'dart:math';
 
 import '../domain/album.dart';
 import '../domain/breath.dart';
+import '../domain/collector.dart';
 import '../domain/companion.dart';
 import '../domain/forge.dart';
 import '../domain/market.dart';
@@ -30,6 +31,7 @@ class GameData {
     this.messengers = const MessengerState(),
     this.salves = const SalveStock(),
     this.album = const AlbumState(),
+    this.shelfBought = 0,
   });
 
   factory GameData.initial(DateTime now) {
@@ -82,6 +84,9 @@ class GameData {
 
   /// Mutsalben in the Vorrat.
   final SalveStock salves;
+
+  /// Shelf slots bought for LP (see [ShelfSlots]).
+  final int shelfBought;
 
   /// Species ever owned (and as Schimmer), and the Schimmer pity count.
   /// [copyWith] notes new companions here.
@@ -176,8 +181,35 @@ class GameData {
     return game;
   }
 
-  /// Shelf size: [inventoryCap], plus 2 from waymark 17.
-  int get shelfSlots => unlocks.shelfSlots;
+  /// Shelf size: [inventoryCap], plus 2 from waymark 17, plus the slots
+  /// bought for LP; never more than [ShelfSlots.max].
+  int get shelfSlots => min(ShelfSlots.max, unlocks.shelfSlots + shelfBought);
+
+  /// LP for the next shelf slot, or null when no more can be bought.
+  int? get nextSlotPrice =>
+      shelfBought >= ShelfSlots.maxBought || shelfSlots >= ShelfSlots.max
+      ? null
+      : ShelfSlots.priceAfter(shelfBought);
+
+  /// Why no shelf slot can be bought right now, or null if one can.
+  SlotBlock? get slotBlock {
+    final price = nextSlotPrice;
+    if (price == null) return SlotBlock.max;
+    if (lp < price) return SlotBlock.notEnoughLp;
+    return null;
+  }
+
+  /// One more shelf slot for [nextSlotPrice] LP. Check [slotBlock] first.
+  GameData buyingSlot() {
+    if (slotBlock != null) return this;
+    return copyWith(lp: lp - nextSlotPrice!, shelfBought: shelfBought + 1);
+  }
+
+  /// Companions that count for the Sammlerbonus (see [Collector]).
+  int get collectorCount => Collector.countOf(companions);
+
+  /// Extra Breath tank from the Sammlerbonus (0 to 3).
+  int get collectorBonus => Collector.bonusFor(collectorCount);
 
   /// Worlds whose species the Market offers.
   Set<World> get marketWorlds => unlocks.marketWorlds;
@@ -185,8 +217,8 @@ class GameData {
   Companion get activeCompanion =>
       companions.firstWhere((c) => c.id == activeCompanionId);
 
-  /// Only the companion taken along sets the cap, never the collection size.
-  int get breathCap => activeCompanion.tankSize;
+  /// The companion taken along sets the cap; the Sammlerbonus adds up to 3.
+  int get breathCap => activeCompanion.tankSize + collectorBonus;
 
   RunSummary? get lastRun => runs.isEmpty ? null : runs.first;
 
@@ -485,7 +517,7 @@ class GameData {
     if (!run.valid || unlocks.pouchColors.isEmpty) return 0;
     final chance = Pouches.chance(
       breathUsed: run.breathUsed,
-      tankSize: run.tankSize ?? activeCompanion.tankSize,
+      tankSize: run.tankSize ?? breathCap,
       fortuneFactor: fortuneFactorFor(run),
     );
     if (chance > 0 && pouches.foundTotal == 0) return 1;
@@ -609,7 +641,7 @@ class GameData {
     if (messengers.todayOn(day) >= Messengers.dailyCap) return 0;
     final chance = Messengers.chance(
       breathUsed: run.breathUsed,
-      tankSize: run.tankSize ?? activeCompanion.tankSize,
+      tankSize: run.tankSize ?? breathCap,
       fortuneFactor: fortuneFactorFor(run),
     );
     if (chance <= 0) return 0;
@@ -970,6 +1002,7 @@ class GameData {
     MessengerState? messengers,
     SalveStock? salves,
     AlbumState? album,
+    int? shelfBought,
   }) => GameData(
     lp: lp ?? this.lp,
     companions: companions ?? this.companions,
@@ -985,6 +1018,7 @@ class GameData {
     messengers: messengers ?? this.messengers,
     salves: salves ?? this.salves,
     album: (album ?? this.album).noting(companions ?? this.companions),
+    shelfBought: shelfBought ?? this.shelfBought,
   );
 
   GameData replaceCompanion(Companion companion) => copyWith(
@@ -1009,6 +1043,7 @@ class GameData {
     'messengers': messengers.toJson(),
     if (!salves.isEmpty) 'salves': salves.toJson(),
     'album': album.toJson(),
+    if (shelfBought > 0) 'shelfBought': shelfBought,
   };
 
   /// [now] dates the waymarks a save from before the trail is granted.
@@ -1093,6 +1128,11 @@ class GameData {
         final Map<String, Object?> a => AlbumState.fromJson(a),
         _ => AlbumState(lastShimmerAtM: totals.distanceM),
       }.noting(owned),
+      // Saves from before bought slots: none bought.
+      shelfBought: ((json['shelfBought'] as num?)?.toInt() ?? 0).clamp(
+        0,
+        ShelfSlots.maxBought,
+      ),
     );
   }
 
@@ -1237,4 +1277,11 @@ class AppSettings {
         MovementAccess.unasked,
     lastExportAt: DateTime.tryParse(json['lastExportAt'] as String? ?? ''),
   );
+}
+
+/// Why a shelf slot can't be bought.
+enum SlotBlock {
+  /// [ShelfSlots.max] reached.
+  max,
+  notEnoughLp,
 }

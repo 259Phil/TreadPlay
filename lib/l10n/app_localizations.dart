@@ -155,7 +155,7 @@ abstract class AppLocalizations {
   /// No description provided for @breathRegenHint.
   ///
   /// In en, this message translates to:
-  /// **'One shared bar for all companions, +1 every 90 min. Taking a companion along only sets the max.'**
+  /// **'One shared bar for all companions, +1 every 90 min. The companion taken along sets the max, the collector bonus adds up to 3.'**
   String get breathRegenHint;
 
   /// No description provided for @breathMax.
@@ -3187,6 +3187,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{name} L{level}: {effect}'**
   String recipeEffectLine(String name, int level, String effect);
+
+  /// No description provided for @collectorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Collector bonus'**
+  String get collectorTitle;
+
+  /// No description provided for @collectorBonus.
+  ///
+  /// In en, this message translates to:
+  /// **'+{bonus} Breath tank'**
+  String collectorBonus(int bonus);
+
+  /// No description provided for @collectorNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No bonus yet'**
+  String get collectorNone;
+
+  /// No description provided for @collectorCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} companions with at least 50 % spirit'**
+  String collectorCount(int count);
+
+  /// No description provided for @collectorNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next step: from {at} companions +{bonus} Breath tank ({need} to go)'**
+  String collectorNext(int at, int bonus, int need);
+
+  /// No description provided for @collectorMaxed.
+  ///
+  /// In en, this message translates to:
+  /// **'Top step reached: +3 Breath tank.'**
+  String get collectorMaxed;
+
+  /// No description provided for @collectorExplain.
+  ///
+  /// In en, this message translates to:
+  /// **'From 5, 10 and 20 companions with at least 50 % spirit, the shared Breath tank grows by 1 each (max +3). A companion below 50 % spirit counts again once its spirit is back.'**
+  String get collectorExplain;
+
+  /// No description provided for @breathMaxBonus.
+  ///
+  /// In en, this message translates to:
+  /// **'Breath max {max} (incl. +{bonus} collector bonus)'**
+  String breathMaxBonus(int max, int bonus);
+
+  /// No description provided for @shelfSlotsLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Den {count}/{cap} spots'**
+  String shelfSlotsLine(int count, int cap);
+
+  /// No description provided for @shelfBuySlot.
+  ///
+  /// In en, this message translates to:
+  /// **'+1 spot · {price} LP'**
+  String shelfBuySlot(int price);
+
+  /// No description provided for @shelfBuyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy a den spot?'**
+  String get shelfBuyTitle;
+
+  /// No description provided for @shelfBuyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock spot {slot} for {price} LP? Every further spot costs 30 LP more, 30 spots at most.'**
+  String shelfBuyBody(int slot, int price);
+
+  /// No description provided for @shelfBuyConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy'**
+  String get shelfBuyConfirm;
+
+  /// No description provided for @shelfBuyDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Your den has {cap} spots now.'**
+  String shelfBuyDone(int cap);
+
+  /// No description provided for @shelfSlotsMax.
+  ///
+  /// In en, this message translates to:
+  /// **'30 spots is the most a den can have.'**
+  String get shelfSlotsMax;
+
+  /// No description provided for @shelfSlotNoLp.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough LP for spot {slot} ({price} LP).'**
+  String shelfSlotNoLp(int slot, int price);
+
+  /// No description provided for @collectorMore.
+  ///
+  /// In en, this message translates to:
+  /// **'How does it work?'**
+  String get collectorMore;
 }
 
 class _AppLocalizationsDelegate

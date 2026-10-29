@@ -44,10 +44,7 @@ class HomeScreen extends ConsumerWidget {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 14, 20, 10),
-            child: _BreathRow(
-              breath: game.breath.points,
-              tank: companion.tankSize,
-            ),
+            child: _BreathRow(breath: game.breath.points, tank: game.breathCap),
           ),
           Expanded(
             child: Stack(

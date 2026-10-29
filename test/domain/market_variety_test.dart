@@ -189,7 +189,7 @@ void main() {
       final now = t0.add(const Duration(hours: 1));
       final m = game.withMarket(now, Random(5)).market!;
       expect(species(m).length, greaterThanOrEqualTo(3));
-      expect(jsonDecode(utf8.decode(SaveGame.encode(game, t0)))['version'], 12);
+      expect(jsonDecode(utf8.decode(SaveGame.encode(game, t0)))['version'], 13);
     });
   });
 

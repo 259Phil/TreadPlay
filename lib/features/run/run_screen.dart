@@ -160,7 +160,7 @@ class _RunScreenState extends ConsumerState<RunScreen>
                     ),
                   ),
                   const SizedBox(height: 24),
-                  BreathBar(breath: e.breathLeft, tank: e.companion.tankSize),
+                  BreathBar(breath: e.breathLeft, tank: e.tankSize),
                   const SizedBox(height: 24),
                   SweetSpotGauge(
                     type: e.companion.type,

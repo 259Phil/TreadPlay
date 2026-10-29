@@ -93,6 +93,13 @@ class GameNotifier extends Notifier<GameData> {
 
   bool get _running => ref.read(runControllerProvider) != null;
 
+  /// Buys one more shelf slot for LP. Not possible during a run.
+  bool buySlot() {
+    if (_running || state.slotBlock != null) return false;
+    _set(state.buyingSlot());
+    return true;
+  }
+
   /// Levels [companionId] up for LP once it has walked the XP. Not
   /// possible during a run.
   bool levelUp(String companionId) {
@@ -318,6 +325,7 @@ class RunController extends Notifier<RunView?> {
     final game = ref.read(gameProvider);
     final engine = RunEngine(
       companion: game.activeCompanion,
+      tankSize: game.breathCap,
       breathAtStart: game.breath.points,
       startedAt: ref.read(clockProvider)(),
       earnsLp: allowed,

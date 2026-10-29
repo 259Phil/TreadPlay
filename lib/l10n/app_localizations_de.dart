@@ -43,7 +43,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get breathRegenHint =>
-      'Ein gemeinsamer Balken für alle Gefährten, +1 alle 90 min. Der mitgenommene Gefährte legt nur das Maximum fest.';
+      'Ein gemeinsamer Balken für alle Gefährten, +1 alle 90 min. Der mitgenommene Gefährte legt das Maximum fest, der Sammlerbonus legt bis zu 3 drauf.';
 
   @override
   String breathMax(int max) {
@@ -2056,4 +2056,74 @@ class AppLocalizationsDe extends AppLocalizations {
   String recipeEffectLine(String name, int level, String effect) {
     return '$name St.$level: $effect';
   }
+
+  @override
+  String get collectorTitle => 'Sammlerbonus';
+
+  @override
+  String collectorBonus(int bonus) {
+    return '+$bonus Puste-Tank';
+  }
+
+  @override
+  String get collectorNone => 'Noch kein Bonus';
+
+  @override
+  String collectorCount(int count) {
+    return '$count Gefährten mit mindestens 50 % Mut';
+  }
+
+  @override
+  String collectorNext(int at, int bonus, int need) {
+    return 'Nächste Stufe: ab $at Gefährten +$bonus Puste-Tank (noch $need)';
+  }
+
+  @override
+  String get collectorMaxed => 'Höchste Stufe erreicht: +3 Puste-Tank.';
+
+  @override
+  String get collectorExplain =>
+      'Ab 5, 10 und 20 Gefährten mit mindestens 50 % Mut wird der gemeinsame Puste-Tank um je 1 größer (max. +3). Wer unter 50 % Mut fällt, zählt erst wieder mit, wenn er Mut gefasst hat.';
+
+  @override
+  String breathMaxBonus(int max, int bonus) {
+    return 'Puste max. $max (inkl. +$bonus Sammlerbonus)';
+  }
+
+  @override
+  String shelfSlotsLine(int count, int cap) {
+    return 'Gehege $count/$cap Plätze';
+  }
+
+  @override
+  String shelfBuySlot(int price) {
+    return '+1 Platz · $price LP';
+  }
+
+  @override
+  String get shelfBuyTitle => 'Gehegeplatz kaufen?';
+
+  @override
+  String shelfBuyBody(int slot, int price) {
+    return 'Platz $slot für $price LP freischalten? Jeder weitere Platz kostet 30 LP mehr, höchstens 30 Plätze.';
+  }
+
+  @override
+  String get shelfBuyConfirm => 'Kaufen';
+
+  @override
+  String shelfBuyDone(int cap) {
+    return 'Dein Gehege hat jetzt $cap Plätze.';
+  }
+
+  @override
+  String get shelfSlotsMax => 'Mehr als 30 Plätze gibt es nicht.';
+
+  @override
+  String shelfSlotNoLp(int slot, int price) {
+    return 'Zu wenig LP für Platz $slot ($price LP).';
+  }
+
+  @override
+  String get collectorMore => 'Wie funktioniert das?';
 }

@@ -84,10 +84,11 @@ class SaveGame {
   /// 12: the Album ('album': species ever owned, ever owned as Schimmer,
   /// where the last Schimmer was on offer) and Schimmer companions
   /// ('shimmer').
+  /// Version 13 adds shelf slots bought for LP ('shelfBought').
   /// Older files still import: every seal in the case or a socket and every
   /// discovered recipe at its best level counts as owned; every companion
   /// owned counts for the Album.
-  static const int version = 12;
+  static const int version = 13;
 
   static String fileName(DateTime now) {
     final stamp = now.toIso8601String().replaceAll(':', '-').split('.').first;
@@ -123,11 +124,14 @@ class SaveGame {
     if (v > version) {
       throw const SaveGameException(SaveGameError.newerVersion);
     }
-    final json = _withoutAlbum(
-      _withoutLinks(
-        _withoutSeen(
-          _withoutRecipes(
-            _withoutLevelling(_withHomeTempo(_migrate(raw['game'], v), v), v),
+    final json = _withoutBoughtSlots(
+      _withoutAlbum(
+        _withoutLinks(
+          _withoutSeen(
+            _withoutRecipes(
+              _withoutLevelling(_withHomeTempo(_migrate(raw['game'], v), v), v),
+              v,
+            ),
             v,
           ),
           v,
@@ -292,6 +296,13 @@ class SaveGame {
       }
     }
     return next;
+  }
+
+  /// Before version 13 no shelf slot could be bought: a stray
+  /// 'shelfBought' is dropped.
+  static Object? _withoutBoughtSlots(Object? game, int fromVersion) {
+    if (fromVersion >= 13 || game is! Map<String, Object?>) return game;
+    return {...game}..remove('shelfBought');
   }
 
   /// Only species and seals this app version knows.

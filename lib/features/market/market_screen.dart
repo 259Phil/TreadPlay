@@ -322,7 +322,12 @@ class _TradeSheet extends ConsumerWidget {
                         ),
                       ),
                       Text(
-                        l.breathMax(c.tankSize),
+                        game.collectorBonus > 0
+                            ? l.breathMaxBonus(
+                                c.tankSize + game.collectorBonus,
+                                game.collectorBonus,
+                              )
+                            : l.breathMax(c.tankSize),
                         style: const TextStyle(color: TreadColors.breath),
                       ),
                     ],

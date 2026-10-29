@@ -120,7 +120,8 @@ class LevelPanel extends ConsumerWidget {
                                 ? l.levelUpDoneTank(
                                     c.name,
                                     up.level,
-                                    up.tankSize,
+                                    up.tankSize +
+                                        ref.read(gameProvider).collectorBonus,
                                   )
                                 : l.levelUpDone(c.name, up.level);
                             ScaffoldMessenger.maybeOf(

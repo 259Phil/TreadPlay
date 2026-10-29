@@ -79,7 +79,7 @@ void main() {
     expect(pebble.takingAlong('gilt-1', t0).breath.points, 6);
   });
 
-  test('owning more companions adds no Breath', () {
+  test('owning more companions adds only the Sammlerbonus', () {
     final start = GameData.initial(t0);
     final many = start.copyWith(
       companions: [
@@ -92,8 +92,9 @@ void main() {
           ),
       ],
     );
-    expect(many.breathCap, 6);
-    expect(many.regenerated(t0.add(const Duration(days: 1))).breath.points, 6);
+    // Ten companions with full Mut: +2 on the starter's tank, nothing else.
+    expect(many.breathCap, 6 + 2);
+    expect(many.regenerated(t0.add(const Duration(days: 1))).breath.points, 8);
   });
 
   test('old saves with a tank per companion keep only the one taken along', () {

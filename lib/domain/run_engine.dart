@@ -15,10 +15,11 @@ import 'sweet_spot.dart';
 class RunEngine {
   RunEngine({
     required this.companion,
+    int? tankSize,
     required this.breathAtStart,
     required this.startedAt,
     this.earnsLp = true,
-  });
+  }) : tankSize = tankSize ?? companion.tankSize;
 
   static const double metersPerBreath = 250;
   static const int piecesPerBreath = 5;
@@ -33,6 +34,11 @@ class RunEngine {
   static const double minDistanceForStepCheckM = 200;
 
   final Companion companion;
+
+  /// Cap of the shared Breath bar for this run: the companion's tank plus
+  /// the Sammlerbonus (`GameData.breathCap`); the companion's own tank
+  /// when not given.
+  final int tankSize;
 
   /// Points on the shared Breath bar when the run started.
   final double breathAtStart;
@@ -152,7 +158,7 @@ class RunEngine {
       lp: valid ? lp : 0,
       breathUsed: valid ? breathUsed : 0,
       breathLeft: valid ? breathLeft : breathAtStart,
-      tankSize: companion.tankSize,
+      tankSize: tankSize,
       earnsLp: earnsLp,
       valid: valid,
       sweetSpotShare: sweetSpotShare,

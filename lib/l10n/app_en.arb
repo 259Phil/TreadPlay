@@ -33,7 +33,7 @@
       }
     }
   },
-  "breathRegenHint": "One shared bar for all companions, +1 every 90 min. Taking a companion along only sets the max.",
+  "breathRegenHint": "One shared bar for all companions, +1 every 90 min. The companion taken along sets the max, the collector bonus adds up to 3.",
   "breathMax": "Breath max {max}",
   "@breathMax": {
     "placeholders": {
@@ -1785,5 +1785,103 @@
         "type": "String"
       }
     }
-  }
+  },
+  "collectorTitle": "Collector bonus",
+  "collectorBonus": "+{bonus} Breath tank",
+  "@collectorBonus": {
+    "placeholders": {
+      "bonus": {
+        "type": "int"
+      }
+    }
+  },
+  "collectorNone": "No bonus yet",
+  "collectorCount": "{count} companions with at least 50 % spirit",
+  "@collectorCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "collectorNext": "Next step: from {at} companions +{bonus} Breath tank ({need} to go)",
+  "@collectorNext": {
+    "placeholders": {
+      "at": {
+        "type": "int"
+      },
+      "bonus": {
+        "type": "int"
+      },
+      "need": {
+        "type": "int"
+      }
+    }
+  },
+  "collectorMaxed": "Top step reached: +3 Breath tank.",
+  "collectorExplain": "From 5, 10 and 20 companions with at least 50 % spirit, the shared Breath tank grows by 1 each (max +3). A companion below 50 % spirit counts again once its spirit is back.",
+  "breathMaxBonus": "Breath max {max} (incl. +{bonus} collector bonus)",
+  "@breathMaxBonus": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      },
+      "bonus": {
+        "type": "int"
+      }
+    }
+  },
+  "shelfSlotsLine": "Den {count}/{cap} spots",
+  "@shelfSlotsLine": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "cap": {
+        "type": "int"
+      }
+    }
+  },
+  "shelfBuySlot": "+1 spot · {price} LP",
+  "@shelfBuySlot": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "shelfBuyTitle": "Buy a den spot?",
+  "shelfBuyBody": "Unlock spot {slot} for {price} LP? Every further spot costs 30 LP more, 30 spots at most.",
+  "@shelfBuyBody": {
+    "placeholders": {
+      "slot": {
+        "type": "int"
+      },
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "shelfBuyConfirm": "Buy",
+  "shelfBuyDone": "Your den has {cap} spots now.",
+  "@shelfBuyDone": {
+    "placeholders": {
+      "cap": {
+        "type": "int"
+      }
+    }
+  },
+  "shelfSlotsMax": "30 spots is the most a den can have.",
+  "shelfSlotNoLp": "Not enough LP for spot {slot} ({price} LP).",
+  "@shelfSlotNoLp": {
+    "placeholders": {
+      "slot": {
+        "type": "int"
+      },
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "collectorMore": "How does it work?"
 }

@@ -3,7 +3,7 @@ import 'dart:math';
 const Duration breathRegenInterval = Duration(minutes: 90);
 
 /// The player's one Breath bar, shared by all companions. Its cap is the tank
-/// size of the companion taken along; owning more companions adds nothing.
+/// size of the companion taken along plus the Sammlerbonus (`Collector`).
 class Breath {
   const Breath({required this.points, required this.updatedAt});
 

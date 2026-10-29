@@ -17,6 +17,7 @@ import '../../widgets/companion_stats.dart';
 import '../../widgets/format.dart';
 import '../../widgets/recipe_text.dart';
 import '../../widgets/lp_pill.dart';
+import 'collector_panel.dart';
 import 'level_panel.dart';
 
 /// Card grid of owned companions.
@@ -62,6 +63,7 @@ class _ShelfScreenState extends ConsumerState<ShelfScreen> {
       ),
       body: CustomScrollView(
         slivers: [
+          const SliverToBoxAdapter(child: CollectorPanel()),
           SliverToBoxAdapter(
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -288,7 +290,12 @@ class _Detail extends ConsumerWidget {
                       ),
                       Text(
                         along
-                            ? '${l.breath} ${l.breathValue(formatNumber(context, game.breath.points.floorToDouble()), c.tankSize)}'
+                            ? '${l.breath} ${l.breathValue(formatNumber(context, game.breath.points.floorToDouble()), game.breathCap)}'
+                            : game.collectorBonus > 0
+                            ? l.breathMaxBonus(
+                                c.tankSize + game.collectorBonus,
+                                game.collectorBonus,
+                              )
                             : l.breathMax(c.tankSize),
                         style: const TextStyle(color: TreadColors.breath),
                       ),

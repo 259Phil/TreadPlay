@@ -43,7 +43,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get breathRegenHint =>
-      'One shared bar for all companions, +1 every 90 min. Taking a companion along only sets the max.';
+      'One shared bar for all companions, +1 every 90 min. The companion taken along sets the max, the collector bonus adds up to 3.';
 
   @override
   String breathMax(int max) {
@@ -2046,4 +2046,74 @@ class AppLocalizationsEn extends AppLocalizations {
   String recipeEffectLine(String name, int level, String effect) {
     return '$name L$level: $effect';
   }
+
+  @override
+  String get collectorTitle => 'Collector bonus';
+
+  @override
+  String collectorBonus(int bonus) {
+    return '+$bonus Breath tank';
+  }
+
+  @override
+  String get collectorNone => 'No bonus yet';
+
+  @override
+  String collectorCount(int count) {
+    return '$count companions with at least 50 % spirit';
+  }
+
+  @override
+  String collectorNext(int at, int bonus, int need) {
+    return 'Next step: from $at companions +$bonus Breath tank ($need to go)';
+  }
+
+  @override
+  String get collectorMaxed => 'Top step reached: +3 Breath tank.';
+
+  @override
+  String get collectorExplain =>
+      'From 5, 10 and 20 companions with at least 50 % spirit, the shared Breath tank grows by 1 each (max +3). A companion below 50 % spirit counts again once its spirit is back.';
+
+  @override
+  String breathMaxBonus(int max, int bonus) {
+    return 'Breath max $max (incl. +$bonus collector bonus)';
+  }
+
+  @override
+  String shelfSlotsLine(int count, int cap) {
+    return 'Den $count/$cap spots';
+  }
+
+  @override
+  String shelfBuySlot(int price) {
+    return '+1 spot · $price LP';
+  }
+
+  @override
+  String get shelfBuyTitle => 'Buy a den spot?';
+
+  @override
+  String shelfBuyBody(int slot, int price) {
+    return 'Unlock spot $slot for $price LP? Every further spot costs 30 LP more, 30 spots at most.';
+  }
+
+  @override
+  String get shelfBuyConfirm => 'Buy';
+
+  @override
+  String shelfBuyDone(int cap) {
+    return 'Your den has $cap spots now.';
+  }
+
+  @override
+  String get shelfSlotsMax => '30 spots is the most a den can have.';
+
+  @override
+  String shelfSlotNoLp(int slot, int price) {
+    return 'Not enough LP for spot $slot ($price LP).';
+  }
+
+  @override
+  String get collectorMore => 'How does it work?';
 }

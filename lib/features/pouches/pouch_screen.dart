@@ -219,8 +219,8 @@ class _PouchScreenState extends ConsumerState<PouchScreen> {
     final c = game.activeCompanion;
     final f = c.fortuneFactor;
     final chance = Pouches.chance(
-      breathUsed: c.tankSize.toDouble(),
-      tankSize: c.tankSize,
+      breathUsed: game.breathCap.toDouble(),
+      tankSize: game.breathCap,
       fortuneFactor: f,
     );
     final pct = '${formatNumber(context, chance * 100, pattern: '0')} %';

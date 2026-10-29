@@ -1288,6 +1288,115 @@ class AppLocalizationsDe extends AppLocalizations {
   String get flavourGlaze => 'Süß, aber mit Kristallkanten.';
 
   @override
+  String get flavourZinnbuck => 'Alt wie die Burgmauer, und genauso geduldig.';
+
+  @override
+  String get flavourRingelpanz =>
+      'Klirrt bei jedem Schritt ein bisschen stolz.';
+
+  @override
+  String get flavourNebulo => 'Trägt einen ganzen Sternenhimmel spazieren.';
+
+  @override
+  String get flavourKraterix =>
+      'Jeder Krater ein Abenteuer, jeder Schritt ein Sprung.';
+
+  @override
+  String get flavourDrahtel => 'Steht unter Spannung – im besten Sinn.';
+
+  @override
+  String get flavourMuttrix => 'Fest verschraubt mit dir und dem Weg.';
+
+  @override
+  String get flavourPorzella => 'Zerbrechlich? Nur auf den ersten Blick.';
+
+  @override
+  String get flavourPuderling => 'Eine Wolke aus Locken mit Füßen dran.';
+
+  @override
+  String get flavourTeerbock => 'Riecht nach Hafen und nach weiter Fahrt.';
+
+  @override
+  String get flavourSegelkamm => 'Hat immer Rückenwind, auch an Land.';
+
+  @override
+  String get flavourMessingor => 'Poliert vom Wind vieler Kilometer.';
+
+  @override
+  String get flavourEmaillo => 'Glänzt in allen Farben einer Werkstatt.';
+
+  @override
+  String get flavourPapyrix => 'Schreibt jeden Weg in seine Fasern.';
+
+  @override
+  String get flavourLapisor => 'Ein Stück Nachthimmel aus dem Tempel.';
+
+  @override
+  String get flavourMuschlo => 'Hört in jeder Muschel das Meer rufen.';
+
+  @override
+  String get flavourTangwell =>
+      'Wogt dahin, als wäre die Straße eine Strömung.';
+
+  @override
+  String get flavourFarnix => 'Rollt sich nur auf, wenn es losgeht.';
+
+  @override
+  String get flavourSchwammo => 'Saugt jeden Regenschauer auf und strahlt.';
+
+  @override
+  String get flavourKaramello => 'Klebt dir an den Fersen – im guten Sinn.';
+
+  @override
+  String get flavourLakrillo => 'Schwarz, gedreht und blitzschnell.';
+
+  @override
+  String get albumTitle => 'Album';
+
+  @override
+  String get albumOpen => 'Album';
+
+  @override
+  String albumProgress(int owned, int total, int shimmer) {
+    return '$owned/$total entdeckt · ✦ $shimmer';
+  }
+
+  @override
+  String get albumShimmerHint =>
+      '✦ Schimmer: 0,1 % pro Angebot, spätestens nach 300 km ohne einen kommt einer in den Markt. Wert ×1,5.';
+
+  @override
+  String albumFromKm(String km) {
+    return 'ab $km km';
+  }
+
+  @override
+  String get albumInMarket => 'im Markt';
+
+  @override
+  String albumFind(String rate) {
+    return 'Fund: $rate';
+  }
+
+  @override
+  String get findRateFrequent => 'häufig';
+
+  @override
+  String get findRateScarce => 'selten';
+
+  @override
+  String get findRateElusive => 'rar';
+
+  @override
+  String get findRateMythic => 'sagenhaft';
+
+  @override
+  String get shimmerTag => '✦ SCHIMMER';
+
+  @override
+  String get shimmerNote => '✦ Schimmer · Wert ×1,5';
+
+  @override
   String msgGreetRuhu(String n) {
     String _temp0 = intl.Intl.selectLogic(n, {
       '0': 'Huhu! Da bist du ja.',

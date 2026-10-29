@@ -2,15 +2,32 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:treadplay/data/companion_art.dart';
+import 'package:treadplay/data/companion_cutouts.dart';
 import 'package:treadplay/data/species.dart';
 import 'package:treadplay/domain/world.dart';
 
 void main() {
-  test('ten species, one per world, each with common art', () {
-    expect(speciesCatalog, hasLength(10));
-    expect(speciesCatalog.map((s) => s.world).toSet(), World.values.toSet());
+  test('thirty species, three per world, each with common art', () {
+    expect(speciesCatalog, hasLength(30));
+    for (final w in World.values) {
+      expect(
+        speciesCatalog.where((s) => s.world == w),
+        hasLength(3),
+        reason: w.name,
+      );
+    }
     for (final s in speciesCatalog) {
       expect(companionArt.containsKey('${s.id}_c'), isTrue, reason: s.id);
+    }
+  });
+
+  test('every species has a cutout in all four rarities', () {
+    for (final s in speciesCatalog) {
+      for (final suffix in ['', '-rare', '-epic', '-legendary']) {
+        final key = '${s.id}$suffix';
+        expect(companionCutouts.containsKey(key), isTrue, reason: key);
+        expect(File('assets/companions/$key.png').existsSync(), isTrue);
+      }
     }
   });
 

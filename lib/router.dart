@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'features/album/album_screen.dart';
 import 'features/forge/forge_screen.dart';
 import 'features/history/history_screen.dart';
 import 'features/home/home_screen.dart';
@@ -31,6 +32,7 @@ class AppRoutes {
   static const history = '/history';
   static const wanderweg = '/wanderweg';
   static const pouches = '/pouches';
+  static const album = '/album';
   static String historyDetail(int index) => '$history/$index';
 }
 
@@ -75,6 +77,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, _) => const WanderwegScreen(),
       ),
       GoRoute(path: AppRoutes.pouches, builder: (_, _) => const PouchScreen()),
+      GoRoute(
+        path: AppRoutes.album,
+        builder: (_, _) => const SkinRoute(child: AlbumScreen()),
+      ),
       GoRoute(
         path: AppRoutes.privacy,
         builder: (_, _) =>

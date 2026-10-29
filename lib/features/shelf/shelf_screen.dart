@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../ui/skin.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../router.dart';
 
 import '../../domain/companion.dart';
 import '../../domain/world.dart';
@@ -45,7 +48,18 @@ class _ShelfScreenState extends ConsumerState<ShelfScreen> {
 
     return Scaffold(
       backgroundColor: TreadSkin.of(context).canvas,
-      appBar: AppBar(title: Text(l.tabShelf), actions: lpActions(game.lp)),
+      appBar: AppBar(
+        title: Text(l.tabShelf),
+        actions: [
+          IconButton(
+            key: const Key('shelf-album'),
+            tooltip: l.albumOpen,
+            icon: const Icon(Icons.auto_stories),
+            onPressed: () => context.push(AppRoutes.album),
+          ),
+          ...lpActions(game.lp),
+        ],
+      ),
       body: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
@@ -102,6 +116,7 @@ class _ShelfScreenState extends ConsumerState<ShelfScreen> {
                     rarity: c.rarity,
                     type: c.type,
                     classType: c.species.type,
+                    shimmer: c.shimmer,
                     name: c.name,
                     // The gait is on the tag next to the class coin.
                     subtitle: l.levelShort(c.level),
@@ -225,6 +240,7 @@ class _Detail extends ConsumerWidget {
                       rarity: c.rarity,
                       type: c.type,
                       classType: c.species.type,
+                      shimmer: c.shimmer,
                       name: c.name,
                       subtitle: l.levelShort(c.level),
                     ),
@@ -244,6 +260,14 @@ class _Detail extends ConsumerWidget {
                         worldLabel(l, c.world),
                         style: const TextStyle(color: TreadColors.muted),
                       ),
+                      if (c.shimmer)
+                        Text(
+                          l.shimmerNote,
+                          style: const TextStyle(
+                            color: Color(0xFFF2C45A),
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       if (speciesFlavour(l, c.speciesId) case final f?)
                         Padding(
                           padding: const EdgeInsets.only(top: 4),

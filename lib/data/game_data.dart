@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import '../domain/album.dart';
 import '../domain/breath.dart';
 import '../domain/companion.dart';
 import '../domain/forge.dart';
@@ -28,6 +29,7 @@ class GameData {
     this.pouches = const PouchState(),
     this.messengers = const MessengerState(),
     this.salves = const SalveStock(),
+    this.album = const AlbumState(),
   });
 
   factory GameData.initial(DateTime now) {
@@ -38,6 +40,7 @@ class GameData {
       activeCompanionId: pebble.id,
       breath: Breath.full(pebble.tankSize, now),
       runs: const [],
+      album: AlbumState.fromCompanions([pebble]),
     );
   }
 
@@ -79,6 +82,16 @@ class GameData {
 
   /// Mutsalben in the Vorrat.
   final SalveStock salves;
+
+  /// Species ever owned (and as Schimmer), and the Schimmer pity count.
+  /// [copyWith] notes new companions here.
+  final AlbumState album;
+
+  /// True when [Market.shimmerPityM] lifetime metres passed without a
+  /// Schimmer in the Market: the next roll has one.
+  bool get shimmerDue =>
+      totals.distanceM - (album.lastShimmerAtM ?? 0) >=
+      Market.shimmerPityM - 1e-6;
 
   /// Seals set into companions, all of them.
   Iterable<Seal> get setSeals => companions.expand((c) => c.seals);
@@ -865,17 +878,36 @@ class GameData {
   }
 
   /// Keeps the current market until its drift is due, then rolls a new one.
-  /// Offers only come from [marketWorlds] (topped up to three species);
-  /// at least three share the gait of the companion taken along. A market
-  /// saved under older rolling rules is rolled anew once.
+  /// Offers only come from [marketWorlds] and species open at the lifetime
+  /// distance (topped up to [Market.minSpecies] species); at least three
+  /// share the gait of the companion taken along. A market saved under
+  /// older rolling rules is rolled anew once. A new market with a Schimmer
+  /// restarts the Schimmer count ([shimmerDue]).
   GameData withMarket(DateTime now, Random random) {
     final pool = marketWorlds;
     final along = activeCompanion.tempo;
+    final km = totals.distanceM;
     final m = market;
+    final next = m == null || m.outdated
+        ? Market.rolled(
+            now,
+            random,
+            worlds: pool,
+            along: along,
+            distanceM: km,
+            shimmerDue: shimmerDue,
+          )
+        : m.drifted(
+            now,
+            random,
+            worlds: pool,
+            along: along,
+            distanceM: km,
+            shimmerDue: shimmerDue,
+          );
     return copyWith(
-      market: m == null || m.outdated
-          ? Market.rolled(now, random, worlds: pool, along: along)
-          : m.drifted(now, random, worlds: pool, along: along),
+      market: next,
+      album: !identical(next, m) && next.hasShimmer ? album.withMark(km) : null,
     );
   }
 
@@ -937,6 +969,7 @@ class GameData {
     PouchState? pouches,
     MessengerState? messengers,
     SalveStock? salves,
+    AlbumState? album,
   }) => GameData(
     lp: lp ?? this.lp,
     companions: companions ?? this.companions,
@@ -951,6 +984,7 @@ class GameData {
     pouches: pouches ?? this.pouches,
     messengers: messengers ?? this.messengers,
     salves: salves ?? this.salves,
+    album: (album ?? this.album).noting(companions ?? this.companions),
   );
 
   GameData replaceCompanion(Companion companion) => copyWith(
@@ -974,6 +1008,7 @@ class GameData {
     'pouches': pouches.toJson(),
     'messengers': messengers.toJson(),
     if (!salves.isEmpty) 'salves': salves.toJson(),
+    'album': album.toJson(),
   };
 
   /// [now] dates the waymarks a save from before the trail is granted.
@@ -1052,6 +1087,12 @@ class GameData {
       },
       // Saves from before salves: an empty Vorrat.
       salves: SalveStock.fromJson(json['salves']),
+      // Saves from before the Album: what is owned now counts, and the
+      // Schimmer count starts at the current distance.
+      album: switch (json['album']) {
+        final Map<String, Object?> a => AlbumState.fromJson(a),
+        _ => AlbumState(lastShimmerAtM: totals.distanceM),
+      }.noting(owned),
     );
   }
 

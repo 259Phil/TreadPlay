@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Regenerates lib/data/companion_cutouts.dart from the companion cutouts in
 # assets/companions/ ({id}.png = Common, {id}-rare.png, {id}-epic.png,
-# {id}-legendary.png). Requires ImageMagick. Run after adding or editing art.
+# {id}-legendary.png). Requires ImageMagick (without it: gen_companion_art.py,
+# which also lists the _c card images). Run after adding or editing art.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 out=lib/data/companion_cutouts.dart

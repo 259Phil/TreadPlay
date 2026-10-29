@@ -81,9 +81,13 @@ class SaveGame {
   /// 10: seals ever owned ('seen' in 'forge', for the Schmiede-Baum).
   /// 11: what each recipe level was forged from ('forged' and 'grown' in
   /// 'forge', the tree's links).
+  /// 12: the Album ('album': species ever owned, ever owned as Schimmer,
+  /// where the last Schimmer was on offer) and Schimmer companions
+  /// ('shimmer').
   /// Older files still import: every seal in the case or a socket and every
-  /// discovered recipe at its best level counts as owned.
-  static const int version = 11;
+  /// discovered recipe at its best level counts as owned; every companion
+  /// owned counts for the Album.
+  static const int version = 12;
 
   static String fileName(DateTime now) {
     final stamp = now.toIso8601String().replaceAll(':', '-').split('.').first;
@@ -119,10 +123,13 @@ class SaveGame {
     if (v > version) {
       throw const SaveGameException(SaveGameError.newerVersion);
     }
-    final json = _withoutLinks(
-      _withoutSeen(
-        _withoutRecipes(
-          _withoutLevelling(_withHomeTempo(_migrate(raw['game'], v), v), v),
+    final json = _withoutAlbum(
+      _withoutLinks(
+        _withoutSeen(
+          _withoutRecipes(
+            _withoutLevelling(_withHomeTempo(_migrate(raw['game'], v), v), v),
+            v,
+          ),
           v,
         ),
         v,
@@ -263,6 +270,28 @@ class SaveGame {
       };
     }
     return game;
+  }
+
+  /// Before version 12 there was no Album and no Schimmer: a stray 'album'
+  /// and stray 'shimmer' marks are dropped, so the Album comes from the
+  /// shelf and the Schimmer count starts at the save's distance.
+  static Object? _withoutAlbum(Object? game, int fromVersion) {
+    if (fromVersion >= 12 || game is! Map<String, Object?>) return game;
+    Object? plain(Object? c) =>
+        c is Map<String, Object?> ? ({...c}..remove('shimmer')) : c;
+    final next = {...game}..remove('album');
+    if (game['companions'] case final List<Object?> owned) {
+      next['companions'] = [for (final c in owned) plain(c)];
+    }
+    if (game['market'] case final Map<String, Object?> m) {
+      if (m['offers'] case final List<Object?> offers) {
+        next['market'] = {
+          ...m,
+          'offers': [for (final c in offers) plain(c)],
+        };
+      }
+    }
+    return next;
   }
 
   /// Only species and seals this app version knows.

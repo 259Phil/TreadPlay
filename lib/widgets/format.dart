@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
+import '../data/species.dart';
 import '../domain/companion.dart';
 import '../domain/world.dart';
 import '../l10n/app_localizations.dart';
@@ -73,5 +74,33 @@ String? speciesFlavour(AppLocalizations l, String speciesId) =>
       'brine' => l.flavourBrine,
       'vine' => l.flavourVine,
       'glaze' => l.flavourGlaze,
+      'zinnbuck' => l.flavourZinnbuck,
+      'ringelpanz' => l.flavourRingelpanz,
+      'nebulo' => l.flavourNebulo,
+      'kraterix' => l.flavourKraterix,
+      'drahtel' => l.flavourDrahtel,
+      'muttrix' => l.flavourMuttrix,
+      'porzella' => l.flavourPorzella,
+      'puderling' => l.flavourPuderling,
+      'teerbock' => l.flavourTeerbock,
+      'segelkamm' => l.flavourSegelkamm,
+      'messingor' => l.flavourMessingor,
+      'emaillo' => l.flavourEmaillo,
+      'papyrix' => l.flavourPapyrix,
+      'lapisor' => l.flavourLapisor,
+      'muschlo' => l.flavourMuschlo,
+      'tangwell' => l.flavourTangwell,
+      'farnix' => l.flavourFarnix,
+      'schwammo' => l.flavourSchwammo,
+      'karamello' => l.flavourKaramello,
+      'lakrillo' => l.flavourLakrillo,
       _ => null,
     };
+
+/// How often a species turns up in the Market, as a word.
+String findRateLabel(AppLocalizations l, FindRate r) => switch (r) {
+  FindRate.frequent => l.findRateFrequent,
+  FindRate.scarce => l.findRateScarce,
+  FindRate.elusive => l.findRateElusive,
+  FindRate.mythic => l.findRateMythic,
+};

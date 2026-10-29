@@ -15,7 +15,7 @@ void main() {
   Set<String> species(Market m) => {for (final c in m.offers) c.speciesId};
 
   group('species variety', () {
-    test('a fresh save sees at least three species in every drift', () {
+    test('a fresh save sees at least four species in every drift', () {
       for (var seed = 0; seed < 200; seed++) {
         final random = Random(seed);
         var game = GameData.initial(t0).withMarket(t0, random);
@@ -28,10 +28,11 @@ void main() {
             greaterThanOrEqualTo(Market.minSpecies),
             reason: 'seed $seed, drift $drift',
           );
-          // Starter worlds in trail order: medieval, jungle, underwater.
+          // Open species of the starter worlds in trail order: medieval,
+          // jungle, underwater (the others there open later on).
           expect(
             species(m),
-            everyElement(isIn({'pebble', 'vine', 'brine'})),
+            everyElement(isIn({'pebble', 'zinnbuck', 'vine', 'brine'})),
             reason: 'seed $seed, drift $drift',
           );
           game = game.withMarket(m.nextDriftAt, random);
@@ -69,14 +70,25 @@ void main() {
           Random(seed),
           worlds: {World.medieval, World.jungle, World.egypt, World.pirate},
         );
+        const worlds = {
+          World.medieval,
+          World.jungle,
+          World.egypt,
+          World.pirate,
+        };
         expect(
           species(m),
-          everyElement(isIn({'pebble', 'vine', 'dune', 'hookfin'})),
+          everyElement(
+            isIn({
+              for (final s in speciesCatalog)
+                if (worlds.contains(s.world)) s.id,
+            }),
+          ),
         );
-        expect(species(m).length, greaterThanOrEqualTo(3));
+        expect(species(m).length, greaterThanOrEqualTo(Market.minSpecies));
         expect(
           species(Market.rolled(t0, Random(seed))).length,
-          greaterThanOrEqualTo(3),
+          greaterThanOrEqualTo(Market.minSpecies),
         );
       }
     });
@@ -177,7 +189,7 @@ void main() {
       final now = t0.add(const Duration(hours: 1));
       final m = game.withMarket(now, Random(5)).market!;
       expect(species(m).length, greaterThanOrEqualTo(3));
-      expect(jsonDecode(utf8.decode(SaveGame.encode(game, t0)))['version'], 11);
+      expect(jsonDecode(utf8.decode(SaveGame.encode(game, t0)))['version'], 12);
     });
   });
 

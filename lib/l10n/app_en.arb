@@ -1022,6 +1022,159 @@
   "@flavourGlaze": {
     "description": "One-line flavour text for the companion species glaze."
   },
+  "flavourZinnbuck": "Old as the castle wall, and just as patient.",
+  "@flavourZinnbuck": {
+    "description": "One-line flavour text for the companion species zinnbuck."
+  },
+  "flavourRingelpanz": "Clinks a little proudly with every step.",
+  "@flavourRingelpanz": {
+    "description": "One-line flavour text for the companion species ringelpanz."
+  },
+  "flavourNebulo": "Takes a whole starry sky for a walk.",
+  "@flavourNebulo": {
+    "description": "One-line flavour text for the companion species nebulo."
+  },
+  "flavourKraterix": "Every crater an adventure, every step a leap.",
+  "@flavourKraterix": {
+    "description": "One-line flavour text for the companion species kraterix."
+  },
+  "flavourDrahtel": "Always wired – in the best way.",
+  "@flavourDrahtel": {
+    "description": "One-line flavour text for the companion species drahtel."
+  },
+  "flavourMuttrix": "Bolted tight to you and the path.",
+  "@flavourMuttrix": {
+    "description": "One-line flavour text for the companion species muttrix."
+  },
+  "flavourPorzella": "Fragile? Only at first glance.",
+  "@flavourPorzella": {
+    "description": "One-line flavour text for the companion species porzella."
+  },
+  "flavourPuderling": "A cloud of curls on little feet.",
+  "@flavourPuderling": {
+    "description": "One-line flavour text for the companion species puderling."
+  },
+  "flavourTeerbock": "Smells of harbours and long voyages.",
+  "@flavourTeerbock": {
+    "description": "One-line flavour text for the companion species teerbock."
+  },
+  "flavourSegelkamm": "Always has a tailwind, even on land.",
+  "@flavourSegelkamm": {
+    "description": "One-line flavour text for the companion species segelkamm."
+  },
+  "flavourMessingor": "Polished by the wind of many kilometres.",
+  "@flavourMessingor": {
+    "description": "One-line flavour text for the companion species messingor."
+  },
+  "flavourEmaillo": "Gleams in every colour of the workshop.",
+  "@flavourEmaillo": {
+    "description": "One-line flavour text for the companion species emaillo."
+  },
+  "flavourPapyrix": "Writes every path into its fibres.",
+  "@flavourPapyrix": {
+    "description": "One-line flavour text for the companion species papyrix."
+  },
+  "flavourLapisor": "A piece of night sky from the temple.",
+  "@flavourLapisor": {
+    "description": "One-line flavour text for the companion species lapisor."
+  },
+  "flavourMuschlo": "Hears the sea calling in every shell.",
+  "@flavourMuschlo": {
+    "description": "One-line flavour text for the companion species muschlo."
+  },
+  "flavourTangwell": "Sways along as if the road were a current.",
+  "@flavourTangwell": {
+    "description": "One-line flavour text for the companion species tangwell."
+  },
+  "flavourFarnix": "Only unfurls when it is time to go.",
+  "@flavourFarnix": {
+    "description": "One-line flavour text for the companion species farnix."
+  },
+  "flavourSchwammo": "Soaks up every shower and beams.",
+  "@flavourSchwammo": {
+    "description": "One-line flavour text for the companion species schwammo."
+  },
+  "flavourKaramello": "Sticks to your heels – in a good way.",
+  "@flavourKaramello": {
+    "description": "One-line flavour text for the companion species karamello."
+  },
+  "flavourLakrillo": "Black, twisted and lightning-fast.",
+  "@flavourLakrillo": {
+    "description": "One-line flavour text for the companion species lakrillo."
+  },
+  "albumTitle": "Album",
+  "@albumTitle": {
+    "description": "Title of the Album screen (every species, collected or not)."
+  },
+  "albumOpen": "Album",
+  "@albumOpen": {
+    "description": "Tooltip of the Album button on the shelf."
+  },
+  "albumProgress": "{owned}/{total} found · ✦ {shimmer}",
+  "@albumProgress": {
+    "description": "Album header: species collected of all, and species owned as Shimmer.",
+    "placeholders": {
+      "owned": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "shimmer": {
+        "type": "int"
+      }
+    }
+  },
+  "albumShimmerHint": "✦ Shimmer: 0.1 % per offer; after 300 km without one, the Market is sure to have one. Worth ×1.5.",
+  "@albumShimmerHint": {
+    "description": "Album: how Shimmer companions turn up."
+  },
+  "albumFromKm": "from {km} km",
+  "@albumFromKm": {
+    "description": "Album tile of a locked species: lifetime km it opens at.",
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "albumInMarket": "in the Market",
+  "@albumInMarket": {
+    "description": "Album tile: not collected yet, but the Market can offer it now."
+  },
+  "albumFind": "Find: {rate}",
+  "@albumFind": {
+    "description": "Album tile: how often the species turns up in the Market.",
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "findRateFrequent": "frequent",
+  "@findRateFrequent": {
+    "description": "Find rate of a species in the Market (weight 1)."
+  },
+  "findRateScarce": "scarce",
+  "@findRateScarce": {
+    "description": "Find rate of a species in the Market (weight 0.5)."
+  },
+  "findRateElusive": "elusive",
+  "@findRateElusive": {
+    "description": "Find rate of a species in the Market (weight 0.25)."
+  },
+  "findRateMythic": "fabled",
+  "@findRateMythic": {
+    "description": "Find rate of a species in the Market (weight 0.1)."
+  },
+  "shimmerTag": "✦ SHIMMER",
+  "@shimmerTag": {
+    "description": "Tag on a Shimmer companion card."
+  },
+  "shimmerNote": "✦ Shimmer · worth ×1.5",
+  "@shimmerNote": {
+    "description": "Detail sheet line for a Shimmer companion: worth 1.5 times as much."
+  },
   "msgGreetRuhu": "{n, select, 0{Hoo-hoo! There you are.} 1{Ruhu here, just landed.} 2{Good day, fellow wanderer!} 3{Hoo … I saw you on the path.} 4{Oh, how lovely to meet you!} 5{Softly, softly – Ruhu is here.} other{Hoo-hoo! There you are.}}",
   "@msgGreetRuhu": {
     "placeholders": {

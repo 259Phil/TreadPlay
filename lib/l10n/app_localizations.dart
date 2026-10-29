@@ -2222,6 +2222,204 @@ abstract class AppLocalizations {
   /// **'Sweet, with crystal edges.'**
   String get flavourGlaze;
 
+  /// One-line flavour text for the companion species zinnbuck.
+  ///
+  /// In en, this message translates to:
+  /// **'Old as the castle wall, and just as patient.'**
+  String get flavourZinnbuck;
+
+  /// One-line flavour text for the companion species ringelpanz.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinks a little proudly with every step.'**
+  String get flavourRingelpanz;
+
+  /// One-line flavour text for the companion species nebulo.
+  ///
+  /// In en, this message translates to:
+  /// **'Takes a whole starry sky for a walk.'**
+  String get flavourNebulo;
+
+  /// One-line flavour text for the companion species kraterix.
+  ///
+  /// In en, this message translates to:
+  /// **'Every crater an adventure, every step a leap.'**
+  String get flavourKraterix;
+
+  /// One-line flavour text for the companion species drahtel.
+  ///
+  /// In en, this message translates to:
+  /// **'Always wired – in the best way.'**
+  String get flavourDrahtel;
+
+  /// One-line flavour text for the companion species muttrix.
+  ///
+  /// In en, this message translates to:
+  /// **'Bolted tight to you and the path.'**
+  String get flavourMuttrix;
+
+  /// One-line flavour text for the companion species porzella.
+  ///
+  /// In en, this message translates to:
+  /// **'Fragile? Only at first glance.'**
+  String get flavourPorzella;
+
+  /// One-line flavour text for the companion species puderling.
+  ///
+  /// In en, this message translates to:
+  /// **'A cloud of curls on little feet.'**
+  String get flavourPuderling;
+
+  /// One-line flavour text for the companion species teerbock.
+  ///
+  /// In en, this message translates to:
+  /// **'Smells of harbours and long voyages.'**
+  String get flavourTeerbock;
+
+  /// One-line flavour text for the companion species segelkamm.
+  ///
+  /// In en, this message translates to:
+  /// **'Always has a tailwind, even on land.'**
+  String get flavourSegelkamm;
+
+  /// One-line flavour text for the companion species messingor.
+  ///
+  /// In en, this message translates to:
+  /// **'Polished by the wind of many kilometres.'**
+  String get flavourMessingor;
+
+  /// One-line flavour text for the companion species emaillo.
+  ///
+  /// In en, this message translates to:
+  /// **'Gleams in every colour of the workshop.'**
+  String get flavourEmaillo;
+
+  /// One-line flavour text for the companion species papyrix.
+  ///
+  /// In en, this message translates to:
+  /// **'Writes every path into its fibres.'**
+  String get flavourPapyrix;
+
+  /// One-line flavour text for the companion species lapisor.
+  ///
+  /// In en, this message translates to:
+  /// **'A piece of night sky from the temple.'**
+  String get flavourLapisor;
+
+  /// One-line flavour text for the companion species muschlo.
+  ///
+  /// In en, this message translates to:
+  /// **'Hears the sea calling in every shell.'**
+  String get flavourMuschlo;
+
+  /// One-line flavour text for the companion species tangwell.
+  ///
+  /// In en, this message translates to:
+  /// **'Sways along as if the road were a current.'**
+  String get flavourTangwell;
+
+  /// One-line flavour text for the companion species farnix.
+  ///
+  /// In en, this message translates to:
+  /// **'Only unfurls when it is time to go.'**
+  String get flavourFarnix;
+
+  /// One-line flavour text for the companion species schwammo.
+  ///
+  /// In en, this message translates to:
+  /// **'Soaks up every shower and beams.'**
+  String get flavourSchwammo;
+
+  /// One-line flavour text for the companion species karamello.
+  ///
+  /// In en, this message translates to:
+  /// **'Sticks to your heels – in a good way.'**
+  String get flavourKaramello;
+
+  /// One-line flavour text for the companion species lakrillo.
+  ///
+  /// In en, this message translates to:
+  /// **'Black, twisted and lightning-fast.'**
+  String get flavourLakrillo;
+
+  /// Title of the Album screen (every species, collected or not).
+  ///
+  /// In en, this message translates to:
+  /// **'Album'**
+  String get albumTitle;
+
+  /// Tooltip of the Album button on the shelf.
+  ///
+  /// In en, this message translates to:
+  /// **'Album'**
+  String get albumOpen;
+
+  /// Album header: species collected of all, and species owned as Shimmer.
+  ///
+  /// In en, this message translates to:
+  /// **'{owned}/{total} found · ✦ {shimmer}'**
+  String albumProgress(int owned, int total, int shimmer);
+
+  /// Album: how Shimmer companions turn up.
+  ///
+  /// In en, this message translates to:
+  /// **'✦ Shimmer: 0.1 % per offer; after 300 km without one, the Market is sure to have one. Worth ×1.5.'**
+  String get albumShimmerHint;
+
+  /// Album tile of a locked species: lifetime km it opens at.
+  ///
+  /// In en, this message translates to:
+  /// **'from {km} km'**
+  String albumFromKm(String km);
+
+  /// Album tile: not collected yet, but the Market can offer it now.
+  ///
+  /// In en, this message translates to:
+  /// **'in the Market'**
+  String get albumInMarket;
+
+  /// Album tile: how often the species turns up in the Market.
+  ///
+  /// In en, this message translates to:
+  /// **'Find: {rate}'**
+  String albumFind(String rate);
+
+  /// Find rate of a species in the Market (weight 1).
+  ///
+  /// In en, this message translates to:
+  /// **'frequent'**
+  String get findRateFrequent;
+
+  /// Find rate of a species in the Market (weight 0.5).
+  ///
+  /// In en, this message translates to:
+  /// **'scarce'**
+  String get findRateScarce;
+
+  /// Find rate of a species in the Market (weight 0.25).
+  ///
+  /// In en, this message translates to:
+  /// **'elusive'**
+  String get findRateElusive;
+
+  /// Find rate of a species in the Market (weight 0.1).
+  ///
+  /// In en, this message translates to:
+  /// **'fabled'**
+  String get findRateMythic;
+
+  /// Tag on a Shimmer companion card.
+  ///
+  /// In en, this message translates to:
+  /// **'✦ SHIMMER'**
+  String get shimmerTag;
+
+  /// Detail sheet line for a Shimmer companion: worth 1.5 times as much.
+  ///
+  /// In en, this message translates to:
+  /// **'✦ Shimmer · worth ×1.5'**
+  String get shimmerNote;
+
   /// No description provided for @msgGreetRuhu.
   ///
   /// In en, this message translates to:

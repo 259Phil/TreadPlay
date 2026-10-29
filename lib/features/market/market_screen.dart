@@ -199,6 +199,7 @@ class _Grid extends StatelessWidget {
                   rarity: c.rarity,
                   type: c.type,
                   classType: c.species.type,
+                  shimmer: c.shimmer,
                   name: c.name,
                   // Rarity already sits left of it; gait is on the tag.
                   subtitle: l.levelShort(c.level),
@@ -274,6 +275,7 @@ class _TradeSheet extends ConsumerWidget {
                       rarity: c.rarity,
                       type: c.type,
                       classType: c.species.type,
+                      shimmer: c.shimmer,
                       name: c.name,
                       subtitle: l.levelShort(c.level),
                     ),
@@ -293,6 +295,14 @@ class _TradeSheet extends ConsumerWidget {
                         worldLabel(l, c.world),
                         style: const TextStyle(color: TreadColors.muted),
                       ),
+                      if (c.shimmer)
+                        Text(
+                          l.shimmerNote,
+                          style: const TextStyle(
+                            color: Color(0xFFF2C45A),
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       if (speciesFlavour(l, c.speciesId) case final f?)
                         Padding(
                           padding: const EdgeInsets.only(top: 4),

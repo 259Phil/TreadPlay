@@ -161,6 +161,7 @@ class Companion {
     required this.spirit,
     required this.charms,
     this.xp = 0,
+    this.shimmer = false,
     CompanionType? tempo,
   }) : _tempo = tempo;
 
@@ -227,6 +228,11 @@ class Companion {
   final String speciesId;
   final Rarity rarity;
   final int level;
+
+  /// Schimmer: a rare gold-foil instance (see `Market.shimmerChance`). Same
+  /// stats as any other; it only looks special and is worth
+  /// `Market.shimmerFactor` times as much in the Market.
+  final bool shimmer;
 
   /// XP collected towards the next level (walking only). Kept when the
   /// level-up is not paid yet; the rest carries over after a level-up.
@@ -352,6 +358,7 @@ class Companion {
     tempo: _tempo,
     level: level + 1,
     xp: level + 1 >= maxLevel ? 0 : xp - xpForLevel(level),
+    shimmer: shimmer,
     stride: stride,
     grit: grit,
     fortune: fortune,
@@ -410,13 +417,16 @@ class Companion {
     CompanionType? tempo,
     int? level,
     int? xp,
+    bool? shimmer,
+    String? speciesId,
   }) => Companion(
     id: id,
-    speciesId: speciesId,
+    speciesId: speciesId ?? this.speciesId,
     rarity: rarity,
     tempo: tempo ?? _tempo,
     level: level ?? this.level,
     xp: xp ?? this.xp,
+    shimmer: shimmer ?? this.shimmer,
     stride: stride ?? this.stride,
     grit: grit ?? this.grit,
     fortune: fortune ?? this.fortune,
@@ -440,6 +450,7 @@ class Companion {
     if (_tempo ?? speciesById[speciesId]?.type case final t?) 'tempo': t.name,
     'level': level,
     if (xp > 0) 'xp': xp,
+    if (shimmer) 'shimmer': true,
     'stride': stride,
     'grit': grit,
     'fortune': fortune,
@@ -459,6 +470,8 @@ class Companion {
       level: (json['level']! as int).clamp(1, maxLevel),
       // Saves before version 8 have no XP.
       xp: max(0, (json['xp'] as num?)?.toInt() ?? 0),
+      // Saves before version 12 have no Schimmer companions.
+      shimmer: json['shimmer'] == true,
       stride: _savedStat(json['stride'], rarity),
       grit: _savedStat(json['grit'], rarity),
       fortune: _savedStat(json['fortune'], rarity),

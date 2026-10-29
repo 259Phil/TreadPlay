@@ -23,39 +23,40 @@ class Market {
   /// Stride, Grit and Fortune are rolled independently (see
   /// [Companion.rolled]).
   /// Offers only come from species of [worlds]; null or no match means
-  /// the whole catalog. A pool with fewer than [minSpecies] species is
-  /// topped up with the next worlds in trail order ([starterWorlds]), and
-  /// at least [minSpecies] different species are always on offer.
+  /// the whole catalog. Species whose [Species.unlockKm] lies beyond
+  /// [distanceM] (lifetime metres; null = no gate) stay out. A pool with
+  /// fewer than [minSpecies] species is topped up with the next worlds in
+  /// trail order ([starterWorlds]).
+  ///
+  /// Each offer picks its species by [Species.findRate] weight; a species
+  /// fills at most [maxPerSpecies] offers while others are left, and at
+  /// least [minSpecies] different species are always on offer.
   ///
   /// Each offer also rolls its gait: the species' home gait at
   /// [homeTempoWeight] %, each other gait at half the rest. At least
   /// [guaranteedTempoOffers] offers share [along] (the gait of the companion
-  /// taken along) when given. Prices still depend on rarity only.
+  /// taken along) when given. Prices depend on rarity (and Schimmer).
+  ///
+  /// Each offer is a Schimmer at [shimmerChance]; with [shimmerDue] at
+  /// least one offer is.
   factory Market.rolled(
     DateTime now,
     Random random, {
     Set<World>? worlds,
     CompanionType? along,
+    double? distanceM,
+    bool shimmerDue = false,
   }) {
-    final inPool = [
-      for (final s in speciesCatalog)
-        if (worlds == null || worlds.contains(s.world)) s,
-    ];
-    final pool = inPool.isEmpty ? [...speciesCatalog] : inPool;
-    for (final w in starterWorlds) {
-      if (pool.length >= minSpecies) break;
-      for (final s in speciesCatalog) {
-        if (s.world == w && !pool.contains(s)) pool.add(s);
-      }
-    }
+    final pool = poolFor(worlds: worlds, distanceM: distanceM);
     final minutes =
         minDrift.inMinutes +
         random.nextInt(maxDrift.inMinutes - minDrift.inMinutes + 1);
+    final picked = <String, int>{};
     final offers = [
       for (var i = 0; i < offerCount; i++)
         Companion.rolled(
           id: 'm${now.microsecondsSinceEpoch}-$i',
-          speciesId: pool[random.nextInt(pool.length)].id,
+          speciesId: _pickSpecies(pool, picked, random).id,
           rarity: _rollRarity(random),
           random: random,
         ),
@@ -88,17 +89,83 @@ class Market {
     final deal = random.nextDouble() < salveDealChance
         ? Salve.values[random.nextInt(Salve.values.length)]
         : null;
+    final shimmer = [
+      for (var i = 0; i < offers.length; i++)
+        random.nextDouble() < shimmerChance,
+    ];
+    if (shimmerDue && offers.isNotEmpty && !shimmer.contains(true)) {
+      shimmer[random.nextInt(offers.length)] = true;
+    }
     return Market(
       nextDriftAt: now.add(Duration(minutes: minutes)),
       drift: drift,
       offers: [
         for (var i = 0; i < offers.length; i++)
-          offers[i].copyWith(tempo: gaits[i]),
+          offers[i].copyWith(tempo: gaits[i], shimmer: shimmer[i]),
       ],
       salveDrift: salveDrift,
       salveDeal: deal,
     );
   }
+
+  /// The species a Market for [worlds] at [distanceM] lifetime metres can
+  /// offer (see [Market.rolled]); null for either means no limit.
+  static List<Species> poolFor({Set<World>? worlds, double? distanceM}) {
+    bool open(Species s) => distanceM == null || s.openAt(distanceM);
+    final inPool = [
+      for (final s in speciesCatalog)
+        if ((worlds == null || worlds.contains(s.world)) && open(s)) s,
+    ];
+    final pool = inPool.isEmpty
+        ? [
+            for (final s in speciesCatalog)
+              if (open(s)) s,
+          ]
+        : inPool;
+    for (final w in starterWorlds) {
+      if (pool.length >= minSpecies) break;
+      for (final s in speciesCatalog) {
+        if (s.world == w && open(s) && !pool.contains(s)) pool.add(s);
+      }
+    }
+    return pool;
+  }
+
+  /// Weighted by [Species.findRate]; species already in [maxPerSpecies]
+  /// offers are skipped while others are left. Counts the pick in [picked].
+  static Species _pickSpecies(
+    List<Species> pool,
+    Map<String, int> picked,
+    Random random,
+  ) {
+    final free = [
+      for (final s in pool)
+        if ((picked[s.id] ?? 0) < maxPerSpecies) s,
+    ];
+    final from = free.isEmpty ? pool : free;
+    final total = from.fold<double>(0, (n, s) => n + s.findRate.weight);
+    var pick = random.nextDouble() * total;
+    var chosen = from.last;
+    for (final s in from) {
+      pick -= s.findRate.weight;
+      if (pick < 0) {
+        chosen = s;
+        break;
+      }
+    }
+    picked[chosen.id] = (picked[chosen.id] ?? 0) + 1;
+    return chosen;
+  }
+
+  /// Chance per offer that it is a Schimmer (0.1 %).
+  static const double shimmerChance = 0.001;
+
+  /// Lifetime metres without a Schimmer in the Market after which the next
+  /// roll has one for sure (see `GameData.withMarket`).
+  static const double shimmerPityM = 300000;
+
+  /// Price factor of a Schimmer, buying and selling.
+  static const double shimmerFactor = 1.5;
 
   /// Chance per drift that one salve is on offer at [salveDealFactor].
   static const double salveDealChance = 0.25;
@@ -126,10 +193,14 @@ class Market {
   /// Version of the rolling rules. A saved market from an older version is
   /// rolled anew once on load (see `GameData.withMarket`).
   /// 2: per-offer gaits, at least [minSpecies] species, 2–9 h drift.
-  static const int currentGeneration = 2;
+  /// 3: 30 species with find rates and km gates, [maxPerSpecies], Schimmer.
+  static const int currentGeneration = 3;
 
   /// Different species per market at least (when the catalog has them).
-  static const int minSpecies = 3;
+  static const int minSpecies = 4;
+
+  /// Offers one species fills at most while other species are left.
+  static const int maxPerSpecies = 3;
 
   /// Worlds in the order the trail opens them for the Market; tops up a
   /// pool that is too small, e.g. for fresh players.
@@ -202,21 +273,41 @@ class Market {
     Random random, {
     Set<World>? worlds,
     CompanionType? along,
+    double? distanceM,
+    bool shimmerDue = false,
   }) => now.isBefore(nextDriftAt)
       ? this
-      : Market.rolled(now, random, worlds: worlds, along: along);
+      : Market.rolled(
+          now,
+          random,
+          worlds: worlds,
+          along: along,
+          distanceM: distanceM,
+          shimmerDue: shimmerDue,
+        );
+
+  /// True when an offer is a Schimmer.
+  bool get hasShimmer => offers.any((c) => c.shimmer);
 
   Companion? offer(String id) => offers.where((c) => c.id == id).firstOrNull;
 
-  /// Whole LP: the rarity's base price times the offer's own drift.
+  /// Whole LP: the rarity's base price times the offer's own drift, times
+  /// [shimmerFactor] for a Schimmer.
   double priceOf(Companion c) =>
-      (basePrice[c.rarity]! * (drift[c.id] ?? 1)).roundToDouble();
+      (basePrice[c.rarity]! * (drift[c.id] ?? 1) * _shimmerOf(c))
+          .roundToDouble();
 
   /// Whole LP: [sellShare] of the rarity's base price, plus
-  /// [sellLevelBonus] for every level above 1.
+  /// [sellLevelBonus] for every level above 1, times [shimmerFactor] for a
+  /// Schimmer.
   double sellPriceOf(Companion c) =>
-      (basePrice[c.rarity]! * sellShare * (1 + sellLevelBonus * (c.level - 1)))
+      (basePrice[c.rarity]! *
+              sellShare *
+              (1 + sellLevelBonus * (c.level - 1)) *
+              _shimmerOf(c))
           .roundToDouble();
+
+  static double _shimmerOf(Companion c) => c.shimmer ? shimmerFactor : 1;
 
   Market without(String offerId) => Market(
     nextDriftAt: nextDriftAt,
@@ -289,16 +380,8 @@ class Market {
       ];
       final i = crowded[random.nextInt(crowded.length)];
       final o = offers[i];
-      offers[i] = Companion(
-        id: o.id,
+      offers[i] = o.copyWith(
         speciesId: missing[random.nextInt(missing.length)].id,
-        rarity: o.rarity,
-        level: o.level,
-        stride: o.stride,
-        grit: o.grit,
-        fortune: o.fortune,
-        spirit: o.spirit,
-        charms: o.charms,
       );
     }
   }

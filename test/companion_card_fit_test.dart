@@ -25,7 +25,7 @@ void main() {
     testWidgets('$where: every creature sits above the name plate', (
       tester,
     ) async {
-      expect(companionCutouts, hasLength(40));
+      expect(companionCutouts, hasLength(120));
       for (final MapEntry(key: art, value: cut) in companionCutouts.entries) {
         await tester.pumpWidget(
           MaterialApp(

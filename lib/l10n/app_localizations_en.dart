@@ -1282,6 +1282,112 @@ class AppLocalizationsEn extends AppLocalizations {
   String get flavourGlaze => 'Sweet, with crystal edges.';
 
   @override
+  String get flavourZinnbuck => 'Old as the castle wall, and just as patient.';
+
+  @override
+  String get flavourRingelpanz => 'Clinks a little proudly with every step.';
+
+  @override
+  String get flavourNebulo => 'Takes a whole starry sky for a walk.';
+
+  @override
+  String get flavourKraterix => 'Every crater an adventure, every step a leap.';
+
+  @override
+  String get flavourDrahtel => 'Always wired – in the best way.';
+
+  @override
+  String get flavourMuttrix => 'Bolted tight to you and the path.';
+
+  @override
+  String get flavourPorzella => 'Fragile? Only at first glance.';
+
+  @override
+  String get flavourPuderling => 'A cloud of curls on little feet.';
+
+  @override
+  String get flavourTeerbock => 'Smells of harbours and long voyages.';
+
+  @override
+  String get flavourSegelkamm => 'Always has a tailwind, even on land.';
+
+  @override
+  String get flavourMessingor => 'Polished by the wind of many kilometres.';
+
+  @override
+  String get flavourEmaillo => 'Gleams in every colour of the workshop.';
+
+  @override
+  String get flavourPapyrix => 'Writes every path into its fibres.';
+
+  @override
+  String get flavourLapisor => 'A piece of night sky from the temple.';
+
+  @override
+  String get flavourMuschlo => 'Hears the sea calling in every shell.';
+
+  @override
+  String get flavourTangwell => 'Sways along as if the road were a current.';
+
+  @override
+  String get flavourFarnix => 'Only unfurls when it is time to go.';
+
+  @override
+  String get flavourSchwammo => 'Soaks up every shower and beams.';
+
+  @override
+  String get flavourKaramello => 'Sticks to your heels – in a good way.';
+
+  @override
+  String get flavourLakrillo => 'Black, twisted and lightning-fast.';
+
+  @override
+  String get albumTitle => 'Album';
+
+  @override
+  String get albumOpen => 'Album';
+
+  @override
+  String albumProgress(int owned, int total, int shimmer) {
+    return '$owned/$total found · ✦ $shimmer';
+  }
+
+  @override
+  String get albumShimmerHint =>
+      '✦ Shimmer: 0.1 % per offer; after 300 km without one, the Market is sure to have one. Worth ×1.5.';
+
+  @override
+  String albumFromKm(String km) {
+    return 'from $km km';
+  }
+
+  @override
+  String get albumInMarket => 'in the Market';
+
+  @override
+  String albumFind(String rate) {
+    return 'Find: $rate';
+  }
+
+  @override
+  String get findRateFrequent => 'frequent';
+
+  @override
+  String get findRateScarce => 'scarce';
+
+  @override
+  String get findRateElusive => 'elusive';
+
+  @override
+  String get findRateMythic => 'fabled';
+
+  @override
+  String get shimmerTag => '✦ SHIMMER';
+
+  @override
+  String get shimmerNote => '✦ Shimmer · worth ×1.5';
+
+  @override
   String msgGreetRuhu(String n) {
     String _temp0 = intl.Intl.selectLogic(n, {
       '0': 'Hoo-hoo! There you are.',

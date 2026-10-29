@@ -27,6 +27,7 @@ class CompanionCard extends StatelessWidget {
     this.action,
     this.type,
     this.classType,
+    this.shimmer = false,
   });
 
   final String artKey;
@@ -53,6 +54,10 @@ class CompanionCard extends StatelessWidget {
   /// Class of the species (its home gait); the brass coin shows its icon.
   /// Falls back to [type].
   final CompanionType? classType;
+
+  /// Schimmer look "Goldfolie": rainbow foil frame, gold palette with a
+  /// holo glare on the creature, sparkles and a "✦ SCHIMMER" tag.
+  final bool shimmer;
 
   static const double aspectRatio = 0.72;
 
@@ -187,7 +192,7 @@ Widget _pill(String text, {required BoxDecoration deco, required Color ink}) =>
     );
 
 class _Tag extends StatelessWidget {
-  const _Tag(this.text, {required this.bg, required this.ink});
+  const _Tag(this.text, {super.key, required this.bg, required this.ink});
 
   final String text;
   final Color bg;
@@ -233,8 +238,9 @@ class _FrameCard extends StatelessWidget {
     return _tap(
       c,
       DecoratedBox(
+        key: c.shimmer ? const Key('card-shimmer') : null,
         decoration: BoxDecoration(
-          gradient: brassGradient,
+          gradient: c.shimmer ? shimmerFoil : brassGradient,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             const BoxShadow(
@@ -242,7 +248,9 @@ class _FrameCard extends StatelessWidget {
               blurRadius: 8,
               offset: Offset(0, 3),
             ),
-            if (c.rarity == Rarity.legendary)
+            if (c.shimmer)
+              const BoxShadow(color: Color(0x66F2C45A), blurRadius: 14)
+            else if (c.rarity == Rarity.legendary)
               BoxShadow(color: metal.withValues(alpha: .4), blurRadius: 14),
           ],
         ),
@@ -281,12 +289,44 @@ class _FrameCard extends StatelessWidget {
                           Positioned.fill(
                             child: Padding(
                               padding: cardArtWindow,
-                              child: CompanionArt(
-                                c.artKey,
-                                imageKey: ValueKey('card-art-${c.artKey}'),
-                              ),
+                              child: c.shimmer
+                                  ? ShimmerArt(
+                                      child: CompanionArt(
+                                        c.artKey,
+                                        imageKey: ValueKey(
+                                          'card-art-${c.artKey}',
+                                        ),
+                                      ),
+                                    )
+                                  : CompanionArt(
+                                      c.artKey,
+                                      imageKey: ValueKey(
+                                        'card-art-${c.artKey}',
+                                      ),
+                                    ),
                             ),
                           ),
+                          if (c.shimmer)
+                            Positioned.fill(
+                              child: IgnorePointer(
+                                child: CustomPaint(
+                                  painter: SparklePainter(
+                                    seed: c.name.hashCode,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          if (c.shimmer)
+                            Positioned(
+                              left: 6,
+                              top: 37,
+                              child: _Tag(
+                                l.shimmerTag,
+                                key: const Key('card-shimmer-tag'),
+                                bg: const Color(0xFFFFF1C8),
+                                ink: const Color(0xFF6A4410),
+                              ),
+                            ),
                           if (c.type case final t?)
                             Positioned(
                               left: 5,
@@ -565,4 +605,90 @@ class _CornerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_CornerPainter old) => false;
+}
+
+/// Rainbow foil for the frame of a Schimmer card.
+const SweepGradient shimmerFoil = SweepGradient(
+  colors: [
+    Color(0xFFF6D27A),
+    Color(0xFFF59A8C),
+    Color(0xFFD58AF0),
+    Color(0xFF8AB8F6),
+    Color(0xFF8CE6C4),
+    Color(0xFFF2E58A),
+    Color(0xFFF6D27A),
+  ],
+);
+
+/// Half the creature's own colours, half warm gold.
+const ColorFilter _goldPalette = ColorFilter.matrix([
+  0.5 + 0.5 * 0.55, 0.5 * 0.80, 0.5 * 0.20, 0, 14, //
+  0.5 * 0.42, 0.5 + 0.5 * 0.66, 0.5 * 0.14, 0, 4, //
+  0.5 * 0.18, 0.5 * 0.32, 0.5 + 0.5 * 0.08, 0, -6, //
+  0, 0, 0, 1, 0,
+]);
+
+/// The Schimmer look on a creature: gold palette plus a diagonal holo
+/// glare, both only where the creature is.
+class ShimmerArt extends StatelessWidget {
+  const ShimmerArt({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => ShaderMask(
+    blendMode: BlendMode.srcATop,
+    shaderCallback: (r) => const LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [
+        Color(0x00FFFFFF),
+        Color(0x40FFE6A0),
+        Color(0x55FFB4C8),
+        Color(0x30B4C8FF),
+        Color(0x00FFFFFF),
+        Color(0x38FFF4D0),
+        Color(0x00FFFFFF),
+      ],
+      stops: [0, .22, .36, .48, .6, .74, 1],
+    ).createShader(r),
+    child: ColorFiltered(colorFilter: _goldPalette, child: child),
+  );
+}
+
+/// Nine four-point sparkles at fixed spots (from [seed]) over the art.
+class SparklePainter extends CustomPainter {
+  SparklePainter({required this.seed, this.count = 9});
+
+  final int seed;
+  final int count;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final r = math.Random(seed);
+    final glow = Paint()
+      ..color = const Color(0x88FFF4C8)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3);
+    final star = Paint()..color = const Color(0xFFFFFBEA);
+    for (var i = 0; i < count; i++) {
+      final c = Offset(
+        size.width * (.12 + .76 * r.nextDouble()),
+        size.height * (.14 + .62 * r.nextDouble()),
+      );
+      final k = size.width * (.022 + .03 * r.nextDouble());
+      final path = Path()
+        ..moveTo(c.dx, c.dy - k)
+        ..quadraticBezierTo(c.dx, c.dy, c.dx + k * .8, c.dy)
+        ..quadraticBezierTo(c.dx, c.dy, c.dx, c.dy + k)
+        ..quadraticBezierTo(c.dx, c.dy, c.dx - k * .8, c.dy)
+        ..quadraticBezierTo(c.dx, c.dy, c.dx, c.dy - k)
+        ..close();
+      canvas.drawCircle(c, k * .6, glow);
+      canvas.drawPath(path, star);
+    }
+  }
+
+  @override
+  bool shouldRepaint(SparklePainter old) =>
+      old.seed != seed || old.count != count;
 }

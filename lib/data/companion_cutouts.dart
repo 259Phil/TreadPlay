@@ -19,6 +19,19 @@ const Map<String, ({Size size, Rect body})> companionCutouts = {
   ),
   'coil-rare': (size: Size(900, 1200), body: Rect.fromLTWH(63, 352, 774, 800)),
   'coil': (size: Size(900, 1200), body: Rect.fromLTWH(63, 484, 774, 668)),
+  'drahtel-epic': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 438, 774, 714),
+  ),
+  'drahtel-legendary': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 262, 774, 890),
+  ),
+  'drahtel-rare': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 439, 774, 713),
+  ),
+  'drahtel': (size: Size(900, 1200), body: Rect.fromLTWH(63, 498, 774, 654)),
   'dune-epic': (size: Size(900, 1200), body: Rect.fromLTWH(63, 240, 774, 912)),
   'dune-legendary': (
     size: Size(900, 1200),
@@ -26,6 +39,32 @@ const Map<String, ({Size size, Rect body})> companionCutouts = {
   ),
   'dune-rare': (size: Size(900, 1200), body: Rect.fromLTWH(63, 219, 774, 933)),
   'dune': (size: Size(900, 1200), body: Rect.fromLTWH(63, 480, 774, 672)),
+  'emaillo-epic': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 190, 774, 962),
+  ),
+  'emaillo-legendary': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 230, 774, 922),
+  ),
+  'emaillo-rare': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 241, 774, 911),
+  ),
+  'emaillo': (size: Size(900, 1200), body: Rect.fromLTWH(63, 292, 774, 860)),
+  'farnix-epic': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 275, 774, 877),
+  ),
+  'farnix-legendary': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 120, 774, 1032),
+  ),
+  'farnix-rare': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 275, 774, 877),
+  ),
+  'farnix': (size: Size(900, 1200), body: Rect.fromLTWH(63, 292, 774, 860)),
   'gilt-epic': (size: Size(900, 1200), body: Rect.fromLTWH(63, 189, 774, 963)),
   'gilt-legendary': (
     size: Size(900, 1200),
@@ -56,6 +95,58 @@ const Map<String, ({Size size, Rect body})> companionCutouts = {
     body: Rect.fromLTWH(63, 450, 774, 702),
   ),
   'hookfin': (size: Size(900, 1200), body: Rect.fromLTWH(63, 638, 774, 514)),
+  'karamello-epic': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 367, 774, 785),
+  ),
+  'karamello-legendary': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 219, 774, 933),
+  ),
+  'karamello-rare': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 370, 774, 782),
+  ),
+  'karamello': (size: Size(900, 1200), body: Rect.fromLTWH(63, 411, 774, 741)),
+  'kraterix-epic': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(107, 72, 686, 1080),
+  ),
+  'kraterix-legendary': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(164, 72, 571, 1080),
+  ),
+  'kraterix-rare': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(85, 72, 729, 1080),
+  ),
+  'kraterix': (size: Size(900, 1200), body: Rect.fromLTWH(77, 72, 745, 1080)),
+  'lakrillo-epic': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 399, 774, 753),
+  ),
+  'lakrillo-legendary': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 258, 774, 894),
+  ),
+  'lakrillo-rare': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 410, 774, 742),
+  ),
+  'lakrillo': (size: Size(900, 1200), body: Rect.fromLTWH(63, 411, 774, 741)),
+  'lapisor-epic': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 468, 774, 684),
+  ),
+  'lapisor-legendary': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 396, 774, 756),
+  ),
+  'lapisor-rare': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 467, 774, 685),
+  ),
+  'lapisor': (size: Size(900, 1200), body: Rect.fromLTWH(63, 475, 774, 677)),
   'lumen-epic': (size: Size(900, 1200), body: Rect.fromLTWH(98, 72, 703, 1080)),
   'lumen-legendary': (
     size: Size(900, 1200),
@@ -66,6 +157,71 @@ const Map<String, ({Size size, Rect body})> companionCutouts = {
     body: Rect.fromLTWH(160, 72, 579, 1080),
   ),
   'lumen': (size: Size(900, 1200), body: Rect.fromLTWH(107, 72, 686, 1080)),
+  'messingor-epic': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 302, 774, 850),
+  ),
+  'messingor-legendary': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 358, 774, 794),
+  ),
+  'messingor-rare': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 301, 774, 851),
+  ),
+  'messingor': (size: Size(900, 1200), body: Rect.fromLTWH(63, 308, 774, 844)),
+  'muschlo-epic': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 490, 774, 662),
+  ),
+  'muschlo-legendary': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 337, 774, 815),
+  ),
+  'muschlo-rare': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 494, 774, 658),
+  ),
+  'muschlo': (size: Size(900, 1200), body: Rect.fromLTWH(63, 561, 774, 591)),
+  'muttrix-epic': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 571, 774, 581),
+  ),
+  'muttrix-legendary': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 438, 774, 714),
+  ),
+  'muttrix-rare': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 579, 774, 573),
+  ),
+  'muttrix': (size: Size(900, 1200), body: Rect.fromLTWH(63, 603, 774, 549)),
+  'nebulo-epic': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 369, 774, 783),
+  ),
+  'nebulo-legendary': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 431, 774, 721),
+  ),
+  'nebulo-rare': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 370, 774, 782),
+  ),
+  'nebulo': (size: Size(900, 1200), body: Rect.fromLTWH(63, 457, 774, 695)),
+  'papyrix-epic': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 242, 774, 910),
+  ),
+  'papyrix-legendary': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 235, 774, 917),
+  ),
+  'papyrix-rare': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 244, 774, 908),
+  ),
+  'papyrix': (size: Size(900, 1200), body: Rect.fromLTWH(63, 273, 774, 879)),
   'pebble-epic': (
     size: Size(900, 1200),
     body: Rect.fromLTWH(63, 181, 774, 971),
@@ -79,6 +235,97 @@ const Map<String, ({Size size, Rect body})> companionCutouts = {
     body: Rect.fromLTWH(63, 391, 774, 761),
   ),
   'pebble': (size: Size(900, 1200), body: Rect.fromLTWH(63, 376, 774, 776)),
+  'porzella-epic': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(100, 72, 700, 1080),
+  ),
+  'porzella-legendary': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(86, 72, 727, 1080),
+  ),
+  'porzella-rare': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(79, 72, 742, 1080),
+  ),
+  'porzella': (size: Size(900, 1200), body: Rect.fromLTWH(63, 110, 774, 1042)),
+  'puderling-epic': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 219, 774, 933),
+  ),
+  'puderling-legendary': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 72, 774, 1080),
+  ),
+  'puderling-rare': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 249, 774, 903),
+  ),
+  'puderling': (size: Size(900, 1200), body: Rect.fromLTWH(63, 399, 774, 753)),
+  'ringelpanz-epic': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 379, 774, 773),
+  ),
+  'ringelpanz-legendary': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 336, 774, 816),
+  ),
+  'ringelpanz-rare': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 443, 774, 709),
+  ),
+  'ringelpanz': (size: Size(900, 1200), body: Rect.fromLTWH(63, 449, 774, 703)),
+  'schwammo-epic': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 288, 774, 864),
+  ),
+  'schwammo-legendary': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 201, 774, 951),
+  ),
+  'schwammo-rare': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 290, 774, 862),
+  ),
+  'schwammo': (size: Size(900, 1200), body: Rect.fromLTWH(63, 297, 774, 855)),
+  'segelkamm-epic': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 172, 774, 980),
+  ),
+  'segelkamm-legendary': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 147, 774, 1005),
+  ),
+  'segelkamm-rare': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 162, 774, 990),
+  ),
+  'segelkamm': (size: Size(900, 1200), body: Rect.fromLTWH(63, 168, 774, 984)),
+  'tangwell-epic': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 85, 774, 1067),
+  ),
+  'tangwell-legendary': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(82, 72, 735, 1080),
+  ),
+  'tangwell-rare': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 86, 774, 1066),
+  ),
+  'tangwell': (size: Size(900, 1200), body: Rect.fromLTWH(63, 79, 774, 1073)),
+  'teerbock-epic': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 406, 774, 746),
+  ),
+  'teerbock-legendary': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 331, 774, 821),
+  ),
+  'teerbock-rare': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 407, 774, 745),
+  ),
+  'teerbock': (size: Size(900, 1200), body: Rect.fromLTWH(63, 447, 774, 705)),
   'valve-epic': (size: Size(900, 1200), body: Rect.fromLTWH(87, 72, 726, 1080)),
   'valve-legendary': (
     size: Size(900, 1200),
@@ -93,4 +340,17 @@ const Map<String, ({Size size, Rect body})> companionCutouts = {
   ),
   'vine-rare': (size: Size(900, 1200), body: Rect.fromLTWH(63, 287, 774, 865)),
   'vine': (size: Size(900, 1200), body: Rect.fromLTWH(63, 373, 774, 779)),
+  'zinnbuck-epic': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 290, 774, 862),
+  ),
+  'zinnbuck-legendary': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 152, 774, 1000),
+  ),
+  'zinnbuck-rare': (
+    size: Size(900, 1200),
+    body: Rect.fromLTWH(63, 375, 774, 777),
+  ),
+  'zinnbuck': (size: Size(900, 1200), body: Rect.fromLTWH(63, 449, 774, 703)),
 };

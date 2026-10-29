@@ -366,7 +366,6 @@ void main() {
     container.read(runControllerProvider.notifier)
       ..setDemoSpeed(4.5)
       ..setTimeLapse(true);
-    expect(find.byKey(const Key('run-piece-ring')), findsOneWidget);
     // 100 ms ticks × 10 = 1 s simulated per tick, ~1.25 m each → the first
     // 50 m piece after ≈ 40 ticks, a whole 250 m block after ≈ 200.
     for (var i = 0; i < 45; i++) {

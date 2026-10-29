@@ -107,9 +107,6 @@ class _RunScreenState extends ConsumerState<RunScreen>
                   const SizedBox(height: 8),
                   _LpCounter(
                     lp: e.lp,
-                    pieces: e.pieces,
-                    progress: e.pieceProgress,
-                    showRing: e.earnsLp && e.canEarn,
                     style: leather
                         ? skin
                               .display(64, color: TreadColors.brass)
@@ -248,62 +245,24 @@ class _RunScreenState extends ConsumerState<RunScreen>
   }
 }
 
-/// The run's LP, counting up in small steps, with a ring that fills
-/// towards the next paid piece.
+/// The run's LP, counting up in small steps as pieces are paid.
 class _LpCounter extends StatelessWidget {
-  const _LpCounter({
-    required this.lp,
-    required this.pieces,
-    required this.progress,
-    required this.showRing,
-    required this.style,
-  });
-
-  static const double _ring = 30;
+  const _LpCounter({required this.lp, required this.style});
 
   final double lp;
-  final int pieces;
-  final double progress;
-  final bool showRing;
   final TextStyle? style;
 
   @override
-  Widget build(BuildContext context) => Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      // Balances the ring so the number stays centred.
-      const SizedBox(width: _ring + 10),
-      TweenAnimationBuilder<double>(
-        tween: Tween(end: lp),
-        duration: const Duration(milliseconds: 650),
-        curve: Curves.easeOut,
-        builder: (context, shown, _) => Text(
-          formatNumber(context, shown),
-          key: const Key('run-lp'),
-          textAlign: TextAlign.center,
-          style: style,
-        ),
-      ),
-      const SizedBox(width: 10),
-      SizedBox.square(
-        dimension: _ring,
-        child: showRing
-            ? TweenAnimationBuilder<double>(
-                // A new piece starts the ring from empty again.
-                key: ValueKey(pieces),
-                tween: Tween(begin: 0, end: progress),
-                duration: const Duration(milliseconds: 400),
-                builder: (context, value, _) => CircularProgressIndicator(
-                  key: const Key('run-piece-ring'),
-                  value: value,
-                  strokeWidth: 4,
-                  color: TreadColors.brass,
-                  backgroundColor: const Color(0x33E8C27A),
-                ),
-              )
-            : null,
-      ),
-    ],
+  Widget build(BuildContext context) => TweenAnimationBuilder<double>(
+    tween: Tween(end: lp),
+    duration: const Duration(milliseconds: 650),
+    curve: Curves.easeOut,
+    builder: (context, shown, _) => Text(
+      formatNumber(context, shown),
+      key: const Key('run-lp'),
+      textAlign: TextAlign.center,
+      style: style,
+    ),
   );
 }
 

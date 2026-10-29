@@ -142,7 +142,6 @@ void main() {
       expect(engine.blocks, 3);
       expect(engine.lp, closeTo(old.lp, 1e-9));
       expect(engine.canEarn, isFalse);
-      expect(engine.pieceProgress, 0);
     });
 
     test('off-centre pace pays the same per weighted metre', () {
@@ -162,7 +161,6 @@ void main() {
       );
       move(engine, 4.5, 39); // 48.75 m
       expect(engine.lp, 0);
-      expect(engine.pieceProgress, closeTo(48.75 / 50, 1e-9));
       move(engine, 4.5, 1); // 50 m
       expect(engine.pieces, 1);
       expect(engine.blocks, 0);

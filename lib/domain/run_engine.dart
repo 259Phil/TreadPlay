@@ -76,10 +76,6 @@ class RunEngine {
   bool get canEarn =>
       earnsLp && companion.spirit > 0 && (_openPieces > 0 || breathLeft >= 1);
 
-  /// Progress (0–1) towards the next piece.
-  double get pieceProgress =>
-      canEarn ? (_progressM / metersPerPiece).clamp(0.0, 1.0) : 0;
-
   /// True while the current pace is inside the companion's sweet spot.
   bool get inBand =>
       sweetSpotFactor(

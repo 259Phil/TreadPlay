@@ -3,16 +3,26 @@ import 'movement.dart';
 import 'run_summary.dart';
 import 'sweet_spot.dart';
 
-/// Turns movement samples into LP blocks for one run with one companion.
+/// Turns movement samples into LP for one run with one companion.
+///
+/// A Breath block is [metersPerBreath] of weighted sweet-spot distance and
+/// pays [Companion.lpPerBreath]. It is paid out in [piecesPerBreath] pieces
+/// (every [metersPerPiece]), each taking 1/[piecesPerBreath] Breath and
+/// paying 1/[piecesPerBreath] of the block's LP, so LP show up early while
+/// LP and Breath per metre stay as before. A new block only starts with at
+/// least one full Breath left, so the tank ends exactly where whole blocks
+/// would have left it.
 class RunEngine {
   RunEngine({
     required this.companion,
     required this.breathAtStart,
     required this.startedAt,
     this.earnsLp = true,
-  }) : breathLeft = breathAtStart;
+  });
 
   static const double metersPerBreath = 250;
+  static const int piecesPerBreath = 5;
+  static const double metersPerPiece = metersPerBreath / piecesPerBreath;
 
   /// Above this, movement is treated as a vehicle.
   static const double maxPlausibleKmh = 30;
@@ -31,11 +41,11 @@ class RunEngine {
   /// False when movement access was denied: distance is tracked, LP is not.
   final bool earnsLp;
 
-  double breathLeft;
   double distanceM = 0;
   int steps = 0;
-  double lp = 0;
-  int blocks = 0;
+
+  /// Pieces paid out so far ([piecesPerBreath] make one Breath block).
+  int pieces = 0;
   double speedKmh = 0;
   double factor = 0;
   Duration elapsed = Duration.zero;
@@ -46,7 +56,29 @@ class RunEngine {
   DateTime? _lastTime;
   bool _stepsKnown = false;
 
-  bool get canEarn => earnsLp && companion.spirit > 0 && breathLeft >= 1;
+  /// Whole Breath blocks completed.
+  int get blocks => pieces ~/ piecesPerBreath;
+
+  /// Pieces into the current, unfinished block (0 to [piecesPerBreath] - 1).
+  int get _openPieces => pieces % piecesPerBreath;
+
+  double get breathLeft =>
+      breathAtStart - blocks - _openPieces / piecesPerBreath;
+
+  double get lp =>
+      blocks * companion.lpPerBreath +
+      _openPieces * companion.lpPerBreath / piecesPerBreath;
+
+  /// LP one piece pays.
+  double get lpPerPiece => companion.lpPerBreath / piecesPerBreath;
+
+  /// A started block is always finished; a new one needs a full Breath.
+  bool get canEarn =>
+      earnsLp && companion.spirit > 0 && (_openPieces > 0 || breathLeft >= 1);
+
+  /// Progress (0–1) towards the next piece.
+  double get pieceProgress =>
+      canEarn ? (_progressM / metersPerPiece).clamp(0.0, 1.0) : 0;
 
   /// True while the current pace is inside the companion's sweet spot.
   bool get inBand =>
@@ -78,7 +110,7 @@ class RunEngine {
     return true;
   }
 
-  /// Returns the number of LP blocks earned by this sample.
+  /// Returns the number of pieces earned by this sample.
   int add(MovementSample sample) {
     final dt = sample.time.difference(_lastTime ?? startedAt);
     _lastTime = sample.time;
@@ -104,11 +136,9 @@ class RunEngine {
 
     _progressM += sample.distanceM * factor;
     var earned = 0;
-    while (_progressM >= metersPerBreath && canEarn) {
-      _progressM -= metersPerBreath;
-      breathLeft -= 1;
-      lp += companion.lpPerBreath;
-      blocks++;
+    while (_progressM >= metersPerPiece && canEarn) {
+      _progressM -= metersPerPiece;
+      pieces++;
       earned++;
     }
     if (!canEarn) _progressM = 0;

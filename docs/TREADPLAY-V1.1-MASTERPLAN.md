@@ -62,7 +62,7 @@ Kleine Ressource für die Schmiede. Kleiner Drop am Ende jeder gültigen Session
 
 ### Puste (EN: Breath) – pro Schuh, keine globale Energie
 **Jeder Schuh hat seinen eigenen Puste-Tank.** Größe nach Seltenheit + Grit (Common 6, Rare 8, Epic 10, Legendary 12 Punkte, vor Grit).  
-Verbrauch nur während gültiger Bewegung (1 Punkt ≈ 250 m im Sweet Spot, nicht zeitbasiert).  
+Verbrauch nur während gültiger Bewegung (1 Punkt ≈ 250 m im Sweet Spot, nicht zeitbasiert; ausgezahlt in Fünfteln: alle 50 m 0,2 Puste und ein Fünftel der LP).  
 Regeneriert stetig: 1 Punkt / 90 min pro Schuh, auch wenn er nicht getragen wird.  
 **Kein Bonus für Anzahl/Seltenheit der besessenen Schuhe.** Mehrere Schuhe lohnen sich, weil man wechseln kann, wenn einer außer Puste ist.  
 Leer = keine LP mehr für diesen Schuh, Tracking der Fitnessdaten läuft trotzdem (User sieht km/Zeit). Schuhwechsel mitten im Lauf: nein (erst nach Stop).

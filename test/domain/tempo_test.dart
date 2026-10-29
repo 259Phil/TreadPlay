@@ -71,12 +71,12 @@ void main() {
         );
         final kmh = t.sweetSpotKmh;
         expect(sweetSpotFactor(t, kmh), 1);
-        // 1100 m (4 blocks of 250 m, away from rounding edges) at the gait's own sweet spot, 1 s samples.
+        // 1025 m (4 blocks of 250 m = 20 pieces of 50 m, away from rounding edges) at the gait's own sweet spot, 1 s samples.
         final m = kmh / 3.6;
         var elapsed = Duration.zero;
         var done = 0.0;
-        while (done < 1100 - 1e-9) {
-          final step = min(m, 1100 - done);
+        while (done < 1025 - 1e-9) {
+          final step = min(m, 1025 - done);
           elapsed += const Duration(seconds: 1);
           engine.add(
             MovementSample(

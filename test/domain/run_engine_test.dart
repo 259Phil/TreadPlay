@@ -3,6 +3,7 @@ import 'package:treadplay/domain/companion.dart';
 import 'package:treadplay/domain/movement.dart';
 import 'package:treadplay/domain/run_engine.dart';
 import 'package:treadplay/domain/run_summary.dart';
+import 'package:treadplay/domain/sweet_spot.dart';
 
 void main() {
   final t0 = DateTime(2026, 1, 1, 8);
@@ -28,6 +29,147 @@ void main() {
       );
     }
   }
+
+  /// The payout before pieces: only whole 250 m blocks. Returns LP, Breath
+  /// left and the second of the first LP for 1 s samples at [kmh].
+  ({double lp, double breathLeft, int? firstLpSecond}) wholeBlocks(
+    Companion c,
+    double breathAtStart,
+    double kmh,
+    int seconds,
+  ) {
+    var breath = breathAtStart;
+    var lp = 0.0;
+    var progress = 0.0;
+    int? first;
+    for (var i = 1; i <= seconds; i++) {
+      bool canEarn() => c.spirit > 0 && breath >= 1;
+      final f = canEarn()
+          ? sweetSpotFactor(c.type, kmh, widenKmh: c.sweetSpotWidenKmh)
+          : 0.0;
+      if (f == 0) continue;
+      progress += kmh / 3.6 * f;
+      while (progress >= RunEngine.metersPerBreath && canEarn()) {
+        progress -= RunEngine.metersPerBreath;
+        breath -= 1;
+        lp += c.lpPerBreath;
+        first ??= i;
+      }
+      if (!canEarn()) progress = 0;
+    }
+    return (lp: lp, breathLeft: breath, firstLpSecond: first);
+  }
+
+  int? firstLpSecond(RunEngine engine, double kmh, int seconds) {
+    for (var i = 1; i <= seconds; i++) {
+      move(engine, kmh, 1);
+      if (engine.lp > 0) return i;
+    }
+    return null;
+  }
+
+  group('pieces pay the same as whole blocks', () {
+    final gaits = <String, (Companion, double)>{
+      'Schritt': (Companion.pebble(), 4.5),
+      'Trab': (
+        Companion.fresh(id: 'g-1', speciesId: 'gilt', rarity: Rarity.common),
+        7.5,
+      ),
+      'Galopp': (
+        Companion.fresh(id: 'h-1', speciesId: 'hookfin', rarity: Rarity.common),
+        11,
+      ),
+    };
+    for (final MapEntry(key: gait, value: (c, kmh)) in gaits.entries) {
+      test('$gait: a full tank ends with the same LP and Breath', () {
+        final tank = c.tankSize.toDouble();
+        // Long enough to empty the tank twice over.
+        final seconds = (tank * 2 * 250 / (kmh / 3.6)).ceil();
+        final old = wholeBlocks(c, tank, kmh, seconds);
+        final engine = RunEngine(
+          companion: c,
+          breathAtStart: tank,
+          startedAt: t0,
+        );
+        move(engine, kmh, seconds);
+        expect(old.breathLeft, 0);
+        expect(engine.breathLeft, old.breathLeft);
+        expect(engine.lp, closeTo(old.lp, 1e-9));
+        expect(engine.lp, closeTo(tank * c.lpPerBreath, 1e-9));
+        expect(engine.blocks, c.tankSize);
+        expect(engine.finish().breathUsed, tank);
+      });
+
+      test('$gait: whole blocks mid-run match exactly', () {
+        for (final seconds in [300, 600, 901]) {
+          final old = wholeBlocks(c, 6, kmh, seconds);
+          final engine = RunEngine(
+            companion: c,
+            breathAtStart: 6,
+            startedAt: t0,
+          );
+          move(engine, kmh, seconds);
+          // Pieces past the last whole block are extra, paid at the same rate.
+          final extra = engine.pieces % RunEngine.piecesPerBreath;
+          expect(engine.lp, closeTo(old.lp + extra * engine.lpPerPiece, 1e-9));
+          expect(
+            engine.breathLeft,
+            closeTo(old.breathLeft - extra / RunEngine.piecesPerBreath, 1e-9),
+          );
+          expect(engine.lp / engine.breathUsed, closeTo(c.lpPerBreath, 1e-9));
+        }
+      });
+
+      test('$gait: first LP after a fifth of the time', () {
+        final old = wholeBlocks(c, 6, kmh, 600).firstLpSecond!;
+        final engine = RunEngine(companion: c, breathAtStart: 6, startedAt: t0);
+        final now = firstLpSecond(engine, kmh, 600)!;
+        expect(now, lessThanOrEqualTo((old / 5).ceil() + 1));
+        expect(engine.lp, closeTo(c.lpPerBreath / 5, 1e-9));
+        expect(engine.breathLeft, closeTo(6 - 0.2, 1e-9));
+        // ignore: avoid_print
+        print('$gait ${kmh}km/h: first LP after ${old}s -> ${now}s');
+      });
+    }
+
+    test('a part-full tank stops at the same place', () {
+      final c = Companion.pebble();
+      final old = wholeBlocks(c, 3.4, 4.5, 2000);
+      final engine = RunEngine(companion: c, breathAtStart: 3.4, startedAt: t0);
+      move(engine, 4.5, 2000);
+      expect(old.breathLeft, closeTo(0.4, 1e-9));
+      expect(engine.breathLeft, closeTo(old.breathLeft, 1e-9));
+      expect(engine.blocks, 3);
+      expect(engine.lp, closeTo(old.lp, 1e-9));
+      expect(engine.canEarn, isFalse);
+      expect(engine.pieceProgress, 0);
+    });
+
+    test('off-centre pace pays the same per weighted metre', () {
+      final c = Companion.pebble();
+      final old = wholeBlocks(c, 6, 3.4, 4000);
+      final engine = RunEngine(companion: c, breathAtStart: 6, startedAt: t0);
+      move(engine, 3.4, 4000);
+      expect(engine.breathLeft, closeTo(old.breathLeft, 1e-9));
+      expect(engine.lp, closeTo(old.lp, 1e-9));
+    });
+
+    test('50 m in the sweet spot pays the first piece', () {
+      final engine = RunEngine(
+        companion: Companion.pebble(),
+        breathAtStart: 6,
+        startedAt: t0,
+      );
+      move(engine, 4.5, 39); // 48.75 m
+      expect(engine.lp, 0);
+      expect(engine.pieceProgress, closeTo(48.75 / 50, 1e-9));
+      move(engine, 4.5, 1); // 50 m
+      expect(engine.pieces, 1);
+      expect(engine.blocks, 0);
+      expect(engine.lp, 0.5);
+      expect(engine.breathLeft, closeTo(5.8, 1e-9));
+    });
+  });
 
   test('1 km in the sweet spot gives 4 blocks', () {
     final engine = RunEngine(

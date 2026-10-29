@@ -366,8 +366,17 @@ void main() {
     container.read(runControllerProvider.notifier)
       ..setDemoSpeed(4.5)
       ..setTimeLapse(true);
-    // 100 ms ticks × 10 = 1 s simulated per tick, ~1.25 m each → 250 m ≈ 200 ticks.
-    for (var i = 0; i < 220; i++) {
+    expect(find.byKey(const Key('run-piece-ring')), findsOneWidget);
+    // 100 ms ticks × 10 = 1 s simulated per tick, ~1.25 m each → the first
+    // 50 m piece after ≈ 40 ticks, a whole 250 m block after ≈ 200.
+    for (var i = 0; i < 45; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    final early = container.read(runControllerProvider)!.engine;
+    expect(early.pieces, 1);
+    expect(early.blocks, 0);
+    expect(early.lp, greaterThan(0));
+    for (var i = 0; i < 175; i++) {
       await tester.pump(const Duration(milliseconds: 100));
     }
     expect(container.read(runControllerProvider)!.engine.blocks, 1);

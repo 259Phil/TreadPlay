@@ -3289,6 +3289,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'How does it work?'**
   String get collectorMore;
+
+  /// No description provided for @runTrailToNext.
+  ///
+  /// In en, this message translates to:
+  /// **'{km} km to waymark {number}'**
+  String runTrailToNext(String km, int number);
+
+  /// No description provided for @runTrailAtWaymark.
+  ///
+  /// In en, this message translates to:
+  /// **'At waymark {number} – tasks open'**
+  String runTrailAtWaymark(int number);
+
+  /// No description provided for @runTrailComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Trail complete'**
+  String get runTrailComplete;
 }
 
 class _AppLocalizationsDelegate

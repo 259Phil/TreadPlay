@@ -531,5 +531,8 @@
   "shelfBuyDone": "Dein Gehege hat jetzt {cap} Plätze.",
   "shelfSlotsMax": "Mehr als 30 Plätze gibt es nicht.",
   "shelfSlotNoLp": "Zu wenig LP für Platz {slot} ({price} LP).",
-  "collectorMore": "Wie funktioniert das?"
+  "collectorMore": "Wie funktioniert das?",
+  "runTrailToNext": "noch {km} km bis Wegmarke {number}",
+  "runTrailAtWaymark": "An Wegmarke {number} – Aufgaben offen",
+  "runTrailComplete": "Wanderweg geschafft"
 }

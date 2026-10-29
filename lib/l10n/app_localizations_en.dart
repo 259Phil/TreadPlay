@@ -2116,4 +2116,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get collectorMore => 'How does it work?';
+
+  @override
+  String runTrailToNext(String km, int number) {
+    return '$km km to waymark $number';
+  }
+
+  @override
+  String runTrailAtWaymark(int number) {
+    return 'At waymark $number – tasks open';
+  }
+
+  @override
+  String get runTrailComplete => 'Trail complete';
 }

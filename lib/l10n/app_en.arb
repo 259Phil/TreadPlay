@@ -1883,5 +1883,25 @@
       }
     }
   },
-  "collectorMore": "How does it work?"
+  "collectorMore": "How does it work?",
+  "runTrailToNext": "{km} km to waymark {number}",
+  "@runTrailToNext": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "runTrailAtWaymark": "At waymark {number} – tasks open",
+  "@runTrailAtWaymark": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "runTrailComplete": "Trail complete"
 }

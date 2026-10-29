@@ -14,6 +14,7 @@ import '../../ui/skin.dart';
 import '../../widgets/breath_bar.dart';
 import '../../widgets/companion_figure.dart';
 import '../../widgets/format.dart';
+import 'run_trail.dart';
 import 'sweet_spot_gauge.dart';
 
 class RunScreen extends ConsumerStatefulWidget {
@@ -93,152 +94,173 @@ class _RunScreenState extends ConsumerState<RunScreen>
 
     final skin = TreadSkin.of(context);
     final leather = skin.style == TreadStyle.leather;
+    final game = ref.watch(gameProvider);
+    final spot = RunTrailSpot(
+      game.wanderweg,
+      game.totals.distanceM + e.distanceM,
+    );
+    final moving = !standing;
     return PopScope(
       canPop: false,
       child: Scaffold(
         backgroundColor: skin.canvas,
-        body: SafeArea(
-          child: Stack(
-            children: [
-              ListView(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+        body: Stack(
+          children: [
+            Positioned.fill(
+              child: IgnorePointer(
+                child: RunTrailMap(
+                  spot: spot,
+                  companion: e.companion,
+                  moving: moving,
+                ),
+              ),
+            ),
+            SafeArea(
+              child: Stack(
                 children: [
-                  _Portrait(view: view),
-                  const SizedBox(height: 8),
-                  _LpCounter(
-                    lp: e.lp,
-                    style: leather
-                        ? skin
-                              .display(64, color: TreadColors.brass)
-                              .copyWith(
-                                shadows: const [
-                                  Shadow(
-                                    color: Color(0xCC000000),
-                                    offset: Offset(0, 2),
-                                    blurRadius: 5,
-                                  ),
-                                ],
-                              )
-                        : theme.textTheme.displayLarge?.copyWith(
-                            color: TreadColors.brass,
-                            fontWeight: FontWeight.bold,
-                          ),
-                  ),
-                  Text(l.lpThisRun, textAlign: TextAlign.center),
-                  if (!e.earnsLp) ...[
-                    const SizedBox(height: 12),
-                    Card(
-                      key: const Key('run-no-lp'),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Text(
-                          l.runNoLp,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(color: TreadColors.copper),
-                        ),
+                  ListView(
+                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+                    children: [
+                      _Portrait(view: view),
+                      const SizedBox(height: 8),
+                      _LpCounter(
+                        lp: e.lp,
+                        style: leather
+                            ? skin
+                                  .display(64, color: TreadColors.brass)
+                                  .copyWith(
+                                    shadows: const [
+                                      Shadow(
+                                        color: Color(0xCC000000),
+                                        offset: Offset(0, 2),
+                                        blurRadius: 5,
+                                      ),
+                                    ],
+                                  )
+                            : theme.textTheme.displayLarge?.copyWith(
+                                color: TreadColors.brass,
+                                fontWeight: FontWeight.bold,
+                              ),
                       ),
-                    ),
-                  ],
-                  const SizedBox(height: 24),
-                  _StatCard(
-                    leather: leather,
-                    child: Row(
-                      children: [
-                        _Stat(
-                          l.distance,
-                          l.kmValue(formatKm(context, e.distanceM)),
-                          onLongPress: device == null
-                              ? null
-                              : () => setState(() => _gpsDebug = !_gpsDebug),
-                        ),
-                        _Stat(l.time, formatDuration(e.elapsed)),
-                        _Stat(
-                          l.pace,
-                          l.paceValue(formatPace(standing ? null : e.pace)),
+                      Text(l.lpThisRun, textAlign: TextAlign.center),
+                      if (!e.earnsLp) ...[
+                        const SizedBox(height: 12),
+                        Card(
+                          key: const Key('run-no-lp'),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Text(
+                              l.runNoLp,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(color: TreadColors.copper),
+                            ),
+                          ),
                         ),
                       ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  BreathBar(breath: e.breathLeft, tank: e.tankSize),
-                  const SizedBox(height: 24),
-                  SweetSpotGauge(
-                    type: e.companion.type,
-                    speedKmh: e.speedKmh,
-                    widenKmh: e.companion.sweetSpotWidenKmh,
-                  ),
-                  const SizedBox(height: 4),
-                  if (hint != null) _GpsHint(device: device, hint: hint, l: l),
-                  if (kIsWeb && device != null && e.earnsLp)
-                    Text(
-                      l.runWebGpsHint,
-                      key: const Key('run-web-gps-hint'),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: TreadColors.muted,
-                        fontSize: 12,
-                      ),
-                    ),
-                  const SizedBox(height: 24),
-                  if (view.simulator case final sim?) ...[
-                    _DemoPanel(sim: sim),
-                    const SizedBox(height: 24),
-                  ],
-                  SizedBox(
-                    height: 64,
-                    child: FilledButton.icon(
-                      style: leather
-                          ? skinButtonStyle(
-                              skin,
-                              SkinButtonKind.danger,
-                              height: 64,
-                            )
-                          : FilledButton.styleFrom(
-                              backgroundColor: TreadColors.stop,
-                              foregroundColor: TreadColors.text,
+                      const SizedBox(height: 24),
+                      _StatCard(
+                        leather: leather,
+                        child: Row(
+                          children: [
+                            _Stat(
+                              l.distance,
+                              l.kmValue(formatKm(context, e.distanceM)),
+                              onLongPress: device == null
+                                  ? null
+                                  : () =>
+                                        setState(() => _gpsDebug = !_gpsDebug),
                             ),
-                      icon: leather
-                          ? const SkinIcon(SkinIcons.stop, size: 36)
-                          : const Icon(Icons.stop, size: 32),
-                      label: Text(
-                        l.stopRun,
-                        style: const TextStyle(fontSize: 22),
+                            _Stat(l.time, formatDuration(e.elapsed)),
+                            _Stat(
+                              l.pace,
+                              l.paceValue(formatPace(standing ? null : e.pace)),
+                            ),
+                          ],
+                        ),
                       ),
-                      onPressed: _stop,
+                      const SizedBox(height: 24),
+                      BreathBar(breath: e.breathLeft, tank: e.tankSize),
+                      const SizedBox(height: 24),
+                      SweetSpotGauge(
+                        type: e.companion.type,
+                        speedKmh: e.speedKmh,
+                        widenKmh: e.companion.sweetSpotWidenKmh,
+                      ),
+                      const SizedBox(height: 4),
+                      if (hint != null)
+                        _GpsHint(device: device, hint: hint, l: l),
+                      if (kIsWeb && device != null && e.earnsLp)
+                        Text(
+                          l.runWebGpsHint,
+                          key: const Key('run-web-gps-hint'),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: TreadColors.muted,
+                            fontSize: 12,
+                          ),
+                        ),
+                      const SizedBox(height: 24),
+                      if (view.simulator case final sim?) ...[
+                        _DemoPanel(sim: sim),
+                        const SizedBox(height: 24),
+                      ],
+                      SizedBox(
+                        height: 64,
+                        child: FilledButton.icon(
+                          style: leather
+                              ? skinButtonStyle(
+                                  skin,
+                                  SkinButtonKind.danger,
+                                  height: 64,
+                                )
+                              : FilledButton.styleFrom(
+                                  backgroundColor: TreadColors.stop,
+                                  foregroundColor: TreadColors.text,
+                                ),
+                          icon: leather
+                              ? const SkinIcon(SkinIcons.stop, size: 36)
+                              : const Icon(Icons.stop, size: 32),
+                          label: Text(
+                            l.stopRun,
+                            style: const TextStyle(fontSize: 22),
+                          ),
+                          onPressed: _stop,
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (_gpsDebug && device != null)
+                    Positioned(
+                      top: 4,
+                      left: 8,
+                      child: IgnorePointer(child: _GpsReadoutLine(device)),
+                    ),
+                  IgnorePointer(
+                    child: AnimatedBuilder(
+                      animation: _kaching,
+                      builder: (context, _) {
+                        final t = _kaching.value;
+                        if (t == 0 || t == 1) return const SizedBox.shrink();
+                        return Align(
+                          alignment: Alignment(0, -0.45 - t * 0.4),
+                          child: Opacity(
+                            opacity: 1 - t,
+                            child: Text(
+                              '+${l.lpAmount(formatNumber(context, _lastGainLp))}',
+                              style: theme.textTheme.headlineMedium?.copyWith(
+                                color: TreadColors.brass,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],
               ),
-              if (_gpsDebug && device != null)
-                Positioned(
-                  top: 4,
-                  left: 8,
-                  child: IgnorePointer(child: _GpsReadoutLine(device)),
-                ),
-              IgnorePointer(
-                child: AnimatedBuilder(
-                  animation: _kaching,
-                  builder: (context, _) {
-                    final t = _kaching.value;
-                    if (t == 0 || t == 1) return const SizedBox.shrink();
-                    return Align(
-                      alignment: Alignment(0, -0.45 - t * 0.4),
-                      child: Opacity(
-                        opacity: 1 - t,
-                        child: Text(
-                          '+${l.lpAmount(formatNumber(context, _lastGainLp))}',
-                          style: theme.textTheme.headlineMedium?.copyWith(
-                            color: TreadColors.brass,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

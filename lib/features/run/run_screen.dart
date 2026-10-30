@@ -34,6 +34,8 @@ class _RunScreenState extends ConsumerState<RunScreen>
   int _lastBlocks = 0;
   double _lastGainLp = 0;
 
+  final RunTrailLook _look = RunTrailLook.fromUrl();
+
   /// Hidden developer readout, toggled by a long press on the distance.
   bool _gpsDebug = false;
 
@@ -106,125 +108,144 @@ class _RunScreenState extends ConsumerState<RunScreen>
         backgroundColor: skin.canvas,
         body: Stack(
           children: [
-            Positioned.fill(
-              child: IgnorePointer(
-                child: RunTrailMap(
-                  spot: spot,
-                  companion: e.companion,
-                  moving: moving,
-                ),
-              ),
-            ),
             SafeArea(
               child: Stack(
                 children: [
-                  ListView(
-                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
-                    children: [
-                      _Portrait(view: view),
-                      const SizedBox(height: 8),
-                      _LpCounter(
-                        lp: e.lp,
-                        style: leather
-                            ? skin
-                                  .display(64, color: TreadColors.brass)
-                                  .copyWith(
-                                    shadows: const [
-                                      Shadow(
-                                        color: Color(0xCC000000),
-                                        offset: Offset(0, 2),
-                                        blurRadius: 5,
-                                      ),
-                                    ],
-                                  )
-                            : theme.textTheme.displayLarge?.copyWith(
-                                color: TreadColors.brass,
-                                fontWeight: FontWeight.bold,
-                              ),
-                      ),
-                      Text(l.lpThisRun, textAlign: TextAlign.center),
-                      if (!e.earnsLp) ...[
-                        const SizedBox(height: 12),
-                        Card(
-                          key: const Key('run-no-lp'),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Text(
-                              l.runNoLp,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(color: TreadColors.copper),
-                            ),
-                          ),
-                        ),
-                      ],
-                      const SizedBox(height: 24),
-                      _StatCard(
-                        leather: leather,
-                        child: Row(
+                  CustomScrollView(
+                    slivers: [
+                      SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
+                        sliver: SliverList.list(
                           children: [
-                            _Stat(
-                              l.distance,
-                              l.kmValue(formatKm(context, e.distanceM)),
-                              onLongPress: device == null
-                                  ? null
-                                  : () =>
-                                        setState(() => _gpsDebug = !_gpsDebug),
+                            _Portrait(view: view),
+                            const SizedBox(height: 8),
+                            _LpCounter(
+                              lp: e.lp,
+                              style: leather
+                                  ? skin
+                                        .display(64, color: TreadColors.brass)
+                                        .copyWith(
+                                          shadows: const [
+                                            Shadow(
+                                              color: Color(0xCC000000),
+                                              offset: Offset(0, 2),
+                                              blurRadius: 5,
+                                            ),
+                                          ],
+                                        )
+                                  : theme.textTheme.displayLarge?.copyWith(
+                                      color: TreadColors.brass,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                             ),
-                            _Stat(l.time, formatDuration(e.elapsed)),
-                            _Stat(
-                              l.pace,
-                              l.paceValue(formatPace(standing ? null : e.pace)),
+                            Text(l.lpThisRun, textAlign: TextAlign.center),
+                            if (!e.earnsLp) ...[
+                              const SizedBox(height: 12),
+                              Card(
+                                key: const Key('run-no-lp'),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(12),
+                                  child: Text(
+                                    l.runNoLp,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      color: TreadColors.copper,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                            const SizedBox(height: 24),
+                            _StatCard(
+                              leather: leather,
+                              child: Row(
+                                children: [
+                                  _Stat(
+                                    l.distance,
+                                    l.kmValue(formatKm(context, e.distanceM)),
+                                    onLongPress: device == null
+                                        ? null
+                                        : () => setState(
+                                            () => _gpsDebug = !_gpsDebug,
+                                          ),
+                                  ),
+                                  _Stat(l.time, formatDuration(e.elapsed)),
+                                  _Stat(
+                                    l.pace,
+                                    l.paceValue(
+                                      formatPace(standing ? null : e.pace),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            BreathBar(breath: e.breathLeft, tank: e.tankSize),
+                            const SizedBox(height: 24),
+                            SweetSpotGauge(
+                              type: e.companion.type,
+                              speedKmh: e.speedKmh,
+                              widenKmh: e.companion.sweetSpotWidenKmh,
+                            ),
+                            const SizedBox(height: 4),
+                            if (hint != null)
+                              _GpsHint(device: device, hint: hint, l: l),
+                            if (kIsWeb && device != null && e.earnsLp)
+                              Text(
+                                l.runWebGpsHint,
+                                key: const Key('run-web-gps-hint'),
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: TreadColors.muted,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            const SizedBox(height: 24),
+                            if (view.simulator case final sim?) ...[
+                              _DemoPanel(sim: sim),
+                              const SizedBox(height: 24),
+                            ],
+                            SizedBox(
+                              height: 64,
+                              child: FilledButton.icon(
+                                style: leather
+                                    ? skinButtonStyle(
+                                        skin,
+                                        SkinButtonKind.danger,
+                                        height: 64,
+                                      )
+                                    : FilledButton.styleFrom(
+                                        backgroundColor: TreadColors.stop,
+                                        foregroundColor: TreadColors.text,
+                                      ),
+                                icon: leather
+                                    ? const SkinIcon(SkinIcons.stop, size: 36)
+                                    : const Icon(Icons.stop, size: 32),
+                                label: Text(
+                                  l.stopRun,
+                                  style: const TextStyle(fontSize: 22),
+                                ),
+                                onPressed: _stop,
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 24),
-                      BreathBar(breath: e.breathLeft, tank: e.tankSize),
-                      const SizedBox(height: 24),
-                      SweetSpotGauge(
-                        type: e.companion.type,
-                        speedKmh: e.speedKmh,
-                        widenKmh: e.companion.sweetSpotWidenKmh,
-                      ),
-                      const SizedBox(height: 4),
-                      if (hint != null)
-                        _GpsHint(device: device, hint: hint, l: l),
-                      if (kIsWeb && device != null && e.earnsLp)
-                        Text(
-                          l.runWebGpsHint,
-                          key: const Key('run-web-gps-hint'),
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: TreadColors.muted,
-                            fontSize: 12,
+                      // The Wanderweg only in the free space below the
+                      // controls, never behind them.
+                      SliverFillRemaining(
+                        hasScrollBody: false,
+                        fillOverscroll: false,
+                        child: SizedBox(
+                          height: _look.minHeight,
+                          child: IgnorePointer(
+                            child: RunTrailMap(
+                              spot: spot,
+                              companion: e.companion,
+                              moving: moving,
+                              look: _look,
+                            ),
                           ),
-                        ),
-                      const SizedBox(height: 24),
-                      if (view.simulator case final sim?) ...[
-                        _DemoPanel(sim: sim),
-                        const SizedBox(height: 24),
-                      ],
-                      SizedBox(
-                        height: 64,
-                        child: FilledButton.icon(
-                          style: leather
-                              ? skinButtonStyle(
-                                  skin,
-                                  SkinButtonKind.danger,
-                                  height: 64,
-                                )
-                              : FilledButton.styleFrom(
-                                  backgroundColor: TreadColors.stop,
-                                  foregroundColor: TreadColors.text,
-                                ),
-                          icon: leather
-                              ? const SkinIcon(SkinIcons.stop, size: 36)
-                              : const Icon(Icons.stop, size: 32),
-                          label: Text(
-                            l.stopRun,
-                            style: const TextStyle(fontSize: 22),
-                          ),
-                          onPressed: _stop,
                         ),
                       ),
                     ],

@@ -61,14 +61,48 @@ void main() {
     final spot = RunTrailSpot(reached(2), 3200);
     final c = Companion.pebble();
 
-    testWidgets('A shows the trail map with the companion', (tester) async {
-      await tester.pumpWidget(
-        host(RunTrailMap(spot: spot, companion: c, moving: false)),
-      );
-      await tester.pumpAndSettle();
-      expect(find.byKey(const Key('run-trail-a')), findsOneWidget);
-      expect(find.byKey(const Key('run-trail-figure')), findsOneWidget);
-      expect(find.text('noch 0,9 km bis Wegmarke 3'), findsOneWidget);
+    for (final (look, key) in [
+      (RunTrailLook.calm, 'run-trail-calm'),
+      (RunTrailLook.parchment, 'run-trail-parchment'),
+      (RunTrailLook.horizon, 'run-trail-horizon'),
+    ]) {
+      testWidgets('${look.name} shows the trail with the companion', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          host(
+            SizedBox(
+              height: 300,
+              child: RunTrailMap(
+                spot: spot,
+                companion: c,
+                moving: false,
+                look: look,
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(find.byKey(Key(key)), findsOneWidget);
+        expect(find.byKey(const Key('run-trail-figure')), findsOneWidget);
+        expect(find.text('noch 0,9 km bis Wegmarke 3'), findsOneWidget);
+        // Everything stays inside the map's own box.
+        final box = tester.getRect(find.byType(RunTrailMap)).inflate(0.5);
+        final fig = tester.getRect(find.byKey(const Key('run-trail-figure')));
+        final label = tester.getRect(find.byKey(const Key('run-trail-label')));
+        expect(
+          box.contains(fig.topLeft) && box.contains(fig.bottomRight),
+          isTrue,
+        );
+        expect(
+          box.contains(label.topLeft) && box.contains(label.bottomRight),
+          isTrue,
+        );
+      });
+    }
+
+    test('preview switch defaults to the calm look', () {
+      expect(RunTrailLook.fromUrl(), RunTrailLook.calm);
     });
 
     test('zooms in so walking pace moves the companion visibly', () {

@@ -6,10 +6,15 @@ class MovementSample {
     required this.speedKmh,
     required this.distanceM,
     required this.steps,
+    this.speedReady = true,
   });
 
   final DateTime time;
   final double speedKmh;
   final double distanceM;
   final int? steps;
+
+  /// False while too little movement was seen for [speedKmh] to be shown as
+  /// a tempo (it is still the best guess and used for the sweet spot).
+  final bool speedReady;
 }

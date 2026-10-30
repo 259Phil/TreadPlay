@@ -422,6 +422,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get pace => 'Tempo';
 
   @override
+  String get paceAverage => 'Ø Tempo';
+
+  @override
   String paceValue(String pace) {
     return '$pace /km';
   }

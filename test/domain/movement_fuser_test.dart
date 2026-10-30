@@ -52,4 +52,32 @@ void main() {
     expect(s.distanceM, 0);
     expect(s.speedKmh, 5);
   });
+
+  test('with positions, the live speed is fitted and the tempo waits', () {
+    final fuser = MovementFuser();
+    fuser.tick(at(0));
+    late var s = fuser.tick(at(0));
+    for (var i = 1; i <= 12; i++) {
+      // 3 m/s north; the filter counts 6 m every other second.
+      fuser.addGps(
+        at(i),
+        i.isEven ? 6 : 0,
+        accuracyM: 5,
+        speedKmh: i.isEven ? 30 : 0,
+        x: 0,
+        y: 3.0 * i,
+      );
+      s = fuser.tick(at(i));
+      if (i < 4) expect(s.speedReady, isFalse);
+    }
+    expect(s.speedKmh, closeTo(10.8, 1e-6));
+    expect(s.speedReady, isTrue);
+  });
+
+  test('standing reported by the filter gives 0', () {
+    final fuser = MovementFuser();
+    fuser.addGps(at(1), 0, accuracyM: 5, x: 0, y: 0, moving: false);
+    final s = fuser.tick(at(1));
+    expect(s.speedKmh, 0);
+  });
 }

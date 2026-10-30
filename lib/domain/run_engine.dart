@@ -53,6 +53,9 @@ class RunEngine {
   /// Pieces paid out so far ([piecesPerBreath] make one Breath block).
   int pieces = 0;
   double speedKmh = 0;
+
+  /// False while too little movement was seen to show a live tempo.
+  bool speedReady = false;
   double factor = 0;
   Duration elapsed = Duration.zero;
 
@@ -91,8 +94,18 @@ class RunEngine {
       ) >
       0;
 
-  /// Average pace of the run, null before the first 10 m.
+  /// Average pace of the whole run (start and stops included), null before
+  /// the first 10 m. For the summary and history, not the live display.
   Duration? get pace => paceOf(elapsed, distanceM);
+
+  /// Below this, there is no live tempo to show.
+  static const double minLivePaceKmh = 2;
+
+  /// Pace per km at the current speed, the same speed the gauge and the gait
+  /// check use. Null while standing or before enough movement was seen.
+  Duration? get livePace => !speedReady || speedKmh < minLivePaceKmh
+      ? null
+      : Duration(milliseconds: (3600 * 1000 / speedKmh).round());
 
   double get breathUsed => breathAtStart - breathLeft;
 
@@ -124,6 +137,7 @@ class RunEngine {
       steps += sampleSteps;
     }
     speedKmh = sample.speedKmh;
+    speedReady = sample.speedReady;
     if (speedKmh > maxPlausibleKmh) _fastTime += dt;
     if (inBand) _inBandTime += dt;
 

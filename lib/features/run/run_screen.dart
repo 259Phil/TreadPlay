@@ -80,7 +80,6 @@ class _RunScreenState extends ConsumerState<RunScreen>
       final DeviceMovementSource d => d,
       _ => null,
     };
-    // Standing still: no live tempo, the average would only show drift.
     final standing = e.speedKmh < 0.5;
     final hint = !e.earnsLp
         ? null
@@ -170,9 +169,7 @@ class _RunScreenState extends ConsumerState<RunScreen>
                                   _Stat(l.time, formatDuration(e.elapsed)),
                                   _Stat(
                                     l.pace,
-                                    l.paceValue(
-                                      formatPace(standing ? null : e.pace),
-                                    ),
+                                    l.paceValue(formatPace(e.livePace)),
                                   ),
                                 ],
                               ),
@@ -391,7 +388,8 @@ class _GpsReadoutLine extends StatelessWidget {
           : 'GPS ±${r.accuracyM?.toStringAsFixed(0) ?? '?'} m · '
                 'ok ${r.accepted} · drop ${r.rejected} · '
                 'jump ${r.jumps} · gap ${r.gaps}'
-                '${r.warmingUp ? ' · warm-up' : ''} · ${r.verdict?.name ?? ''}',
+                '${r.warmingUp ? ' · warm-up' : ''} · ${r.verdict?.name ?? ''}'
+                ' · doppler ${r.dopplerKmh?.toStringAsFixed(1) ?? '–'}',
       key: const Key('run-gps-readout'),
       style: const TextStyle(color: TreadColors.muted, fontSize: 10),
     ),

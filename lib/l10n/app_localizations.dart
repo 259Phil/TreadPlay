@@ -818,6 +818,12 @@ abstract class AppLocalizations {
   /// **'Pace'**
   String get pace;
 
+  /// Average pace of a whole run (summary, history), not the live tempo
+  ///
+  /// In en, this message translates to:
+  /// **'Avg pace'**
+  String get paceAverage;
+
   /// No description provided for @paceValue.
   ///
   /// In en, this message translates to:

@@ -112,7 +112,7 @@ class SummaryScreen extends ConsumerWidget {
                           l.kmValue(formatKm(context, run.distanceM)),
                         ),
                         row(l.time, formatDuration(run.duration)),
-                        row(l.pace, l.paceValue(formatPace(run.pace))),
+                        row(l.paceAverage, l.paceValue(formatPace(run.pace))),
                         row(
                           l.sweetSpotShare,
                           formatShare(context, run.sweetSpotShare),

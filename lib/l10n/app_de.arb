@@ -121,6 +121,7 @@
   "forgeClearKeep": "Behalten",
   "pace": "Tempo",
   "paceValue": "{pace} /km",
+  "paceAverage": "Ø Tempo",
   "summaryBreathLeft": "Puste übrig",
   "runNoLp": "Bewegungszugriff ist aus. Die Strecke wird nicht gelesen, dieser Lauf bringt keine LP.",
   "summaryNoLp": "Bewegungszugriff war aus, darum brachte dieser Lauf keine LP.",

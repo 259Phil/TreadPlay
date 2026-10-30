@@ -240,7 +240,7 @@ class RunDetailScreen extends ConsumerWidget {
                           l.kmValue(formatKm(context, run.distanceM)),
                         ),
                         _Row(l.time, formatDuration(run.duration)),
-                        _Row(l.pace, l.paceValue(formatPace(run.pace))),
+                        _Row(l.paceAverage, l.paceValue(formatPace(run.pace))),
                         _Row(
                           l.breathUsed,
                           formatNumber(context, run.breathUsed),

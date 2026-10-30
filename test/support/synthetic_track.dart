@@ -5,7 +5,8 @@ import 'package:treadplay/domain/gps_filter.dart';
 /// Builds synthetic GPS fixes around a fixed origin with correlated noise
 /// (GPS errors drift slowly rather than jumping every second).
 class SyntheticTrack {
-  SyntheticTrack({int seed = 1, this.correlation = 0.85}) : _rng = Random(seed);
+  SyntheticTrack({int seed = 1, this.correlation = 0.85, this.jitterM = 0})
+    : _rng = Random(seed);
 
   static const double lat0 = 52.52;
   static const double lon0 = 13.405;
@@ -13,10 +14,17 @@ class SyntheticTrack {
 
   final Random _rng;
   final double correlation;
+
+  /// Extra white noise per fix (sigma per axis) on top of the slow drift.
+  final double jitterM;
   final DateTime t0 = DateTime.utc(2026, 10, 23, 8);
 
   final List<GpsFix> fixes = [];
+
+  /// True speed in m/s at each fix in [fixes].
+  final List<double> trueSpeeds = [];
   double trueDistanceM = 0;
+  double _speed = 0;
 
   double _x = 0;
   double _y = 0;
@@ -36,8 +44,11 @@ class SyntheticTrack {
     final k = sqrt(1 - correlation * correlation);
     _nx = correlation * _nx + k * sigma * _gauss();
     _ny = correlation * _ny + k * sigma * _gauss();
-    final mx = _x + _nx + dx;
-    final my = _y + _ny + dy;
+    final jx = jitterM == 0 ? 0.0 : jitterM * _gauss();
+    final jy = jitterM == 0 ? 0.0 : jitterM * _gauss();
+    final mx = _x + _nx + dx + jx;
+    final my = _y + _ny + dy + jy;
+    trueSpeeds.add(_speed);
     fixes.add(
       GpsFix(
         time: t0.add(Duration(seconds: _second)),
@@ -58,6 +69,7 @@ class SyntheticTrack {
     bool countTruth = true,
   }) {
     final h = headingDeg * pi / 180;
+    _speed = speedMps;
     for (var i = 0; i < seconds; i++) {
       _second++;
       _x += speedMps * sin(h);
@@ -79,6 +91,7 @@ class SyntheticTrack {
   /// Same timestamp as the previous fix again.
   void duplicate() {
     final last = fixes.last;
+    trueSpeeds.add(_speed);
     fixes.add(
       GpsFix(
         time: last.time,

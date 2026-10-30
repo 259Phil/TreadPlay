@@ -420,6 +420,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pace => 'Pace';
 
   @override
+  String get paceAverage => 'Avg pace';
+
+  @override
   String paceValue(String pace) {
     return '$pace /km';
   }

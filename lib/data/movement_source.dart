@@ -32,6 +32,7 @@ class GpsReadout {
     required this.gaps,
     required this.warmingUp,
     required this.verdict,
+    this.dopplerKmh,
   });
 
   final double? accuracyM;
@@ -41,6 +42,9 @@ class GpsReadout {
   final int gaps;
   final bool warmingUp;
   final GpsVerdict? verdict;
+
+  /// The device's own speed (`coords.speed`), null when it reports none.
+  final double? dopplerKmh;
 }
 
 /// GPS distance and pedometer steps from this device (GPS only on Web).
@@ -110,6 +114,7 @@ class DeviceMovementSource implements MovementSource {
       gaps: filter.gaps,
       warmingUp: filter.warmingUp,
       verdict: filter.lastVerdict,
+      dopplerKmh: p.speed > 0 ? p.speed * 3.6 : null,
     );
     // Rejected fixes do not count as a live GPS signal, so on phones the
     // step counter takes over while GPS is unusable.
@@ -119,6 +124,11 @@ class DeviceMovementSource implements MovementSource {
       meters,
       accuracyM: p.accuracy,
       speedKmh: filter.speedMps * 3.6,
+      x: filter.rawX,
+      y: filter.rawY,
+      moving: filter.moving,
+      // Web reports 0 when the browser has no speed; LiveSpeed ignores it.
+      dopplerMps: p.speed,
     );
   }
 

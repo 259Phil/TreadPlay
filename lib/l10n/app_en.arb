@@ -265,6 +265,10 @@
     }
   },
   "pace": "Pace",
+  "paceAverage": "Avg pace",
+  "@paceAverage": {
+    "description": "Average pace of a whole run (summary, history), not the live tempo"
+  },
   "paceValue": "{pace} /km",
   "summaryBreathLeft": "Breath left",
   "runNoLp": "Movement access is off. Distance is not read and this run earns no LP.",

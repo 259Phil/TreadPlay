@@ -221,6 +221,11 @@ class GpsFilter {
   DateTime? _candTime;
   double _candD = 0;
 
+  /// Last accepted fix in meters east and north of the first fix, raw (not
+  /// smoothed), for the live speed.
+  double get rawX => _lastRawX;
+  double get rawY => _lastRawY;
+
   /// True while the filter believes the device is moving.
   bool get moving => _moving;
 

@@ -386,7 +386,7 @@ void main() {
     expect(find.text('Run complete'), findsOneWidget);
     // The starter's Stride 9.2: 2.5 × 0.92 LP per Breath point.
     expect(find.text('2.3 LP'), findsOneWidget);
-    expect(find.text('Pace'), findsOneWidget);
+    expect(find.text('Avg pace'), findsOneWidget);
     expect(find.textContaining(' /km'), findsOneWidget);
     expect(find.text('Breath left'), findsOneWidget);
     expect(find.text('5 / 6'), findsOneWidget);

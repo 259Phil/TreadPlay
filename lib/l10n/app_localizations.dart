@@ -686,6 +686,12 @@ abstract class AppLocalizations {
   /// **'Send feedback'**
   String get settingsFeedback;
 
+  /// No description provided for @settingsFeedbackCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'No email app found. Email address copied.'**
+  String get settingsFeedbackCopied;
+
   /// No description provided for @settingsMovement.
   ///
   /// In en, this message translates to:

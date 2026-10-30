@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -118,7 +119,7 @@ class SettingsScreen extends ConsumerWidget {
             title: Text(l.settingsFeedback),
             subtitle: const Text(feedbackEmail),
             trailing: const Icon(Icons.open_in_new, size: 18),
-            onTap: _sendFeedback,
+            onTap: () => _sendFeedback(context, l.settingsFeedbackCopied),
           ),
           const Divider(),
           ListTile(
@@ -154,19 +155,25 @@ class SettingsScreen extends ConsumerWidget {
 
 const String feedbackEmail = 'kontakt.bender.interactive@gmail.com';
 
-Future<void> _sendFeedback() async {
-  final info = await PackageInfo.fromPlatform();
+Future<void> _sendFeedback(BuildContext context, String copiedMessage) async {
+  final messenger = ScaffoldMessenger.of(context);
+  final version = await PackageInfo.fromPlatform()
+      .then((info) => ' – v${info.version}')
+      .catchError((_) => '');
   final platform = kIsWeb
       ? 'Web'
       : defaultTargetPlatform == TargetPlatform.iOS
       ? 'iOS'
       : 'Android';
-  final subject = 'TreadPlay Feedback – $platform – v${info.version}';
-  await launchUrl(
+  final subject = 'TreadPlay Feedback – $platform$version';
+  final opened = await launchUrl(
     Uri(
       scheme: 'mailto',
       path: feedbackEmail,
       query: 'subject=${Uri.encodeComponent(subject)}',
     ),
-  );
+  ).catchError((_) => false);
+  if (opened) return;
+  await Clipboard.setData(const ClipboardData(text: feedbackEmail));
+  messenger.showSnackBar(SnackBar(content: Text(copiedMessage)));
 }

@@ -7,6 +7,7 @@ class GpsFix {
     required this.latitude,
     required this.longitude,
     required this.accuracyM,
+    this.speedMps,
   });
 
   /// When the fix was taken (platform timestamp).
@@ -16,6 +17,10 @@ class GpsFix {
 
   /// Horizontal accuracy radius in meters (0 or negative = unknown).
   final double accuracyM;
+
+  /// Speed the receiver measured (Doppler, `coords.speed`) in m/s; null or
+  /// not positive when unknown.
+  final double? speedMps;
 }
 
 /// Why a fix did not add distance.
@@ -59,16 +64,33 @@ enum GpsVerdict {
 /// detection delay costs no distance. While moving, distance is summed in
 /// steps of a few meters and the filter falls back to standing when the
 /// position stops making progress (see [stopAfter], [progressWindow]).
+///
+/// The receiver speed (`coords.speed`, Doppler) is independent of position
+/// drift: when it confirms walking or running, the filter starts at once
+/// with a small radius, accepts coarser fixes (iPhones outdoors report 35
+/// or 48 m), bridges short gaps and predicts the position with it (no lag).
+/// Above the foot limit it means a vehicle: nothing counts.
 class GpsFilter {
   GpsFilter({this.checkFixAge = false});
 
-  /// Hard upper limit for the accuracy radius.
-  static const double maxAccuracyM = 25;
+  /// Hard upper limit for the accuracy radius while moving. iPhones
+  /// outdoors often report 35 or 48 m for fixes that are much better than
+  /// that; only the cold-start values (65 m and worse) are useless.
+  static const double maxAccuracyM = 50;
+
+  /// Hard limit while standing without receiver speed: indoors the radius
+  /// says 25–45 m and the fixes scatter even more, so those must not start
+  /// a walk.
+  static const double stillMaxAccuracyM = 25;
+
+  /// Limit while moving without receiver speed.
+  static const double movingMaxAccuracyM = 35;
 
   /// Adaptive gate: a fix may be at most this much worse than the recent
   /// typical accuracy, but the gate never drops below [minAccuracyGateM].
   static const double adaptiveAccuracyFactor = 2.5;
-  static const double minAccuracyGateM = 15;
+  static const double minAccuracyGateM = 25;
+  static const double stillMinAccuracyGateM = 15;
 
   /// Warm-up ends after this many consecutive usable fixes, or at once with
   /// one fix at or below [warmUpGoodAccuracyM].
@@ -83,8 +105,10 @@ class GpsFilter {
   static const double maxAccelMps2 = 3;
 
   /// A longer silence (tab in background, tunnel) re-anchors without
-  /// distance.
-  static const Duration maxGap = Duration(seconds: 10);
+  /// distance. Shorter ones (a few inaccurate fixes in a row) are bridged
+  /// with the straight line when the jump gate finds it plausible.
+  static const Duration maxGap = Duration(seconds: 30);
+  static const Duration stillMaxGap = Duration(seconds: 10);
 
   /// On Web, fixes older than this when they arrive are cached ones.
   static const Duration maxFixAge = Duration(seconds: 10);
@@ -153,6 +177,26 @@ class GpsFilter {
   static const Duration progressWindow = Duration(seconds: 20);
   static const double minProgressMps = 0.3;
 
+  /// Receiver speed (Doppler) that confirms walking or running. Phones
+  /// report it from the carrier frequency shift, not from positions, so
+  /// position drift does not raise it. [dopplerFixes] fixes in a row must
+  /// agree.
+  static const double minDopplerMps = 1.0;
+  static const int dopplerFixes = 3;
+
+  /// Escape radius while the receiver speed confirms movement: the current
+  /// typical accuracy, clamped to [minEscapeM]..[dopplerEscapeMaxM], with
+  /// [dopplerConfirmS] confirmation.
+  static const double dopplerEscapeMaxM = 20;
+  static const double dopplerConfirmS = 2;
+
+  /// While moving, the Kalman position is predicted with the velocity of
+  /// the raw fixes over the last [velocityWindow] (least squares, at least
+  /// [minVelocitySpan]); without it the smoothed position lags tens of
+  /// meters behind at running pace with 35 m accuracy.
+  static const Duration velocityWindow = Duration(seconds: 10);
+  static const Duration minVelocitySpan = Duration(seconds: 4);
+
   /// Accuracy used when the platform reports none.
   static const double unknownAccuracyM = 20;
 
@@ -166,6 +210,11 @@ class GpsFilter {
   int rejected = 0;
   int jumps = 0;
   int gaps = 0;
+  int inaccurate = 0;
+  int stale = 0;
+  int duplicates = 0;
+  int warmUps = 0;
+  double? lastDopplerMps;
   double? lastAccuracyM;
   GpsVerdict? lastVerdict;
 
@@ -213,6 +262,15 @@ class GpsFilter {
   bool _moving = false;
   bool _hasMoved = false;
 
+  // Consecutive accepted fixes whose receiver speed says moving, and the
+  // way they add up to (speed × time) while standing.
+  int _dopRun = 0;
+  DateTime? _lastSeen;
+  double _dopDist = 0;
+
+  // How far the anchor followed the position before the first movement.
+  double _followed = 0;
+
   // Lightly smoothed position, its last [progressWindow] (oldest first) and
   // the pending escape (time and distance when the radius was left).
   double _ex = 0;
@@ -221,6 +279,9 @@ class GpsFilter {
   DateTime? _candTime;
   double _candD = 0;
 
+  // Raw accepted fixes of the last [velocityWindow] (oldest first).
+  final List<(DateTime, double, double)> _raw = [];
+
   /// Last accepted fix in meters east and north of the first fix, raw (not
   /// smoothed), for the live speed.
   double get rawX => _lastRawX;
@@ -228,6 +289,16 @@ class GpsFilter {
 
   /// True while the filter believes the device is moving.
   bool get moving => _moving;
+
+  /// Moving, or the receiver speed says so: poorer fixes and longer gaps
+  /// are usable then.
+  bool get _relaxed => _moving || dopplerMoving;
+
+  /// Accuracy limit for the next fix (developer readout).
+  double get accuracyGateM => _accuracyGate;
+
+  /// True while the receiver speed (Doppler) confirms movement.
+  bool get dopplerMoving => _dopRun >= dopplerFixes;
 
   /// True until the accuracy has settled.
   bool get warmingUp => !_warm;
@@ -260,6 +331,18 @@ class GpsFilter {
       accepted++;
     } else {
       rejected++;
+      switch (verdict.$1) {
+        case GpsVerdict.inaccurate:
+          inaccurate++;
+        case GpsVerdict.stale:
+          stale++;
+        case GpsVerdict.duplicate:
+          duplicates++;
+        case GpsVerdict.warmingUp:
+          warmUps++;
+        default:
+          break;
+      }
     }
     return verdict.$2;
   }
@@ -267,6 +350,8 @@ class GpsFilter {
   (GpsVerdict, double) _classify(GpsFix fix, DateTime? receivedAt) {
     final acc = fix.accuracyM > 0 ? fix.accuracyM : unknownAccuracyM;
     lastAccuracyM = acc;
+    final dop = fix.speedMps;
+    lastDopplerMps = dop != null && dop > 0 ? dop : null;
     final last = _lastTime;
     if (last != null && !fix.time.isAfter(last)) {
       return (GpsVerdict.duplicate, 0);
@@ -275,6 +360,20 @@ class GpsFilter {
         receivedAt != null &&
         receivedAt.difference(fix.time) > maxFixAge) {
       return (GpsVerdict.stale, 0);
+    }
+    // Receiver speed counts from every fresh fix, also an inaccurate one:
+    // it does not come from the position.
+    final seen = _lastSeen;
+    _lastSeen = fix.time;
+    if (dop != null && dop >= minDopplerMps && dop <= maxSpeedMps) {
+      _dopRun++;
+      if (!_moving && seen != null) {
+        final ds = fix.time.difference(seen).inMilliseconds / 1000;
+        _dopDist += dop * min(ds, 2.0);
+      }
+    } else {
+      _dopRun = 0;
+      _dopDist = 0;
     }
     final gate = _accuracyGate;
     _rememberAcc(acc);
@@ -286,10 +385,20 @@ class GpsFilter {
     final rx = (fix.longitude - _lon0!) * pi / 180 * _earthR * _cosLat0;
     final ry = (fix.latitude - _lat0!) * pi / 180 * _earthR;
 
+    // Receiver speed above the foot limit: a vehicle. Nothing counts, and
+    // the position starts over here so the ride is not bridged later.
+    if (dop != null && dop > maxSpeedMps) {
+      jumps++;
+      _restart(fix.time, rx, ry, acc);
+      return (GpsVerdict.jump, 0);
+    }
+
     // Long silence: start over from this fix, no distance across the gap.
-    if (last != null && fix.time.difference(last) > maxGap) {
+    if (last != null &&
+        fix.time.difference(last) > (_relaxed ? maxGap : stillMaxGap)) {
       gaps++;
       _restart(fix.time, rx, ry, acc);
+      _dopRun = 0;
       _warm = false;
       _warmGood = 0;
       _noteWarm(acc);
@@ -333,11 +442,24 @@ class GpsFilter {
     _lastRawY = ry;
     _lastAcc = acc;
 
+    _raw.add((fix.time, rx, ry));
+    while (_raw.length > 2 &&
+        fix.time.difference(_raw.first.$1) > velocityWindow) {
+      _raw.removeAt(0);
+    }
+
     // Kalman update, accuracy as standard deviation of the measurement.
     // Faster movement may turn harder: more process noise, less lag.
     final q = _moving
         ? processNoiseMps + speedProcessNoise * _segSpeed
         : stillProcessNoiseMps;
+    if (_moving && dopplerMoving) {
+      final v = _rawVelocity(dop);
+      if (v != null) {
+        _x += v.$1 * dt;
+        _y += v.$2 * dt;
+      }
+    }
     _var += dt * q * q;
     final k = _var / (_var + acc * acc);
     _x += k * (rx - _x);
@@ -370,10 +492,13 @@ class GpsFilter {
         span >= progressWindow &&
         _dist(_ex, _ey, old.$2, old.$3) <
             minProgressMps * span.inMilliseconds / 1000;
-    if (stalled ||
-        (moved < stepGate &&
-            sinceAnchor >= stopAfter &&
-            moved < minMovingMps * secs)) {
+    // While the receiver speed says moving, slow position progress is
+    // GPS lag, not a stop.
+    if (!dopplerMoving &&
+        (stalled ||
+            (moved < stepGate &&
+                sinceAnchor >= stopAfter &&
+                moved < minMovingMps * secs))) {
       // Standing again. The anchor stays at the last counted point: if
       // the walk goes on, the next start credits the rest of the last step
       // too.
@@ -382,6 +507,13 @@ class GpsFilter {
     }
     if (moved < stepGate) return (GpsVerdict.accepted, 0);
     _setAnchor(fix.time);
+    // Coarse accuracy lets single fixes pass the jump gate even in a car;
+    // over [velocityWindow] the raw fixes give the speed away.
+    if (_rawSpeed() > maxSpeedMps) {
+      jumps++;
+      _stop();
+      return (GpsVerdict.jump, 0);
+    }
     if (secs <= 0 || moved / secs < minWalkMps) {
       _stop();
       return (GpsVerdict.accepted, 0);
@@ -396,8 +528,13 @@ class GpsFilter {
   /// left the anchor, then credit the whole way from the anchor at once.
   (GpsVerdict, double) _still(DateTime t, double dt, double acc) {
     final noise = _medianAcc;
-    final radius = (escapeAccFactor * noise * max(1.0, noise / noiseKneeM))
-        .clamp(minEscapeM, maxEscapeM);
+    final doppler = dopplerMoving;
+    final radius = doppler
+        ? noise.clamp(minEscapeM, dopplerEscapeMaxM)
+        : (escapeAccFactor * noise * max(1.0, noise / noiseKneeM)).clamp(
+            minEscapeM,
+            maxEscapeM,
+          );
     final d = _dist(_ex, _ey, _ax, _ay);
     final cand = _candTime;
     if (cand == null) {
@@ -406,10 +543,12 @@ class GpsFilter {
         _candD = d;
         return (GpsVerdict.accepted, 0);
       }
-      if (!_hasMoved && d < anchorFollow * radius) {
+      if (!_hasMoved && !doppler && d < anchorFollow * radius) {
         final b = 1 - exp(-dt / anchorTauS);
-        _ax += b * (_x - _ax);
-        _ay += b * (_y - _ay);
+        final fx = b * (_x - _ax), fy = b * (_y - _ay);
+        _ax += fx;
+        _ay += fy;
+        _followed += sqrt(fx * fx + fy * fy);
       }
       return (GpsVerdict.accepted, 0);
     }
@@ -418,7 +557,8 @@ class GpsFilter {
       return (GpsVerdict.accepted, 0);
     }
     final secs = t.difference(cand).inMilliseconds / 1000;
-    if (secs >= confirmS && d >= _candD + minEscapeMps * secs) {
+    if (secs >= (doppler ? dopplerConfirmS : confirmS) &&
+        d >= _candD + minEscapeMps * secs) {
       _moving = true;
       _hasMoved = true;
       _candTime = null;
@@ -430,8 +570,15 @@ class GpsFilter {
       _x = _ex;
       _y = _ey;
       _var = max(_var, acc * acc / 4);
+      // The way the anchor followed was the start of this movement. With
+      // the receiver speed confirming it, the speed × time since then is
+      // the better measure when the lagging positions show less.
+      var credit = d + _followed;
+      if (doppler) credit = max(credit, _dopDist);
+      _followed = 0;
+      _dopDist = 0;
       _setAnchor(t);
-      return (GpsVerdict.accepted, d);
+      return (GpsVerdict.accepted, credit);
     }
     if (t.difference(cand) > escapeTimeout) {
       if (d < _candD + snapMps * secs) {
@@ -448,8 +595,46 @@ class GpsFilter {
     return (GpsVerdict.accepted, 0);
   }
 
+  /// Speed of the raw fixes over [velocityWindow] in m/s, 0 when unknown.
+  double _rawSpeed() {
+    final v = _rawVelocity(null, clamp: false);
+    return v == null ? 0 : sqrt(v.$1 * v.$1 + v.$2 * v.$2);
+  }
+
+  /// Least-squares velocity of the raw fixes in m/s, scaled to the receiver
+  /// speed when that confirms movement; null with too little data.
+  (double, double)? _rawVelocity(double? dop, {bool clamp = true}) {
+    if (_raw.length < 3) return null;
+    final t0 = _raw.first.$1;
+    if (_raw.last.$1.difference(t0) < minVelocitySpan) return null;
+    var st = 0.0, sx = 0.0, sy = 0.0;
+    for (final r in _raw) {
+      st += r.$1.difference(t0).inMilliseconds / 1000;
+      sx += r.$2;
+      sy += r.$3;
+    }
+    final n = _raw.length;
+    final mt = st / n, mx = sx / n, my = sy / n;
+    var stt = 0.0, stx = 0.0, sty = 0.0;
+    for (final r in _raw) {
+      final t = r.$1.difference(t0).inMilliseconds / 1000 - mt;
+      stt += t * t;
+      stx += t * (r.$2 - mx);
+      sty += t * (r.$3 - my);
+    }
+    if (stt <= 0) return null;
+    var vx = stx / stt, vy = sty / stt;
+    var v = sqrt(vx * vx + vy * vy);
+    if (v <= 0) return null;
+    if (!clamp) return (vx, vy);
+    var target = min(v, maxSpeedMps);
+    if (dopplerMoving && dop != null && dop > 0) target = min(dop, maxSpeedMps);
+    return (vx / v * target, vy / v * target);
+  }
+
   void _stop() {
     _moving = false;
+    _dopDist = 0;
     _segSpeed = 0;
     _speed = 0;
     _candTime = null;
@@ -488,6 +673,9 @@ class GpsFilter {
     _hasMoved = false;
     _candTime = null;
     _trail.clear();
+    _raw.clear();
+    _followed = 0;
+    _dopDist = 0;
     _ex = rx;
     _ey = ry;
   }
@@ -516,12 +704,18 @@ class GpsFilter {
   }
 
   double get _accuracyGate {
-    if (_recentAcc.length < 3) return maxAccuracyM;
+    final relaxed = _relaxed;
+    final cap = dopplerMoving
+        ? maxAccuracyM
+        : _moving
+        ? movingMaxAccuracyM
+        : stillMaxAccuracyM;
+    if (_recentAcc.length < 3) return cap;
     final sorted = [..._recentAcc]..sort();
     final median = sorted[sorted.length ~/ 2];
     return (median * adaptiveAccuracyFactor).clamp(
-      minAccuracyGateM,
-      maxAccuracyM,
+      relaxed ? minAccuracyGateM : stillMinAccuracyGateM,
+      cap,
     );
   }
 

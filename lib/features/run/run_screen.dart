@@ -385,11 +385,16 @@ class _GpsReadoutLine extends StatelessWidget {
     builder: (context, r, _) => Text(
       r == null
           ? 'GPS –'
-          : 'GPS ±${r.accuracyM?.toStringAsFixed(0) ?? '?'} m · '
-                'ok ${r.accepted} · drop ${r.rejected} · '
-                'jump ${r.jumps} · gap ${r.gaps}'
-                '${r.warmingUp ? ' · warm-up' : ''} · ${r.verdict?.name ?? ''}'
-                ' · doppler ${r.dopplerKmh?.toStringAsFixed(1) ?? '–'}',
+          : 'GPS ±${r.accuracyM?.toStringAsFixed(0) ?? '?'} m '
+                '(gate ${r.gateM?.toStringAsFixed(0) ?? '?'}) · '
+                'doppler ${r.dopplerKmh?.toStringAsFixed(1) ?? '–'} km/h'
+                '${r.dopplerMoving ? ' ✓' : ''} · '
+                '${r.moving ? 'moving' : 'still'}'
+                '${r.warmingUp ? ' · warm-up' : ''} · ${r.verdict?.name ?? ''}\n'
+                'ok ${r.accepted} · drop ${r.rejected}: '
+                'acc ${r.inaccurate} · jump ${r.jumps} · gap ${r.gaps} · '
+                'stale ${r.stale} · dup ${r.duplicates} · warm ${r.warmUps}',
+      textAlign: TextAlign.center,
       key: const Key('run-gps-readout'),
       style: const TextStyle(color: TreadColors.muted, fontSize: 10),
     ),

@@ -5,8 +5,15 @@ import 'package:treadplay/domain/gps_filter.dart';
 /// Builds synthetic GPS fixes around a fixed origin with correlated noise
 /// (GPS errors drift slowly rather than jumping every second).
 class SyntheticTrack {
-  SyntheticTrack({int seed = 1, this.correlation = 0.85, this.jitterM = 0})
-    : _rng = Random(seed);
+  SyntheticTrack({
+    int seed = 1,
+    this.correlation = 0.85,
+    this.jitterM = 0,
+    this.sigmaShare = 0.5,
+  }) : _rng = Random(seed);
+
+  /// Noise sigma per axis as a share of the reported accuracy.
+  final double sigmaShare;
 
   static const double lat0 = 52.52;
   static const double lon0 = 13.405;
@@ -40,7 +47,7 @@ class SyntheticTrack {
 
   void _emit(double accuracyM, {double dx = 0, double dy = 0}) {
     // Per-axis sigma of about half the reported radius, AR(1) in time.
-    final sigma = accuracyM / 2;
+    final sigma = accuracyM * sigmaShare;
     final k = sqrt(1 - correlation * correlation);
     _nx = correlation * _nx + k * sigma * _gauss();
     _ny = correlation * _ny + k * sigma * _gauss();
@@ -76,6 +83,20 @@ class SyntheticTrack {
       _y += speedMps * cos(h);
       if (countTruth) trueDistanceM += speedMps;
       if (record) _emit(accuracyM);
+    }
+  }
+
+  /// One fix per second at [speedMps] with the given accuracy per second.
+  void moveWith(
+    List<double> accuracies,
+    double speedMps, {
+    double headingDeg = 0,
+    double turnDegPerS = 0,
+  }) {
+    var h = headingDeg;
+    for (final acc in accuracies) {
+      move(1, speedMps, headingDeg: h, accuracyM: acc);
+      h += turnDegPerS;
     }
   }
 

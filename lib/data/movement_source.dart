@@ -33,6 +33,13 @@ class GpsReadout {
     required this.warmingUp,
     required this.verdict,
     this.dopplerKmh,
+    this.inaccurate = 0,
+    this.stale = 0,
+    this.duplicates = 0,
+    this.warmUps = 0,
+    this.gateM,
+    this.moving = false,
+    this.dopplerMoving = false,
   });
 
   final double? accuracyM;
@@ -45,6 +52,19 @@ class GpsReadout {
 
   /// The device's own speed (`coords.speed`), null when it reports none.
   final double? dopplerKmh;
+
+  /// Rejected fixes by reason (the rest of [rejected] are jumps and gaps).
+  final int inaccurate;
+  final int stale;
+  final int duplicates;
+  final int warmUps;
+
+  /// Accuracy limit in force for the next fix.
+  final double? gateM;
+
+  /// Filter state: moving, and whether `coords.speed` confirms it.
+  final bool moving;
+  final bool dopplerMoving;
 }
 
 /// GPS distance and pedometer steps from this device (GPS only on Web).
@@ -103,6 +123,7 @@ class DeviceMovementSource implements MovementSource {
         latitude: p.latitude,
         longitude: p.longitude,
         accuracyM: p.accuracy,
+        speedMps: p.speed,
       ),
       receivedAt: now,
     );
@@ -115,6 +136,13 @@ class DeviceMovementSource implements MovementSource {
       warmingUp: filter.warmingUp,
       verdict: filter.lastVerdict,
       dopplerKmh: p.speed > 0 ? p.speed * 3.6 : null,
+      inaccurate: filter.inaccurate,
+      stale: filter.stale,
+      duplicates: filter.duplicates,
+      warmUps: filter.warmUps,
+      gateM: filter.accuracyGateM,
+      moving: filter.moving,
+      dopplerMoving: filter.dopplerMoving,
     );
     // Rejected fixes do not count as a live GPS signal, so on phones the
     // step counter takes over while GPS is unusable.

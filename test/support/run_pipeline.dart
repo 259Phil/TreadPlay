@@ -16,7 +16,11 @@ class ShownSample {
     required this.livePace,
     required this.oldSpeedKmh,
     required this.oldPace,
+    this.distanceM = 0,
   });
+
+  /// Run distance so far.
+  final double distanceM;
 
   final int second;
   final double trueKmh;
@@ -81,10 +85,22 @@ class RunPipeline {
         final f = fixes[i];
         trueMps = track.trueSpeeds[i];
         i++;
-        final m = filter.add(f, receivedAt: f.time);
+        final noise = dopplerNoiseMps;
+        final doppler = noise == null
+            ? null
+            : max(0.0, trueMps + noise * (_rng.nextDouble() * 2 - 1));
+        final m = filter.add(
+          GpsFix(
+            time: f.time,
+            latitude: f.latitude,
+            longitude: f.longitude,
+            accuracyM: f.accuracyM,
+            speedMps: doppler,
+          ),
+          receivedAt: f.time,
+        );
         if (filter.lastVerdict != GpsVerdict.accepted) continue;
         oldKmh = filter.speedMps * 3.6;
-        final noise = dopplerNoiseMps;
         fuser.addGps(
           f.time,
           m,
@@ -93,9 +109,7 @@ class RunPipeline {
           x: legacy ? null : filter.rawX,
           y: legacy ? null : filter.rawY,
           moving: filter.moving,
-          dopplerMps: noise == null
-              ? null
-              : max(0.0, trueMps + noise * (_rng.nextDouble() * 2 - 1)),
+          dopplerMps: doppler,
         );
       }
       engine.add(fuser.tick(now));
@@ -107,11 +121,16 @@ class RunPipeline {
           livePace: engine.livePace,
           oldSpeedKmh: oldKmh,
           oldPace: engine.pace,
+          distanceM: engine.distanceM,
         ),
       );
     }
     return this;
   }
+
+  /// Run distance after [second] seconds.
+  double distanceAt(int second) =>
+      shown.lastWhere((s) => s.second <= second).distanceM;
 
   /// Samples from second [from] up to (not including) [to].
   List<ShownSample> between(int from, int to) => [

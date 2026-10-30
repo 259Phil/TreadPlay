@@ -23,6 +23,7 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    _loadFeedbackVersion();
     final l = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final settings = ref.watch(settingsProvider);
@@ -155,11 +156,21 @@ class SettingsScreen extends ConsumerWidget {
 
 const String feedbackEmail = 'kontakt.bender.interactive@gmail.com';
 
+String? _feedbackVersion;
+
+void _loadFeedbackVersion() {
+  if (_feedbackVersion != null) return;
+  _feedbackVersion = '';
+  PackageInfo.fromPlatform().then(
+    (info) => _feedbackVersion = ' – v${info.version}',
+    onError: (_) => '',
+  );
+}
+
+// No await before launchUrl: browsers drop mailto without a live user gesture.
 Future<void> _sendFeedback(BuildContext context, String copiedMessage) async {
   final messenger = ScaffoldMessenger.of(context);
-  final version = await PackageInfo.fromPlatform()
-      .then((info) => ' – v${info.version}')
-      .catchError((_) => '');
+  final version = _feedbackVersion ?? '';
   final platform = kIsWeb
       ? 'Web'
       : defaultTargetPlatform == TargetPlatform.iOS

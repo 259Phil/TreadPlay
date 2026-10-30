@@ -1,4 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../ui/skin.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -111,6 +114,12 @@ class SettingsScreen extends ConsumerWidget {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push(AppRoutes.terms),
           ),
+          ListTile(
+            title: Text(l.settingsFeedback),
+            subtitle: const Text(feedbackEmail),
+            trailing: const Icon(Icons.open_in_new, size: 18),
+            onTap: _sendFeedback,
+          ),
           const Divider(),
           ListTile(
             key: const Key('settings-trail'),
@@ -141,4 +150,23 @@ class SettingsScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+const String feedbackEmail = 'kontakt.bender.interactive@gmail.com';
+
+Future<void> _sendFeedback() async {
+  final info = await PackageInfo.fromPlatform();
+  final platform = kIsWeb
+      ? 'Web'
+      : defaultTargetPlatform == TargetPlatform.iOS
+      ? 'iOS'
+      : 'Android';
+  final subject = 'TreadPlay Feedback – $platform – v${info.version}';
+  await launchUrl(
+    Uri(
+      scheme: 'mailto',
+      path: feedbackEmail,
+      query: 'subject=${Uri.encodeComponent(subject)}',
+    ),
+  );
 }

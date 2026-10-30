@@ -680,6 +680,12 @@ abstract class AppLocalizations {
   /// **'Terms of use'**
   String get settingsTerms;
 
+  /// No description provided for @settingsFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Send feedback'**
+  String get settingsFeedback;
+
   /// No description provided for @settingsMovement.
   ///
   /// In en, this message translates to:

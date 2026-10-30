@@ -34,8 +34,6 @@ class _RunScreenState extends ConsumerState<RunScreen>
   int _lastBlocks = 0;
   double _lastGainLp = 0;
 
-  final RunTrailLook _look = RunTrailLook.fromUrl();
-
   /// Hidden developer readout, toggled by a long press on the distance.
   bool _gpsDebug = false;
 
@@ -237,13 +235,13 @@ class _RunScreenState extends ConsumerState<RunScreen>
                         hasScrollBody: false,
                         fillOverscroll: false,
                         child: SizedBox(
-                          height: _look.minHeight,
+                          height: RunTrailMap.minHeight,
                           child: IgnorePointer(
                             child: RunTrailMap(
+                              game: game,
                               spot: spot,
                               companion: e.companion,
                               moving: moving,
-                              look: _look,
                             ),
                           ),
                         ),

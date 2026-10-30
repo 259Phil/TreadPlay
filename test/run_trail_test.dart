@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:treadplay/data/game_data.dart';
 import 'package:treadplay/domain/companion.dart';
 import 'package:treadplay/domain/wanderweg.dart';
 import 'package:treadplay/features/run/run_trail.dart';
-import 'package:treadplay/features/wanderweg/trail_layout.dart';
+import 'package:treadplay/features/wanderweg/wanderweg_screen.dart';
 import 'package:treadplay/l10n/app_localizations.dart';
 
 void main() {
@@ -61,63 +62,41 @@ void main() {
     final spot = RunTrailSpot(reached(2), 3200);
     final c = Companion.pebble();
 
-    for (final (look, key) in [
-      (RunTrailLook.calm, 'run-trail-calm'),
-      (RunTrailLook.parchment, 'run-trail-parchment'),
-      (RunTrailLook.horizon, 'run-trail-horizon'),
-    ]) {
-      testWidgets('${look.name} shows the trail with the companion', (
-        tester,
-      ) async {
-        await tester.pumpWidget(
-          host(
-            SizedBox(
+    testWidgets('shows the real Wanderweg with the companion', (tester) async {
+      final game = GameData.initial(t0).copyWith(wanderweg: reached(2));
+      await tester.pumpWidget(
+        host(
+          Center(
+            child: SizedBox(
               height: 300,
               child: RunTrailMap(
+                game: game,
                 spot: spot,
                 companion: c,
                 moving: false,
-                look: look,
               ),
             ),
           ),
-        );
-        await tester.pumpAndSettle();
-        expect(find.byKey(Key(key)), findsOneWidget);
-        expect(find.byKey(const Key('run-trail-figure')), findsOneWidget);
-        expect(find.text('noch 0,9 km bis Wegmarke 3'), findsOneWidget);
-        // Everything stays inside the map's own box.
-        final box = tester.getRect(find.byType(RunTrailMap)).inflate(0.5);
-        final fig = tester.getRect(find.byKey(const Key('run-trail-figure')));
-        final label = tester.getRect(find.byKey(const Key('run-trail-label')));
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('run-trail-map')), findsOneWidget);
+      // Same art, trail and waymarks as the Wanderweg screen.
+      expect(find.byType(TrailMapContent), findsOneWidget);
+      expect(find.byKey(const Key('trail-art-0')), findsOneWidget);
+      expect(find.byKey(const Key('trail-companion')), findsNothing);
+      expect(find.byKey(const Key('run-trail-figure')), findsOneWidget);
+      expect(find.text('noch 0,9 km bis Wegmarke 3'), findsOneWidget);
+      // The companion and its label stay inside the map's own box.
+      final box = tester.getRect(find.byType(RunTrailMap)).inflate(0.5);
+      for (final k in ['run-trail-figure', 'run-trail-label']) {
+        final r = tester.getRect(find.byKey(Key(k)));
         expect(
-          box.contains(fig.topLeft) && box.contains(fig.bottomRight),
+          box.contains(r.topLeft) && box.contains(r.bottomRight),
           isTrue,
+          reason: k,
         );
-        expect(
-          box.contains(label.topLeft) && box.contains(label.bottomRight),
-          isTrue,
-        );
-      });
-    }
-
-    test('preview switch defaults to the calm look', () {
-      expect(RunTrailLook.fromUrl(), RunTrailLook.calm);
-    });
-
-    test('zooms in so walking pace moves the companion visibly', () {
-      const w = 412.0;
-      for (var n = 0; n < waymarks.length; n++) {
-        final at = RunTrailSpot(reached(n), waymarks[n].meters - 100);
-        final z = RunTrailMap.zoomFor(at, w);
-        expect(z, inInclusiveRange(RunTrailMap.minZoom, RunTrailMap.maxZoom));
       }
-      // Waymark 2 -> 3: 30 s at 6 km/h (50 m) moves the companion visibly.
-      final z = RunTrailMap.zoomFor(spot, w);
-      final geo = TrailGeometry(width: w * z, topPad: 0, bottomPad: 0);
-      final a = geo.at(geo.companionS(spot.progress, 3200));
-      final b = geo.at(geo.companionS(spot.progress, 3250));
-      expect((b - a).distance, greaterThan(10));
     });
 
     testWidgets('the companion only steps while moving', (tester) async {

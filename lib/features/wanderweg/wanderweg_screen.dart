@@ -94,7 +94,7 @@ class _WanderwegScreenState extends ConsumerState<WanderwegScreen> {
                 child: SizedBox(
                   width: w,
                   height: geo.totalHeight,
-                  child: _TrailContent(geo: geo, game: game, companionS: s),
+                  child: TrailMapContent(geo: geo, game: game, companionS: s),
                 ),
               ),
               Positioned(
@@ -117,16 +117,27 @@ class _WanderwegScreenState extends ConsumerState<WanderwegScreen> {
   }
 }
 
-class _TrailContent extends StatelessWidget {
-  const _TrailContent({
+/// The painted Wanderweg with its stitched trail, world signs and waymark
+/// medallions; shared by the Wanderweg screen and the run screen.
+class TrailMapContent extends StatelessWidget {
+  const TrailMapContent({
+    super.key,
     required this.geo,
     required this.game,
     required this.companionS,
+    this.showCompanion = true,
+    this.interactive = true,
   });
 
   final TrailGeometry geo;
   final GameData game;
   final double companionS;
+
+  /// Off on the run screen, which walks its own stepping companion.
+  final bool showCompanion;
+
+  /// Waymarks open their sheet on tap.
+  final bool interactive;
 
   @override
   Widget build(BuildContext context) {
@@ -194,20 +205,22 @@ class _TrailContent extends StatelessWidget {
             _placedSign(context, geo.map(i, sign.at), sign, reached),
         for (final wm in waymarks)
           ..._cairn(context, wm, geo.cairnFoot(wm.number), cairnH),
-        Positioned(
-          left: at.dx - w * 0.09,
-          top: at.dy - w * 0.17,
-          width: w * 0.18,
-          height: w * 0.18,
-          child: _Companion(game: game),
-        ),
-        Positioned(
-          left: 0,
-          right: 0,
-          top: at.dy + w * 0.01 + 4,
-          height: 22,
-          child: _CompanionTag(game: game, centerX: at.dx),
-        ),
+        if (showCompanion) ...[
+          Positioned(
+            left: at.dx - w * 0.09,
+            top: at.dy - w * 0.17,
+            width: w * 0.18,
+            height: w * 0.18,
+            child: _Companion(game: game),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            top: at.dy + w * 0.01 + 4,
+            height: 22,
+            child: _CompanionTag(game: game, centerX: at.dx),
+          ),
+        ],
       ],
     );
   }
@@ -242,8 +255,8 @@ class _TrailContent extends StatelessWidget {
         width: cw,
         height: h,
         child: GestureDetector(
-          key: Key('waymark-${wm.number}'),
-          onTap: () => showWaymarkSheet(context, game, wm),
+          key: interactive ? Key('waymark-${wm.number}') : null,
+          onTap: interactive ? () => showWaymarkSheet(context, game, wm) : null,
           child: _Medallion(number: wm.number, state: state),
         ),
       ),
@@ -254,7 +267,9 @@ class _TrailContent extends StatelessWidget {
         child: Align(
           alignment: labelLeft ? Alignment.topRight : Alignment.topLeft,
           child: GestureDetector(
-            onTap: () => showWaymarkSheet(context, game, wm),
+            onTap: interactive
+                ? () => showWaymarkSheet(context, game, wm)
+                : null,
             child: _CairnLabel(waymark: wm, state: state),
           ),
         ),

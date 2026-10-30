@@ -89,7 +89,7 @@ class DeviceMovementSource implements MovementSource {
     final session = ++_session;
     final fuser = MovementFuser();
     _filter = GpsFilter(checkFixAge: kIsWeb);
-    if (kIsWeb) ScreenWake.enable();
+    ScreenWake.enable();
     final controller = StreamController<MovementSample>();
     _controller = controller;
     _timer = Timer.periodic(tick, (_) => controller.add(fuser.tick(_now())));
@@ -220,7 +220,7 @@ class DeviceMovementSource implements MovementSource {
     _steps = null;
     _filter = null;
     readout.value = null;
-    if (kIsWeb) ScreenWake.disable();
+    ScreenWake.disable();
     _controller?.close();
     _controller = null;
   }

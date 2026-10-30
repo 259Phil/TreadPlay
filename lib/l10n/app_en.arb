@@ -211,6 +211,8 @@
   },
   "marketSoldOut": "All offers are gone. New ones arrive later.",
   "settingsTerms": "Terms of use",
+  "settingsFeedback": "Send feedback",
+  "settingsFeedbackCopied": "No email app found. Email address copied.",
   "settingsMovement": "Movement access",
   "settingsMovementOn": "Real movement earns LP. Readings stay on this device.",
   "settingsMovementOff": "Off: real movement earns no LP.",

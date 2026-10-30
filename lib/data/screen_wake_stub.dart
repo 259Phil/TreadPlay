@@ -1,2 +1,0 @@
-void enable() {}
-void disable() {}

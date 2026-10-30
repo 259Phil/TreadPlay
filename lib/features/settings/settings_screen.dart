@@ -1,4 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../ui/skin.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,6 +23,7 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    _loadFeedbackVersion();
     final l = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final settings = ref.watch(settingsProvider);
@@ -111,6 +116,12 @@ class SettingsScreen extends ConsumerWidget {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push(AppRoutes.terms),
           ),
+          ListTile(
+            title: Text(l.settingsFeedback),
+            subtitle: const Text(feedbackEmail),
+            trailing: const Icon(Icons.open_in_new, size: 18),
+            onTap: () => _sendFeedback(context, l.settingsFeedbackCopied),
+          ),
           const Divider(),
           ListTile(
             key: const Key('settings-trail'),
@@ -141,4 +152,39 @@ class SettingsScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+const String feedbackEmail = 'kontakt.bender.interactive@gmail.com';
+
+String? _feedbackVersion;
+
+void _loadFeedbackVersion() {
+  if (_feedbackVersion != null) return;
+  _feedbackVersion = '';
+  PackageInfo.fromPlatform().then(
+    (info) => _feedbackVersion = ' – v${info.version}',
+    onError: (_) => '',
+  );
+}
+
+// No await before launchUrl: browsers drop mailto without a live user gesture.
+Future<void> _sendFeedback(BuildContext context, String copiedMessage) async {
+  final messenger = ScaffoldMessenger.of(context);
+  final version = _feedbackVersion ?? '';
+  final platform = kIsWeb
+      ? 'Web'
+      : defaultTargetPlatform == TargetPlatform.iOS
+      ? 'iOS'
+      : 'Android';
+  final subject = 'TreadPlay Feedback – $platform$version';
+  final opened = await launchUrl(
+    Uri(
+      scheme: 'mailto',
+      path: feedbackEmail,
+      query: 'subject=${Uri.encodeComponent(subject)}',
+    ),
+  ).catchError((_) => false);
+  if (opened) return;
+  await Clipboard.setData(const ClipboardData(text: feedbackEmail));
+  messenger.showSnackBar(SnackBar(content: Text(copiedMessage)));
 }

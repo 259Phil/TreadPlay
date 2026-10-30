@@ -97,6 +97,7 @@
   "marketSellSwitches": "Danach geht {name} mit dir.",
   "marketSoldOut": "Alle Angebote sind weg. Später kommen neue.",
   "settingsTerms": "Nutzungsbedingungen",
+  "settingsFeedback": "Feedback senden",
   "settingsMovement": "Bewegungszugriff",
   "settingsMovementOn": "Echte Bewegung bringt LP. Die Werte bleiben auf dem Gerät.",
   "settingsMovementOff": "Aus: Echte Bewegung bringt keine LP.",

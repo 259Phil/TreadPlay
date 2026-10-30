@@ -338,6 +338,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsTerms => 'Nutzungsbedingungen';
 
   @override
+  String get settingsFeedback => 'Feedback senden';
+
+  @override
   String get settingsMovement => 'Bewegungszugriff';
 
   @override

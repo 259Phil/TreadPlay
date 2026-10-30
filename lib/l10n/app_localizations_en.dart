@@ -337,6 +337,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsTerms => 'Terms of use';
 
   @override
+  String get settingsFeedback => 'Send feedback';
+
+  @override
   String get settingsMovement => 'Movement access';
 
   @override

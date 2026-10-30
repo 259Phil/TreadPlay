@@ -680,6 +680,18 @@ abstract class AppLocalizations {
   /// **'Terms of use'**
   String get settingsTerms;
 
+  /// No description provided for @settingsFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Send feedback'**
+  String get settingsFeedback;
+
+  /// No description provided for @settingsFeedbackCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'No email app found. Email address copied.'**
+  String get settingsFeedbackCopied;
+
   /// No description provided for @settingsMovement.
   ///
   /// In en, this message translates to:

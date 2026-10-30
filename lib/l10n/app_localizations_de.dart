@@ -338,6 +338,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsTerms => 'Nutzungsbedingungen';
 
   @override
+  String get settingsFeedback => 'Feedback senden';
+
+  @override
+  String get settingsFeedbackCopied =>
+      'Keine E-Mail-App gefunden. E-Mail-Adresse kopiert.';
+
+  @override
   String get settingsMovement => 'Bewegungszugriff';
 
   @override

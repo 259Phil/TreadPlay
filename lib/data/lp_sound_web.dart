@@ -1,5 +1,6 @@
 import 'dart:js_interop';
-import 'dart:js_interop_unsafe';
+
+import 'dart:ui_web' as ui_web;
 
 import 'package:flutter/services.dart';
 import 'package:web/web.dart' as web;
@@ -8,18 +9,13 @@ web.AudioContext? _ctx;
 final Map<String, web.AudioBuffer> _buffers = {};
 final Map<String, Future<web.AudioBuffer?>> _loading = {};
 DateTime? _lastStart;
-web.AudioBufferSourceNode? _previewNode;
+web.HTMLAudioElement? _previewEl;
+final Map<String, web.HTMLAudioElement> _elements = {};
 
 web.AudioContext? _context() {
   var ctx = _ctx;
   if (ctx != null) return ctx;
   try {
-    // "ambient": mixes with the music that is playing instead of pausing it and
-    // respects the silent switch (Safari 17+, ignored elsewhere).
-    final nav = web.window.navigator as JSObject;
-    if (nav.has('audioSession')) {
-      (nav['audioSession'] as JSObject?)?['type'] = 'ambient'.toJS;
-    }
     ctx = _ctx = web.AudioContext();
   } catch (_) {
     // No Web Audio: the run works without sound.
@@ -101,16 +97,38 @@ bool play(String asset, double gain, Duration minGap) {
   return true;
 }
 
-bool preview(String asset, double gain) {
-  unlock(asset);
-  final ctx = _ctx;
-  if (ctx == null) return true;
-  _load(ctx, asset).then((buffer) {
-    if (buffer == null) return;
+web.HTMLAudioElement _element(String asset) =>
+    _elements[asset] ??= web.HTMLAudioElement()
+      ..src = ui_web.assetManager.getAssetUrl(asset)
+      ..preload = 'auto';
+
+/// Creates the audio elements ahead of a tap so the first preview starts
+/// without a network wait (iOS may still load on the first play).
+void preload(List<String> assets) {
+  for (final a in assets) {
     try {
-      _previewNode?.stop();
+      _element(a);
     } catch (_) {}
-    _previewNode = _start(ctx, buffer, gain);
-  });
+  }
+}
+
+/// Settings preview: plays through an audio element, started synchronously
+/// inside the tap, which iOS Safari allows even on a fresh page without any
+/// earlier gesture. The same tap unlocks Web Audio for the run.
+bool preview(String asset, double gain) {
+  try {
+    final el = _element(asset);
+    final prev = _previewEl;
+    if (prev != null) {
+      prev.pause();
+      if (prev != el) prev.currentTime = 0;
+    }
+    el
+      ..volume = gain
+      ..currentTime = 0;
+    el.play().toDart.catchError((Object _) => null);
+    _previewEl = el;
+  } catch (_) {}
+  unlock(asset);
   return true;
 }

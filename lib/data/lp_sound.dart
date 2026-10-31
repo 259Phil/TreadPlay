@@ -63,8 +63,13 @@ abstract final class LpSound {
     }
   }
 
-  /// Plays [tone] from a tap (settings preview): unlocks, loads if needed
-  /// and stops a preview that is still ringing.
+  /// Prepares the preview players (call when a sound choice is shown).
+  static void preload() =>
+      impl.preload([for (final t in LpTone.values) t.asset]);
+
+  /// Plays [tone] at once from a tap (preview): must be called
+  /// synchronously in the tap handler; also unlocks the run sound and stops
+  /// a preview that is still ringing.
   static void preview(LpTone tone) {
     if (!impl.preview(tone.asset, tone.gain)) {
       SystemSound.play(SystemSoundType.click);

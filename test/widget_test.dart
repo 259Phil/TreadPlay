@@ -860,10 +860,11 @@ void main() {
         tester,
       ).read(gameRepositoryProvider).loadSettings();
       expect(saved.lpSound, 'cash_3');
-      // Off hides the choice, the switch stays as before.
+      // The choice stays visible with the switch off (preview still works).
       await tester.tap(find.text('Ka-ching sound'));
       await tester.pumpAndSettle();
-      expect(find.byKey(const Key('lp-tone')), findsNothing);
+      expect(find.byKey(const Key('lp-tone')), findsOneWidget);
+      expect(containerOf(tester).read(settingsProvider).kaching, isFalse);
     });
   });
 

@@ -4,3 +4,5 @@ void unlock(String asset) {}
 bool play(String asset, double gain, Duration minGap) => false;
 
 bool preview(String asset, double gain) => false;
+
+void preload(List<String> assets) {}

@@ -74,14 +74,11 @@ class SettingsScreen extends ConsumerWidget {
               notifier.setKaching(on);
             },
           ),
-          if (settings.kaching)
-            _LpToneTile(
-              selected: LpTone.byId(settings.lpSound),
-              onSelect: (tone) {
-                LpSound.preview(tone);
-                notifier.setLpSound(tone.id);
-              },
-            ),
+          // Always shown: the preview works with the switch off too.
+          _LpToneTile(
+            selected: LpTone.byId(settings.lpSound),
+            onSelect: (tone) => notifier.setLpSound(tone.id),
+          ),
           const Divider(),
           ListTile(
             leading: skinIcon(
@@ -201,8 +198,8 @@ Future<void> _sendFeedback(BuildContext context, String copiedMessage) async {
   messenger.showSnackBar(SnackBar(content: Text(copiedMessage)));
 }
 
-/// Choice of the LP payout sound: pick one (it plays once), the play
-/// button previews the chosen one again.
+/// Choice of the LP payout sound: picking one plays it, the play button
+/// previews the chosen one again. Both start audio within the tap.
 class _LpToneTile extends StatelessWidget {
   const _LpToneTile({required this.selected, required this.onSelect});
 
@@ -212,6 +209,7 @@ class _LpToneTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    LpSound.preload();
     return ListTile(
       contentPadding: const EdgeInsets.only(left: 16, right: 8),
       title: Text(l.settingsLpSound),
@@ -227,6 +225,9 @@ class _LpToneTile extends StatelessWidget {
                 DropdownMenuItem(
                   key: Key('lp-tone-${t.id}'),
                   value: t,
+                  // onTap runs inside the tap itself (onChanged only after
+                  // the menu closed), which iOS Safari needs for audio.
+                  onTap: () => LpSound.preview(t),
                   child: Text(t.label),
                 ),
             ],

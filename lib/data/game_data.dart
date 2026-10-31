@@ -1239,12 +1239,16 @@ class AppSettings {
   const AppSettings({
     this.localeCode = 'en',
     this.kaching = true,
+    this.lpSound = 'pixel_3',
     this.movementAccess = MovementAccess.unasked,
     this.lastExportAt,
   });
 
   final String localeCode;
   final bool kaching;
+
+  /// Id of the LP payout sound (`LpTone.id`).
+  final String lpSound;
   final MovementAccess movementAccess;
 
   /// When the save game was last exported on this device.
@@ -1253,11 +1257,13 @@ class AppSettings {
   AppSettings copyWith({
     String? localeCode,
     bool? kaching,
+    String? lpSound,
     MovementAccess? movementAccess,
     DateTime? lastExportAt,
   }) => AppSettings(
     localeCode: localeCode ?? this.localeCode,
     kaching: kaching ?? this.kaching,
+    lpSound: lpSound ?? this.lpSound,
     movementAccess: movementAccess ?? this.movementAccess,
     lastExportAt: lastExportAt ?? this.lastExportAt,
   );
@@ -1265,6 +1271,7 @@ class AppSettings {
   Map<String, Object?> toJson() => {
     'localeCode': localeCode,
     'kaching': kaching,
+    'lpSound': lpSound,
     'movementAccess': movementAccess.name,
     if (lastExportAt case final d?) 'lastExportAt': d.toIso8601String(),
   };
@@ -1272,6 +1279,7 @@ class AppSettings {
   factory AppSettings.fromJson(Map<String, Object?> json) => AppSettings(
     localeCode: json['localeCode'] as String? ?? 'en',
     kaching: json['kaching'] as bool? ?? true,
+    lpSound: json['lpSound'] as String? ?? 'pixel_3',
     movementAccess:
         MovementAccess.values.asNameMap()[json['movementAccess']] ??
         MovementAccess.unasked,

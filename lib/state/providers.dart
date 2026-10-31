@@ -273,6 +273,7 @@ class SettingsNotifier extends Notifier<AppSettings> {
   void setLocale(String code) => _set(state.copyWith(localeCode: code));
 
   void setKaching(bool on) => _set(state.copyWith(kaching: on));
+  void setLpSound(String id) => _set(state.copyWith(lpSound: id));
 
   void setMovementAccess(MovementAccess access) =>
       _set(state.copyWith(movementAccess: access));

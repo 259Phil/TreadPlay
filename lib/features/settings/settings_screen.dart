@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../data/game_data.dart';
+import '../../data/lp_sound.dart';
 import '../../domain/wanderweg.dart';
 
 import '../../l10n/app_localizations.dart';
@@ -68,8 +69,19 @@ class SettingsScreen extends ConsumerWidget {
           SwitchListTile(
             title: Text(l.settingsKaching),
             value: settings.kaching,
-            onChanged: notifier.setKaching,
+            onChanged: (on) {
+              if (on) LpSound.unlock(LpTone.byId(settings.lpSound));
+              notifier.setKaching(on);
+            },
           ),
+          if (settings.kaching)
+            _LpToneTile(
+              selected: LpTone.byId(settings.lpSound),
+              onSelect: (tone) {
+                LpSound.preview(tone);
+                notifier.setLpSound(tone.id);
+              },
+            ),
           const Divider(),
           ListTile(
             leading: skinIcon(
@@ -187,4 +199,49 @@ Future<void> _sendFeedback(BuildContext context, String copiedMessage) async {
   if (opened) return;
   await Clipboard.setData(const ClipboardData(text: feedbackEmail));
   messenger.showSnackBar(SnackBar(content: Text(copiedMessage)));
+}
+
+/// Choice of the LP payout sound: pick one (it plays once), the play
+/// button previews the chosen one again.
+class _LpToneTile extends StatelessWidget {
+  const _LpToneTile({required this.selected, required this.onSelect});
+
+  final LpTone selected;
+  final ValueChanged<LpTone> onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return ListTile(
+      contentPadding: const EdgeInsets.only(left: 16, right: 8),
+      title: Text(l.settingsLpSound),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          DropdownButton<LpTone>(
+            key: const Key('lp-tone'),
+            value: selected,
+            underline: const SizedBox.shrink(),
+            items: [
+              for (final t in LpTone.values)
+                DropdownMenuItem(
+                  key: Key('lp-tone-${t.id}'),
+                  value: t,
+                  child: Text(t.label),
+                ),
+            ],
+            onChanged: (t) {
+              if (t != null) onSelect(t);
+            },
+          ),
+          IconButton(
+            key: const Key('lp-tone-play'),
+            tooltip: l.settingsLpSoundPreview(selected.label),
+            icon: const Icon(Icons.play_arrow),
+            onPressed: () => LpSound.preview(selected),
+          ),
+        ],
+      ),
+    );
+  }
 }

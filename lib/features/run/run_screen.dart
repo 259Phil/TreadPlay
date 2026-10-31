@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../data/lp_sound.dart';
 import '../../data/movement_source.dart';
 import '../../domain/run_engine.dart';
 import '../../l10n/app_localizations.dart';
@@ -43,7 +44,8 @@ class _RunScreenState extends ConsumerState<RunScreen>
     super.dispose();
   }
 
-  /// Every paid piece floats its LP up; a full Breath block also clicks.
+  /// Every paid piece floats its LP up and plays the LP sound; a full
+  /// Breath block also gives a stronger buzz.
   void _onPieces(RunEngine engine) {
     if (engine.pieces <= _lastPieces) return;
     _lastGainLp = (engine.pieces - _lastPieces) * engine.lpPerPiece;
@@ -51,8 +53,8 @@ class _RunScreenState extends ConsumerState<RunScreen>
     final block = engine.blocks > _lastBlocks;
     _lastBlocks = engine.blocks;
     if (ref.read(settingsProvider).kaching) {
+      LpSound.play(LpTone.byId(ref.read(settingsProvider).lpSound));
       if (block) {
-        SystemSound.play(SystemSoundType.click);
         HapticFeedback.mediumImpact();
       } else {
         HapticFeedback.selectionClick();

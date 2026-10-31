@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:treadplay/ads/rewarded_ad_service.dart';
 import 'package:treadplay/app.dart';
 import 'package:treadplay/data/game_data.dart';
+import 'package:treadplay/data/lp_sound.dart';
 import 'package:treadplay/data/movement_source.dart';
 import 'package:treadplay/domain/breath.dart';
 import 'package:treadplay/domain/companion.dart';
@@ -833,6 +834,36 @@ void main() {
         tester,
       ).read(gameRepositoryProvider).loadSettings();
       expect(saved.movementAccess, MovementAccess.allowed);
+    });
+
+    testWidgets('the LP sound can be chosen and previewed in settings', (
+      tester,
+    ) async {
+      await pumpApp(tester);
+      await tester.tap(find.widgetWithText(NavigationDestination, 'Settings'));
+      await tester.pumpAndSettle();
+      expect(find.text('Sound for each LP payout'), findsOneWidget);
+      expect(
+        containerOf(tester).read(settingsProvider).lpSound,
+        LpTone.standard.id,
+      );
+      await tester.tap(find.byKey(const Key('lp-tone-play')));
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('lp-tone')));
+      await tester.pumpAndSettle();
+      for (final t in LpTone.values) {
+        expect(find.text(t.label), findsWidgets);
+      }
+      await tester.tap(find.text('Cha-ching').last);
+      await tester.pumpAndSettle();
+      final saved = containerOf(
+        tester,
+      ).read(gameRepositoryProvider).loadSettings();
+      expect(saved.lpSound, 'cash_3');
+      // Off hides the choice, the switch stays as before.
+      await tester.tap(find.text('Ka-ching sound'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('lp-tone')), findsNothing);
     });
   });
 

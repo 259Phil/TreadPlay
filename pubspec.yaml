@@ -48,6 +48,7 @@ flutter:
     - assets/nav/
     - assets/backdrop/
     - assets/npc/
+    - assets/sounds/
     - assets/forge/
     - assets/items/
 

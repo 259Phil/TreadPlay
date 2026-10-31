@@ -162,6 +162,14 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsKaching => 'Ka-ching-Sound';
 
   @override
+  String get settingsLpSound => 'Klang bei jeder LP-Auszahlung';
+
+  @override
+  String settingsLpSoundPreview(String name) {
+    return '$name anhören';
+  }
+
+  @override
   String get settingsHealthTitle => 'Bewegungsdaten';
 
   @override

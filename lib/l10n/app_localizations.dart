@@ -362,6 +362,18 @@ abstract class AppLocalizations {
   /// **'Ka-ching sound'**
   String get settingsKaching;
 
+  /// No description provided for @settingsLpSound.
+  ///
+  /// In en, this message translates to:
+  /// **'Sound for each LP payout'**
+  String get settingsLpSound;
+
+  /// No description provided for @settingsLpSoundPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Play {name}'**
+  String settingsLpSoundPreview(String name);
+
   /// No description provided for @settingsHealthTitle.
   ///
   /// In en, this message translates to:

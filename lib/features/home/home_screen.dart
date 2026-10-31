@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../data/game_data.dart';
+import '../../data/lp_sound.dart';
 import '../../domain/companion.dart';
 import '../../domain/run_summary.dart';
 import '../../l10n/app_localizations.dart';
@@ -84,6 +85,10 @@ class HomeScreen extends ConsumerWidget {
                 _StartButton(
                   label: l.startRun,
                   onPressed: () async {
+                    // Audio may only start inside a tap (iOS Safari): unlock
+                    // the LP sound now, before anything is awaited.
+                    final s = ref.read(settingsProvider);
+                    if (s.kaching) LpSound.unlock(LpTone.byId(s.lpSound));
                     await ensureMovementAccess(context, ref);
                     final access = ref.read(settingsProvider).movementAccess;
                     if (!context.mounted || access == MovementAccess.unasked) {

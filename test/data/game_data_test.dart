@@ -243,6 +243,7 @@ void main() {
     );
     for (final a in MovementAccess.values) {
       final s = const AppSettings().copyWith(movementAccess: a);
+      expect(AppSettings.fromJson(s.toJson()).lpSound, 'pixel_3');
       expect(AppSettings.fromJson(s.toJson()).movementAccess, a);
     }
   });

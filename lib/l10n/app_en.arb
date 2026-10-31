@@ -103,6 +103,15 @@
   },
   "settingsLanguage": "Language",
   "settingsKaching": "Ka-ching sound",
+  "settingsLpSound": "Sound for each LP payout",
+  "settingsLpSoundPreview": "Play {name}",
+  "@settingsLpSoundPreview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "settingsHealthTitle": "Movement data",
   "settingsHealthBody": "TreadPlay uses location (GPS) and the step counter only while a run is active and only on this device. Only the run summary is saved, no route. Nothing is uploaded.",
   "settingsPrivacyTitle": "Privacy",

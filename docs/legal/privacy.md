@@ -27,7 +27,9 @@ We do not sell data and we do not build a profile of you. For the rewarded video
 ## 5. Rewarded videos (ads)
 [Interim text: to be updated when AdMob and the consent query (Google UMP, iOS tracking prompt) are connected.]
 
-- The Android and iOS apps offer an optional button for up to 3 rewarded videos a day, each for a few extra Lauf Points. Watching is voluntary. You can play the whole game without videos; running stays the main way to earn.
+**Currently off:** All monetization is switched off. The app shows no ads and no video button, does not initialize the AdMob SDK and sends no advertising data to Google. The game is fully playable without this. The points below describe the feature for when it is turned back on.
+
+- When this feature is on, the Android and iOS apps offer an optional button for up to 3 rewarded videos a day, each for a few extra Lauf Points. Watching is voluntary. You can play the whole game without videos; running stays the main way to earn.
 - The app requests a video from Google only after you tap the button and confirm.
 - Provider: Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland (Google AdMob). When a video is loaded and shown, Google may process device and usage data such as IP address, device type, app information, ad interactions and, where available, your device's advertising ID. Details: https://policies.google.com/technologies/ads and https://policies.google.com/privacy
 - Personalised ads use your advertising ID and earlier activity to pick ads for you. Non-personalised ads are chosen only from context (for example this app and a rough location from the IP address). Google may still use data for frequency capping, ad measurement and fraud prevention.
@@ -91,7 +93,9 @@ Wir verkaufen keine Daten und bilden kein Profil über dich. Zu den belohnten Vi
 ## 5. Belohnte Videos (Werbung)
 [Übergangstext: wird aktualisiert, sobald AdMob und die Einwilligungsabfrage (Google UMP, iOS-Tracking-Abfrage) angebunden sind.]
 
-- Die Android- und iOS-App bieten einen freiwilligen Knopf für bis zu 3 belohnte Videos am Tag, jeweils für ein paar zusätzliche Laufpunkte. Anschauen ist freiwillig. Du kannst das ganze Spiel ohne Videos spielen; Laufen bleibt der Hauptweg zu Punkten.
+**Derzeit aus:** Die gesamte Monetarisierung ist abgeschaltet. Die App zeigt keine Werbung und keinen Video-Knopf, startet das AdMob-SDK nicht und sendet keine Werbedaten an Google. Das Spiel ist ohne das voll spielbar. Die Punkte unten beschreiben die Funktion für den Fall, dass sie wieder eingeschaltet wird.
+
+- Wenn diese Funktion an ist, bieten die Android- und iOS-App einen freiwilligen Knopf für bis zu 3 belohnte Videos am Tag, jeweils für ein paar zusätzliche Laufpunkte. Anschauen ist freiwillig. Du kannst das ganze Spiel ohne Videos spielen; Laufen bleibt der Hauptweg zu Punkten.
 - Die App fordert ein Video bei Google erst an, wenn du den Knopf tippst und bestätigst.
 - Anbieter: Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland (Google AdMob). Wenn ein Video geladen und gezeigt wird, kann Google Geräte- und Nutzungsdaten verarbeiten, etwa IP-Adresse, Gerätetyp, App-Informationen, Interaktionen mit der Werbung und, falls verfügbar, die Werbe-ID deines Geräts. Details: https://policies.google.com/technologies/ads und https://policies.google.com/privacy
 - Personalisierte Werbung nutzt deine Werbe-ID und frühere Aktivitäten, um Werbung für dich auszuwählen. Nicht personalisierte Werbung wird nur nach dem Kontext gewählt (zum Beispiel diese App und ein ungefährer Ort aus der IP-Adresse). Google kann Daten trotzdem zur Begrenzung der Häufigkeit, zur Messung und gegen Betrug nutzen.

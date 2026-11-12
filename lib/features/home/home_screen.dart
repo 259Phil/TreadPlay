@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../config/monetization.dart';
 import '../../data/game_data.dart';
 import '../../data/lp_sound.dart';
 import '../../domain/companion.dart';
@@ -138,10 +139,11 @@ class _Header extends StatelessWidget {
                 style: TreadSkin.of(context).display(30),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.only(right: 10),
-              child: VideoButton(),
-            ),
+            if (monetizationEnabled)
+              const Padding(
+                padding: EdgeInsets.only(right: 10),
+                child: VideoButton(),
+              ),
             LpPill(lp: lp),
           ],
         ),

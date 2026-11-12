@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../ads/rewarded_ad_service.dart';
+import '../../config/monetization.dart';
 import '../../domain/video_rewards.dart';
 import '../../l10n/app_localizations.dart';
 import '../../state/providers.dart';
@@ -24,6 +25,7 @@ class _VideoButtonState extends ConsumerState<VideoButton> {
 
   @override
   Widget build(BuildContext context) {
+    if (!monetizationEnabled) return const SizedBox.shrink();
     final service = ref.watch(rewardedAdServiceProvider);
     if (!service.available) return const SizedBox.shrink();
     final l = AppLocalizations.of(context);

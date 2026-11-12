@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
+import '../config/monetization.dart';
 import 'rewarded_ad_service.dart';
 
 RewardedAdService createPlatformRewardedAdService() =>
@@ -27,10 +28,13 @@ class GoogleRewardedAdService implements RewardedAdService {
   Future<void>? _init;
 
   @override
-  bool get available => true;
+  bool get available => monetizationEnabled;
 
   @override
   Future<AdOutcome> show() async {
+    // Belt and braces: never initialize or load an ad while the
+    // central switch is off, even if this service is constructed.
+    if (!monetizationEnabled) return AdOutcome.failed;
     // Started only on the first tap, never at app launch.
     await (_init ??= MobileAds.instance.initialize());
     final loaded = Completer<RewardedAd?>();

@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../config/monetization.dart';
+
 import 'google_rewarded_ad_service_stub.dart'
     if (dart.library.io) 'google_rewarded_ad_service.dart';
 
@@ -62,6 +64,8 @@ class FakeRewardedAdService implements RewardedAdService {
 }
 
 final rewardedAdServiceProvider = Provider<RewardedAdService>((ref) {
+  // Central switch first: no SDK, no fake preview, no button.
+  if (!monetizationEnabled) return const UnavailableRewardedAdService();
   if (fakeAdsFlag) return FakeRewardedAdService();
   if (kIsWeb) return const UnavailableRewardedAdService();
   return createPlatformRewardedAdService();

@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../config/monetization.dart';
 import '../data/game_data.dart';
 import '../data/game_repository.dart';
 import '../data/movement_source.dart';
@@ -232,7 +233,9 @@ class GameNotifier extends Notifier<GameData> {
   void eraseRuns() => _set(state.erasingRuns());
 
   /// Pays today's next video reward after a fully watched video.
+  /// No-op while [monetizationEnabled] is off, so no LP comes from ads.
   bool claimVideo() {
+    if (!monetizationEnabled) return false;
     final next = state.claimingVideo(_now());
     if (next == null) return false;
     _set(next);

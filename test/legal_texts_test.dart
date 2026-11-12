@@ -41,6 +41,14 @@ void main() {
     expect(de, contains('[Übergangstext: wird aktualisiert, sobald AdMob'));
   });
 
+  test('privacy says ads are currently switched off', () {
+    expect(en, contains('**Currently off:** All monetization is switched off'));
+    expect(
+      de,
+      contains('**Derzeit aus:** Die gesamte Monetarisierung ist abgeschaltet'),
+    );
+  });
+
   test('no claim that the app reads health stores', () {
     expect(en, contains('does not read Apple Health (HealthKit)'));
     expect(de, contains('liest weder Apple Health (HealthKit)'));

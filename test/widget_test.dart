@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:treadplay/ads/rewarded_ad_service.dart';
+import 'package:treadplay/config/monetization.dart';
 import 'package:treadplay/app.dart';
 import 'package:treadplay/data/game_data.dart';
 import 'package:treadplay/data/lp_sound.dart';
@@ -88,6 +89,16 @@ void main() {
     expect(find.byKey(const Key('video-button')), findsNothing);
   });
 
+  testWidgets(
+    'video button stays hidden while monetization is off, even with a fake ad service',
+    (tester) async {
+      await pumpApp(tester, ads: FakeRewardedAdService(delay: Duration.zero));
+      expect(find.byKey(const Key('video-button')), findsNothing);
+      expect(find.text('3'), findsNothing);
+    },
+    skip: monetizationEnabled,
+  );
+
   testWidgets('video button pays 3 shrinking rewards, then dims', (
     tester,
   ) async {
@@ -112,7 +123,7 @@ void main() {
       findsOneWidget,
     );
     expect(container.read(gameProvider).lp, 5);
-  });
+  }, skip: !monetizationEnabled);
 
   Future<void> openSaveTile(WidgetTester tester, String key) async {
     await tester.tap(find.text('Settings'));

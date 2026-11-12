@@ -6,7 +6,13 @@ Last updated: October 2026
 
 ## 1. Provider
 BENDER INTERACTIVE  
-[address · e-mail]
+Philip Bender  
+c/o IP-Management #12979  
+Ludwig-Erhard-Straße 18  
+20459 Hamburg  
+
+Email: kontakt.bender.interactive@gmail.com  
+Phone: +49 176 70706133
 
 ## 2. What the app is
 TreadPlay is a walking game with invented companions. Lauf Points, breath and seals are virtual items inside the app. They are not money and cannot be cashed out.
@@ -40,7 +46,13 @@ Stand: Oktober 2026
 
 ## 1. Anbieter
 BENDER INTERACTIVE  
-[Anschrift · E-Mail]
+Philip Bender  
+c/o IP-Management #12979  
+Ludwig-Erhard-Straße 18  
+20459 Hamburg  
+
+E-Mail: kontakt.bender.interactive@gmail.com  
+Telefon: +49 176 70706133
 
 ## 2. Was die App ist
 TreadPlay ist ein Laufspiel mit erfundenen Gefährten. Laufpunkte, Puste und Siegel sind virtuelle Gegenstände in der App. Sie sind kein Geld und nicht auszahlbar.

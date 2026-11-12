@@ -1,14 +1,14 @@
-// Full privacy policy and terms of use, EN and DE.
-// Source: docs/legal/privacy.md and docs/legal/terms.md. Bracketed
-// placeholders stay until the provider data is filled in.
+// Full privacy policy, terms of use and imprint, EN and DE.
+// Source: docs/legal/privacy.md, terms.md and imprint.md. Keep in sync.
 
-enum LegalDoc { privacy, terms }
+enum LegalDoc { privacy, terms, imprint }
 
 String legalText(LegalDoc doc, String languageCode) {
   final de = languageCode == 'de';
   return switch (doc) {
     LegalDoc.privacy => de ? _privacyDe : _privacyEn,
     LegalDoc.terms => de ? _termsDe : _termsEn,
+    LegalDoc.imprint => de ? _imprintDe : _imprintEn,
   };
 }
 
@@ -16,8 +16,13 @@ const _privacyEn = r'''
 Last updated: October 2026
 
 ## 1. Controller
-BENDER INTERACTIVE  
-[Contact person · address · e-mail — fill in before publishing]
+Philip Bender  
+c/o IP-Management #12979  
+Ludwig-Erhard-Straße 18  
+20459 Hamburg  
+
+Email: kontakt.bender.interactive@gmail.com  
+Phone: +49 176 70706133
 
 ## 2. Principle: your data stays on your device
 TreadPlay works without a user account, login or cloud sync, and we run no game server. Companions, Lauf Points, Breath, seals, market, run history and settings are stored only in the app storage on your device (web version: in your browser's local storage). We cannot see your saves.
@@ -80,8 +85,13 @@ const _privacyDe = r'''
 Stand: Oktober 2026
 
 ## 1. Verantwortlicher
-BENDER INTERACTIVE  
-[Ansprechpartner · Anschrift · E-Mail — vor Veröffentlichung eintragen]
+Philip Bender  
+c/o IP-Management #12979  
+Ludwig-Erhard-Straße 18  
+20459 Hamburg  
+
+E-Mail: kontakt.bender.interactive@gmail.com  
+Telefon: +49 176 70706133
 
 ## 2. Grundsatz: Deine Daten bleiben auf deinem Gerät
 TreadPlay funktioniert ohne Benutzerkonto, Login und Cloud, und wir betreiben keinen Spielserver. Gefährten, Laufpunkte, Puste, Siegel, Markt, Laufverlauf und Einstellungen liegen nur im App-Speicher deines Geräts (Web-Version: im lokalen Speicher deines Browsers). Wir können deine Spielstände nicht sehen.
@@ -145,7 +155,13 @@ Last updated: October 2026
 
 ## 1. Provider
 BENDER INTERACTIVE  
-[address · e-mail]
+Philip Bender  
+c/o IP-Management #12979  
+Ludwig-Erhard-Straße 18  
+20459 Hamburg  
+
+Email: kontakt.bender.interactive@gmail.com  
+Phone: +49 176 70706133
 
 ## 2. What the app is
 TreadPlay is a walking game with invented companions. Lauf Points, breath and seals are virtual items inside the app. They are not money and cannot be cashed out.
@@ -177,7 +193,13 @@ Stand: Oktober 2026
 
 ## 1. Anbieter
 BENDER INTERACTIVE  
-[Anschrift · E-Mail]
+Philip Bender  
+c/o IP-Management #12979  
+Ludwig-Erhard-Straße 18  
+20459 Hamburg  
+
+E-Mail: kontakt.bender.interactive@gmail.com  
+Telefon: +49 176 70706133
 
 ## 2. Was die App ist
 TreadPlay ist ein Laufspiel mit erfundenen Gefährten. Laufpunkte, Puste und Siegel sind virtuelle Gegenstände in der App. Sie sind kein Geld und nicht auszahlbar.
@@ -202,4 +224,32 @@ Die App wird wie gesehen bereitgestellt. Für verlorene lokale Spielstände (Ger
 
 ## 9. Recht
 [Deutsches Recht / Gerichtsstand am Sitz — vor Veröffentlichung festlegen.]
+''';
+
+const _imprintEn = r'''
+## Information pursuant to § 5 DDG (German Digital Services Act)
+Philip Bender  
+c/o IP-Management #12979  
+Ludwig-Erhard-Straße 18  
+20459 Hamburg
+
+## Contact
+Email: kontakt.bender.interactive@gmail.com  
+Phone: +49 176 70706133
+
+Source: Impressum-Privatschutz
+''';
+
+const _imprintDe = r'''
+## Inhalte gemäß § 5 DDG
+Philip Bender  
+c/o IP-Management #12979  
+Ludwig-Erhard-Straße 18  
+20459 Hamburg
+
+## Kontaktdaten
+E-Mail: kontakt.bender.interactive@gmail.com  
+Telefon: +49 176 70706133
+
+Quelle: Impressum-Privatschutz
 ''';

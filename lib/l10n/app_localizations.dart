@@ -692,6 +692,12 @@ abstract class AppLocalizations {
   /// **'Terms of use'**
   String get settingsTerms;
 
+  /// No description provided for @settingsImprint.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal Notice'**
+  String get settingsImprint;
+
   /// No description provided for @settingsFeedback.
   ///
   /// In en, this message translates to:

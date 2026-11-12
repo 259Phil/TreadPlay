@@ -29,6 +29,7 @@ class AppRoutes {
   static const summary = '/summary';
   static const privacy = '/privacy';
   static const terms = '/terms';
+  static const imprint = '/imprint';
   static const history = '/history';
   static const wanderweg = '/wanderweg';
   static const pouches = '/pouches';
@@ -90,6 +91,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.terms,
         builder: (_, _) =>
             const SkinRoute(child: LegalScreen(doc: LegalDoc.terms)),
+      ),
+      GoRoute(
+        path: AppRoutes.imprint,
+        builder: (_, _) =>
+            const SkinRoute(child: LegalScreen(doc: LegalDoc.imprint)),
       ),
     ],
   );

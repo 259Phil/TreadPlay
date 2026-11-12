@@ -220,6 +220,7 @@
   },
   "marketSoldOut": "All offers are gone. New ones arrive later.",
   "settingsTerms": "Terms of use",
+  "settingsImprint": "Legal Notice",
   "settingsFeedback": "Send feedback",
   "settingsFeedbackCopied": "No email app found. Email address copied.",
   "settingsMovement": "Movement access",

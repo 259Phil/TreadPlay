@@ -21,9 +21,11 @@ class LegalScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: TreadSkin.of(context).canvas,
       appBar: AppBar(
-        title: Text(
-          doc == LegalDoc.privacy ? l.settingsPrivacyTitle : l.settingsTerms,
-        ),
+        title: Text(switch (doc) {
+          LegalDoc.privacy => l.settingsPrivacyTitle,
+          LegalDoc.terms => l.settingsTerms,
+          LegalDoc.imprint => l.settingsImprint,
+        }),
       ),
       body: SelectionArea(
         child: ListView(

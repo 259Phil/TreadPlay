@@ -802,18 +802,16 @@ void main() {
 
       await tapRow('Privacy');
       expect(find.text('1. Controller'), findsOneWidget);
-      expect(
-        find.textContaining(
-          '[Contact person · address · e-mail — fill in before publishing]',
-        ),
-        findsOneWidget,
-      );
+      expect(find.textContaining('c/o IP-Management #12979'), findsOneWidget);
+      expect(find.textContaining('20459 Hamburg'), findsOneWidget);
+      expect(find.textContaining('[Contact person'), findsNothing);
       await tester.tap(find.byType(BackButton));
       await tester.pumpAndSettle();
 
       await tapRow('Terms of use');
       expect(find.text('2. What the app is'), findsOneWidget);
-      expect(find.textContaining('[address · e-mail]'), findsOneWidget);
+      expect(find.textContaining('c/o IP-Management #12979'), findsOneWidget);
+      expect(find.textContaining('[address · e-mail]'), findsNothing);
       expect(
         find.textContaining(RegExp('crypto', caseSensitive: false)),
         findsNothing,
@@ -821,14 +819,41 @@ void main() {
       await tester.tap(find.byType(BackButton));
       await tester.pumpAndSettle();
 
+      await tapRow('Legal Notice');
+      expect(
+        find.text(
+          'Information pursuant to § 5 DDG (German Digital Services Act)',
+        ),
+        findsOneWidget,
+      );
+      expect(find.textContaining('Ludwig-Erhard-Straße 18'), findsOneWidget);
+      expect(
+        find.textContaining('Source: Impressum-Privatschutz'),
+        findsOneWidget,
+      );
+      await tester.tap(find.byType(BackButton));
+      await tester.pumpAndSettle();
+
       await tapRow('Deutsch', delta: -200);
       await tapRow('Nutzungsbedingungen');
       expect(find.text('2. Was die App ist'), findsOneWidget);
-      expect(find.textContaining('[Anschrift · E-Mail]'), findsOneWidget);
+      expect(find.textContaining('c/o IP-Management #12979'), findsOneWidget);
+      expect(find.textContaining('[Anschrift · E-Mail]'), findsNothing);
       await tester.tap(find.byType(BackButton));
       await tester.pumpAndSettle();
       await tapRow('Datenschutz');
       expect(find.text('1. Verantwortlicher'), findsOneWidget);
+      expect(find.textContaining('Philip Bender'), findsWidgets);
+      expect(find.textContaining('[Ansprechpartner'), findsNothing);
+      await tester.tap(find.byType(BackButton));
+      await tester.pumpAndSettle();
+      await tapRow('Impressum');
+      expect(find.text('Inhalte gemäß § 5 DDG'), findsOneWidget);
+      expect(find.textContaining('Kontaktdaten'), findsOneWidget);
+      expect(
+        find.textContaining('Quelle: Impressum-Privatschutz'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('movement access can be switched in settings', (tester) async {

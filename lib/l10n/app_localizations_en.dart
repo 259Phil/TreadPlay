@@ -345,6 +345,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsTerms => 'Terms of use';
 
   @override
+  String get settingsImprint => 'Legal Notice';
+
+  @override
   String get settingsFeedback => 'Send feedback';
 
   @override

@@ -126,6 +126,11 @@ class SettingsScreen extends ConsumerWidget {
             onTap: () => context.push(AppRoutes.terms),
           ),
           ListTile(
+            title: Text(l.settingsImprint),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push(AppRoutes.imprint),
+          ),
+          ListTile(
             title: Text(l.settingsFeedback),
             subtitle: const Text(feedbackEmail),
             trailing: const Icon(Icons.open_in_new, size: 18),

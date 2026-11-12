@@ -35,9 +35,6 @@ If you buy something later, Apple’s or Google’s terms apply to the payment.
 ## 8. Liability
 The app is provided as is. We are not liable for lost local saves (device loss, uninstall) beyond what mandatory law requires.
 
-## 9. Law
-[German law / courts at the provider’s seat — confirm before publishing.]
-
 ---
 
 # Nutzungsbedingungen — TreadPlay
@@ -74,6 +71,3 @@ Spätere Käufe unterliegen den Bedingungen von Apple oder Google.
 
 ## 8. Haftung
 Die App wird wie gesehen bereitgestellt. Für verlorene lokale Spielstände (Geräteverlust, Deinstallation) haften wir nur, soweit zwingendes Recht das verlangt.
-
-## 9. Recht
-[Deutsches Recht / Gerichtsstand am Sitz — vor Veröffentlichung festlegen.]

@@ -70,7 +70,7 @@ Under Settings → Save game you can export your save as a file (treadplay-save-
 
 ## 8. Web version
 - The game data stays in your browser's local storage on this device.
-- The page is delivered by our hosting provider [name — fill in before publishing]. Its servers technically process your IP address and log access.
+- The page is delivered by GitHub Pages (GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA). Its servers technically process your IP address and log access. This may involve a transfer of data to the USA.
 - When the page loads, your browser fetches the Flutter rendering engine (CanvasKit) from Google servers (www.gstatic.com). Google receives your IP address for this.
 - Location comes from your browser, only during a run and only with your browser's permission. During a run the app keeps the screen awake.
 
@@ -139,7 +139,7 @@ Unter Einstellungen → Spielstand kannst du deinen Spielstand als Datei exporti
 
 ## 8. Web-Version
 - Die Spieldaten bleiben im lokalen Speicher deines Browsers auf diesem Gerät.
-- Die Seite wird von unserem Hosting-Anbieter ausgeliefert [Name — vor Veröffentlichung eintragen]. Dessen Server verarbeiten technisch bedingt deine IP-Adresse und protokollieren Zugriffe.
+- Die Seite wird von GitHub Pages ausgeliefert (GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA). Dessen Server verarbeiten technisch bedingt deine IP-Adresse und protokollieren Zugriffe. Dabei kann eine Übermittlung in die USA stattfinden.
 - Beim Laden holt dein Browser die Flutter-Darstellungs-Engine (CanvasKit) von Google-Servern (www.gstatic.com). Google erhält dafür deine IP-Adresse.
 - Den Standort liefert dein Browser, nur während eines Laufs und nur mit seiner Freigabe. Während eines Laufs hält die App den Bildschirm wach.
 
@@ -183,9 +183,6 @@ If you buy something later, Apple’s or Google’s terms apply to the payment.
 
 ## 8. Liability
 The app is provided as is. We are not liable for lost local saves (device loss, uninstall) beyond what mandatory law requires.
-
-## 9. Law
-[German law / courts at the provider’s seat — confirm before publishing.]
 ''';
 
 const _termsDe = r'''
@@ -221,9 +218,6 @@ Spätere Käufe unterliegen den Bedingungen von Apple oder Google.
 
 ## 8. Haftung
 Die App wird wie gesehen bereitgestellt. Für verlorene lokale Spielstände (Geräteverlust, Deinstallation) haften wir nur, soweit zwingendes Recht das verlangt.
-
-## 9. Recht
-[Deutsches Recht / Gerichtsstand am Sitz — vor Veröffentlichung festlegen.]
 ''';
 
 const _imprintEn = r'''

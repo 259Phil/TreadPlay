@@ -90,14 +90,61 @@ void main() {
     expect(imprintDe, contains('Quelle: Impressum-Privatschutz'));
   });
 
-  test('legal texts have no leftover address placeholders', () {
+  test('privacy names GitHub Pages as the web host', () {
+    for (final s in [en, de]) {
+      expect(s, contains('GitHub Pages'));
+      expect(s, contains('GitHub, Inc., 88 Colin P. Kelly Jr. Street'));
+      expect(s, contains('San Francisco, CA 94107, USA'));
+    }
+    expect(en, contains('This may involve a transfer of data to the USA.'));
+    expect(
+      de,
+      contains('Dabei kann eine Übermittlung in die USA stattfinden.'),
+    );
+    expect(en, isNot(contains('[name — fill in before publishing]')));
+    expect(de, isNot(contains('[Name — vor Veröffentlichung eintragen]')));
+  });
+
+  test('terms have no place of jurisdiction clause', () {
+    final termsEn = legalText(LegalDoc.terms, 'en');
+    final termsDe = legalText(LegalDoc.terms, 'de');
+    for (final s in [termsEn, termsDe]) {
+      expect(s, isNot(contains('Gerichtsstand')));
+      expect(s, isNot(contains('place of jurisdiction')));
+      expect(s, isNot(contains('## 9. Law')));
+      expect(s, isNot(contains('## 9. Recht')));
+    }
+    List<String> numbers(String s) => RegExp(
+      r'^## (\d+)\.',
+      multiLine: true,
+    ).allMatches(s).map((m) => m.group(1)!).toList();
+    expect(numbers(termsEn), List.generate(8, (i) => '${i + 1}'));
+    expect(numbers(termsDe), numbers(termsEn));
+  });
+
+  test('legal texts have no leftover fill-in placeholders', () {
+    const allowedBrackets = [
+      '[Interim text: to be updated when AdMob',
+      '[Übergangstext: wird aktualisiert, sobald AdMob',
+    ];
     for (final doc in LegalDoc.values) {
       for (final lang in ['en', 'de']) {
-        final s = legalText(doc, lang);
+        var s = legalText(doc, lang);
         expect(s, isNot(contains('[Contact person')));
         expect(s, isNot(contains('[Ansprechpartner')));
         expect(s, isNot(contains('[address · e-mail]')));
         expect(s, isNot(contains('[Anschrift · E-Mail]')));
+        expect(s, isNot(contains('fill in before publishing')));
+        expect(s, isNot(contains('vor Veröffentlichung')));
+        expect(s, isNot(contains('Gerichtsstand')));
+        for (final keep in allowedBrackets) {
+          s = s.replaceAll(keep, '');
+        }
+        expect(
+          s,
+          isNot(contains('[')),
+          reason: '$doc $lang still has [ after known interim marks',
+        );
       }
     }
   });

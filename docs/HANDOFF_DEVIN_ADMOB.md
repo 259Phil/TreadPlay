@@ -44,10 +44,10 @@ The UMP form actually appears in the EEA (debug geography), "Manage options" and
 
 ## 5. Privacy text to update afterwards
 
-`lib/features/legal/legal_texts.dart` (DE+EN, mirrored in `docs/legal/privacy.md`). **Section 5 "Belohnte Videos (Werbung)" / "Rewarded videos (ads)"** is currently an interim text marked `[Übergangstext ...]` / `[Interim text ...]`, which says no consent dialog exists yet. Rewrite it to describe:
+`lib/features/legal/legal_texts.dart` (DE+EN, mirrored in `docs/legal/privacy.md`). **Section 5 "Belohnte Videos (Werbung)" / "Rewarded videos (ads)"** is currently a short public sentence: no advertising at the moment; the statement will be updated and consent obtained before ads are switched on. The previous longer future-facing text is kept internally in `docs/legal/admob-later.md`. When wiring ads, rewrite section 5 to describe:
 - UMP (Google as provider, personalised vs non-personalised),
 - reopening consent via Settings → Datenschutz-Einstellungen,
 - iOS ATT,
 - legal basis (lawyer).
 
-Then remove the interim marker and update `test/legal_texts_test.dart` (it asserts the marker). Draft review notes were kept outside the repo (DATENSCHUTZ_ENTWURF.md, ask Philip); the current text is in `docs/legal/privacy.md`.
+Then update `test/legal_texts_test.dart` (it currently asserts the short “no advertising” sentence). Draft review notes were kept outside the repo (DATENSCHUTZ_ENTWURF.md, ask Philip); the current text is in `docs/legal/privacy.md`.

@@ -23,7 +23,7 @@ Solange dieser Wert `false` ist, gilt alles unten. Zum Wiedereinschalten reicht 
 | AdMob-SDK | `lib/ads/google_rewarded_ad_service.dart` | `available` ist `false`. `show()` kehrt sofort mit `failed` zurück und ruft weder `MobileAds.instance.initialize()` noch `RewardedAd.load()` auf. |
 | Video-Knopf | `lib/features/home/video_button.dart`, `lib/features/home/home_screen.dart` | Wird auf Home nicht gebaut (auch nicht, wenn ein Test einen Fake-Service einsetzt). |
 | LP aus Videos | `lib/state/providers.dart` → `GameNotifier.claimVideo()` | Gibt immer `false` zurück, zahlt keine LP. |
-| Datenschutztext | `lib/features/legal/legal_texts.dart`, gespiegelt in `docs/legal/privacy.md` | Abschnitt 5 sagt klar „Derzeit aus“ / „Currently off“: keine Werbung, kein Video-Knopf, kein SDK-Start, keine Werbedaten an Google. Die alte Beschreibung bleibt darunter als Text für das Wiedereinschalten. |
+| Datenschutztext | `lib/features/legal/legal_texts.dart`, gespiegelt in `docs/legal/privacy.md` | Abschnitt 5 in der öffentlichen Fassung ist kurz: „Derzeit keine Werbung; sobald Werbung eingeschaltet wird, wird diese Erklärung vorher aktualisiert und eine Einwilligung eingeholt.“ (EN entsprechend). Der ausführliche Zukunftstext liegt intern in `docs/legal/admob-later.md`. |
 
 Die Spiellogik selbst (`lib/domain/video_rewards.dart`, `GameData.claimingVideo`, Speicherfeld `videos` im Spielstand) bleibt unverändert, damit sich die Funktion ohne Umbau wieder einschalten lässt. Sie ist nur nicht mehr über die Oberfläche oder den Notifier erreichbar.
 
@@ -47,7 +47,7 @@ Im gesamten Projekt gibt es kein AdSense, keine In-App-Käufe (`in_app_purchase`
 - Neu: `test/config/monetization_test.dart` prüft, dass `monetizationEnabled` `false` ist. Dieser Test muss beim Wiedereinschalten auf `isTrue` gedreht (oder entfernt) werden.
 - Neu: Widget-Test „video button stays hidden while monetization is off, even with a fake ad service“ in `test/widget_test.dart`. Läuft nur, solange der Schalter aus ist (`skip: monetizationEnabled`).
 - Übersprungen, solange der Schalter aus ist: „video button pays 3 shrinking rewards, then dims“ in `test/widget_test.dart` (`skip: !monetizationEnabled`). Die Domain-Tests in `test/domain/video_rewards_test.dart` und der Spielstand-Test (`videos.watched`) laufen weiter, weil die Logik erhalten bleibt.
-- `test/legal_texts_test.dart` prüft zusätzlich den Hinweis „Derzeit aus“ / „Currently off“.
+- `test/legal_texts_test.dart` prüft zusätzlich den kurzen Hinweis „Derzeit keine Werbung“ / „Currently no advertising“ und dass der ausführliche AdMob-Zukunftstext nicht in der öffentlichen Fassung steht.
 
 ## Auswirkung auf die Spielbalance
 
@@ -68,7 +68,7 @@ Nur nach ausdrücklichem Go von Philip:
 
 1. In `lib/config/monetization.dart` `monetizationEnabled` auf `true` setzen.
 2. In `test/config/monetization_test.dart` die Erwartung auf `isTrue` ändern (oder den Test entfernen). Die Skip-Bedingungen in `test/widget_test.dart` drehen sich dann von selbst: der „pays 3 rewards“-Test läuft wieder, der „stays hidden“-Test wird übersprungen.
-3. Datenschutz-Abschnitt 5 in `lib/features/legal/legal_texts.dart` und `docs/legal/privacy.md` aktualisieren: den Hinweis „Derzeit aus“ / „Currently off“ entfernen oder ersetzen, und den Übergangstext durch den echten Text zur Einwilligung ersetzen, sobald UMP und ATT angebunden sind (siehe `docs/HANDOFF_DEVIN_ADMOB.md`). Den zugehörigen Test in `test/legal_texts_test.dart` anpassen.
+3. Datenschutz-Abschnitt 5 in `lib/features/legal/legal_texts.dart` und `docs/legal/privacy.md` aktualisieren: den kurzen Hinweis „Derzeit keine Werbung“ / „Currently no advertising“ durch den echten Text zur Einwilligung ersetzen, sobald UMP und ATT angebunden sind (siehe `docs/HANDOFF_DEVIN_ADMOB.md`). Der frühere ausführliche Text liegt in `docs/legal/admob-later.md`. Den zugehörigen Test in `test/legal_texts_test.dart` anpassen.
 4. Vor einem Release mit echten Anzeigen: echte AdMob-App- und Unit-IDs einsetzen (nicht die Test-IDs), UMP-Einwilligung und iOS-ATT verdrahten. Das macht Devin; Details stehen in `docs/HANDOFF_DEVIN_ADMOB.md`.
 5. `flutter analyze`, `flutter test` und `scripts/check_forbidden_terms.sh` müssen grün sein.
 6. Weiterhin: kein Merge auf `main`, kein Store-Upload, kein Produktions-Deploy, bis Philip „accepted“ bzw. ausdrücklich zustimmt.

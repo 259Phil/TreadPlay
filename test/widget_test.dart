@@ -779,8 +779,14 @@ void main() {
       await tester.tap(find.widgetWithText(NavigationDestination, 'Settings'));
       await tester.pumpAndSettle();
       Future<void> tapRow(String text, {double delta = 200}) async {
+        // Scope to the settings list: Home also shows an Impressum /
+        // Legal Notice link (kept in the indexed stack).
+        final row = find.descendant(
+          of: find.byType(ListView),
+          matching: find.text(text),
+        );
         await tester.scrollUntilVisible(
-          find.text(text),
+          row,
           delta,
           scrollable: find
               .descendant(
@@ -790,11 +796,11 @@ void main() {
               .first,
         );
         await Scrollable.ensureVisible(
-          tester.element(find.text(text)),
+          tester.element(row),
           alignment: 0.5,
         );
         await tester.pumpAndSettle();
-        await tester.tap(find.text(text));
+        await tester.tap(row);
         await tester.pumpAndSettle();
       }
 
@@ -852,6 +858,34 @@ void main() {
       expect(find.textContaining('Kontaktdaten'), findsOneWidget);
       expect(
         find.textContaining('Quelle: Impressum-Privatschutz'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('home shows an imprint link that opens the legal notice', (
+      tester,
+    ) async {
+      await pumpApp(tester);
+      expect(find.byKey(const Key('home-imprint')), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('home-imprint')),
+          matching: find.text('Legal Notice'),
+        ),
+        findsOneWidget,
+      );
+      await tester.tap(find.byKey(const Key('home-imprint')));
+      await tester.pumpAndSettle();
+      expect(
+        find.text(
+          'Information pursuant to § 5 DDG (German Digital Services Act)',
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining(
+          'BENDER INTERACTIVE is the trading name and brand of Philip Bender',
+        ),
         findsOneWidget,
       );
     });

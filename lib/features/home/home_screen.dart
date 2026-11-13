@@ -72,7 +72,7 @@ class HomeScreen extends ConsumerWidget {
             ),
           const MessengerWatcher(),
           Padding(
-            padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+            padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -102,6 +102,31 @@ class HomeScreen extends ConsumerWidget {
                   },
                 ),
               ],
+            ),
+          ),
+          // Unobtrusive legal notice, also reachable from Settings.
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 6),
+              child: TextButton(
+                key: const Key('home-imprint'),
+                style: TextButton.styleFrom(
+                  foregroundColor: TreadColors.muted,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  textStyle: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                onPressed: () => context.push(AppRoutes.imprint),
+                child: Text(l.settingsImprint),
+              ),
             ),
           ),
         ],

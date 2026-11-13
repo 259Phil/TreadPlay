@@ -13,7 +13,7 @@ String legalText(LegalDoc doc, String languageCode) {
 }
 
 const _privacyEn = r'''
-Last updated: October 2026
+Last updated: 13 November 2026
 
 ## 1. Controller
 Philip Bender  
@@ -41,17 +41,7 @@ A run counts real movement. Before the first run the app explains this and asks 
 We do not sell data and we do not build a profile of you. For the rewarded videos, see section 5.
 
 ## 5. Rewarded videos (ads)
-[Interim text: to be updated when AdMob and the consent query (Google UMP, iOS tracking prompt) are connected.]
-
-**Currently off:** All monetization is switched off. The app shows no ads and no video button, does not initialize the AdMob SDK and sends no advertising data to Google. The game is fully playable without this. The points below describe the feature for when it is turned back on.
-
-- When this feature is on, the Android and iOS apps offer an optional button for up to 3 rewarded videos a day, each for a few extra Lauf Points. Watching is voluntary. You can play the whole game without videos; running stays the main way to earn.
-- The app requests a video from Google only after you tap the button and confirm.
-- Provider: Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland (Google AdMob). When a video is loaded and shown, Google may process device and usage data such as IP address, device type, app information, ad interactions and, where available, your device's advertising ID. Details: https://policies.google.com/technologies/ads and https://policies.google.com/privacy
-- Personalised ads use your advertising ID and earlier activity to pick ads for you. Non-personalised ads are chosen only from context (for example this app and a rough location from the IP address). Google may still use data for frequency capping, ad measurement and fraud prevention.
-- Your choice: this version does not yet show its own consent dialog. Before real ads are switched on, a consent query (Google User Messaging Platform) will be added. You will then be able to choose between personalised and non-personalised ads and change your choice at any time under Settings → Privacy settings.
-- iOS: the app does not ask for tracking permission at the moment, so iOS does not give it your advertising ID (IDFA). Android: you can reset or delete your advertising ID in the system settings.
-- The web version shows no videos and no ads.
+Currently no advertising; as soon as advertising is switched on, this statement will be updated beforehand and consent will be obtained.
 
 ## 6. Purchases (only if a later version enables them)
 Purchases run through Apple App Store or Google Play. We do not receive your card data. Only the on-device purchase status would be stored.
@@ -68,21 +58,33 @@ Under Settings → Save game you can export your save as a file (treadplay-save-
 - Files you saved or shared elsewhere (for example in Files, a mail or a cloud drive) are outside the app. The app cannot and does not delete them; delete them yourself if you no longer need them. After deleting, only such a file can bring the old game back.
 - Uninstalling the app (web: clearing the site data) deletes all local data. There is no account to erase on a server.
 
-## 8. Web version
-- The game data stays in your browser's local storage on this device.
-- The page is delivered by GitHub Pages (GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA). Its servers technically process your IP address and log access. This may involve a transfer of data to the USA.
-- When the page loads, your browser fetches the Flutter rendering engine (CanvasKit) from Google servers (www.gstatic.com). Google receives your IP address for this.
-- Location comes from your browser, only during a run and only with your browser's permission. During a run the app keeps the screen awake.
+## 8. Web version and hosting
+The game data stays in your browser's local storage on this device. This is technically necessary for the operation of the game (§ 25 (2) no. 2 TDDDG).
+
+The website is delivered via GitHub Pages, a service of GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA (European contact address: GitHub B.V., Prins Bernhardplein 200, 1097 JB Amsterdam, the Netherlands).
+When the page is accessed, GitHub processes technically necessary data, in particular the IP address and usual connection data (time, page requested, referrer, browser or device information), in order to deliver the page and protect it against abuse. The legal basis is Art. 6 (1) (f) GDPR. The legitimate interest is to provide the website securely and reliably.
+We ourselves have no access to these server logs; according to its documentation, GitHub does not provide GitHub Pages access logs to site operators.
+GitHub does not state a fixed retention period for these logs. The duration depends on the purpose of collection (operation and security of the service) and GitHub's legal obligations. Further information: https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement (section "Security and Retention") and https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages
+Data may be transferred to the USA. GitHub, Inc. is certified under the EU-US Data Privacy Framework (https://www.dataprivacyframework.gov/participant/6174). GitHub also regularly relies, according to its own statement, on the European Commission's Standard Contractual Clauses for international transfers.
+Where processing is based on Art. 6 (1) (f) GDPR, you may object under Art. 21 GDPR. An objection to the technically necessary processing of the IP address for delivery is, in practice, only possible by not visiting the page.
+
+Fonts and the rendering engine (CanvasKit) are shipped with the app and are not loaded from Google servers.
+
+Your location is supplied by your browser only during a run and only with its permission. During a run the app keeps the screen awake.
 
 ## 9. Children
 TreadPlay is rated 9+. It is not directed at children under the age required by the store. We do not knowingly collect personal data from children.
 
-## 10. Changes
+## 10. Your rights
+You have the right of access, rectification, erasure, restriction of processing, data portability and objection (Art. 15–21 GDPR), as well as the right to withdraw consent. For save games that exist only on your device, you can remove all content yourself via "Delete save game" or by clearing the website data in your browser. For questions about data processed by us or by the host (in particular server logs), please contact the address given above.
+You may lodge a complaint with a data protection supervisory authority, in particular with the State Commissioner for Data Protection and Freedom of Information of Baden-Württemberg, Lautenschlagerstraße 20, 70173 Stuttgart (https://www.baden-wuerttemberg.datenschutz.de/). This right also exists independently vis-à-vis any other supervisory authority in the EU (Art. 77 GDPR).
+
+## 11. Changes
 We will update this text in the app if the data flow changes (for example when the ad consent query or cloud backup is added).
 ''';
 
 const _privacyDe = r'''
-Stand: Oktober 2026
+Stand: 13.11.2026
 
 ## 1. Verantwortlicher
 Philip Bender  
@@ -110,17 +112,7 @@ Ein Lauf zählt echte Bewegung. Vor dem ersten Lauf erklärt die App das und fra
 Wir verkaufen keine Daten und bilden kein Profil über dich. Zu den belohnten Videos siehe Abschnitt 5.
 
 ## 5. Belohnte Videos (Werbung)
-[Übergangstext: wird aktualisiert, sobald AdMob und die Einwilligungsabfrage (Google UMP, iOS-Tracking-Abfrage) angebunden sind.]
-
-**Derzeit aus:** Die gesamte Monetarisierung ist abgeschaltet. Die App zeigt keine Werbung und keinen Video-Knopf, startet das AdMob-SDK nicht und sendet keine Werbedaten an Google. Das Spiel ist ohne das voll spielbar. Die Punkte unten beschreiben die Funktion für den Fall, dass sie wieder eingeschaltet wird.
-
-- Wenn diese Funktion an ist, bieten die Android- und iOS-App einen freiwilligen Knopf für bis zu 3 belohnte Videos am Tag, jeweils für ein paar zusätzliche Laufpunkte. Anschauen ist freiwillig. Du kannst das ganze Spiel ohne Videos spielen; Laufen bleibt der Hauptweg zu Punkten.
-- Die App fordert ein Video bei Google erst an, wenn du den Knopf tippst und bestätigst.
-- Anbieter: Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland (Google AdMob). Wenn ein Video geladen und gezeigt wird, kann Google Geräte- und Nutzungsdaten verarbeiten, etwa IP-Adresse, Gerätetyp, App-Informationen, Interaktionen mit der Werbung und, falls verfügbar, die Werbe-ID deines Geräts. Details: https://policies.google.com/technologies/ads und https://policies.google.com/privacy
-- Personalisierte Werbung nutzt deine Werbe-ID und frühere Aktivitäten, um Werbung für dich auszuwählen. Nicht personalisierte Werbung wird nur nach dem Kontext gewählt (zum Beispiel diese App und ein ungefährer Ort aus der IP-Adresse). Google kann Daten trotzdem zur Begrenzung der Häufigkeit, zur Messung und gegen Betrug nutzen.
-- Deine Wahl: Diese Version zeigt noch keinen eigenen Einwilligungsdialog. Bevor echte Werbung eingeschaltet wird, kommt eine Einwilligungsabfrage (Google User Messaging Platform) dazu. Dann kannst du zwischen personalisierter und nicht personalisierter Werbung wählen und deine Wahl jederzeit unter Einstellungen → Datenschutz-Einstellungen ändern.
-- iOS: Die App fragt derzeit keine Tracking-Erlaubnis ab, daher gibt iOS ihr deine Werbe-ID (IDFA) nicht. Android: Deine Werbe-ID kannst du in den Systemeinstellungen zurücksetzen oder löschen.
-- Die Web-Version zeigt keine Videos und keine Werbung.
+Derzeit keine Werbung; sobald Werbung eingeschaltet wird, wird diese Erklärung vorher aktualisiert und eine Einwilligung eingeholt.
 
 ## 6. Käufe (nur wenn eine spätere Version sie einschaltet)
 Käufe laufen über den Apple App Store oder Google Play. Wir erhalten keine Kartendaten. Gespeichert würde nur der Kaufstatus auf dem Gerät.
@@ -137,21 +129,33 @@ Unter Einstellungen → Spielstand kannst du deinen Spielstand als Datei exporti
 - Dateien, die du woanders gespeichert oder geteilt hast (zum Beispiel in Dateien, einer Mail oder einem Cloud-Speicher), liegen außerhalb der App. Die App kann und wird sie nicht löschen; lösche sie selbst, wenn du sie nicht mehr brauchst. Nach dem Löschen bringt nur eine solche Datei den alten Spielstand zurück.
 - App deinstallieren (Web: Websitedaten löschen) löscht alle lokalen Daten. Ein Konto zum Löschen auf einem Server gibt es nicht.
 
-## 8. Web-Version
-- Die Spieldaten bleiben im lokalen Speicher deines Browsers auf diesem Gerät.
-- Die Seite wird von GitHub Pages ausgeliefert (GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA). Dessen Server verarbeiten technisch bedingt deine IP-Adresse und protokollieren Zugriffe. Dabei kann eine Übermittlung in die USA stattfinden.
-- Beim Laden holt dein Browser die Flutter-Darstellungs-Engine (CanvasKit) von Google-Servern (www.gstatic.com). Google erhält dafür deine IP-Adresse.
-- Den Standort liefert dein Browser, nur während eines Laufs und nur mit seiner Freigabe. Während eines Laufs hält die App den Bildschirm wach.
+## 8. Web-Version und Hosting
+Die Spieldaten bleiben im lokalen Speicher deines Browsers auf diesem Gerät. Das ist für den Betrieb des Spiels technisch erforderlich (§ 25 Abs. 2 Nr. 2 TDDDG).
+
+Die Website wird über GitHub Pages ausgeliefert, einen Dienst von GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA (europäische Kontaktadresse: GitHub B.V., Prins Bernhardplein 200, 1097 JB Amsterdam, Niederlande).
+Beim Aufruf verarbeitet GitHub technisch notwendige Daten, insbesondere die IP-Adresse sowie übliche Verbindungsdaten (Zeitpunkt, aufgerufene Seite, Referrer, Browser- bzw. Geräteinformationen), um die Seite auszuliefern und vor Missbrauch zu schützen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO. Das berechtigte Interesse besteht darin, die Website sicher und zuverlässig bereitzustellen.
+Wir selbst haben keinen Zugriff auf diese Server-Logs; GitHub stellt Seitenbetreibern nach seiner Dokumentation keine Zugriffslogs von GitHub Pages zur Verfügung.
+Eine feste Speicherdauer für diese Logs nennt GitHub nicht. Die Dauer richtet sich nach dem Zweck der Erhebung (Betrieb und Sicherheit des Dienstes) und den gesetzlichen Pflichten von GitHub. Nähere Angaben: https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement (Abschnitt „Security and Retention“) und https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages
+Daten können in die USA übermittelt werden. GitHub, Inc. ist unter dem EU-US Data Privacy Framework zertifiziert (https://www.dataprivacyframework.gov/participant/6174). GitHub stützt internationale Übermittlungen nach eigener Erklärung außerdem regelmäßig auf die Standardvertragsklauseln der Europäischen Kommission.
+Soweit die Verarbeitung auf Art. 6 Abs. 1 lit. f DSGVO beruht, kannst du ihr nach Art. 21 DSGVO widersprechen. Ein Widerspruch gegen die zur Auslieferung technisch notwendige Verarbeitung der IP-Adresse ist in der Praxis nur möglich, indem du die Seite nicht aufrufst.
+
+Schriftarten und die Darstellungs-Engine (CanvasKit) werden mit der App ausgeliefert und nicht von Google-Servern nachgeladen.
+
+Den Standort liefert dein Browser nur während eines Laufs und nur mit seiner Freigabe. Während eines Laufs hält die App den Bildschirm wach.
 
 ## 9. Kinder
 Altersfreigabe 9+. Die App richtet sich nicht an Kinder unter dem Store-Mindestalter. Wir erheben wissentlich keine personenbezogenen Daten von Kindern.
 
-## 10. Änderungen
+## 10. Deine Rechte
+Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit und Widerspruch (Art. 15–21 DSGVO) sowie auf Widerruf einer Einwilligung. Für die nur auf deinem Gerät liegenden Spielstände kannst du alle Inhalte selbst über „Spielstand löschen“ oder durch Löschen der Website-Daten im Browser entfernen. Bei Fragen zu den von uns bzw. vom Hoster verarbeiteten Daten (insbesondere Server-Logs) wende dich an die oben genannte Kontaktadresse.
+Beschweren kannst du dich bei einer Datenschutz-Aufsichtsbehörde, insbesondere beim Landesbeauftragten für den Datenschutz und die Informationsfreiheit Baden-Württemberg, Lautenschlagerstraße 20, 70173 Stuttgart (https://www.baden-wuerttemberg.datenschutz.de/). Das Recht besteht unabhängig davon auch gegenüber jeder anderen Aufsichtsbehörde der EU (Art. 77 DSGVO).
+
+## 11. Änderungen
 Ändert sich der Datenfluss (zum Beispiel durch die Einwilligungsabfrage für Werbung oder ein Cloud-Backup), aktualisieren wir diesen Text in der App.
 ''';
 
 const _termsEn = r'''
-Last updated: October 2026
+Last updated: 13 November 2026
 
 ## 1. Provider
 BENDER INTERACTIVE  
@@ -162,6 +166,8 @@ Ludwig-Erhard-Straße 18
 
 Email: kontakt.bender.interactive@gmail.com  
 Phone: +49 176 70706133
+
+BENDER INTERACTIVE is the trading name and brand of Philip Bender. It is not a legal entity and is not a company registered in the commercial register.
 
 ## 2. What the app is
 TreadPlay is a walking game with invented companions. Lauf Points, breath and seals are virtual items inside the app. They are not money and cannot be cashed out.
@@ -182,11 +188,11 @@ Companion and world art was created with Grok (xAI) and edited by TreadPlay. Cre
 If you buy something later, Apple’s or Google’s terms apply to the payment.
 
 ## 8. Liability
-The app is provided as is. We are not liable for lost local saves (device loss, uninstall) beyond what mandatory law requires.
+The app is provided without warranty of uninterrupted availability or of the preservation of local save games (device loss, uninstallation, deletion of website data). Liability of the provider is excluded to the extent permitted by law; this does not apply in cases of intent, gross negligence, or injury to life, body or health. Liability for slightly negligent breach of essential contractual obligations remains unaffected; in that case, liability is limited to the foreseeable, typical damage.
 ''';
 
 const _termsDe = r'''
-Stand: Oktober 2026
+Stand: 13.11.2026
 
 ## 1. Anbieter
 BENDER INTERACTIVE  
@@ -197,6 +203,8 @@ Ludwig-Erhard-Straße 18
 
 E-Mail: kontakt.bender.interactive@gmail.com  
 Telefon: +49 176 70706133
+
+BENDER INTERACTIVE ist die Geschäftsbezeichnung bzw. Marke von Philip Bender. Es handelt sich um keine juristische Person und kein im Handelsregister eingetragenes Unternehmen.
 
 ## 2. Was die App ist
 TreadPlay ist ein Laufspiel mit erfundenen Gefährten. Laufpunkte, Puste und Siegel sind virtuelle Gegenstände in der App. Sie sind kein Geld und nicht auszahlbar.
@@ -217,7 +225,7 @@ Gefährten und Welten wurden mit Grok (xAI) erstellt und von TreadPlay bearbeite
 Spätere Käufe unterliegen den Bedingungen von Apple oder Google.
 
 ## 8. Haftung
-Die App wird wie gesehen bereitgestellt. Für verlorene lokale Spielstände (Geräteverlust, Deinstallation) haften wir nur, soweit zwingendes Recht das verlangt.
+Die App wird ohne Gewähr für ununterbrochene Verfügbarkeit oder den Erhalt lokaler Spielstände (Geräteverlust, Deinstallation, Löschen der Website-Daten) bereitgestellt. Eine Haftung des Anbieters ist, soweit gesetzlich zulässig, ausgeschlossen; dies gilt nicht bei Vorsatz, grober Fahrlässigkeit oder Verletzung von Leben, Körper oder Gesundheit. Unberührt bleibt ferner die Haftung für die leicht fahrlässige Verletzung wesentlicher Vertragspflichten; in diesem Fall ist die Haftung auf den vorhersehbaren, typischen Schaden begrenzt.
 ''';
 
 const _imprintEn = r'''
@@ -226,6 +234,8 @@ Philip Bender
 c/o IP-Management #12979  
 Ludwig-Erhard-Straße 18  
 20459 Hamburg
+
+BENDER INTERACTIVE is the trading name and brand of Philip Bender. It is not a legal entity and is not a company registered in the commercial register.
 
 ## Contact
 Email: kontakt.bender.interactive@gmail.com  
@@ -240,6 +250,8 @@ Philip Bender
 c/o IP-Management #12979  
 Ludwig-Erhard-Straße 18  
 20459 Hamburg
+
+BENDER INTERACTIVE ist die Geschäftsbezeichnung bzw. Marke von Philip Bender. Es handelt sich um keine juristische Person und kein im Handelsregister eingetragenes Unternehmen.
 
 ## Kontaktdaten
 E-Mail: kontakt.bender.interactive@gmail.com  

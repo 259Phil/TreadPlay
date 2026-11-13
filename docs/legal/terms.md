@@ -1,8 +1,8 @@
-<!-- Source: TREADPLAY-LEGAL.md (2026-10-03). Shown in the app from lib/features/legal/legal_texts.dart; keep both in sync. Not legal advice; fill in the bracketed placeholders before publishing. -->
+<!-- Shown in the app from lib/features/legal/legal_texts.dart; keep both in sync. -->
 
 # Terms of Use — TreadPlay
 
-Last updated: October 2026
+Last updated: 13 November 2026
 
 ## 1. Provider
 BENDER INTERACTIVE  
@@ -13,6 +13,8 @@ Ludwig-Erhard-Straße 18
 
 Email: kontakt.bender.interactive@gmail.com  
 Phone: +49 176 70706133
+
+BENDER INTERACTIVE is the trading name and brand of Philip Bender. It is not a legal entity and is not a company registered in the commercial register.
 
 ## 2. What the app is
 TreadPlay is a walking game with invented companions. Lauf Points, breath and seals are virtual items inside the app. They are not money and cannot be cashed out.
@@ -33,13 +35,13 @@ Companion and world art was created with Grok (xAI) and edited by TreadPlay. Cre
 If you buy something later, Apple’s or Google’s terms apply to the payment.
 
 ## 8. Liability
-The app is provided as is. We are not liable for lost local saves (device loss, uninstall) beyond what mandatory law requires.
+The app is provided without warranty of uninterrupted availability or of the preservation of local save games (device loss, uninstallation, deletion of website data). Liability of the provider is excluded to the extent permitted by law; this does not apply in cases of intent, gross negligence, or injury to life, body or health. Liability for slightly negligent breach of essential contractual obligations remains unaffected; in that case, liability is limited to the foreseeable, typical damage.
 
 ---
 
 # Nutzungsbedingungen — TreadPlay
 
-Stand: Oktober 2026
+Stand: 13.11.2026
 
 ## 1. Anbieter
 BENDER INTERACTIVE  
@@ -50,6 +52,8 @@ Ludwig-Erhard-Straße 18
 
 E-Mail: kontakt.bender.interactive@gmail.com  
 Telefon: +49 176 70706133
+
+BENDER INTERACTIVE ist die Geschäftsbezeichnung bzw. Marke von Philip Bender. Es handelt sich um keine juristische Person und kein im Handelsregister eingetragenes Unternehmen.
 
 ## 2. Was die App ist
 TreadPlay ist ein Laufspiel mit erfundenen Gefährten. Laufpunkte, Puste und Siegel sind virtuelle Gegenstände in der App. Sie sind kein Geld und nicht auszahlbar.
@@ -70,4 +74,4 @@ Gefährten und Welten wurden mit Grok (xAI) erstellt und von TreadPlay bearbeite
 Spätere Käufe unterliegen den Bedingungen von Apple oder Google.
 
 ## 8. Haftung
-Die App wird wie gesehen bereitgestellt. Für verlorene lokale Spielstände (Geräteverlust, Deinstallation) haften wir nur, soweit zwingendes Recht das verlangt.
+Die App wird ohne Gewähr für ununterbrochene Verfügbarkeit oder den Erhalt lokaler Spielstände (Geräteverlust, Deinstallation, Löschen der Website-Daten) bereitgestellt. Eine Haftung des Anbieters ist, soweit gesetzlich zulässig, ausgeschlossen; dies gilt nicht bei Vorsatz, grober Fahrlässigkeit oder Verletzung von Leben, Körper oder Gesundheit. Unberührt bleibt ferner die Haftung für die leicht fahrlässige Verletzung wesentlicher Vertragspflichten; in diesem Fall ist die Haftung auf den vorhersehbaren, typischen Schaden begrenzt.

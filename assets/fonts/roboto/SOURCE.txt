@@ -1,0 +1,14 @@
+Roboto (Google Fonts), SIL Open Font License 1.1 — see OFL.txt.
+
+Taken from the official Google Fonts upstream release:
+
+  https://github.com/googlefonts/roboto-3-classic/releases/download/v3.015/Roboto_v3.015.zip
+
+Version: 3.015 (15 January 2026)
+Upstream: https://github.com/googlefonts/roboto-classic
+(same files as google/fonts ofl/roboto, commit 91d5d3e5b81efa04a77925cc609fdcdd7ee663d1)
+
+Files used: web/static/Roboto-Regular.ttf, Roboto-Medium.ttf, Roboto-Bold.ttf
+(weights 400 / 500 / 700). Italic is not bundled unless a later check
+shows the app fetching it. The OFL text is the official one from
+https://github.com/google/fonts/blob/main/ofl/roboto/OFL.txt

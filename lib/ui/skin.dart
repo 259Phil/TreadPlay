@@ -106,6 +106,15 @@ class TreadSkin extends ThemeExtension<TreadSkin> {
 
   static const bodyFont = 'Inter';
 
+  /// Bundled fallbacks so Flutter Web does not fetch Roboto or Noto
+  /// symbol families from fonts.gstatic.com when a glyph is missing
+  /// from Inter or a display face.
+  static const fontFamilyFallback = <String>[
+    'Roboto',
+    'NotoSansSymbols',
+    'NotoSansSymbols2',
+  ];
+
   static TreadSkin forStyle(TreadStyle s) => switch (s) {
     TreadStyle.forgeBrass => const TreadSkin(
       style: TreadStyle.forgeBrass,
@@ -198,6 +207,7 @@ class TreadSkin extends ThemeExtension<TreadSkin> {
   /// Display text style (titles, names, button labels in A/C/D).
   TextStyle display(double size, {Color? color}) => TextStyle(
     fontFamily: displayFont,
+    fontFamilyFallback: fontFamilyFallback,
     fontSize: size,
     fontWeight: displayWeight,
     letterSpacing: displaySpacing,
@@ -1461,9 +1471,13 @@ ThemeData _applySkin(
 ) {
   return themed.copyWith(
     extensions: [s],
-    textTheme: base.textTheme.apply(fontFamily: TreadSkin.bodyFont),
+    textTheme: base.textTheme.apply(
+      fontFamily: TreadSkin.bodyFont,
+      fontFamilyFallback: TreadSkin.fontFamilyFallback,
+    ),
     primaryTextTheme: base.primaryTextTheme.apply(
       fontFamily: TreadSkin.bodyFont,
+      fontFamilyFallback: TreadSkin.fontFamilyFallback,
     ),
     tabBarTheme: TabBarThemeData(
       labelColor: s.brass,
@@ -1481,6 +1495,7 @@ ThemeData _applySkin(
         (st) => leather
             ? TextStyle(
                 fontFamily: 'AlegreyaSC',
+                fontFamilyFallback: TreadSkin.fontFamilyFallback,
                 fontSize: 11,
                 height: 1,
                 letterSpacing: -.25,
@@ -1494,6 +1509,7 @@ ThemeData _applySkin(
               )
             : TextStyle(
                 fontFamily: TreadSkin.bodyFont,
+                fontFamilyFallback: TreadSkin.fontFamilyFallback,
                 fontSize: 10.5,
                 letterSpacing: -.2,
                 fontWeight: FontWeight.w600,

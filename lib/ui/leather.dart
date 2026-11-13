@@ -220,7 +220,11 @@ class LeatherBorder extends OutlinedBorder {
 ThemeData leatherComponents(ThemeData t, TreadSkin s) {
   const deep = Color(0xFF241A14);
   const hi = Color(0xFFF2DCA8);
-  final body = TextStyle(fontFamily: TreadSkin.bodyFont, color: s.text);
+  final body = TextStyle(
+    fontFamily: TreadSkin.bodyFont,
+    fontFamilyFallback: TreadSkin.fontFamilyFallback,
+    color: s.text,
+  );
   return t.copyWith(
     iconTheme: t.iconTheme.copyWith(color: s.brass),
     appBarTheme: t.appBarTheme.copyWith(

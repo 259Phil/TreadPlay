@@ -1,0 +1,18 @@
+Noto Sans Symbols and Noto Sans Symbols 2 — glyph subsets for Flutter Web.
+
+Purpose: the app uses a few symbols that Inter/Roboto do not contain
+(→ ← ↔ in legal and l10n strings; ✓ ▸ ✦ ✧ on Wanderweg, run, Schmiede-Baum
+and Album). Without a bundled fallback, Flutter Web downloads those Noto
+families from fonts.gstatic.com. These subsets close that gap.
+
+Upstream (official Noto Project, SIL OFL 1.1):
+  https://github.com/notofonts/symbols
+  NotoSansSymbols-v2.003  (hinted/ttf/NotoSansSymbols-Regular.ttf)
+  NotoSansSymbols2-v2.008 (hinted/ttf/NotoSansSymbols2-Regular.ttf)
+
+Subset with fonttools pyftsubset:
+  NotoSansSymbols-Regular-subset.ttf   U+2190 U+2192 U+2194
+  NotoSansSymbols2-Regular-subset.ttf  U+25B8 U+2713 U+2726 U+2727
+
+Licence files: OFL-NotoSansSymbols.txt, OFL-NotoSansSymbols2.txt.
+Family names kept as upstream ("Noto Sans Symbols" / "Noto Sans Symbols 2").

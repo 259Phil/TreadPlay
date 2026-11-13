@@ -795,10 +795,7 @@ void main() {
               )
               .first,
         );
-        await Scrollable.ensureVisible(
-          tester.element(row),
-          alignment: 0.5,
-        );
+        await Scrollable.ensureVisible(tester.element(row), alignment: 0.5);
         await tester.pumpAndSettle();
         await tester.tap(row);
         await tester.pumpAndSettle();

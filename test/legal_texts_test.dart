@@ -164,54 +164,67 @@ void main() {
     }
   });
 
-  test('imprint and terms § 1 name BENDER INTERACTIVE as a brand, not a legal entity', () {
-    final imprintEn = legalText(LegalDoc.imprint, 'en');
-    final imprintDe = legalText(LegalDoc.imprint, 'de');
-    final termsEn = legalText(LegalDoc.terms, 'en');
-    final termsDe = legalText(LegalDoc.terms, 'de');
-    const brandDe =
-        'BENDER INTERACTIVE ist die Geschäftsbezeichnung bzw. Marke von Philip Bender. Es handelt sich um keine juristische Person und kein im Handelsregister eingetragenes Unternehmen.';
-    const brandEn =
-        'BENDER INTERACTIVE is the trading name and brand of Philip Bender. It is not a legal entity and is not a company registered in the commercial register.';
-    expect(imprintDe, contains(brandDe));
-    expect(termsDe, contains(brandDe));
-    expect(imprintEn, contains(brandEn));
-    expect(termsEn, contains(brandEn));
-    for (final s in [imprintEn, imprintDe, termsEn, termsDe]) {
-      expect(s, isNot(contains('ODR')));
-      expect(s, isNot(contains('Online-Streitbeilegung')));
-    }
-  });
+  test(
+    'imprint and terms § 1 name BENDER INTERACTIVE as a brand, not a legal entity',
+    () {
+      final imprintEn = legalText(LegalDoc.imprint, 'en');
+      final imprintDe = legalText(LegalDoc.imprint, 'de');
+      final termsEn = legalText(LegalDoc.terms, 'en');
+      final termsDe = legalText(LegalDoc.terms, 'de');
+      const brandDe =
+          'BENDER INTERACTIVE ist die Geschäftsbezeichnung bzw. Marke von Philip Bender. Es handelt sich um keine juristische Person und kein im Handelsregister eingetragenes Unternehmen.';
+      const brandEn =
+          'BENDER INTERACTIVE is the trading name and brand of Philip Bender. It is not a legal entity and is not a company registered in the commercial register.';
+      expect(imprintDe, contains(brandDe));
+      expect(termsDe, contains(brandDe));
+      expect(imprintEn, contains(brandEn));
+      expect(termsEn, contains(brandEn));
+      for (final s in [imprintEn, imprintDe, termsEn, termsDe]) {
+        expect(s, isNot(contains('ODR')));
+        expect(s, isNot(contains('Online-Streitbeilegung')));
+      }
+    },
+  );
 
-  test('terms § 8 liability keeps intent, gross negligence and essential duties', () {
-    final termsEn = legalText(LegalDoc.terms, 'en');
-    final termsDe = legalText(LegalDoc.terms, 'de');
-    expect(termsDe, contains('Vorsatz, grober Fahrlässigkeit'));
-    expect(termsDe, contains('Verletzung von Leben, Körper oder Gesundheit'));
-    expect(
-      termsDe,
-      contains('leicht fahrlässige Verletzung wesentlicher Vertragspflichten'),
-    );
-    expect(termsEn, contains('intent, gross negligence'));
-    expect(termsEn, contains('injury to life, body or health'));
-    expect(
-      termsEn,
-      contains('slightly negligent breach of essential contractual obligations'),
-    );
-  });
+  test(
+    'terms § 8 liability keeps intent, gross negligence and essential duties',
+    () {
+      final termsEn = legalText(LegalDoc.terms, 'en');
+      final termsDe = legalText(LegalDoc.terms, 'de');
+      expect(termsDe, contains('Vorsatz, grober Fahrlässigkeit'));
+      expect(termsDe, contains('Verletzung von Leben, Körper oder Gesundheit'));
+      expect(
+        termsDe,
+        contains(
+          'leicht fahrlässige Verletzung wesentlicher Vertragspflichten',
+        ),
+      );
+      expect(termsEn, contains('intent, gross negligence'));
+      expect(termsEn, contains('injury to life, body or health'));
+      expect(
+        termsEn,
+        contains(
+          'slightly negligent breach of essential contractual obligations',
+        ),
+      );
+    },
+  );
 
-  test('privacy has a rights section with LfDI Baden-Württemberg and Art. 77', () {
-    expect(en, contains('## 10. Your rights'));
-    expect(de, contains('## 10. Deine Rechte'));
-    expect(en, contains('Art. 15–21 GDPR'));
-    expect(de, contains('Art. 15–21 DSGVO'));
-    expect(en, contains('Art. 77 GDPR'));
-    expect(de, contains('Art. 77 DSGVO'));
-    expect(en, contains('https://www.baden-wuerttemberg.datenschutz.de/'));
-    expect(de, contains('https://www.baden-wuerttemberg.datenschutz.de/'));
-    expect(en, contains('Lautenschlagerstraße 20, 70173 Stuttgart'));
-    expect(de, contains('Lautenschlagerstraße 20, 70173 Stuttgart'));
-    expect(en, contains('Last updated: 13 November 2026'));
-    expect(de, contains('Stand: 13.11.2026'));
-  });
+  test(
+    'privacy has a rights section with LfDI Baden-Württemberg and Art. 77',
+    () {
+      expect(en, contains('## 10. Your rights'));
+      expect(de, contains('## 10. Deine Rechte'));
+      expect(en, contains('Art. 15–21 GDPR'));
+      expect(de, contains('Art. 15–21 DSGVO'));
+      expect(en, contains('Art. 77 GDPR'));
+      expect(de, contains('Art. 77 DSGVO'));
+      expect(en, contains('https://www.baden-wuerttemberg.datenschutz.de/'));
+      expect(de, contains('https://www.baden-wuerttemberg.datenschutz.de/'));
+      expect(en, contains('Lautenschlagerstraße 20, 70173 Stuttgart'));
+      expect(de, contains('Lautenschlagerstraße 20, 70173 Stuttgart'));
+      expect(en, contains('Last updated: 13 November 2026'));
+      expect(de, contains('Stand: 13.11.2026'));
+    },
+  );
 }

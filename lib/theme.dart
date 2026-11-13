@@ -64,6 +64,7 @@ ThemeData _baseTheme(ThemeData base) {
       toolbarHeight: 64,
       titleTextStyle: TextStyle(
         fontFamily: 'serif',
+        fontFamilyFallback: TreadSkin.fontFamilyFallback,
         fontSize: 30,
         fontWeight: FontWeight.w600,
         color: TreadColors.text,
@@ -164,6 +165,7 @@ ThemeData _baseTheme(ThemeData base) {
 /// Serif display style for screen and companion titles.
 const serifTitle = TextStyle(
   fontFamily: 'serif',
+  fontFamilyFallback: TreadSkin.fontFamilyFallback,
   fontWeight: FontWeight.w600,
   color: TreadColors.text,
 );

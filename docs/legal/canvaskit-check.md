@@ -1,6 +1,7 @@
 # CanvasKit-Prüfung (Web-Build)
 
-Stand: 13.11.2026. Prüfung an einem Release-Build mit Flutter 3.35.3:
+Stand: 13.11.2026. Prüfung an einem Release-Build mit Flutter 3.35.3
+(Zweig `grokbot/roboto-lokal`, nach dem Merge von PR #19):
 
 ```
 flutter build web --release --base-href /TreadPlay/ --no-web-resources-cdn
@@ -22,31 +23,52 @@ _flutter.buildConfig = {
 
 Die lokale Engine liegt unter `build/web/canvaskit/` (`canvaskit.js`, `canvaskit.wasm` und die Chromium-Variante). Der Loader wählt die lokale Basis-URL `"canvaskit"`, wenn `useLocalCanvasKit` wahr ist. Die Zeichenkette `https://www.gstatic.com/flutter-canvaskit` bleibt als Fallback-Zweig im Loader-Code stehen, wird in diesem Build aber nicht genommen.
 
-Die Datenschutzerklärung (§ 8) verwendet deshalb den Satz der Variante A: Schriftarten und die Darstellungs-Engine (CanvasKit) werden mit der App ausgeliefert und nicht von Google-Servern nachgeladen.
+Die Datenschutzerklärung (§ 8) verwendet den Satz der Variante A: Schriftarten und die Darstellungs-Engine (CanvasKit) werden mit der App ausgeliefert und nicht von Google-Servern nachgeladen. Der Laufzeit-Check unten bestätigt, dass dieser Satz jetzt zutrifft.
 
-## Schriftarten
+## Schriftarten (gebündelt)
 
 Im Build sind gebündelt (FontManifest plus Dateien unter `build/web/assets/`):
 
 - Inter (Regular, SemiBold, Bold) — Fließtext
 - Cinzel (SemiBold, Bold) — Display in mehreren Skins
 - BarlowSemiCondensed, AlegreyaSC, Metamorphous — weitere Skins
+- Roboto (Regular/Medium/Bold, offiziell Google Fonts / roboto-3-classic v3.015, SIL OFL 1.1, unter `assets/fonts/roboto/`) — Material-Standardfamilie; ohne Registrierung im FontManifest würde die Engine sie automatisch von `fonts.gstatic.com` nachladen
+- Noto Sans Symbols und Noto Sans Symbols 2 (offiziell Noto Project, SIL OFL 1.1; Glyphen-Teilmengen unter `assets/fonts/noto/`, nur die im UI vorkommenden Zeichen: ← → ↔ sowie ✓ ▸ ✦ ✧)
 - MaterialIcons (tree-shaken)
+
+Roboto-Kursiv ist nicht gebündelt: die App setzt `FontStyle.italic` auf Inter- und Display-Schriften, nicht auf Roboto; im Laufzeit-Check erschien kein Request nach einer Italic-Schnitt.
+
+Die Theme- und Skin-Textstile setzen `fontFamilyFallback: [Roboto, NotoSansSymbols, NotoSansSymbols2]`, damit fehlende Glyphen zuerst aus den gebündelten Schriften kommen und die Engine keine Noto-Familie von Google holt.
 
 Keine Font-CSS-Links zu `fonts.googleapis.com` in `index.html`. `googleapis.com` kommt im Build nicht vor.
 
-## Glyph- und Roboto-Fallback (Laufzeit, 13.11.2026)
+Asset-Größe (Release-`build/web` gegenüber dem Stand vor dieser Bündelung, Merge-Commit 787f86d / vorheriger Legal-Build 158.720.842 Bytes): **+484.943 Bytes (473,6 KB)**. Davon etwa 462 KB die drei Roboto-TTF, der Rest Noto-Teilmengen (knapp 10 KB), Lizenz-/SOURCE-Dateien und Manifest.
 
-In `main.dart.js` setzt Flutter `fontFallbackBaseUrl` standardmäßig auf `https://fonts.gstatic.com/s/`. Fehlt in den registrierten Schriften ein Zeichen (Emoji, CJK, seltene Symbole), würde die Engine eine Ergänzung (Noto) von Google nachladen und dabei die IP übermitteln.
+## Glyph-Fallback der Engine (Codepfad)
 
-Zusätzlich gilt: Steht die Familie „Roboto“ nicht im FontManifest, hängt die Engine sie automatisch an und lädt sie von genau dieser Basis-URL (`…/roboto/v32/KFOmCnqEu92Fr1Me4GZLCzYlKw.woff2`). Das ist unabhängig von fehlenden Glyphen.
+In `main.dart.js` setzt Flutter `fontFallbackBaseUrl` weiterhin standardmäßig auf `https://fonts.gstatic.com/s/`. Dieser Zweig bleibt im Engine-Code stehen. Er wird nur ausgelöst, wenn ein Zeichen in keiner bereits geladenen, am Textstil hinterlegten Schrift vorkommt (Emoji, CJK, weitere Symbole). Im geprüften Umfang der App-Bildschirme tritt das nicht ein.
 
-Laufzeit-Check des Release-Builds (Headless-Chrome, Startbildschirm, Service Worker blockiert):
+Emoji: das einzige Emoji in den Quellen (`👍`) steht nur in `docs/TREADPLAY-IP-CHECK.md`, nicht in der laufenden App. CJK-Zeichen kommen in den UI-Texten nicht vor. Ein generisches `fontFamily: 'serif'` (`serifTitle` in `lib/theme.dart`, Wanderweg/Schmiede/Begleiter-Werte) hat keine Anfrage an gstatic ausgelöst.
 
-- CanvasKit kommt lokal von `/TreadPlay/canvaskit/` — **kein** Request an `www.gstatic.com/flutter-canvaskit`.
-- **Ein** Request geht an `https://fonts.gstatic.com/s/roboto/v32/…woff2`. Ursache: Roboto ist nicht gebündelt, die Engine fügt sie als Standard-Fallback hinzu (Material-TextTheme-Defaults heißen intern weiter „Roboto“, auch wenn die App Inter/Cinzel setzt).
-- `googleapis.com` und `fonts.googleapis.com` werden nicht aufgerufen.
+## Laufzeit-Check (Release-Build, 13.11.2026)
 
-Die gebündelten Schriften (Inter, Cinzel, BarlowSemiCondensed, AlegreyaSC, Metamorphous) werden lokal geladen. Einige ältere Titelstile nutzen noch `fontFamily: 'serif'` (`serifTitle` in `lib/theme.dart`, Wanderweg/Schmiede/Begleiter-Werte); das ist eine generische Familie und nicht im FontManifest.
+Headless-Chrome (Playwright, Service Worker blockiert, Locale `de`, `--no-sandbox --disable-gpu`). Geprüft wurden die Hash-Routen:
 
-Der öffentliche Satz der Variante A („Schriftarten und die Darstellungs-Engine (CanvasKit) werden mit der App ausgeliefert und nicht von Google-Servern nachgeladen“) trifft für CanvasKit und die App-Schriften zu. Er deckt den automatischen Roboto-Fallback der Engine nicht vollständig ab. Abhilfe später: Roboto lokal bündeln und im FontManifest registrieren, dann entfällt dieser eine Request. Die Datenschutzerklärung wurde nach dem Prüfungstext (Variante A) gesetzt; diese Abweichung ist hier festgehalten.
+`#/home`, `#/run`, `#/settings`, `#/imprint`, `#/privacy` (durchgescrollt, inkl. § 8 und „Deine Rechte“), `#/terms`, `#/shelf` (Gehege), `#/wanderweg` (Karte), `#/forge`, `#/market`, `#/album`, `#/pouches`, `#/history`.
+
+Vor der Roboto- und Noto-Bündelung (Live-Stand nach PR #19):
+
+- CanvasKit kam lokal von `/TreadPlay/canvaskit/` — kein Request an `www.gstatic.com/flutter-canvaskit`.
+- Ein Request an `https://fonts.gstatic.com/s/roboto/v32/…woff2`, weil Roboto nicht im FontManifest stand.
+- Beim Scrollen der Datenschutzerklärung (Pfeil „→“ in „Einstellungen → Spielstand“) ein Request an `https://fonts.gstatic.com/s/notosanssymbols/v43/…woff2`.
+- Auf dem Album-Schirm (✦ / ✧) ein Request an `https://fonts.gstatic.com/s/notosanssymbols2/v24/…woff2`.
+
+Nach der Bündelung (dieser Build, lokal unter `/TreadPlay/` ausgeliefert):
+
+- **Keine** Requests an einen fremden Host. Alle 170 erfassten Requests gingen an denselben lokalen Ursprung.
+- Insbesondere **kein** Request an `fonts.gstatic.com`, `fonts.googleapis.com`, `www.gstatic.com` oder `googleapis.com`.
+- CanvasKit und alle Schriftarten (Roboto, Inter, Display-Schriften, Noto-Teilmengen, MaterialIcons) kommen aus dem App-Bundle.
+
+Damit trifft der öffentliche Satz der Variante A zu: „Schriftarten und die Darstellungs-Engine (CanvasKit) werden mit der App ausgeliefert und nicht von Google-Servern nachgeladen.“
+
+Live-Vorschau https://259phil.github.io/TreadPlay/ (gh-pages-Commit ac8585b, gleicher Build, 13.11.2026, Headless-Chrome, Service Worker blockiert, dieselben Routen inkl. durchgescrollter Rechtstexte): **170 Requests, alle an `259phil.github.io`**. Kein Request an `fonts.gstatic.com`, `fonts.googleapis.com`, `www.gstatic.com` oder einen anderen fremden Host. `useLocalCanvasKit` ist wahr, noindex und robots.txt unverändert, keine Custom Domain. Text auf dem Startbildschirm (mobil 390×844 und Desktop 1280×800) setzt sauber.

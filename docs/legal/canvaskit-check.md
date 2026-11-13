@@ -71,4 +71,4 @@ Nach der Bündelung (dieser Build, lokal unter `/TreadPlay/` ausgeliefert):
 
 Damit trifft der öffentliche Satz der Variante A zu: „Schriftarten und die Darstellungs-Engine (CanvasKit) werden mit der App ausgeliefert und nicht von Google-Servern nachgeladen.“
 
-Ein erneuter Check gegen die Live-Vorschau (GitHub Pages, gleicher Build) ist nach dem Ausrollen festgehalten, sobald er vorliegt; das erwartete Ergebnis ist identisch.
+Live-Vorschau https://259phil.github.io/TreadPlay/ (gh-pages-Commit ac8585b, gleicher Build, 13.11.2026, Headless-Chrome, Service Worker blockiert, dieselben Routen inkl. durchgescrollter Rechtstexte): **170 Requests, alle an `259phil.github.io`**. Kein Request an `fonts.gstatic.com`, `fonts.googleapis.com`, `www.gstatic.com` oder einen anderen fremden Host. `useLocalCanvasKit` ist wahr, noindex und robots.txt unverändert, keine Custom Domain. Text auf dem Startbildschirm (mobil 390×844 und Desktop 1280×800) setzt sauber.

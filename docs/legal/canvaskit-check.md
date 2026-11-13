@@ -35,12 +35,18 @@ Im Build sind gebündelt (FontManifest plus Dateien unter `build/web/assets/`):
 
 Keine Font-CSS-Links zu `fonts.googleapis.com` in `index.html`. `googleapis.com` kommt im Build nicht vor.
 
-## Glyph-Fallback (Restbemerkung)
+## Glyph- und Roboto-Fallback (Laufzeit, 13.11.2026)
 
-In `main.dart.js` setzt Flutter `fontFallbackBaseUrl` standardmäßig auf `https://fonts.gstatic.com/s/`. Das ist der eingebaute Noto-/Roboto-Fallback der Engine: fehlt in den registrierten Schriften ein Zeichen (Emoji, CJK, seltene Symbole), würde der Browser die Ergänzung von Google laden und dabei die IP übermitteln.
+In `main.dart.js` setzt Flutter `fontFallbackBaseUrl` standardmäßig auf `https://fonts.gstatic.com/s/`. Fehlt in den registrierten Schriften ein Zeichen (Emoji, CJK, seltene Symbole), würde die Engine eine Ergänzung (Noto) von Google nachladen und dabei die IP übermitteln.
 
-Die normale DE-/EN-Oberfläche nutzt die gebündelten Schriften (Inter für den Fließtext; Cinzel und die Skin-Schriften für Titel). Inter und die übrigen Familien decken die lateinische Schrift inkl. Umlaute ab. Ein automatischer Google-Request ist dort nicht zu erwarten.
+Zusätzlich gilt: Steht die Familie „Roboto“ nicht im FontManifest, hängt die Engine sie automatisch an und lädt sie von genau dieser Basis-URL (`…/roboto/v32/KFOmCnqEu92Fr1Me4GZLCzYlKw.woff2`). Das ist unabhängig von fehlenden Glyphen.
 
-Einige ältere Titelstile verwenden noch `fontFamily: 'serif'` (generische CSS-Familie, nicht im FontManifest; u. a. `serifTitle` in `lib/theme.dart`, genutzt auf dem Wanderweg, in der Schmiede und an den Begleiter-Werten). Ob CanvasKit dafür ein System-Serif nimmt oder den Noto-Fallback auslöst, ist nicht fest zugesichert. Beim Laufzeit-Check der rechtlichen Seiten und des Startbildschirms darf deshalb kein Request an `gstatic.com` / `fonts.gstatic.com` erscheinen; ein solcher Request auf Wanderweg oder Schmiede wäre ein Restpunkt, kein Widerspruch zur lokalen CanvasKit-Auslieferung.
+Laufzeit-Check des Release-Builds (Headless-Chrome, Startbildschirm, Service Worker blockiert):
 
-Diese Restbemerkung ändert den öffentlichen Satz der Variante A nicht. Die Engine selbst kommt lokal.
+- CanvasKit kommt lokal von `/TreadPlay/canvaskit/` — **kein** Request an `www.gstatic.com/flutter-canvaskit`.
+- **Ein** Request geht an `https://fonts.gstatic.com/s/roboto/v32/…woff2`. Ursache: Roboto ist nicht gebündelt, die Engine fügt sie als Standard-Fallback hinzu (Material-TextTheme-Defaults heißen intern weiter „Roboto“, auch wenn die App Inter/Cinzel setzt).
+- `googleapis.com` und `fonts.googleapis.com` werden nicht aufgerufen.
+
+Die gebündelten Schriften (Inter, Cinzel, BarlowSemiCondensed, AlegreyaSC, Metamorphous) werden lokal geladen. Einige ältere Titelstile nutzen noch `fontFamily: 'serif'` (`serifTitle` in `lib/theme.dart`, Wanderweg/Schmiede/Begleiter-Werte); das ist eine generische Familie und nicht im FontManifest.
+
+Der öffentliche Satz der Variante A („Schriftarten und die Darstellungs-Engine (CanvasKit) werden mit der App ausgeliefert und nicht von Google-Servern nachgeladen“) trifft für CanvasKit und die App-Schriften zu. Er deckt den automatischen Roboto-Fallback der Engine nicht vollständig ab. Abhilfe später: Roboto lokal bündeln und im FontManifest registrieren, dann entfällt dieser eine Request. Die Datenschutzerklärung wurde nach dem Prüfungstext (Variante A) gesetzt; diese Abweichung ist hier festgehalten.

@@ -11,7 +11,7 @@ Ludwig-Erhard-Straße 18
 20459 Hamburg  
 
 Email: kontakt.bender.interactive@gmail.com  
-Phone: +49 176 70706133
+Phone: +49 152 22724856
 
 ## 2. Principle: your data stays on your device
 TreadPlay works without a user account, login or cloud sync, and we run no game server. Companions, Lauf Points, Breath, seals, market, run history and settings are stored only in the app storage on your device (web version: in your browser's local storage). We cannot see your saves.
@@ -84,7 +84,7 @@ Ludwig-Erhard-Straße 18
 20459 Hamburg  
 
 E-Mail: kontakt.bender.interactive@gmail.com  
-Telefon: +49 176 70706133
+Telefon: +49 152 22724856
 
 ## 2. Grundsatz: Deine Daten bleiben auf deinem Gerät
 TreadPlay funktioniert ohne Benutzerkonto, Login und Cloud, und wir betreiben keinen Spielserver. Gefährten, Laufpunkte, Puste, Siegel, Markt, Laufverlauf und Einstellungen liegen nur im App-Speicher deines Geräts (Web-Version: im lokalen Speicher deines Browsers). Wir können deine Spielstände nicht sehen.

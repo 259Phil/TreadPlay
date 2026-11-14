@@ -12,7 +12,7 @@ BENDER INTERACTIVE is the trading name and brand of Philip Bender. It is not a l
 
 ## Contact
 Email: kontakt.bender.interactive@gmail.com  
-Phone: +49 176 70706133
+Phone: +49 152 22724856
 
 Source: Impressum-Privatschutz
 
@@ -30,6 +30,6 @@ BENDER INTERACTIVE ist die Geschäftsbezeichnung bzw. Marke von Philip Bender. E
 
 ## Kontaktdaten
 E-Mail: kontakt.bender.interactive@gmail.com  
-Telefon: +49 176 70706133
+Telefon: +49 152 22724856
 
 Quelle: Impressum-Privatschutz

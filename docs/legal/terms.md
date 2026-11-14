@@ -12,7 +12,7 @@ Ludwig-Erhard-Straße 18
 20459 Hamburg  
 
 Email: kontakt.bender.interactive@gmail.com  
-Phone: +49 176 70706133
+Phone: +49 152 22724856
 
 BENDER INTERACTIVE is the trading name and brand of Philip Bender. It is not a legal entity and is not a company registered in the commercial register.
 
@@ -51,7 +51,7 @@ Ludwig-Erhard-Straße 18
 20459 Hamburg  
 
 E-Mail: kontakt.bender.interactive@gmail.com  
-Telefon: +49 176 70706133
+Telefon: +49 152 22724856
 
 BENDER INTERACTIVE ist die Geschäftsbezeichnung bzw. Marke von Philip Bender. Es handelt sich um keine juristische Person und kein im Handelsregister eingetragenes Unternehmen.
 

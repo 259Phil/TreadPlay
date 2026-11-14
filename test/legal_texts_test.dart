@@ -73,7 +73,7 @@ void main() {
       'Ludwig-Erhard-Straße 18',
       '20459 Hamburg',
       'kontakt.bender.interactive@gmail.com',
-      '+49 176 70706133',
+      '+49 152 22724856',
     ];
     for (final s in [en, de, imprintEn, imprintDe, termsEn, termsDe]) {
       for (final part in address) {

@@ -136,6 +136,13 @@ class SettingsScreen extends ConsumerWidget {
             trailing: const Icon(Icons.open_in_new, size: 18),
             onTap: () => _sendFeedback(context, l.settingsFeedbackCopied),
           ),
+          ListTile(
+            title: Text(l.settingsFeedbackTelegram),
+            subtitle: const Text(telegramHandle),
+            trailing: const Icon(Icons.open_in_new, size: 18),
+            onTap: () =>
+                _openTelegram(context, l.settingsFeedbackTelegramCopied),
+          ),
           const Divider(),
           ListTile(
             key: const Key('settings-trail'),
@@ -170,6 +177,9 @@ class SettingsScreen extends ConsumerWidget {
 
 const String feedbackEmail = 'kontakt.bender.interactive@gmail.com';
 
+const String telegramUrl = 'https://t.me/BENDER_INTERACTIVE';
+const String telegramHandle = '@BENDER_INTERACTIVE';
+
 String? _feedbackVersion;
 
 void _loadFeedbackVersion() {
@@ -200,6 +210,17 @@ Future<void> _sendFeedback(BuildContext context, String copiedMessage) async {
   ).catchError((_) => false);
   if (opened) return;
   await Clipboard.setData(const ClipboardData(text: feedbackEmail));
+  messenger.showSnackBar(SnackBar(content: Text(copiedMessage)));
+}
+
+Future<void> _openTelegram(BuildContext context, String copiedMessage) async {
+  final messenger = ScaffoldMessenger.of(context);
+  final opened = await launchUrl(
+    Uri.parse(telegramUrl),
+    mode: LaunchMode.externalApplication,
+  ).catchError((_) => false);
+  if (opened) return;
+  await Clipboard.setData(const ClipboardData(text: telegramUrl));
   messenger.showSnackBar(SnackBar(content: Text(copiedMessage)));
 }
 

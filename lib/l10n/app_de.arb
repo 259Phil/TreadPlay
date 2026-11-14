@@ -102,6 +102,8 @@
   "settingsImprint": "Impressum",
   "settingsFeedback": "Feedback senden",
   "settingsFeedbackCopied": "Keine E-Mail-App gefunden. E-Mail-Adresse kopiert.",
+  "settingsFeedbackTelegram": "Feedback per Telegram senden",
+  "settingsFeedbackTelegramCopied": "Telegram ließ sich nicht öffnen. Link kopiert.",
   "settingsMovement": "Bewegungszugriff",
   "settingsMovementOn": "Echte Bewegung bringt LP. Die Werte bleiben auf dem Gerät.",
   "settingsMovementOff": "Aus: Echte Bewegung bringt keine LP.",

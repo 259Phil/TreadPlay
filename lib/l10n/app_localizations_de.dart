@@ -356,6 +356,13 @@ class AppLocalizationsDe extends AppLocalizations {
       'Keine E-Mail-App gefunden. E-Mail-Adresse kopiert.';
 
   @override
+  String get settingsFeedbackTelegram => 'Feedback per Telegram senden';
+
+  @override
+  String get settingsFeedbackTelegramCopied =>
+      'Telegram ließ sich nicht öffnen. Link kopiert.';
+
+  @override
   String get settingsMovement => 'Bewegungszugriff';
 
   @override

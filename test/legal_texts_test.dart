@@ -33,7 +33,7 @@ void main() {
       multiLine: true,
     ).allMatches(s).map((m) => m.group(1)!).toList();
     expect(numbers(de), numbers(en));
-    expect(numbers(en), List.generate(11, (i) => '${i + 1}'));
+    expect(numbers(en), List.generate(12, (i) => '${i + 1}'));
   });
 
   test('the public ads section is the short “currently off” sentence', () {
@@ -213,8 +213,8 @@ void main() {
   test(
     'privacy has a rights section with LfDI Baden-Württemberg and Art. 77',
     () {
-      expect(en, contains('## 10. Your rights'));
-      expect(de, contains('## 10. Deine Rechte'));
+      expect(en, contains('## 11. Your rights'));
+      expect(de, contains('## 11. Deine Rechte'));
       expect(en, contains('Art. 15–21 GDPR'));
       expect(de, contains('Art. 15–21 DSGVO'));
       expect(en, contains('Art. 77 GDPR'));
@@ -227,4 +227,21 @@ void main() {
       expect(de, contains('Stand: 13.11.2026'));
     },
   );
+
+  test('privacy mentions Telegram contact processing', () {
+    expect(en, contains('## 10. Contact'));
+    expect(de, contains('## 10. Kontakt'));
+    expect(
+      en,
+      contains(
+        'If you contact us via Telegram, your message and profile data are also processed by Telegram (Telegram Messenger Inc.) under its own privacy policy (https://telegram.org/privacy). We use your message only to answer your request.',
+      ),
+    );
+    expect(
+      de,
+      contains(
+        'Wenn du uns über Telegram kontaktierst, verarbeitet auch Telegram (Telegram Messenger Inc.) deine Nachricht und Profildaten nach eigener Datenschutzerklärung (https://telegram.org/privacy). Wir nutzen deine Nachricht nur, um deine Anfrage zu beantworten.',
+      ),
+    );
+  });
 }

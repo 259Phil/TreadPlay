@@ -710,6 +710,18 @@ abstract class AppLocalizations {
   /// **'No email app found. Email address copied.'**
   String get settingsFeedbackCopied;
 
+  /// No description provided for @settingsFeedbackTelegram.
+  ///
+  /// In en, this message translates to:
+  /// **'Send feedback on Telegram'**
+  String get settingsFeedbackTelegram;
+
+  /// No description provided for @settingsFeedbackTelegramCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open Telegram. Link copied.'**
+  String get settingsFeedbackTelegramCopied;
+
   /// No description provided for @settingsMovement.
   ///
   /// In en, this message translates to:

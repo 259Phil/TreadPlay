@@ -75,11 +75,14 @@ Your location is supplied by your browser only during a run and only with its pe
 ## 9. Children
 TreadPlay is rated 9+. It is not directed at children under the age required by the store. We do not knowingly collect personal data from children.
 
-## 10. Your rights
+## 10. Contact
+If you contact us via Telegram, your message and profile data are also processed by Telegram (Telegram Messenger Inc.) under its own privacy policy (https://telegram.org/privacy). We use your message only to answer your request.
+
+## 11. Your rights
 You have the right of access, rectification, erasure, restriction of processing, data portability and objection (Art. 15–21 GDPR), as well as the right to withdraw consent. For save games that exist only on your device, you can remove all content yourself via "Delete save game" or by clearing the website data in your browser. For questions about data processed by us or by the host (in particular server logs), please contact the address given above.
 You may lodge a complaint with a data protection supervisory authority, in particular with the State Commissioner for Data Protection and Freedom of Information of Baden-Württemberg, Lautenschlagerstraße 20, 70173 Stuttgart (https://www.baden-wuerttemberg.datenschutz.de/). This right also exists independently vis-à-vis any other supervisory authority in the EU (Art. 77 GDPR).
 
-## 11. Changes
+## 12. Changes
 We will update this text in the app if the data flow changes (for example when the ad consent query or cloud backup is added).
 ''';
 
@@ -146,11 +149,14 @@ Den Standort liefert dein Browser nur während eines Laufs und nur mit seiner Fr
 ## 9. Kinder
 Altersfreigabe 9+. Die App richtet sich nicht an Kinder unter dem Store-Mindestalter. Wir erheben wissentlich keine personenbezogenen Daten von Kindern.
 
-## 10. Deine Rechte
+## 10. Kontakt
+Wenn du uns über Telegram kontaktierst, verarbeitet auch Telegram (Telegram Messenger Inc.) deine Nachricht und Profildaten nach eigener Datenschutzerklärung (https://telegram.org/privacy). Wir nutzen deine Nachricht nur, um deine Anfrage zu beantworten.
+
+## 11. Deine Rechte
 Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit und Widerspruch (Art. 15–21 DSGVO) sowie auf Widerruf einer Einwilligung. Für die nur auf deinem Gerät liegenden Spielstände kannst du alle Inhalte selbst über „Spielstand löschen“ oder durch Löschen der Website-Daten im Browser entfernen. Bei Fragen zu den von uns bzw. vom Hoster verarbeiteten Daten (insbesondere Server-Logs) wende dich an die oben genannte Kontaktadresse.
 Beschweren kannst du dich bei einer Datenschutz-Aufsichtsbehörde, insbesondere beim Landesbeauftragten für den Datenschutz und die Informationsfreiheit Baden-Württemberg, Lautenschlagerstraße 20, 70173 Stuttgart (https://www.baden-wuerttemberg.datenschutz.de/). Das Recht besteht unabhängig davon auch gegenüber jeder anderen Aufsichtsbehörde der EU (Art. 77 DSGVO).
 
-## 11. Änderungen
+## 12. Änderungen
 Ändert sich der Datenfluss (zum Beispiel durch die Einwilligungsabfrage für Werbung oder ein Cloud-Backup), aktualisieren wir diesen Text in der App.
 ''';
 

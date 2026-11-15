@@ -8,6 +8,7 @@ import '../../router.dart';
 import '../../state/providers.dart';
 import '../../widgets/companion_figure.dart';
 import '../../widgets/format.dart';
+import '../../ui/skin.dart';
 import '../../widgets/lp_pill.dart';
 import 'arena_look.dart';
 import 'arena_state.dart';
@@ -30,15 +31,11 @@ class ArenaScreen extends ConsumerWidget {
     final lineup = ref.watch(arenaLineupProvider);
     final teams = ref.watch(arenaTeamsProvider);
     final owned = {for (final c in game.companions) c.id: c};
+    final world = ref.watch(arenaWorldProvider);
 
     return Scaffold(
-      backgroundColor: ArenaColors.night,
-      appBar: AppBar(
-        title: Text(l.tabArena),
-        backgroundColor: ArenaColors.night,
-        foregroundColor: ArenaColors.text,
-        actions: lpActions(game.lp),
-      ),
+      backgroundColor: TreadSkin.of(context).canvas,
+      appBar: AppBar(title: Text(l.tabArena), actions: lpActions(game.lp)),
       body: Column(
         children: [
           Expanded(
@@ -63,14 +60,16 @@ class ArenaScreen extends ConsumerWidget {
 
                 return Stack(
                   children: [
-                    const Positioned.fill(
-                      child: CustomPaint(painter: ArenaPainter()),
-                    ),
+                    Positioned.fill(child: ArenaBackdrop(world: world)),
                     Positioned(
                       top: 8,
                       left: 0,
                       right: 0,
-                      child: Center(child: _Caption(l.arenaOpponent)),
+                      child: Center(
+                        child: _Caption(
+                          '${l.arenaOpponent} · ${worldLabel(l, world)}',
+                        ),
+                      ),
                     ),
                     for (final (row, team) in [
                       (BattleRow.back, teams.enemyBack),
@@ -127,9 +126,11 @@ class ArenaScreen extends ConsumerWidget {
                         top:
                             geo.feet(BattleSide.player, row, 0, 1).dy -
                             ArenaFigure.heightFor(geo.figure) * .55,
-                        child: RotatedBox(
-                          quarterTurns: 3,
-                          child: _Caption(label),
+                        child: IgnorePointer(
+                          child: RotatedBox(
+                            quarterTurns: 3,
+                            child: _Caption(label),
+                          ),
                         ),
                       ),
                   ],
@@ -155,7 +156,7 @@ class ArenaScreen extends ConsumerWidget {
     final lineup = ref.read(arenaLineupProvider.notifier);
     return showModalBottomSheet<void>(
       context: context,
-      backgroundColor: ArenaColors.dusk,
+      backgroundColor: ArenaColors.leather,
       showDragHandle: true,
       isScrollControlled: true,
       builder: (sheet) => SafeArea(
@@ -239,7 +240,7 @@ class _Caption extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
     decoration: BoxDecoration(
-      color: const Color(0xAA0C0A16),
+      color: const Color(0xCC241912),
       borderRadius: BorderRadius.circular(10),
       border: Border.all(color: ArenaColors.brass.withValues(alpha: .6)),
     ),
@@ -273,7 +274,7 @@ class _Footer extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 14),
       decoration: const BoxDecoration(
-        color: Color(0xFF0B0806),
+        color: ArenaColors.leather,
         border: Border(top: BorderSide(color: ArenaColors.brass, width: 1.2)),
       ),
       child: Column(

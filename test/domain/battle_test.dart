@@ -261,4 +261,20 @@ void main() {
     expect(spent.canBattle, isFalse);
     expect(spent.xp, c.xp);
   });
+
+  test('opponent strength scales attack and Herz only', () {
+    Fighter rival(double k) => Fighter.opponent(
+      id: 'r',
+      speciesId: 'pebble',
+      rarity: Rarity.common,
+      level: 3,
+      strength: k,
+    );
+    final full = rival(1);
+    final weak = rival(.5);
+    expect(weak.attack, closeTo(full.attack * .5, 1e-9));
+    expect(weak.heart, closeTo(full.heart * .5, 1e-9));
+    expect(weak.crit, full.crit);
+    expect(weak.dodge, full.dodge);
+  });
 }

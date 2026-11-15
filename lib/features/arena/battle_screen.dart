@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../domain/battle.dart';
+import '../../domain/world.dart';
 import '../../l10n/app_localizations.dart';
 import '../../state/providers.dart';
 import '../../widgets/companion_card.dart';
@@ -24,6 +25,7 @@ class BattleScreen extends ConsumerStatefulWidget {
 class _BattleScreenState extends ConsumerState<BattleScreen>
     with SingleTickerProviderStateMixin {
   late final ArenaTeams _teams;
+  late final World _world;
   late final Map<BattlePos, ArenaEntry> _byPos;
   late final AnimationController _c;
   BattleResult? _result;
@@ -42,6 +44,7 @@ class _BattleScreenState extends ConsumerState<BattleScreen>
   void initState() {
     super.initState();
     _teams = ref.read(arenaTeamsProvider);
+    _world = ref.read(arenaWorldProvider);
     _byPos = _teams.byPos;
     _c = AnimationController(vsync: this)
       ..addListener(_tick)
@@ -125,7 +128,7 @@ class _BattleScreenState extends ConsumerState<BattleScreen>
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     return Scaffold(
-      backgroundColor: ArenaColors.night,
+      backgroundColor: ArenaColors.leather,
       body: LayoutBuilder(
         builder: (context, box) {
           final geo = ArenaGeometry(box.biggest);
@@ -134,11 +137,7 @@ class _BattleScreenState extends ConsumerState<BattleScreen>
             builder: (context, _) => Stack(
               fit: StackFit.expand,
               children: [
-                Positioned.fill(
-                  child: CustomPaint(
-                    painter: ArenaPainter(flicker: (_i + _c.value) / 6),
-                  ),
-                ),
+                Positioned.fill(child: ArenaBackdrop(world: _world)),
                 ..._fighters(geo),
                 ..._effects(l, geo),
                 Positioned(
@@ -208,6 +207,19 @@ class _BattleScreenState extends ConsumerState<BattleScreen>
   double _size(ArenaGeometry geo, BattlePos p) =>
       geo.figure * ArenaGeometry.depth(p.side, p.row);
 
+  /// Size of fighter [p] now: a lunge carries it along the depth too.
+  double _sizeNow(ArenaGeometry geo, BattlePos p) {
+    if (_event case Attacked(
+      :final actor,
+      :final target,
+      :final volley,
+    ) when p == actor && !volley) {
+      final k = .4 * sin(pi * _c.value);
+      return _size(geo, actor) + (_size(geo, target) - _size(geo, actor)) * k;
+    }
+    return _size(geo, p);
+  }
+
   /// Offset of fighter [p] in the current animation.
   Offset _motion(ArenaGeometry geo, BattlePos p) {
     final e = _event;
@@ -252,7 +264,7 @@ class _BattleScreenState extends ConsumerState<BattleScreen>
     return [
       for (final p in order)
         () {
-          final size = _size(geo, p);
+          final size = _sizeNow(geo, p);
           final at = _feet(geo, p) + _motion(geo, p);
           return Positioned(
             key: ValueKey(p),
@@ -377,7 +389,7 @@ class _Banner extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 10),
     decoration: BoxDecoration(
-      color: const Color(0xDD0C0A16),
+      color: const Color(0xE6241912),
       borderRadius: BorderRadius.circular(12),
       border: Border.all(color: ArenaColors.brass, width: 1.6),
       boxShadow: [
@@ -409,7 +421,7 @@ class _ResultPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final won = result.won;
-    final glow = won ? ArenaColors.ember : const Color(0xFF6A6080);
+    final glow = won ? ArenaColors.ember : ArenaColors.brassDeep;
     return Positioned.fill(
       child: ColoredBox(
         color: const Color(0xB3000000),
@@ -419,7 +431,7 @@ class _ResultPanel extends StatelessWidget {
             margin: const EdgeInsets.all(28),
             padding: const EdgeInsets.fromLTRB(28, 26, 28, 22),
             decoration: BoxDecoration(
-              color: ArenaColors.dusk,
+              color: ArenaColors.leather,
               borderRadius: BorderRadius.circular(18),
               border: Border.all(color: ArenaColors.brass, width: 1.6),
               boxShadow: [

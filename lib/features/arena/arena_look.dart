@@ -4,261 +4,165 @@ import 'package:flutter/material.dart';
 
 import '../../domain/battle.dart';
 import '../../domain/companion.dart';
+import '../../domain/world.dart';
 import '../../widgets/companion_card.dart';
 import '../../widgets/companion_figure.dart';
 import 'arena_state.dart';
 
-/// Colours of the arena: a night pit of dark stone lit by torches, set apart
-/// from the warm leather of the rest of the app.
+/// Colours of the arena, taken from the TreadPlay palette.
 abstract final class ArenaColors {
-  static const night = Color(0xFF0C0A16);
-  static const dusk = Color(0xFF1B1428);
-  static const stone = Color(0xFF4A3F4E);
-  static const stoneDeep = Color(0xFF15111A);
+  static const leather = Color(0xFF241912);
+  static const leatherLight = Color(0xFF3A2A20);
   static const brass = Color(0xFFD2B074);
   static const brassLight = Color(0xFFF6E2AA);
-  static const ember = Color(0xFFE8873A);
+  static const brassDeep = Color(0xFF7A6238);
+  static const ember = Color(0xFFD9692F);
   static const heart = Color(0xFFD23B3F);
   static const mend = Color(0xFF7FD08A);
-  static const text = Color(0xFFF2EADC);
-  static const muted = Color(0xFFB4A9BF);
+  static const text = Color(0xFFEDE4D3);
+  static const muted = Color(0xFFBBAC95);
 }
 
-/// Where fighters stand on a field of [size]: the enemy on the far half,
-/// the player on the near half, the front rows facing each other.
+/// The field in perspective, seen by the TreadPlayer from behind their own
+/// companions: the rivals stand far up on the ground of the world, small;
+/// your line-up stands near, large, its back turned to you.
 class ArenaGeometry {
   const ArenaGeometry(this.size);
 
   final Size size;
 
-  double get figure => min(size.width * .27, size.height * .17);
+  /// Width of a near fighter.
+  double get figure => min(size.width * .34, size.height * .22);
 
   static double _feet(BattleSide side, BattleRow row) => switch ((side, row)) {
-    (BattleSide.enemy, BattleRow.back) => .29,
-    (BattleSide.enemy, BattleRow.front) => .44,
-    (BattleSide.player, BattleRow.front) => .72,
-    (BattleSide.player, BattleRow.back) => .89,
+    (BattleSide.enemy, BattleRow.back) => .50,
+    (BattleSide.enemy, BattleRow.front) => .58,
+    (BattleSide.player, BattleRow.front) => .80,
+    (BattleSide.player, BattleRow.back) => .95,
   };
 
   /// Depth scale: farther rows are drawn smaller.
   static double depth(BattleSide side, BattleRow row) => switch ((side, row)) {
-    (BattleSide.enemy, BattleRow.back) => .74,
-    (BattleSide.enemy, BattleRow.front) => .86,
+    (BattleSide.enemy, BattleRow.back) => .5,
+    (BattleSide.enemy, BattleRow.front) => .62,
     (BattleSide.player, BattleRow.front) => 1,
-    (BattleSide.player, BattleRow.back) => .9,
+    (BattleSide.player, BattleRow.back) => 1.1,
   };
 
-  /// Feet point of fighter [index] of [count] in a row.
+  /// Feet point of fighter [index] of [count] in a row; rows close in
+  /// towards the horizon.
   Offset feet(BattleSide side, BattleRow row, int index, int count) {
-    final spacing = size.width * (row == BattleRow.front ? .3 : .34);
+    final d = depth(side, row);
+    final spacing =
+        size.width * (row == BattleRow.front ? .31 : .38) * min(1, d * 1.1);
     final x = size.width / 2 + (index - (count - 1) / 2) * spacing;
     return Offset(x, size.height * _feet(side, row));
   }
+
+  /// Centre of the trodden ring on the ground.
+  Offset get ringCenter => Offset(size.width / 2, size.height * .70);
 }
 
-/// The arena floor: night sky, stone pit with the gait circle as a rune ring,
-/// a brass rim, a midline and two torches. [flicker] moves the torch light.
-class ArenaPainter extends CustomPainter {
-  const ArenaPainter({this.flicker = 0});
+/// The ground of the [world] as the battlefield: its backdrop, a trodden
+/// ring in perspective and a soft vignette.
+class ArenaBackdrop extends StatelessWidget {
+  const ArenaBackdrop({super.key, required this.world});
 
-  final double flicker;
+  final World world;
+
+  @override
+  Widget build(BuildContext context) {
+    final bg = world.background;
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        if (bg != null)
+          Image.asset(bg, fit: BoxFit.cover, alignment: Alignment.bottomCenter)
+        else
+          ColoredBox(color: world.placeholder),
+        const CustomPaint(painter: _FieldPainter()),
+      ],
+    );
+  }
+}
+
+class _FieldPainter extends CustomPainter {
+  const _FieldPainter();
 
   @override
   void paint(Canvas canvas, Size size) {
     final w = size.width;
     final h = size.height;
     final all = Offset.zero & size;
+    final geo = ArenaGeometry(size);
+    final c = geo.ringCenter;
+    final ring = Rect.fromCenter(center: c, width: w * 1.05, height: h * .46);
+
+    // Trodden earth inside the ring.
+    canvas.drawOval(
+      ring,
+      Paint()
+        ..shader = const RadialGradient(
+          colors: [Color(0x40000000), Color(0x22000000), Color(0x00000000)],
+          stops: [0, .7, 1],
+        ).createShader(ring),
+    );
+    // Faint chalk lines: the ring and the line between the two sides.
+    final chalk = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..color = const Color(0x55F6E2AA);
+    const n = 40;
+    for (var i = 0; i < n; i++) {
+      canvas.drawArc(
+        ring.deflate(6),
+        i * 2 * pi / n,
+        pi / n * 1.2,
+        false,
+        chalk,
+      );
+    }
+    final midY = h * .68;
+    final half =
+        w *
+        .5 *
+        sqrt(max(0, 1 - pow((midY - c.dy) / (ring.height / 2 - 6), 2)));
+    canvas.drawLine(
+      Offset(c.dx - half + 8, midY),
+      Offset(c.dx + half - 8, midY),
+      chalk..strokeWidth = 1.6,
+    );
+
+    // Darken the edges so the field draws the eye; top for the bar.
     canvas.drawRect(
       all,
       Paint()
-        ..shader = const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [ArenaColors.night, ArenaColors.dusk, Color(0xFF0B0806)],
-          stops: [0, .45, 1],
-        ).createShader(all),
-    );
-    var seed = 4241;
-    double rnd() {
-      seed = (seed * 1103515245 + 12345) & 0x7fffffff;
-      return seed / 0x7fffffff;
-    }
-
-    final star = Paint();
-    for (var i = 0; i < 60; i++) {
-      star.color = Color.fromRGBO(240, 230, 255, .15 + rnd() * .45);
-      canvas.drawCircle(Offset(rnd() * w, rnd() * h * .2), .4 + rnd(), star);
-    }
-
-    final c = Offset(w / 2, h * .58);
-    final floor = Rect.fromCenter(center: c, width: w * 1.2, height: h * .78);
-    canvas.drawOval(
-      floor.shift(const Offset(0, 10)),
-      Paint()
-        ..color = const Color(0xCC000000)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 18),
-    );
-    canvas.drawOval(
-      floor,
-      Paint()
-        ..shader = const RadialGradient(
-          colors: [ArenaColors.stone, Color(0xFF2C2533), ArenaColors.stoneDeep],
-          stops: [0, .6, 1],
-        ).createShader(floor),
-    );
-    final seam = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.4
-      ..color = const Color(0x55000000);
-    for (final f in [.34, .67]) {
-      canvas.drawOval(
-        Rect.fromCenter(
-          center: c,
-          width: floor.width * f,
-          height: floor.height * f,
-        ),
-        seam,
-      );
-    }
-    for (var i = 0; i < 16; i++) {
-      final a = i * pi / 8;
-      final d = Offset(cos(a) * floor.width / 2, sin(a) * floor.height / 2);
-      canvas.drawLine(c + d * .34, c + d, seam);
-    }
-
-    // The gait circle as a glowing rune ring: Stroll, Trot, Gallop.
-    final ring = Rect.fromCenter(
-      center: c,
-      width: floor.width * .5,
-      height: floor.height * .5,
-    );
-    const gaits = [CompanionType.moss, CompanionType.gale, CompanionType.brook];
-    for (var i = 0; i < 3; i++) {
-      final start = -pi / 2 + i * 2 * pi / 3 + .12;
-      final col = tempoColor(gaits[i]);
-      canvas.drawArc(
-        ring,
-        start,
-        2 * pi / 3 - .24,
-        false,
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 7
-          ..color = col.withValues(alpha: .35)
-          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6),
-      );
-      canvas.drawArc(
-        ring,
-        start,
-        2 * pi / 3 - .24,
-        false,
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 2.2
-          ..strokeCap = StrokeCap.round
-          ..color = col.withValues(alpha: .85),
-      );
-    }
-
-    final mid = Paint()
-      ..strokeWidth = 2
-      ..shader = const LinearGradient(
-        colors: [
-          Color(0x00D2B074),
-          ArenaColors.brass,
-          ArenaColors.brassLight,
-          ArenaColors.brass,
-          Color(0x00D2B074),
-        ],
-      ).createShader(Rect.fromLTWH(0, c.dy - 1, w, 2));
-    canvas.drawLine(
-      Offset(floor.left + 20, c.dy),
-      Offset(floor.right - 20, c.dy),
-      mid,
-    );
-    final diamond = Path()
-      ..moveTo(c.dx, c.dy - 7)
-      ..lineTo(c.dx + 7, c.dy)
-      ..lineTo(c.dx, c.dy + 7)
-      ..lineTo(c.dx - 7, c.dy)
-      ..close();
-    canvas.drawPath(diamond, Paint()..color = ArenaColors.brass);
-
-    canvas.drawOval(
-      floor,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 6
         ..shader = const LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            ArenaColors.brassLight,
-            ArenaColors.brass,
-            Color(0xFF5E4523),
+            Color(0x99241912),
+            Color(0x00241912),
+            Color(0x00241912),
+            Color(0x66241912),
           ],
-        ).createShader(floor),
+          stops: [0, .18, .82, 1],
+        ).createShader(all),
     );
-    canvas.drawOval(
-      floor.deflate(4),
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.2
-        ..color = const Color(0xFF140D08),
-    );
-
-    for (final x in [w * .07, w * .93]) {
-      _torch(canvas, Offset(x, h * .52), w, x < w / 2 ? 0 : 1.7);
-    }
-
     canvas.drawRect(
       all,
       Paint()
         ..shader = const RadialGradient(
-          radius: .85,
-          colors: [Color(0x00000000), Color(0xB0000000)],
-          stops: [.6, 1],
+          center: Alignment(0, .3),
+          radius: 1.1,
+          colors: [Color(0x00000000), Color(0x88000000)],
+          stops: [.55, 1],
         ).createShader(all),
     );
   }
 
-  void _torch(Canvas canvas, Offset at, double w, double phase) {
-    final f = 1 + .06 * sin(flicker * 9 + phase) + .03 * sin(flicker * 23);
-    final glow = Rect.fromCircle(center: at, radius: w * .24 * f);
-    canvas.drawOval(
-      glow,
-      Paint()
-        ..shader = const RadialGradient(
-          colors: [Color(0x88E8873A), Color(0x22E8873A), Color(0x00E8873A)],
-          stops: [0, .45, 1],
-        ).createShader(glow),
-    );
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromCenter(center: at + const Offset(0, 22), width: 7, height: 40),
-        const Radius.circular(2),
-      ),
-      Paint()..color = const Color(0xFF3A281C),
-    );
-    final top = at + const Offset(0, 2);
-    final flame = Path()
-      ..moveTo(top.dx - 7, top.dy)
-      ..quadraticBezierTo(top.dx - 8, top.dy - 14 * f, top.dx, top.dy - 24 * f)
-      ..quadraticBezierTo(top.dx + 8, top.dy - 14 * f, top.dx + 7, top.dy)
-      ..close();
-    canvas.drawPath(
-      flame,
-      Paint()
-        ..shader = const LinearGradient(
-          begin: Alignment.bottomCenter,
-          end: Alignment.topCenter,
-          colors: [Color(0xFFFFE6A0), ArenaColors.ember, Color(0xFFB0301A)],
-        ).createShader(flame.getBounds()),
-    );
-  }
-
   @override
-  bool shouldRepaint(ArenaPainter old) => old.flicker != flicker;
+  bool shouldRepaint(_FieldPainter old) => false;
 }
 
 /// Herz bar: a brass-framed red bar with the Herz number.
@@ -281,7 +185,7 @@ class HerzBar extends StatelessWidget {
       width: width,
       height: 13,
       decoration: BoxDecoration(
-        color: const Color(0xFF1A0E0E),
+        color: ArenaColors.leather,
         borderRadius: BorderRadius.circular(4),
         border: Border.all(color: ArenaColors.brass, width: 1),
         boxShadow: const [BoxShadow(color: Color(0x99000000), blurRadius: 3)],
@@ -323,9 +227,9 @@ class HerzBar extends StatelessWidget {
   }
 }
 
-/// Stone pedestal under a fighter with a glow in its gait colour.
-class _PedestalPainter extends CustomPainter {
-  const _PedestalPainter(this.gait, {this.lit = false});
+/// Shadow on the ground under a fighter, rimmed in its gait colour.
+class _GroundPainter extends CustomPainter {
+  const _GroundPainter(this.gait, {this.lit = false});
 
   final CompanionType? gait;
   final bool lit;
@@ -333,37 +237,27 @@ class _PedestalPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final r = Offset.zero & size;
-    final col = gait == null ? ArenaColors.brass : tempoColor(gait!);
-    canvas.drawOval(
-      r.inflate(lit ? 8 : 4),
-      Paint()
-        ..color = col.withValues(alpha: lit ? .7 : .4)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8),
-    );
-    canvas.drawOval(
-      r.shift(const Offset(0, 4)),
-      Paint()..color = const Color(0xFF0E0B10),
-    );
     canvas.drawOval(
       r,
       Paint()
         ..shader = const RadialGradient(
-          center: Alignment(0, -.4),
-          colors: [Color(0xFF6A5E70), Color(0xFF3A3140), Color(0xFF1E1924)],
+          colors: [Color(0x99000000), Color(0x00000000)],
         ).createShader(r),
     );
+    if (gait == null) return;
+    final col = tempoColor(gait!);
     canvas.drawOval(
-      r.deflate(1),
+      r.deflate(size.width * .08),
       Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.6
-        ..color = col.withValues(alpha: .9),
+        ..strokeWidth = lit ? 3 : 1.6
+        ..color = col.withValues(alpha: lit ? .95 : .55)
+        ..maskFilter = lit ? const MaskFilter.blur(BlurStyle.normal, 2) : null,
     );
   }
 
   @override
-  bool shouldRepaint(_PedestalPainter old) =>
-      old.gait != gait || old.lit != lit;
+  bool shouldRepaint(_GroundPainter old) => old.gait != gait || old.lit != lit;
 }
 
 const _grey = ColorFilter.matrix([
@@ -373,9 +267,9 @@ const _grey = ColorFilter.matrix([
   0, 0, 0, 1, 0,
 ]);
 
-/// A fighter on the field: Herz bar, the creature on its pedestal, gait coin
-/// and level. The box is [size] wide and [size] × 1.3 tall, feet at the
-/// bottom centre.
+/// A fighter on the field: Herz bar, gait and level coins, the creature on
+/// its shadow. Rivals face you; your own companions show their back. The
+/// box is [size] wide and [heightFor] tall, feet at the bottom centre.
 class ArenaFigure extends StatelessWidget {
   const ArenaFigure({
     super.key,
@@ -394,20 +288,27 @@ class ArenaFigure extends StatelessWidget {
   final bool knockedOut;
   final bool lit;
 
-  static double heightFor(double size) => size * 1.3;
+  static double heightFor(double size) => size * 1.25;
 
   @override
   Widget build(BuildContext context) {
     final gait = entry.fighter.tempo;
-    Widget art = CompanionArt(entry.artKey);
-    if (side == BattleSide.enemy) art = Transform.flip(flipX: true, child: art);
+    final back = side == BattleSide.player ? entry.backAsset : null;
+    Widget art = back == null
+        ? CompanionArt(entry.artKey)
+        : Image.asset(
+            back,
+            fit: BoxFit.contain,
+            alignment: Alignment.bottomCenter,
+          );
     if (knockedOut) {
       art = Opacity(
         opacity: .35,
         child: ColorFiltered(colorFilter: _grey, child: art),
       );
     }
-    final pedestal = size * .22;
+    final shadow = size * .24;
+    final coin = (size * .2).clamp(14.0, 20.0);
     return SizedBox(
       width: size,
       height: heightFor(size),
@@ -415,48 +316,54 @@ class ArenaFigure extends StatelessWidget {
         clipBehavior: Clip.none,
         children: [
           Positioned(
-            left: size * .08,
-            right: size * .08,
-            bottom: 0,
-            height: pedestal,
+            left: 0,
+            right: 0,
+            bottom: -shadow * .3,
+            height: shadow,
             child: CustomPaint(
-              painter: _PedestalPainter(knockedOut ? null : gait, lit: lit),
+              painter: _GroundPainter(knockedOut ? null : gait, lit: lit),
             ),
           ),
           Positioned(
-            left: size * .04,
-            right: size * .04,
-            bottom: pedestal * .45,
-            height: size * .92,
+            left: size * .02,
+            right: size * .02,
+            bottom: 0,
+            height: size * .98,
             child: art,
           ),
           Positioned(
             top: 0,
-            left: size * .06,
+            left: size * .1,
             child: HerzBar(
               heart: heart ?? entry.maxHeart,
               max: entry.maxHeart,
-              width: size * .88,
+              width: size * .8,
             ),
           ),
           Positioned(
-            top: 17,
-            right: size * .02,
+            top: 16,
+            right: size * .04,
             child: _Coin(
+              size: coin,
               color: tempoColor(gait),
-              child: Icon(elementIcon(gait), size: 11, color: Colors.white),
+              child: Icon(
+                elementIcon(gait),
+                size: coin * .55,
+                color: Colors.white,
+              ),
             ),
           ),
           Positioned(
-            top: 17,
-            left: size * .02,
+            top: 16,
+            left: size * .04,
             child: _Coin(
-              color: const Color(0xFF3A281C),
+              size: coin,
+              color: ArenaColors.leatherLight,
               child: Text(
                 '${entry.level}',
-                style: const TextStyle(
+                style: TextStyle(
                   color: ArenaColors.brassLight,
-                  fontSize: 10,
+                  fontSize: coin * .5,
                   height: 1,
                   fontWeight: FontWeight.w700,
                 ),
@@ -470,15 +377,16 @@ class ArenaFigure extends StatelessWidget {
 }
 
 class _Coin extends StatelessWidget {
-  const _Coin({required this.color, required this.child});
+  const _Coin({required this.size, required this.color, required this.child});
 
+  final double size;
   final Color color;
   final Widget child;
 
   @override
   Widget build(BuildContext context) => Container(
-    width: 20,
-    height: 20,
+    width: size,
+    height: size,
     alignment: Alignment.center,
     decoration: BoxDecoration(
       color: color,
@@ -490,7 +398,7 @@ class _Coin extends StatelessWidget {
   );
 }
 
-/// A free slot: a dashed brass ring on the floor with a plus.
+/// A free slot: a dashed chalk ring on the ground with a plus.
 class EmptySlot extends StatelessWidget {
   const EmptySlot({super.key, required this.size, required this.label});
 
@@ -506,18 +414,23 @@ class EmptySlot extends StatelessWidget {
       children: [
         const Icon(
           Icons.add_circle_outline,
-          color: ArenaColors.brass,
+          color: ArenaColors.brassLight,
           size: 28,
+          shadows: [Shadow(blurRadius: 6)],
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(color: ArenaColors.muted, fontSize: 11),
+          style: const TextStyle(
+            color: ArenaColors.text,
+            fontSize: 11,
+            shadows: [Shadow(blurRadius: 4)],
+          ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 4),
         SizedBox(
-          width: size * .84,
-          height: size * .22,
+          width: size * .9,
+          height: size * .26,
           child: const CustomPaint(painter: _DashedRing()),
         ),
       ],
@@ -531,11 +444,11 @@ class _DashedRing extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final r = Offset.zero & size;
-    canvas.drawOval(r, Paint()..color = const Color(0x33000000));
+    canvas.drawOval(r, Paint()..color = const Color(0x44000000));
     final p = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.6
-      ..color = ArenaColors.brass.withValues(alpha: .8);
+      ..strokeWidth = 1.8
+      ..color = ArenaColors.brassLight.withValues(alpha: .85);
     const n = 18;
     for (var i = 0; i < n; i++) {
       canvas.drawArc(r, i * 2 * pi / n, pi / n, false, p);
@@ -546,7 +459,7 @@ class _DashedRing extends CustomPainter {
   bool shouldRepaint(_DashedRing old) => false;
 }
 
-/// Big ember button of the arena.
+/// Big brass button of the arena, like the Start button on Home.
 class ArenaButton extends StatelessWidget {
   const ArenaButton({
     super.key,
@@ -562,49 +475,47 @@ class ArenaButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final on = onPressed != null;
+    const ink = Color(0xFF2A1D15);
     return Opacity(
       opacity: on ? 1 : .45,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onPressed,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(26),
           child: Ink(
-            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
+            padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 13),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(26),
               gradient: const LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color(0xFFF0A050),
-                  ArenaColors.ember,
-                  Color(0xFF9A3E18),
+                  ArenaColors.brassLight,
+                  ArenaColors.brass,
+                  ArenaColors.brassDeep,
                 ],
               ),
-              border: Border.all(color: ArenaColors.brassLight, width: 1.4),
-              boxShadow: [
-                BoxShadow(
-                  color: ArenaColors.ember.withValues(alpha: on ? .55 : 0),
-                  blurRadius: 18,
-                ),
+              border: Border.all(color: const Color(0xFF4A3520), width: 1.6),
+              boxShadow: const [
+                BoxShadow(color: Color(0x99000000), blurRadius: 8),
               ],
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (icon != null) ...[
-                  Icon(icon, color: Colors.white, size: 20),
+                  Icon(icon, color: ink, size: 20),
                   const SizedBox(width: 8),
                 ],
                 Text(
-                  label.toUpperCase(),
+                  label,
                   style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.4,
-                    fontSize: 15,
-                    shadows: [Shadow(blurRadius: 3, color: Color(0xAA000000))],
+                    fontFamily: 'Cinzel',
+                    color: ink,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1,
+                    fontSize: 16,
                   ),
                 ),
               ],

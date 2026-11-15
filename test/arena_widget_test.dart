@@ -10,6 +10,15 @@ import 'package:treadplay/features/arena/arena_look.dart';
 import 'package:treadplay/features/forge/forge_screen.dart';
 import 'package:treadplay/state/providers.dart';
 
+/// Taps a slot high up: in perspective the nearer row overlaps the feet of
+/// the row in front of it.
+Future<void> tapSlot(WidgetTester tester, int slot) {
+  final f = find.byKey(Key('arena-slot-$slot'));
+  return tester.tapAt(
+    tester.getTopLeft(f) + Offset(tester.getSize(f).width / 2, 30),
+  );
+}
+
 void main() {
   setUpAll(() => forgeAmbientMotion = false);
 
@@ -43,7 +52,7 @@ void main() {
     tester,
   ) async {
     await openArena(tester);
-    expect(find.text('PRACTICE OPPONENT'), findsOneWidget);
+    expect(find.textContaining('PRACTICE OPPONENT'), findsOneWidget);
     expect(
       find.descendant(
         of: find.byKey(const Key('arena-slot-0')),
@@ -60,7 +69,7 @@ void main() {
     tester,
   ) async {
     await openArena(tester);
-    await tester.tap(find.byKey(const Key('arena-slot-0')));
+    await tapSlot(tester, 0);
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('arena-remove')));
     await tester.pumpAndSettle();
@@ -70,7 +79,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('arena-skip')), findsNothing);
 
-    await tester.tap(find.byKey(const Key('arena-slot-3')));
+    await tapSlot(tester, 3);
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('arena-pick-pebble-1')).first);
     await tester.pumpAndSettle();

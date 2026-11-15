@@ -2,9 +2,12 @@ import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../data/game_data.dart';
 import '../../data/species.dart';
 import '../../domain/battle.dart';
 import '../../domain/companion.dart';
+import '../../domain/market.dart';
+import '../../domain/wanderweg.dart';
 import '../../domain/world.dart';
 import '../../state/providers.dart';
 
@@ -65,6 +68,12 @@ class ArenaEntry {
     level: c.level,
   );
 
+  /// Back view for the player's side, seen over the shoulder; null when the
+  /// species has none yet.
+  String? get backAsset => speciesById.containsKey(fighter.speciesId)
+      ? 'assets/companions_back/${fighter.speciesId}.webp'
+      : null;
+
   final Fighter fighter;
   final String artKey;
   final String name;
@@ -114,12 +123,36 @@ class ArenaTeams {
   );
 }
 
-/// The player's line-up against a practice team of the same shape: World 1
-/// species at the same levels, Common.
+/// Practice rivals are weaker than a full Common: the starter's rolled stats
+/// sit below the Common base, and at full strength it would win only about
+/// one practice battle in twenty. At this strength it wins about four in
+/// five.
+const double practiceStrength = .8;
+
+/// The world the arena stands in: the latest one the trail has opened.
+World arenaWorldOf(GameData game) {
+  final open = {
+    ...WaymarkUnlocks.startWorlds,
+    for (final w in waymarks.take(game.unlocks.progress.reached))
+      ...w.unlock.marketWorlds,
+  };
+  return Market.starterWorlds.lastWhere(
+    open.contains,
+    orElse: () => World.medieval,
+  );
+}
+
+final arenaWorldProvider = Provider<World>(
+  (ref) => arenaWorldOf(ref.watch(gameProvider)),
+);
+
+/// The player's line-up against a practice team of the same shape: species
+/// of the arena [world] at the same levels, Common.
 ArenaTeams arenaTeams({
   required List<String?> lineup,
   required List<Companion> owned,
   required int opponentSeed,
+  World world = World.medieval,
 }) {
   final byId = {for (final c in owned) c.id: c};
   List<Companion> row(BattleRow r) => [
@@ -130,8 +163,9 @@ ArenaTeams arenaTeams({
   final back = row(BattleRow.back);
   final pool = [
     for (final s in speciesCatalog)
-      if (s.world == World.medieval) s,
+      if (s.world == world) s,
   ];
+  if (pool.isEmpty) pool.addAll(speciesCatalog);
   final random = Random(opponentSeed);
   var n = 0;
   List<ArenaEntry> rival(List<Companion> mirror) => [
@@ -145,6 +179,7 @@ ArenaTeams arenaTeams({
             speciesId: s.id,
             rarity: Rarity.common,
             level: c.level,
+            strength: practiceStrength,
           ),
           artKey: cutoutKeyFor(s.id, Rarity.common),
           name: s.name,
@@ -165,5 +200,6 @@ final arenaTeamsProvider = Provider<ArenaTeams>(
     lineup: ref.watch(arenaLineupProvider),
     owned: ref.watch(gameProvider).companions,
     opponentSeed: ref.watch(arenaOpponentSeedProvider),
+    world: ref.watch(arenaWorldProvider),
   ),
 );

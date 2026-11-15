@@ -33,16 +33,18 @@ Neuer Tab **Arena**.
 
 ## Kampfbereich-Look (Schritt 2)
 
-Der Arena-Tab und der Kampf heben sich vom warmen Leder der restlichen App ab: Nachtgrube aus dunklem Stein, Fackeln, Messingrand und der Gangart-Kreis als leuchtender Runenring im Boden (Grün Schritt, Türkis Trab, Orange Galopp). Die Begleiter stehen als Freisteller auf Stein-Sockeln mit Glühen in ihrer Gangart-Farbe. Der Gegner steht oben, du unten. Vorerst ist alles gemalt (CustomPainter). Die Grok-Art ersetzt das später unter festen Namen:
+Der Kampf findet direkt in der Welt statt: Hintergrund ist das Weltbild der zuletzt über den Wanderweg geöffneten Welt (`arenaWorldOf`), darauf liegt ein Feld in Perspektive mit Kreidering und Mittellinie. Du bist der TreadPlayer und schaust von hinten über deine Begleiter: Die stehen groß und nah vorne und zeigen dir den Rücken, die Gegner stehen klein weiter hinten im Feld und schauen dich an. Die Übungsgegner kommen aus der Arena-Welt. Unter jedem Begleiter liegt ein Schatten mit Ring in seiner Gangart-Farbe. Knöpfe und Leisten sind in Leder und Messing wie in der übrigen App gehalten.
+
+Die Rückansichten stammen aus Odyssey (`grok/art-monsters`) und liegen unter `assets/companions_back/{art}.webp` (512×512, transparent). Die Grok-Art kann das später unter festen Namen ergänzen:
 
 | Datei | Inhalt |
 | --- | --- |
-| `assets/arena/arena_floor.webp` | Kampfboden hochkant (1080×1920), Gegner oben, Spieler unten, Mitte frei für Runenring |
-| `assets/arena/pedestal_{moss,brook,gale}.webp` | Sockel je Gangart, 512×160, transparent |
 | `assets/arena/fx_hit.webp`, `fx_crit.webp`, `fx_mend.webp`, `fx_ko.webp` | Treffer, Volltreffer, Heilung, K.o.-Staub, 256×256, transparent |
 | `assets/arena/orb_{moss,brook,gale}.webp` | Wurf-Geschoss je Gangart, 128×128 |
 | `assets/nav/nav_arena.webp` | Tab-Icon im Stil der anderen Nav-Icons |
-| `assets/companions/{art}_back.png` | Rückansicht je Art für die Spielerseite (wie Odyssey) |
+| `assets/companions_back/{art}.webp` | Rückansicht für neue Arten und Seltenheiten |
+
+**Balance:** Übungsgegner kämpfen mit 80 % Angriff und Herz (`practiceStrength`). Mit voller Common-Stärke gewinnt der Starter nur etwa 1 von 20 Kämpfen, mit 80 % etwa 4 von 5. Die Stärke der Missionen bekommt in Schritt 3 eine eigene Kurve.
 
 Übungskämpfe in Schritt 2 kosten noch keinen Mut und bringen nichts; alle 5 Plätze sind offen. Mut-Kosten, Belohnungen und Platz-Freischaltung kommen mit den Missionen (Schritt 3).
 

@@ -123,13 +123,15 @@ class Fighter {
     );
   }
 
-  /// An opponent with the unrolled base stats of [rarity] at [level].
+  /// An opponent with the unrolled base stats of [rarity] at [level];
+  /// [strength] scales its attack and Herz (1 = full strength).
   factory Fighter.opponent({
     required String id,
     required String speciesId,
     required Rarity rarity,
     required int level,
     CompanionType? tempo,
+    double strength = 1,
   }) {
     final c = Companion.fresh(
       id: id,
@@ -137,7 +139,19 @@ class Fighter {
       rarity: rarity,
       tempo: tempo,
     ).copyWith(level: level.clamp(1, maxLevel));
-    return Fighter.of(c);
+    final f = Fighter.of(c);
+    if (strength == 1) return f;
+    return Fighter(
+      id: f.id,
+      speciesId: f.speciesId,
+      tempo: f.tempo,
+      attack: f.attack * strength,
+      heart: f.heart * strength,
+      crit: f.crit,
+      dodge: f.dodge,
+      fortune: f.fortune,
+      ability: f.ability,
+    );
   }
 
   final String id;

@@ -274,14 +274,17 @@ class BattleResult {
 }
 
 class _Unit {
-  _Unit(this.fighter, this.pos) : heart = fighter.heart.roundToDouble();
+  _Unit(this.fighter, this.pos)
+    : maxHeart = fighter.heart.roundToDouble(),
+      heart = fighter.heart.roundToDouble();
 
   final Fighter fighter;
   final BattlePos pos;
+  final double maxHeart;
   double heart;
 
   bool get alive => heart > 0;
-  double get share => max(0, heart) / fighter.heart;
+  double get share => max(0, heart) / maxHeart;
 }
 
 abstract final class Battle {
@@ -396,13 +399,13 @@ abstract final class Battle {
             final hurt = row(
               s,
               BattleRow.front,
-            ).where((u) => u.heart < u.fighter.heart).toList();
+            ).where((u) => u.heart < u.maxHeart).toList();
             if (hurt.isEmpty) return;
             hurt.sort((a, b) => a.share.compareTo(b.share));
             final t = hurt.first;
             final before = t.heart;
             t.heart = min(
-              t.fighter.heart.roundToDouble(),
+              t.maxHeart,
               t.heart + (actor.fighter.attack * mendShare).round(),
             );
             events.add(

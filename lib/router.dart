@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'features/album/album_screen.dart';
+import 'features/arena/arena_screen.dart';
+import 'features/arena/battle_screen.dart';
 import 'features/forge/forge_screen.dart';
 import 'features/history/history_screen.dart';
 import 'features/home/home_screen.dart';
@@ -24,6 +26,8 @@ class AppRoutes {
   static const shelf = '/shelf';
   static const forge = '/forge';
   static const market = '/market';
+  static const arena = '/arena';
+  static const arenaBattle = '/arena-battle';
   static const settings = '/settings';
   static const run = '/run';
   static const summary = '/summary';
@@ -48,12 +52,17 @@ final routerProvider = Provider<GoRouter>((ref) {
           _branch(AppRoutes.shelf, (_) => const ShelfScreen()),
           _branch(AppRoutes.forge, (_) => const ForgeScreen()),
           _branch(AppRoutes.market, (_) => const MarketScreen()),
+          _branch(AppRoutes.arena, (_) => const ArenaScreen()),
           _branch(AppRoutes.settings, (_) => const SettingsScreen()),
         ],
       ),
       GoRoute(
         path: AppRoutes.run,
         builder: (_, _) => const SkinRoute(child: RunScreen()),
+      ),
+      GoRoute(
+        path: AppRoutes.arenaBattle,
+        builder: (_, _) => const BattleScreen(),
       ),
       GoRoute(
         path: AppRoutes.summary,

@@ -3355,6 +3355,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Trail complete'**
   String get runTrailComplete;
+
+  /// No description provided for @tabArena.
+  ///
+  /// In en, this message translates to:
+  /// **'Arena'**
+  String get tabArena;
+
+  /// No description provided for @arenaLineup.
+  ///
+  /// In en, this message translates to:
+  /// **'Line-up'**
+  String get arenaLineup;
+
+  /// No description provided for @arenaFront.
+  ///
+  /// In en, this message translates to:
+  /// **'Front'**
+  String get arenaFront;
+
+  /// No description provided for @arenaBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get arenaBack;
+
+  /// No description provided for @arenaPick.
+  ///
+  /// In en, this message translates to:
+  /// **'Put a companion on the field'**
+  String get arenaPick;
+
+  /// No description provided for @arenaEmptySlot.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get arenaEmptySlot;
+
+  /// No description provided for @arenaRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Take off the field'**
+  String get arenaRemove;
+
+  /// No description provided for @arenaOpponent.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice opponent'**
+  String get arenaOpponent;
+
+  /// No description provided for @arenaNewOpponent.
+  ///
+  /// In en, this message translates to:
+  /// **'New opponent'**
+  String get arenaNewOpponent;
+
+  /// No description provided for @arenaStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start battle'**
+  String get arenaStart;
+
+  /// No description provided for @arenaPracticeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice battles cost no Mut and give no rewards yet.'**
+  String get arenaPracticeHint;
+
+  /// No description provided for @arenaNeedFront.
+  ///
+  /// In en, this message translates to:
+  /// **'Put at least one companion in front.'**
+  String get arenaNeedFront;
+
+  /// No description provided for @arenaNoMut.
+  ///
+  /// In en, this message translates to:
+  /// **'No Mut'**
+  String get arenaNoMut;
+
+  /// No description provided for @arenaRound.
+  ///
+  /// In en, this message translates to:
+  /// **'Round {round}'**
+  String arenaRound(int round);
+
+  /// No description provided for @arenaCrit.
+  ///
+  /// In en, this message translates to:
+  /// **'Critical!'**
+  String get arenaCrit;
+
+  /// No description provided for @arenaDodge.
+  ///
+  /// In en, this message translates to:
+  /// **'Dodged'**
+  String get arenaDodge;
+
+  /// No description provided for @arenaKo.
+  ///
+  /// In en, this message translates to:
+  /// **'K.O.'**
+  String get arenaKo;
+
+  /// No description provided for @arenaWon.
+  ///
+  /// In en, this message translates to:
+  /// **'Victory!'**
+  String get arenaWon;
+
+  /// No description provided for @arenaLost.
+  ///
+  /// In en, this message translates to:
+  /// **'Defeat'**
+  String get arenaLost;
+
+  /// No description provided for @arenaRounds.
+  ///
+  /// In en, this message translates to:
+  /// **'after {rounds} rounds'**
+  String arenaRounds(int rounds);
+
+  /// No description provided for @arenaAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Again'**
+  String get arenaAgain;
+
+  /// No description provided for @arenaBackToLineup.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to line-up'**
+  String get arenaBackToLineup;
+
+  /// No description provided for @arenaSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get arenaSkip;
+
+  /// No description provided for @arenaFaster.
+  ///
+  /// In en, this message translates to:
+  /// **'Faster'**
+  String get arenaFaster;
+
+  /// No description provided for @arenaAbilityMend.
+  ///
+  /// In en, this message translates to:
+  /// **'mends the front'**
+  String get arenaAbilityMend;
+
+  /// No description provided for @arenaAbilityRally.
+  ///
+  /// In en, this message translates to:
+  /// **'rallies the front'**
+  String get arenaAbilityRally;
+
+  /// No description provided for @arenaAbilityVolley.
+  ///
+  /// In en, this message translates to:
+  /// **'throws from behind'**
+  String get arenaAbilityVolley;
 }
 
 class _AppLocalizationsDelegate

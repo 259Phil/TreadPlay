@@ -2167,4 +2167,90 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get runTrailComplete => 'Wanderweg geschafft';
+
+  @override
+  String get tabArena => 'Arena';
+
+  @override
+  String get arenaLineup => 'Aufstellung';
+
+  @override
+  String get arenaFront => 'Vorne';
+
+  @override
+  String get arenaBack => 'Hinten';
+
+  @override
+  String get arenaPick => 'Begleiter aufs Feld';
+
+  @override
+  String get arenaEmptySlot => 'Frei';
+
+  @override
+  String get arenaRemove => 'Vom Feld nehmen';
+
+  @override
+  String get arenaOpponent => 'Übungsgegner';
+
+  @override
+  String get arenaNewOpponent => 'Neuer Gegner';
+
+  @override
+  String get arenaStart => 'Kampf starten';
+
+  @override
+  String get arenaPracticeHint =>
+      'Übungskämpfe kosten noch keinen Mut und bringen keine Belohnung.';
+
+  @override
+  String get arenaNeedFront => 'Stell mindestens einen Begleiter nach vorne.';
+
+  @override
+  String get arenaNoMut => 'Kein Mut';
+
+  @override
+  String arenaRound(int round) {
+    return 'Runde $round';
+  }
+
+  @override
+  String get arenaCrit => 'Volltreffer!';
+
+  @override
+  String get arenaDodge => 'Ausgewichen';
+
+  @override
+  String get arenaKo => 'K.o.';
+
+  @override
+  String get arenaWon => 'Sieg!';
+
+  @override
+  String get arenaLost => 'Niederlage';
+
+  @override
+  String arenaRounds(int rounds) {
+    return 'nach $rounds Runden';
+  }
+
+  @override
+  String get arenaAgain => 'Nochmal';
+
+  @override
+  String get arenaBackToLineup => 'Zur Aufstellung';
+
+  @override
+  String get arenaSkip => 'Überspringen';
+
+  @override
+  String get arenaFaster => 'Schneller';
+
+  @override
+  String get arenaAbilityMend => 'heilt vorne';
+
+  @override
+  String get arenaAbilityRally => 'stärkt vorne';
+
+  @override
+  String get arenaAbilityVolley => 'wirft von hinten';
 }

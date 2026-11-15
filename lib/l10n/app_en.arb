@@ -1921,5 +1921,46 @@
       }
     }
   },
-  "runTrailComplete": "Trail complete"
+  "runTrailComplete": "Trail complete",
+  "tabArena": "Arena",
+  "arenaLineup": "Line-up",
+  "arenaFront": "Front",
+  "arenaBack": "Back",
+  "arenaPick": "Put a companion on the field",
+  "arenaEmptySlot": "Free",
+  "arenaRemove": "Take off the field",
+  "arenaOpponent": "Practice opponent",
+  "arenaNewOpponent": "New opponent",
+  "arenaStart": "Start battle",
+  "arenaPracticeHint": "Practice battles cost no Mut and give no rewards yet.",
+  "arenaNeedFront": "Put at least one companion in front.",
+  "arenaNoMut": "No Mut",
+  "arenaRound": "Round {round}",
+  "@arenaRound": {
+    "placeholders": {
+      "round": {
+        "type": "int"
+      }
+    }
+  },
+  "arenaCrit": "Critical!",
+  "arenaDodge": "Dodged",
+  "arenaKo": "K.O.",
+  "arenaWon": "Victory!",
+  "arenaLost": "Defeat",
+  "arenaRounds": "after {rounds} rounds",
+  "@arenaRounds": {
+    "placeholders": {
+      "rounds": {
+        "type": "int"
+      }
+    }
+  },
+  "arenaAgain": "Again",
+  "arenaBackToLineup": "Back to line-up",
+  "arenaSkip": "Skip",
+  "arenaFaster": "Faster",
+  "arenaAbilityMend": "mends the front",
+  "arenaAbilityRally": "rallies the front",
+  "arenaAbilityVolley": "throws from behind"
 }

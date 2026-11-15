@@ -2157,4 +2157,90 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get runTrailComplete => 'Trail complete';
+
+  @override
+  String get tabArena => 'Arena';
+
+  @override
+  String get arenaLineup => 'Line-up';
+
+  @override
+  String get arenaFront => 'Front';
+
+  @override
+  String get arenaBack => 'Back';
+
+  @override
+  String get arenaPick => 'Put a companion on the field';
+
+  @override
+  String get arenaEmptySlot => 'Free';
+
+  @override
+  String get arenaRemove => 'Take off the field';
+
+  @override
+  String get arenaOpponent => 'Practice opponent';
+
+  @override
+  String get arenaNewOpponent => 'New opponent';
+
+  @override
+  String get arenaStart => 'Start battle';
+
+  @override
+  String get arenaPracticeHint =>
+      'Practice battles cost no Mut and give no rewards yet.';
+
+  @override
+  String get arenaNeedFront => 'Put at least one companion in front.';
+
+  @override
+  String get arenaNoMut => 'No Mut';
+
+  @override
+  String arenaRound(int round) {
+    return 'Round $round';
+  }
+
+  @override
+  String get arenaCrit => 'Critical!';
+
+  @override
+  String get arenaDodge => 'Dodged';
+
+  @override
+  String get arenaKo => 'K.O.';
+
+  @override
+  String get arenaWon => 'Victory!';
+
+  @override
+  String get arenaLost => 'Defeat';
+
+  @override
+  String arenaRounds(int rounds) {
+    return 'after $rounds rounds';
+  }
+
+  @override
+  String get arenaAgain => 'Again';
+
+  @override
+  String get arenaBackToLineup => 'Back to line-up';
+
+  @override
+  String get arenaSkip => 'Skip';
+
+  @override
+  String get arenaFaster => 'Faster';
+
+  @override
+  String get arenaAbilityMend => 'mends the front';
+
+  @override
+  String get arenaAbilityRally => 'rallies the front';
+
+  @override
+  String get arenaAbilityVolley => 'throws from behind';
 }

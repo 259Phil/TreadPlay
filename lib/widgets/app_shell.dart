@@ -17,14 +17,18 @@ class AppShell extends StatelessWidget {
     final s = TreadSkin.of(context);
     final leather = s.style == TreadStyle.leather;
     NavigationDestination dest(
-      String painted,
+      String? painted,
       IconData plain,
       IconData on,
       String label,
     ) => leather
         ? NavigationDestination(
-            icon: _PaintedNavIcon(asset: painted, selected: false),
-            selectedIcon: _PaintedNavIcon(asset: painted, selected: true),
+            icon: _PaintedNavIcon(asset: painted, icon: on, selected: false),
+            selectedIcon: _PaintedNavIcon(
+              asset: painted,
+              icon: on,
+              selected: true,
+            ),
             label: label,
           )
         : NavigationDestination(
@@ -51,6 +55,7 @@ class AppShell extends StatelessWidget {
           l.tabForge,
         ),
         dest('markt', Icons.storefront_outlined, Icons.storefront, l.tabMarket),
+        dest(null, Icons.shield_outlined, Icons.shield, l.tabArena),
         dest(
           'einstellungen',
           Icons.settings_outlined,
@@ -73,19 +78,34 @@ class AppShell extends StatelessWidget {
 /// Painted tab icon of style C. Selected sits on an embossed brass-rimmed
 /// plate with a warm glow; unselected is slightly dimmed.
 class _PaintedNavIcon extends StatelessWidget {
-  const _PaintedNavIcon({required this.asset, required this.selected});
+  const _PaintedNavIcon({
+    required this.asset,
+    required this.icon,
+    required this.selected,
+  });
 
-  final String asset;
+  /// Painted icon `assets/nav/nav_{asset}.webp`; until one exists the
+  /// [icon] is drawn in brass instead.
+  final String? asset;
+  final IconData icon;
   final bool selected;
 
   @override
   Widget build(BuildContext context) {
-    final img = Image.asset(
-      'assets/nav/nav_$asset.webp',
-      width: selected ? 34 : 30,
-      height: selected ? 34 : 30,
-      filterQuality: FilterQuality.medium,
-    );
+    final a = asset;
+    final img = a == null
+        ? Icon(
+            icon,
+            size: selected ? 30 : 27,
+            color: const Color(0xFFD2B074),
+            shadows: const [Shadow(blurRadius: 3)],
+          )
+        : Image.asset(
+            'assets/nav/nav_$a.webp',
+            width: selected ? 34 : 30,
+            height: selected ? 34 : 30,
+            filterQuality: FilterQuality.medium,
+          );
     if (!selected) {
       return SizedBox(
         width: 52,
